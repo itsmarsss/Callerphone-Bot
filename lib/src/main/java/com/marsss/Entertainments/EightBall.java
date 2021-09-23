@@ -3,7 +3,7 @@ package com.marsss.Entertainments;
 import java.util.Random;
 
 public class EightBall {
-	static String eightball(String []args){
+	public static String eightball(String qst){
 		String [] answerlist = new String[20];
 		answerlist[0] = "It is certain.";
 		answerlist[1] = "It is decidedly so.";
@@ -28,7 +28,7 @@ public class EightBall {
 		Random rand = new Random();
 		int answer = rand.nextInt(answerlist.length);
 
-		return answerlist[answer];
+		return "Answer to `" + qst + "` is... " + answerlist[answer];
 	}
 	
 	static String getHelp() {

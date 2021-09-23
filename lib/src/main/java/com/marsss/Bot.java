@@ -41,20 +41,20 @@ public class Bot {
 	public static final String ANSI_CYAN = "\u001B[36m";
 	public static final String ANSI_WHITE = "\u001B[37m";
 	private static final EnumSet<GatewayIntent> intent = EnumSet.of(
-			//GatewayIntent.GUILD_MEMBERS,
+			GatewayIntent.GUILD_MEMBERS,
 			GatewayIntent.GUILD_MESSAGES,
 			GatewayIntent.GUILD_MESSAGE_REACTIONS,
 			GatewayIntent.GUILD_VOICE_STATES,
-			//GatewayIntent.GUILD_PRESENCES,
+			GatewayIntent.GUILD_PRESENCES,
 			GatewayIntent.GUILD_EMOJIS,
 			GatewayIntent.GUILD_INVITES,
 			GatewayIntent.DIRECT_MESSAGES);
 
 	private static void BotInit() throws LoginException, InterruptedException {
-		jda = JDABuilder.create("ODQ5NzEzNDY4MzQ4OTU2Njky.YLfLVQ.w7U69m6oCsWYPLADoz2IdPUzB-I", intent)
+		jda = JDABuilder.create("token", intent)
 				.enableCache(CacheFlag.VOICE_STATE)
-			//	.setChunkingFilter(ChunkingFilter.ALL)
-			//	.setMemberCachePolicy(MemberCachePolicy.ALL)
+				.setChunkingFilter(ChunkingFilter.ALL)
+				.setMemberCachePolicy(MemberCachePolicy.ALL)
 				.addEventListeners(
 						new OnGuildMessage(), 
 						new OnPrivateMessage(), 
@@ -69,9 +69,9 @@ public class Bot {
 //				).queue();
 //		
 //		jda.upsertCommand(new CommandData("colorrgb", "COLORS!")
-//				.addOptions(new OptionData(OptionType.STRING, "red", "Red value").setRequired(true))
-//				.addOptions(new OptionData(OptionType.STRING, "green", "Green value").setRequired(true))
-//				.addOptions(new OptionData(OptionType.STRING, "blue", "Blue value").setRequired(true))
+//				.addOptions(new OptionData(OptionType.INTEGER, "red", "Red value").setRequired(true))
+//				.addOptions(new OptionData(OptionType.INTEGER, "green", "Green value").setRequired(true))
+//				.addOptions(new OptionData(OptionType.INTEGER, "blue", "Blue value").setRequired(true))
 //				).queue();
 //		
 //		jda.upsertCommand(new CommandData("colorhex", "COLORS!")

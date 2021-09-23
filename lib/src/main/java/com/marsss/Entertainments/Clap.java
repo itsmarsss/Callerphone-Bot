@@ -4,7 +4,7 @@ public class Clap {
 
 	public static String clap(String []args) {
 		StringBuilder message = new StringBuilder("👏");
-		for(int i = 1; i < args.length; i++) {
+		for(int i = 0; i < args.length; i++) {
 			message.append(args[i]).append("👏");
 		}
 		return message.toString();

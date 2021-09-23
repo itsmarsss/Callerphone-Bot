@@ -2,10 +2,10 @@ package com.marsss.Entertainments;
 
 public class Echo {
 
-	static String echo(String []args){
+	public static String echo(String []args){
 		//Nothing to see here
 		StringBuilder echo = new StringBuilder();
-		for(int i = 1; i < args.length; i++) {
+		for(int i = 0; i < args.length; i++) {
 			echo.append(" ").append(args[i]);
 		}
 		return echo.toString();
