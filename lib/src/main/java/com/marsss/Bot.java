@@ -51,48 +51,54 @@ public class Bot {
 			GatewayIntent.DIRECT_MESSAGES);
 
 	private static void BotInit() throws LoginException, InterruptedException {
-		jda = JDABuilder.create("token", intent)
+		jda = JDABuilder.createDefault("token", intent)
 				.enableCache(CacheFlag.VOICE_STATE)
 				.setChunkingFilter(ChunkingFilter.ALL)
 				.setMemberCachePolicy(MemberCachePolicy.ALL)
-				.addEventListeners(
-						new OnGuildMessage(), 
-						new OnPrivateMessage(), 
-						new OnSlashCommand(), 
-						new OnButtonClick())
 				.build();
 
-		jda.awaitReady();
-		
-//		jda.upsertCommand(new CommandData("clap", "Claps your message")
-//				.addOptions(new OptionData(OptionType.STRING, "message", "The message to clap").setRequired(true))
-//				).queue();
-//		
-//		jda.upsertCommand(new CommandData("colorrgb", "COLORS!")
-//				.addOptions(new OptionData(OptionType.INTEGER, "red", "Red value").setRequired(true))
-//				.addOptions(new OptionData(OptionType.INTEGER, "green", "Green value").setRequired(true))
-//				.addOptions(new OptionData(OptionType.INTEGER, "blue", "Blue value").setRequired(true))
-//				).queue();
-//		
-//		jda.upsertCommand(new CommandData("colorhex", "COLORS!")
-//				.addOptions(new OptionData(OptionType.STRING, "hex", "Hexcode").setRequired(true))
-//				).queue();
-//		
-//		jda.upsertCommand(new CommandData("echo", "Echos your message")
-//				.addOptions(new OptionData(OptionType.STRING, "message", "The message to echo").setRequired(true))
-//				).queue();
-//		
-//		jda.upsertCommand(new CommandData("eightball", "Help you decide things")
-//				.addOptions(new OptionData(OptionType.STRING, "question", "The question to be answered").setRequired(true))
-//				).queue();
-//		
-//		jda.upsertCommand(new CommandData("pollnew", "Creates a poll for members to vote")
-//				.addOptions(new OptionData(OptionType.STRING, "question", "What are we voting for?").setRequired(true))
-//				).queue();
-//		
-//		jda.upsertCommand(new CommandData("rps", "Rock Paper Scissors")
-//				.addOptions(new OptionData(OptionType.STRING, "move", "Rock Paper or Scissors? (r,p,s)").setRequired(true))
-//				).queue();
+		jda.addEventListener(new OnGuildMessage());
+		jda.addEventListener(new OnPrivateMessage());
+		jda.addEventListener(new OnSlashCommand());
+		jda.addEventListener(new OnButtonClick());
+
+		//jda.awaitReady();
+
+		//jda.upsertCommand(new CommandData("ping", "Get the my ping")).queue();
+
+		//		jda.upsertCommand(new CommandData("help", "Learn more about my comamnds"))
+		//		.addOptions(new OptionData(OptionType.STRING, "command", "The command you want to learn more about").setRequired(true))
+		//		.queue();
+
+		//		jda.upsertCommand(new CommandData("clap", "Claps your message")
+		//				.addOptions(new OptionData(OptionType.STRING, "message", "The message to clap").setRequired(true))
+		//				).queue();
+		//		
+		//		jda.upsertCommand(new CommandData("colorrgb", "COLORS!")
+		//				.addOptions(new OptionData(OptionType.INTEGER, "red", "Red value").setRequired(true))
+		//				.addOptions(new OptionData(OptionType.INTEGER, "green", "Green value").setRequired(true))
+		//				.addOptions(new OptionData(OptionType.INTEGER, "blue", "Blue value").setRequired(true))
+		//				).queue();
+		//		
+		//		jda.upsertCommand(new CommandData("colorhex", "COLORS!")
+		//				.addOptions(new OptionData(OptionType.STRING, "hex", "Hexcode").setRequired(true))
+		//				).queue();
+		//		
+		//		jda.upsertCommand(new CommandData("echo", "Echos your message")
+		//				.addOptions(new OptionData(OptionType.STRING, "message", "The message to echo").setRequired(true))
+		//				).queue();
+		//		
+		//		jda.upsertCommand(new CommandData("eightball", "Help you decide things")
+		//				.addOptions(new OptionData(OptionType.STRING, "question", "The question to be answered").setRequired(true))
+		//				).queue();
+		//		
+		//		jda.upsertCommand(new CommandData("pollnew", "Creates a poll for members to vote")
+		//				.addOptions(new OptionData(OptionType.STRING, "question", "What are we voting for?").setRequired(true))
+		//				).queue();
+		//		
+		//		jda.upsertCommand(new CommandData("rps", "Rock Paper Scissors")
+		//				.addOptions(new OptionData(OptionType.STRING, "move", "Rock Paper or Scissors? (r,p,s)").setRequired(true))
+		//				).queue();
 	}
 	public static void main(String[] args) throws LoginException, InterruptedException {
 		commandPrompt();
@@ -101,7 +107,7 @@ public class Bot {
 	private static void commandPrompt() throws LoginException, InterruptedException {
 		Scanner sc = new Scanner(System.in);
 
-		DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss.ms");
+		DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
 
 		System.out.println(ANSI_RED + "Bot Loaded...\n"
 				+ "Welcome to Userphone Bot Command Line (UBCL)!" + ANSI_RESET);

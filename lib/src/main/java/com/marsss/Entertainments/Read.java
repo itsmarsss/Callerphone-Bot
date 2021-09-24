@@ -28,7 +28,7 @@ public class Read {
 		return new EmbedBuilder().setTitle("Received a file! \nUnable to Read Bytes").build();
 	}
 	
-	static String getHelp() {
+	public static String getHelp() {
 		return "`read <textfile>` - Read text files even though Discord has it :D";
 	}
 }

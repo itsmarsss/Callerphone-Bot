@@ -31,7 +31,7 @@ public class EightBall {
 		return "Answer to `" + qst + "` is... " + answerlist[answer];
 	}
 	
-	static String getHelp() {
+	public static String getHelp() {
 		return "`8ball <question>` - Help you answer hard questions!";
 	}
 }

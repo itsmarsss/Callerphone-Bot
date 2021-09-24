@@ -40,7 +40,7 @@ public class RPS {
 		return "Invalid move...";
 	}
 	
-	static String getHelp() {
+	public static String getHelp() {
 		return "`rps <r/p/s>` - Play rock paper scissors with... a computer 😅…";
 	}
 }

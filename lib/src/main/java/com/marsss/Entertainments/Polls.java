@@ -7,11 +7,6 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 
 public class Polls {
-	static void poll(String args[]) {
-		//Nothing to see here
-
-	}
-
 	public static MessageEmbed newpoll(String qst) {
 		Random rand = new Random();
 		int r = rand.nextInt(256), g = rand.nextInt(256), b = rand.nextInt(256);
@@ -24,7 +19,7 @@ public class Polls {
 		return PollEmd.build();
 	}
 
-	static String getHelp() {
+	public static String getHelp() {
 		return "`poll <msg>` - Create a poll for server members to vote!";
 	}
 }

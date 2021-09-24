@@ -11,7 +11,7 @@ public class Echo {
 		return echo.toString();
 	}
 
-	static String getHelp() {
+	public static String getHelp() {
 		return "`echo <arg>` - Echos your message for all to \"hear\"!";
 	}
 }

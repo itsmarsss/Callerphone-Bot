@@ -10,7 +10,7 @@ public class Clap {
 		return message.toString();
 	}
 	
-	static String getHelp() {
+	public static String getHelp() {
 		return "`clap` - Add meaning to your messages by having the 👏 emoji between every word!";
 	}
 }
