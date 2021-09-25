@@ -13,30 +13,35 @@ import net.dv8tion.jda.api.entities.MessageEmbed;
 
 public class Commands {
 	public static MessageEmbed commands() {
-		String split = "\n-=-\n";
+		String SPLIT = "\n—\n";
 		EmbedBuilder CmdEmd = new EmbedBuilder()
 				.setTitle("**All Commands**")
-				.setDescription(
-						"**Utils**\n"
-								+ Commands.getHelp()
-								+ split
-								+ Help.getHelp()
-								+ split
-								+ Ping.getHelp()
-								+ "\n\n**Entertainments**\n"
-								+ Clap.getHelp()
-								+ split
-								+ Colour.getHelp()
-								+ split
-								+ Echo.getHelp()
-								+ split
-								+ EightBall.getHelp()
-								+ split
-								+ Polls.getHelp()
-								+ split
-								+ Read.getHelp()
-								+ split
-								+ RPS.getHelp()
+				.addField("**Utils**",
+						Commands.getHelp()
+						+ SPLIT
+						+ Help.getHelp()
+						+ SPLIT
+						+ Ping.getHelp()
+						+ SPLIT
+						+ Uptime.getHelp()
+						+ SPLIT
+						+ UserInfo.getHelp()
+						+ SPLIT
+						+ BotInfo.getHelp(), true)
+				.addField("**Entertainments**",
+						Clap.getHelp()
+						+ SPLIT
+						+ Colour.getHelp()
+						+ SPLIT
+						+ Echo.getHelp()
+						+ SPLIT
+						+ EightBall.getHelp()
+						+ SPLIT
+						+ Polls.getHelp()
+						+ SPLIT
+						+ Read.getHelp()
+						+ SPLIT
+						+ RPS.getHelp(), true
 						);
 
 		return CmdEmd.build();

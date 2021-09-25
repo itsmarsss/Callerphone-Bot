@@ -26,9 +26,9 @@ public class EightBall {
 		answerlist[18] = "Outlook not so good.";
 		answerlist[19] = "Very doubtful.";
 		Random rand = new Random();
-		int answer = rand.nextInt(answerlist.length);
+		int ANSWER = rand.nextInt(answerlist.length);
 
-		return "Answer to `" + qst + "` is... " + answerlist[answer];
+		return "Answer to `" + qst + "` is... " + answerlist[ANSWER];
 	}
 	
 	public static String getHelp() {

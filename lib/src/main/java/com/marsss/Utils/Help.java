@@ -1,7 +1,6 @@
 package com.marsss.Utils;
 
 import java.awt.Color;
-import java.util.Random;
 
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
@@ -10,46 +9,44 @@ import com.marsss.Entertainments.*;
 
 public class Help {
 	public static MessageEmbed help(String name) {
-		String desc = "I don't recognize that command :(";
+		String DESC = "I don't recognize that command :(";
 		name = name.toLowerCase();
 		switch(name) {
 		case "clap":
-			desc = Clap.getHelp();
+			DESC = Clap.getHelp();
 			break;
 		case "color":
-			desc = Colour.getHelp();
+			DESC = Colour.getHelp();
 			break;
 		case "echo":
-			desc = Echo.getHelp();
+			DESC = Echo.getHelp();
 			break;
 		case "eightball":
-			desc = EightBall.getHelp();
+			DESC = EightBall.getHelp();
 			break;
 		case "poll":
-			desc = Polls.getHelp();
+			DESC = Polls.getHelp();
 			break;
 		case "read":
-			desc = Read.getHelp();
+			DESC = Read.getHelp();
 			break;
 		case "rps":
-			desc = RPS.getHelp();
+			DESC = RPS.getHelp();
 			break;
 		case "ping":
-			desc = Ping.getHelp();
+			DESC = Ping.getHelp();
 			break;
 			case "help":
-				desc = Help.getHelp();
+				DESC = Help.getHelp();
 				break;
 		}
 		
-		Random rand = new Random();
-		int r = rand.nextInt(256), g = rand.nextInt(256), b = rand.nextInt(256);
-		Color color = new Color(r, g, b);
+		Color COLOR = Colour.randColor();
 		EmbedBuilder HelpEmd = new EmbedBuilder()
 				.setTitle("Help is here!")
-				.setDescription(desc)
+				.setDescription(DESC)
 				.setFooter("Hope you found this useful!")
-				.setColor(color);
+				.setColor(COLOR);
 
 		return HelpEmd.build();
 	}

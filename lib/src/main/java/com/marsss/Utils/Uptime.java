@@ -6,32 +6,36 @@ public class Uptime {
 
 	public static String uptime() {
 
-		final long duration = ManagementFactory.getRuntimeMXBean().getUptime();
+		final long DURATION = ManagementFactory.getRuntimeMXBean().getUptime();
 
-		final long years = duration / 31104000000L;
-		final long months = duration / 2592000000L % 12;
-		final long days = duration / 86400000L % 30;
-		final long hours = duration / 3600000L % 24;
-		final long minutes = duration / 60000L % 60;
-		final long seconds = duration / 1000L % 60;
-		final long milliseconds = duration % 1000;
+		final long YEARS = DURATION / 31104000000L;
+		final long MONTHS = DURATION / 2592000000L % 12;
+		final long DAYS = DURATION / 86400000L % 30;
+		final long HOURS = DURATION / 3600000L % 24;
+		final long MINUTES = DURATION / 60000L % 60;
+		final long SECONDS = DURATION / 1000L % 60;
+		final long MILLISECONDS = DURATION % 1000;
 
-		String uptime = (years == 0 ? "" : "**" + years + "** Years, ") + 
-				(months == 0 ? "" : "**" + months + "** Months, ") + 
-				(days == 0 ? "" : "**" + days + "** Days, ") + 
-				(hours == 0 ? "" : "**" + hours + "** Hours, ") + 
-				(minutes == 0 ? "" : "**" + minutes + "** Minutes, ") + 
-				(seconds == 0 ? "" : "**" + seconds + "** Seconds, ") + 
-				(milliseconds == 0 ? "" : "**" + milliseconds + "** Milliseconds, ");
+		String UPTIME = (YEARS == 0 ? "" : "**" + YEARS + "** Years, ") + 
+				(MONTHS == 0 ? "" : "**" + MONTHS + "** Months, ") + 
+				(DAYS == 0 ? "" : "**" + DAYS + "** Days, ") + 
+				(HOURS == 0 ? "" : "**" + HOURS + "** Hours, ") + 
+				(MINUTES == 0 ? "" : "**" + MINUTES + "** Minutes, ") + 
+				(SECONDS == 0 ? "" : "**" + SECONDS + "** Seconds, ") + 
+				(MILLISECONDS == 0 ? "" : "**" + MILLISECONDS + "** Milliseconds, ");
 
-		uptime = replaceLast(uptime, ", ", "");
-		uptime = replaceLast(uptime, ",", " and");
+		UPTIME = replaceLast(UPTIME, ", ", "");
+		UPTIME = replaceLast(UPTIME, ",", " and");
 
-		return "**I've been online for** " + uptime;
+		return "**I've been online for** " + UPTIME;
 	}
 	
 	private static String replaceLast(final String text, final String regex, final String replacement) {
         return text.replaceFirst("(?s)(.*)" + regex, "$1" + replacement);
     }
+
+	public static String getHelp() {
+		return "`uptime` - See how long I've been online!";
+	}
 	
 }

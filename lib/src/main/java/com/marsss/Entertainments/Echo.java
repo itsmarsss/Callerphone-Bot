@@ -4,11 +4,11 @@ public class Echo {
 
 	public static String echo(String []args){
 		//Nothing to see here
-		StringBuilder echo = new StringBuilder();
+		StringBuilder ECHO = new StringBuilder();
 		for(int i = 0; i < args.length; i++) {
-			echo.append(" ").append(args[i]);
+			ECHO.append(" ").append(args[i]);
 		}
-		return echo.toString();
+		return ECHO.toString();
 	}
 
 	public static String getHelp() {

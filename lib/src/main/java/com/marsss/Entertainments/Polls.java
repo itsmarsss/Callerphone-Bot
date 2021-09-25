@@ -1,19 +1,16 @@
 package com.marsss.Entertainments;
 
 import java.awt.Color;
-import java.util.Random;
 
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 
 public class Polls {
 	public static MessageEmbed newpoll(String qst) {
-		Random rand = new Random();
-		int r = rand.nextInt(256), g = rand.nextInt(256), b = rand.nextInt(256);
-		Color color = new Color(r, g, b);
+		Color COLOR = Colour.randColor();
 		EmbedBuilder PollEmd = new EmbedBuilder()
 				.setTitle("**POLL**")
-				.setColor(color)
+				.setColor(COLOR)
 				.setDescription(qst.toString());
 
 		return PollEmd.build();

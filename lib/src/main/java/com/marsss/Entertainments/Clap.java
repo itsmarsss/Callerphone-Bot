@@ -3,11 +3,11 @@ package com.marsss.Entertainments;
 public class Clap {
 
 	public static String clap(String []args) {
-		StringBuilder message = new StringBuilder("👏");
+		StringBuilder MESSAGE = new StringBuilder("👏");
 		for(int i = 0; i < args.length; i++) {
-			message.append(args[i]).append("👏");
+			MESSAGE.append(args[i]).append("👏");
 		}
-		return message.toString();
+		return MESSAGE.toString();
 	}
 	
 	public static String getHelp() {

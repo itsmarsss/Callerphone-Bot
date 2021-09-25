@@ -9,10 +9,7 @@ import java.util.Scanner;
 
 import javax.security.auth.login.LoginException;
 
-import com.marsss.Listeners.OnButtonClick;
-import com.marsss.Listeners.OnGuildMessage;
-import com.marsss.Listeners.OnPrivateMessage;
-import com.marsss.Listeners.OnSlashCommand;
+import com.marsss.Listeners.*;
 
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
@@ -57,7 +54,7 @@ public class Bot {
 				.setMemberCachePolicy(MemberCachePolicy.ALL)
 				.build();
 
-		jda.addEventListener(new OnGuildMessage());
+		jda.addEventListener(new CommandListener());
 		jda.addEventListener(new OnPrivateMessage());
 		jda.addEventListener(new OnSlashCommand());
 		jda.addEventListener(new OnButtonClick());
