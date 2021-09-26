@@ -6,10 +6,12 @@ import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.EnumSet;
 import java.util.Scanner;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 import javax.security.auth.login.LoginException;
 
 import com.marsss.Listeners.*;
+import com.marsss.VCUserphone.AudioStorage;
 
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
@@ -17,9 +19,9 @@ import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.TextChannel;
-import net.dv8tion.jda.api.interactions.commands.OptionType;
-import net.dv8tion.jda.api.interactions.commands.build.CommandData;
-import net.dv8tion.jda.api.interactions.commands.build.OptionData;
+//import net.dv8tion.jda.api.interactions.commands.OptionType;
+//import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+//import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.ChunkingFilter;
 import net.dv8tion.jda.api.utils.MemberCachePolicy;
@@ -55,11 +57,16 @@ public class Bot {
 				.build();
 
 		jda.addEventListener(new CommandListener());
+		jda.addEventListener(new VCUserphoneListener());
 		jda.addEventListener(new OnPrivateMessage());
 		jda.addEventListener(new OnSlashCommand());
 		jda.addEventListener(new OnButtonClick());
+		
+		for(int i = 0; i < AudioStorage.audio.length; i++) {
+			AudioStorage.audio[i] = new AudioStorage.Audio(new ConcurrentLinkedQueue<>(), "empty", "", new ConcurrentLinkedQueue<>(), "", "", false);
+		}
 
-		//jda.awaitReady();
+		jda.awaitReady();
 
 		//jda.upsertCommand(new CommandData("ping", "Get the my ping")).queue();
 
