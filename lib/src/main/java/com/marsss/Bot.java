@@ -50,7 +50,7 @@ public class Bot {
 			GatewayIntent.DIRECT_MESSAGES);
 
 	private static void BotInit() throws LoginException, InterruptedException {
-		jda = JDABuilder.createDefault("token", intent)
+		jda = JDABuilder.createDefault("ODQ5NzEzNDY4MzQ4OTU2Njky.YLfLVQ.7j0KOJ3EksIy6crvvAXvazCwgjY", intent)
 				.enableCache(CacheFlag.VOICE_STATE)
 				.setChunkingFilter(ChunkingFilter.ALL)
 				.setMemberCachePolicy(MemberCachePolicy.ALL)
