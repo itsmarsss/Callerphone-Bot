@@ -49,8 +49,8 @@ public class Bot {
 			GatewayIntent.GUILD_INVITES,
 			GatewayIntent.DIRECT_MESSAGES);
 
-	private static void BotInit() throws LoginException, InterruptedException {
-		jda = JDABuilder.createDefault("token", intent) //REMEMBER TO REMOVE THE TOKEN!11!!!11
+	private static void BotInit(String token) throws LoginException, InterruptedException {
+		jda = JDABuilder.createDefault(token, intent)
 				.enableCache(CacheFlag.VOICE_STATE)
 				.setChunkingFilter(ChunkingFilter.ALL)
 				.setMemberCachePolicy(MemberCachePolicy.ALL)
@@ -120,11 +120,13 @@ public class Bot {
 			String cmd = sc.nextLine().toLowerCase();
 
 			if(cmd.equals("start")) {
+				System.out.println("Token: ");
+				String TOKEN = sc.nextLine();
 				System.out.println(ANSI_GREEN + "[" + dtf.format(LocalDateTime.now()) + "]: " + ANSI_RESET + "Starting Bot...");
 				if(jda != null) {
 					System.out.println(ANSI_GREEN + "[" + dtf.format(LocalDateTime.now()) + "]: " + ANSI_RESET + "Bot Is Online Right Now");
 				} else {
-					BotInit();
+					BotInit(TOKEN);
 					System.out.println(ANSI_GREEN + "[" + dtf.format(LocalDateTime.now()) + "]: " + ANSI_RESET + "Bot Online");
 					try {
 						EmbedBuilder embedBuilder = new EmbedBuilder().setTitle("Status").setColor(Color.GREEN).setFooter("Hello World!").setDescription(jda.getSelfUser().getAsMention() + " is now online!" + cmd.replaceFirst("start", ""));
