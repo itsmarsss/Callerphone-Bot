@@ -11,7 +11,6 @@ import net.dv8tion.jda.api.entities.VoiceChannel;
 import net.dv8tion.jda.api.managers.AudioManager;
 
 public class VCCallPairer {
-	static int port;
 
 	public static void onCallCommand(VoiceChannel vcchannel, Message message) {
 		Guild GUILD = vcchannel.getGuild();
@@ -20,11 +19,11 @@ public class VCCallPairer {
 		JDA jda = Bot.jda;
 		for(int i = 0; i < AudioStorage.audio.length; i++) {
 			Audio audio = AudioStorage.audio[i];
-			if(!audio.connected) {
-				if(!audio.callerGuildID.equals("empty")) {
-					audio.receiverGuildID = GUILDID;
-					audio.receiverChannelID = CHANNELID;
-					audio.connected = true;
+			if(!audio.getConnected()) {
+				if(!audio.getCallerGuildID().equals("empty")) {
+					audio.setReceiverGuildID(GUILDID);
+					audio.setReceiverChannelID(CHANNELID);
+					audio.setConnected(true);
 					connectTo(vcchannel, i, true);
 
 					String MEMBERSRECEIVER = "";
@@ -41,7 +40,7 @@ public class VCCallPairer {
 
 					String MEMBERSCALLER = "";
 
-					for(Member m : jda.getGuildById(audio.callerGuildID).getSelfMember().getVoiceState().getChannel().getMembers()) {
+					for(Member m : jda.getGuildById(audio.getCallerGuildID()).getSelfMember().getVoiceState().getChannel().getMembers()) {
 						if(!(m.getUser() == jda.getSelfUser())) {
 							MEMBERSCALLER += m.getAsMention() + ", ";
 						}
@@ -51,18 +50,19 @@ public class VCCallPairer {
 					}else
 						MEMBERSCALLER = "no one :(";
 
-					jda.getTextChannelById(audio.callerChannelID).sendMessage("Someone picked up the phone!").queue();
-					jda.getTextChannelById(audio.callerChannelID).sendMessage("You are in a call with " + MEMBERSRECEIVER).queue();
+					jda.getTextChannelById(audio.getCallerChannelID()).sendMessage("Someone picked up the phone!").queue();
+					jda.getTextChannelById(audio.getCallerChannelID()).sendMessage("You are in a call with " + MEMBERSRECEIVER).queue();
 
 					message.reply("Calling...").queue();
 					message.getChannel().sendMessage("Someone picked up the phone!").queue();
 					message.getChannel().sendMessage("You are in a call with " + MEMBERSCALLER).queue();
-					System.out.println("From Guild: " + audio.callerChannelID + " - To Guild: " + audio.receiverGuildID);
-					System.out.println("From Channel: " + audio.callerGuildID + " - To Channel: " + audio.receiverGuildID);
+					
+					System.out.println("From Guild: " + audio.getCallerGuildID() + " - To Guild: " + audio.getReceiverGuildID());
+					System.out.println("From Channel: " + audio.getCallerChannelID() + " - To Channel: " + audio.getReceiverChannelID());
 					return;
-				}else if(audio.callerGuildID.equals("empty")) {
-					audio.callerGuildID = GUILDID;
-					audio.callerChannelID = CHANNELID;
+				}else if(audio.getCallerGuildID().equals("empty")) {
+					audio.setCallerGuildID(GUILDID);
+					audio.setCallerChannelID(CHANNELID);
 					connectTo(vcchannel, i, false);
 					message.reply("Calling...").queue();
 					return;
@@ -72,18 +72,22 @@ public class VCCallPairer {
 		message.reply("Hmmm, I was unable to find an open port!");
 	}
 
-	private static void connectTo(VoiceChannel channel, int inport, boolean receiver) {
+	private static void connectTo(VoiceChannel channel, int port, boolean receiver) {
 		Guild guild = channel.getGuild();
 		AudioManager audioManager = guild.getAudioManager();
-		port = inport;
 		if(receiver) {
 			CallerAudioHandler callerhandler = new CallerAudioHandler();
 			ReceiverAudioHandler receiverhandler = new ReceiverAudioHandler();
+			
+			callerhandler.setPort(port);
+			receiverhandler.setPort(port);
 
-			Bot.jda.getGuildById(AudioStorage.audio[port].callerGuildID).getAudioManager().setSendingHandler(callerhandler);
+			Bot.jda.getGuildById(AudioStorage.audio[port].getCallerGuildID()).getAudioManager().setSendingHandler(callerhandler);
+			
 			audioManager.setSendingHandler(receiverhandler);
 
-			Bot.jda.getGuildById(AudioStorage.audio[port].callerGuildID).getAudioManager().setReceivingHandler(callerhandler);
+			Bot.jda.getGuildById(AudioStorage.audio[port].getCallerGuildID()).getAudioManager().setReceivingHandler(callerhandler);
+			
 			audioManager.setReceivingHandler(receiverhandler);
 		}
 	}

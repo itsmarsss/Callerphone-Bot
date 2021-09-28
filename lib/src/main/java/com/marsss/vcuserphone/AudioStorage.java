@@ -21,6 +21,60 @@ public class AudioStorage {
 			this.receiverChannelID = receiverChannelID;
 			this.connected = connected;
 		}
+		
+		// Get
+		
+		public Queue<byte[]> getCaller() {
+			return caller;
+		}
+		
+		public String getCallerGuildID() {
+			return callerGuildID;	
+		}
+		
+		public String getCallerChannelID() {
+			return callerChannelID;	
+		}
+		
+		public Queue<byte[]> getReceiver() {
+			return receiver;
+		}
+		
+		public String getReceiverGuildID() {
+			return receiverGuildID;	
+		}
+		
+		public String getReceiverChannelID() {
+			return receiverChannelID;	
+		}
+		
+		public boolean getConnected() {
+			return connected;	
+		}
+		
+		
+		// Set
+		
+		public void setCallerGuildID(String ID) {
+			callerGuildID = ID;
+		}
+		
+		public void setCallerChannelID(String ID) {
+			callerChannelID = ID;
+		}
+		
+		public void setReceiverGuildID(String ID) {
+			receiverGuildID = ID;
+		}
+		
+		public void setReceiverChannelID(String ID) {
+			receiverChannelID = ID;
+		}
+		
+		public void setConnected(boolean bool) {
+			connected = bool;
+		}
+
 	}
 	public static Audio[] audio = new Audio[10];
 }
