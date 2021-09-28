@@ -10,14 +10,15 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 import javax.security.auth.login.LoginException;
 
-import com.marsss.Listeners.*;
-import com.marsss.VCUserphone.AudioStorage;
+import com.marsss.listeners.*;
+import com.marsss.vcuserphone.AudioStorage;
 
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.entities.Activity;
+import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.TextChannel;
 //import net.dv8tion.jda.api.interactions.commands.OptionType;
 //import net.dv8tion.jda.api.interactions.commands.build.CommandData;
@@ -61,13 +62,14 @@ public class Bot {
 		jda.addEventListener(new OnPrivateMessage());
 		jda.addEventListener(new OnSlashCommand());
 		jda.addEventListener(new OnButtonClick());
-		
+
 		for(int i = 0; i < AudioStorage.audio.length; i++) {
 			AudioStorage.audio[i] = new AudioStorage.Audio(new ConcurrentLinkedQueue<>(), "empty", "", new ConcurrentLinkedQueue<>(), "", "", false);
 		}
 
 		jda.awaitReady();
-
+		for(Guild g : jda.getGuilds())
+			System.out.println(g.getName());
 		//jda.upsertCommand(new CommandData("ping", "Get the my ping")).queue();
 
 		//		jda.upsertCommand(new CommandData("help", "Learn more about my comamnds"))
