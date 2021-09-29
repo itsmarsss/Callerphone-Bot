@@ -5,21 +5,21 @@ import java.util.Queue;
 public class AudioStorage {
 	public static class Audio {
 		public Queue<byte[]> caller;
-		public String callerGuildID;
+		public String callerVCID;
 		public String callerChannelID;
 		public Queue<byte[]> receiver;
-		public String receiverGuildID;
+		public String receiverVCID;
 		public String receiverChannelID;
-		public boolean connected;
+		public boolean isConnected;
 
-		public Audio(Queue<byte[]> caller, String callerGuildID, String callerChannelID, Queue<byte[]> receiver, String receiverGuildID, String receiverChannelID, boolean connected){
+		public Audio(Queue<byte[]> caller, String callerVCID, String callerChannelID, Queue<byte[]> receiver, String receiverVCID, String receiverChannelID, boolean isConnected){
 			this.caller = caller;
-			this.callerGuildID = callerGuildID;
+			this.callerVCID = callerVCID;
 			this.callerChannelID = callerChannelID;
 			this.receiver = receiver;
-			this.receiverGuildID = receiverGuildID;
+			this.receiverVCID = receiverVCID;
 			this.receiverChannelID = receiverChannelID;
-			this.connected = connected;
+			this.isConnected = isConnected;
 		}
 		
 		// Get
@@ -28,8 +28,8 @@ public class AudioStorage {
 			return caller;
 		}
 		
-		public String getCallerGuildID() {
-			return callerGuildID;	
+		public String getCallerVCID() {
+			return callerVCID;	
 		}
 		
 		public String getCallerChannelID() {
@@ -40,8 +40,8 @@ public class AudioStorage {
 			return receiver;
 		}
 		
-		public String getReceiverGuildID() {
-			return receiverGuildID;	
+		public String getReceiverVCID() {
+			return receiverVCID;	
 		}
 		
 		public String getReceiverChannelID() {
@@ -49,22 +49,23 @@ public class AudioStorage {
 		}
 		
 		public boolean getConnected() {
-			return connected;	
+			return isConnected;	
 		}
+		
 		
 		
 		// Set
 		
-		public void setCallerGuildID(String ID) {
-			callerGuildID = ID;
+		public void setCallerVCID(String ID) {
+			callerVCID = ID;
 		}
 		
 		public void setCallerChannelID(String ID) {
 			callerChannelID = ID;
 		}
 		
-		public void setReceiverGuildID(String ID) {
-			receiverGuildID = ID;
+		public void setReceiverVCID(String ID) {
+			receiverVCID = ID;
 		}
 		
 		public void setReceiverChannelID(String ID) {
@@ -72,9 +73,18 @@ public class AudioStorage {
 		}
 		
 		public void setConnected(boolean bool) {
-			connected = bool;
+			isConnected = bool;
+		}
+		
+		public void resetAudio() {
+			caller.clear();
+			callerVCID = "empty";
+			callerChannelID = "";
+			receiver.clear();
+			receiverVCID = "";
+			receiverChannelID = "";
 		}
 
 	}
-	public static Audio[] audio = new Audio[10];
+	public static Audio[] audio = new Audio[10000];
 }

@@ -13,15 +13,13 @@ import net.dv8tion.jda.api.managers.AudioManager;
 public class VCCallPairer {
 
 	public static void onCallCommand(VoiceChannel vcchannel, Message message) {
-		Guild GUILD = vcchannel.getGuild();
-		String GUILDID = GUILD.getId();
 		String CHANNELID = message.getChannel().getId();
 		JDA jda = Bot.jda;
 		for(int i = 0; i < AudioStorage.audio.length; i++) {
 			Audio audio = AudioStorage.audio[i];
 			if(!audio.getConnected()) {
-				if(!audio.getCallerGuildID().equals("empty")) {
-					audio.setReceiverGuildID(GUILDID);
+				if(!audio.getCallerVCID().equals("empty")) {
+					audio.setReceiverVCID(vcchannel.getId());
 					audio.setReceiverChannelID(CHANNELID);
 					audio.setConnected(true);
 					connectTo(vcchannel, i, true);
@@ -40,7 +38,7 @@ public class VCCallPairer {
 
 					String MEMBERSCALLER = "";
 
-					for(Member m : jda.getGuildById(audio.getCallerGuildID()).getSelfMember().getVoiceState().getChannel().getMembers()) {
+					for(Member m : jda.getVoiceChannelById(audio.getCallerVCID()).getGuild().getSelfMember().getVoiceState().getChannel().getMembers()) {
 						if(!(m.getUser() == jda.getSelfUser())) {
 							MEMBERSCALLER += m.getAsMention() + ", ";
 						}
@@ -56,12 +54,12 @@ public class VCCallPairer {
 					message.reply("Calling...").queue();
 					message.getChannel().sendMessage("Someone picked up the phone!").queue();
 					message.getChannel().sendMessage("You are in a call with " + MEMBERSCALLER).queue();
-					
-					System.out.println("From Guild: " + audio.getCallerGuildID() + " - To Guild: " + audio.getReceiverGuildID());
+
+					System.out.println("From Guild: " + audio.getCallerVCID() + " - To Guild: " + audio.getReceiverVCID());
 					System.out.println("From Channel: " + audio.getCallerChannelID() + " - To Channel: " + audio.getReceiverChannelID());
 					return;
-				}else if(audio.getCallerGuildID().equals("empty")) {
-					audio.setCallerGuildID(GUILDID);
+				}else if(audio.getCallerVCID().equals("empty")) {
+					audio.setCallerVCID(vcchannel.getId());
 					audio.setCallerChannelID(CHANNELID);
 					connectTo(vcchannel, i, false);
 					message.reply("Calling...").queue();
@@ -78,16 +76,16 @@ public class VCCallPairer {
 		if(receiver) {
 			CallerAudioHandler callerhandler = new CallerAudioHandler();
 			ReceiverAudioHandler receiverhandler = new ReceiverAudioHandler();
-			
+
 			callerhandler.setPort(port);
 			receiverhandler.setPort(port);
 
-			Bot.jda.getGuildById(AudioStorage.audio[port].getCallerGuildID()).getAudioManager().setSendingHandler(callerhandler);
-			
+			Bot.jda.getVoiceChannelById(AudioStorage.audio[port].getCallerVCID()).getGuild().getAudioManager().setSendingHandler(callerhandler);
+
 			audioManager.setSendingHandler(receiverhandler);
 
-			Bot.jda.getGuildById(AudioStorage.audio[port].getCallerGuildID()).getAudioManager().setReceivingHandler(callerhandler);
-			
+			Bot.jda.getVoiceChannelById(AudioStorage.audio[port].getCallerVCID()).getGuild().getAudioManager().setReceivingHandler(callerhandler);
+
 			audioManager.setReceivingHandler(receiverhandler);
 		}
 	}

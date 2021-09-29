@@ -12,6 +12,7 @@ import javax.security.auth.login.LoginException;
 
 import com.marsss.listeners.*;
 import com.marsss.vcuserphone.AudioStorage;
+import com.marsss.vcuserphone.AudioStorage.Audio;
 
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
@@ -40,6 +41,7 @@ public class Bot {
 	public static final String ANSI_PURPLE = "\u001B[35m";
 	public static final String ANSI_CYAN = "\u001B[36m";
 	public static final String ANSI_WHITE = "\u001B[37m";
+	private static final DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
 	private static final EnumSet<GatewayIntent> intent = EnumSet.of(
 			GatewayIntent.GUILD_MEMBERS,
 			GatewayIntent.GUILD_MESSAGES,
@@ -50,26 +52,44 @@ public class Bot {
 			GatewayIntent.GUILD_INVITES,
 			GatewayIntent.DIRECT_MESSAGES);
 
-	private static void BotInit(String token) throws LoginException, InterruptedException {
-		jda = JDABuilder.createDefault(token, intent)
-				.enableCache(CacheFlag.VOICE_STATE)
-				.setChunkingFilter(ChunkingFilter.ALL)
-				.setMemberCachePolicy(MemberCachePolicy.ALL)
-				.build();
+	private static void BotInit(String token, String startupmsg) throws InterruptedException {
+		try {
+			jda = JDABuilder.createDefault(token, intent)
+					.enableCache(CacheFlag.VOICE_STATE)
+					.setChunkingFilter(ChunkingFilter.ALL)
+					.setMemberCachePolicy(MemberCachePolicy.ALL)
+					.build();
+			
+			jda.addEventListener(new CommandListener());
+			jda.addEventListener(new VCUserphoneListener());
+			jda.addEventListener(new OnPrivateMessage());
+			jda.addEventListener(new OnSlashCommand());
+			jda.addEventListener(new OnButtonClick());
 
-		jda.addEventListener(new CommandListener());
-		jda.addEventListener(new VCUserphoneListener());
-		jda.addEventListener(new OnPrivateMessage());
-		jda.addEventListener(new OnSlashCommand());
-		jda.addEventListener(new OnButtonClick());
+			for(int i = 0; i < AudioStorage.audio.length; i++) {
+				AudioStorage.audio[i] = new Audio(new ConcurrentLinkedQueue<>(), "empty", "", new ConcurrentLinkedQueue<>(), "", "", false);
+			}
 
-		for(int i = 0; i < AudioStorage.audio.length; i++) {
-			AudioStorage.audio[i] = new AudioStorage.Audio(new ConcurrentLinkedQueue<>(), "empty", "", new ConcurrentLinkedQueue<>(), "", "", false);
+			jda.awaitReady();
+
+			System.out.println("Server List: ");
+			for(Guild g : jda.getGuilds())
+				System.out.println(g.getName());
+			
+
+			System.out.println(ANSI_GREEN + "[" + dtf.format(LocalDateTime.now()) + "]: " + ANSI_RESET + "Bot Online");
+			try {
+				EmbedBuilder embedBuilder = new EmbedBuilder().setTitle("Status").setColor(Color.GREEN).setFooter("Hello World!").setDescription(jda.getSelfUser().getAsMention() + " is now online!" + startupmsg);
+				jda.getTextChannelById(852342009288851516L).sendMessageEmbeds(embedBuilder.build()).queue();
+			} catch(Exception e) {
+				System.out.println(ANSI_GREEN + "[" + dtf.format(LocalDateTime.now()) + "]: " + ANSI_RED + "Error Sending Startup Message" + ANSI_RESET);
+			}
+			
+		}catch(Exception e) {
+			System.err.println(e.getMessage());
 		}
 
-		jda.awaitReady();
-		for(Guild g : jda.getGuilds())
-			System.out.println(g.getName());
+
 		//jda.upsertCommand(new CommandData("ping", "Get the my ping")).queue();
 
 		//		jda.upsertCommand(new CommandData("help", "Learn more about my comamnds"))
@@ -113,29 +133,20 @@ public class Bot {
 	private static void commandPrompt() throws LoginException, InterruptedException {
 		Scanner sc = new Scanner(System.in);
 
-		DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
-
 		System.out.println(ANSI_RED + "Bot Loaded...\n"
 				+ "Welcome to Userphone Bot Command Line (UBCL)!" + ANSI_RESET);
 
 		while(true) {
 			String cmd = sc.nextLine().toLowerCase();
 
-			if(cmd.equals("start")) {
+			if(cmd.startsWith("start ")) {
 				System.out.println("Token: ");
 				String TOKEN = sc.nextLine();
 				System.out.println(ANSI_GREEN + "[" + dtf.format(LocalDateTime.now()) + "]: " + ANSI_RESET + "Starting Bot...");
 				if(jda != null) {
 					System.out.println(ANSI_GREEN + "[" + dtf.format(LocalDateTime.now()) + "]: " + ANSI_RESET + "Bot Is Online Right Now");
 				} else {
-					BotInit(TOKEN);
-					System.out.println(ANSI_GREEN + "[" + dtf.format(LocalDateTime.now()) + "]: " + ANSI_RESET + "Bot Online");
-					try {
-						EmbedBuilder embedBuilder = new EmbedBuilder().setTitle("Status").setColor(Color.GREEN).setFooter("Hello World!").setDescription(jda.getSelfUser().getAsMention() + " is now online!" + cmd.replaceFirst("start", ""));
-						jda.getTextChannelById(852342009288851516L).sendMessageEmbeds(embedBuilder.build()).queue();
-					} catch(Exception e) {
-						System.out.println(ANSI_GREEN + "[" + dtf.format(LocalDateTime.now()) + "]: " + ANSI_RED + "Error Sending Startup Message" + ANSI_RESET);
-					}
+					BotInit(TOKEN, cmd.replaceFirst("start", ""));
 				}
 				continue;
 			}

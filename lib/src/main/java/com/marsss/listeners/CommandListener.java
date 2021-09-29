@@ -22,10 +22,17 @@ public class CommandListener extends ListenerAdapter {
 		String prefix = ";";
 
 		String content = MESSAGE.getContentRaw();
-		
+
 		String args[] = content.split("\\s+");
-		
-		if(MEMBER.getUser().isBot() || !args[0].equals(prefix))
+
+		try {
+			
+			if(MEMBER.getUser().isBot())
+				return;
+			
+		}catch(NullPointerException npe) {}
+
+		if(!args[0].startsWith(prefix))
 			return;
 
 		// Utils
@@ -93,85 +100,85 @@ public class CommandListener extends ListenerAdapter {
 			return;
 		}
 
-		
+
 		// Bot
 		switch (args[0]) {
-		
-		
-		
+
+
+
 		case ";donate":
 			MESSAGE.reply(Donate.donate()).queue();
 			break;
-			
-			
-			
+
+
+
 		case ";invite":
 			MESSAGE.replyEmbeds(Invite.invite()).queue();
 			break;
-			
-			
-			
+
+
+
 		case ";ping":
 			Bot.jda.getRestPing().queue(
 					(ping) -> MESSAGE.replyFormat("**Reset ping:** %sms \n**WS ping:** %sms", ping, Bot.jda.getGatewayPing()).queue());
 			break;
-			
-			
-			
+
+
+
 		case ";uptime":
 			MESSAGE.reply(Uptime.uptime()).queue();
 			break;
-			
-			
-			
+
+
+
 		}
 
 
 		// Entertainments
 		switch (args[0]) {
-		
-		
-		
+
+
+
 		case ";clap":
 			args[0] = "";
 			MESSAGE.reply(Clap.clap(args)).queue();
 			break;
-		
-		
-		
+
+
+
 		case ";color":
 			MESSAGE.replyEmbeds(Colour.color()).queue();
 			break;
-			
-			
-			
+
+
+
 		case ";colorhex":
 			MESSAGE.replyEmbeds(Colour.colorhex(args[1])).queue();
 			break;
-			
-			
-			
+
+
+
 		case ";colorrgb":
 			MESSAGE.replyEmbeds(Colour.colorrgb(args[1], args[2], args[3])).queue();
 			break;
-			
-			
-			
-			
+
+
+
+
 		case ";echo":
 			args[0] = "";
 			MESSAGE.reply(Echo.echo(args)).queue();
 			break;
-			
-			
-			
+
+
+
 		case ";eightball":
 			content = content.replace(";eightball ", "");
 			MESSAGE.reply(EightBall.eightball(content)).queue();
 			break;
-			
-			
-			
+
+
+
 		}
 	}
 }
