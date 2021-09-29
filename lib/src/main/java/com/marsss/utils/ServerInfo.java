@@ -56,7 +56,7 @@ public class ServerInfo {
 			ROLES = String.valueOf(gld.getRoles().size());
 
 			AFKCHANNEL = gld.getAfkChannel().getAsMention();
-			AFKTIMEOUT = String.valueOf(gld.getAfkTimeout().getSeconds());
+			AFKTIMEOUT = String.valueOf(gld.getAfkTimeout().getSeconds()) + "s";
 		}catch(Exception e) {}
 
 		@SuppressWarnings("deprecation")
@@ -65,7 +65,7 @@ public class ServerInfo {
 
 		EmbedBuilder SvrInfEmd = new EmbedBuilder()
 				.setColor(COLOR)
-				.setDescription("🗂�? **Server information for " + NAME + ":**")
+				.setDescription("🗂 **Server information for " + NAME + ":**")
 				.addField("General Information", 
 						"__Name:__ " + NAME + 
 						"\n__Description:__ " + DESCRIPTION +
@@ -98,7 +98,7 @@ public class ServerInfo {
 
 				.addField("AFK",
 						"__AFK Channel:__ " + AFKCHANNEL +
-						"\n__AFK Timeout:__ " + AFKTIMEOUT + "s",
+						"\n__AFK Timeout:__ " + AFKTIMEOUT,
 						false)
 
 				.addField("Region", 

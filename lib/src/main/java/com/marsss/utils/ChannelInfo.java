@@ -40,7 +40,7 @@ public class ChannelInfo {
 
 		EmbedBuilder ChnlInfEmd = new EmbedBuilder()
 				.setColor(COLOR)
-				.setDescription("🗂�? **Channel information for " + chnl.getAsMention() + ":**")
+				.setDescription("🗂 **Channel information for " + chnl.getAsMention() + ":**")
 				.addField("Name", NAME, false)
 				.addField("Topic", TOPIC, false)
 				.addField("Type", TYPE, false)

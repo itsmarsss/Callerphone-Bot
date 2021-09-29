@@ -15,7 +15,7 @@ public class Invite {
 				.setColor(COLOR)
 				.addField("Add me to your server", "[Invite](https://discord.com/api/oauth2/authorize?client_id=849713468348956692&permissions=8&scope=bot%20applications.commands)", true)
 				.addField("Join the Support Server", "[Server](https://discord.gg/jcYKsfw48p)", true)
-				.addField("Support Us", "[Patreon](https://large-type.com/#Got%20No%20Patreon%20At%20The%20Moment%20LOL)", true)
+				.addField("Support Us", "[Patreon](https://www.patreon.com/itsmarsss)", true)
 				.setFooter("Have a nice day");
 		return InvEmd.build();
 	}

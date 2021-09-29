@@ -49,7 +49,7 @@ public class UserInfo {
 
 		EmbedBuilder UsrInfEmd = new EmbedBuilder()
 				.setColor(COLOR)
-				.setDescription("🗂�? **User information for " + mmbr.getAsMention() + ":**")
+				.setDescription("🗂 **User information for " + mmbr.getAsMention() + ":**")
 				.addField("Name", NAME, false)
 				.addField("Tag", TAG, false)
 				.addField("ID", ID, false)

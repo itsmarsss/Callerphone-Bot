@@ -38,12 +38,14 @@ public class RoleInfo {
 		}
 		if (MEMBERS_WITH_ROLE.length() > 0) {
 			MEMBERS_WITH_ROLE = MEMBERS_WITH_ROLE.substring(0, MEMBERS_WITH_ROLE.length()-2);
+			MEMBERS_WITH_ROLE = MEMBERS_WITH_ROLE.substring(0, 1024);
+			MEMBERS_WITH_ROLE = MEMBERS_WITH_ROLE.substring(0, MEMBERS_WITH_ROLE.lastIndexOf(",")) + "`...`";
 		}else
 			MEMBERS_WITH_ROLE = "No member has this Role.";
 
 		EmbedBuilder RleInfEmd = new EmbedBuilder()
 				.setColor(COLOR)
-				.setDescription("🗂�? **Role information for " + role.getAsMention() + ":**")
+				.setDescription("🗂 **Role information for " + role.getAsMention() + ":**")
 				.addField("Name", NAME, false)
 				.addField("ID", ID, false)
 				.addField("Permissions", PERMISSIONS, false)

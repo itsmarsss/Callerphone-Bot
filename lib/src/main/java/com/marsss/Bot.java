@@ -79,7 +79,7 @@ public class Bot {
 
 			System.out.println(ANSI_GREEN + "[" + dtf.format(LocalDateTime.now()) + "]: " + ANSI_RESET + "Bot Online");
 			try {
-				EmbedBuilder embedBuilder = new EmbedBuilder().setTitle("Status").setColor(Color.GREEN).setFooter("Hello World!").setDescription(jda.getSelfUser().getAsMention() + " is now online!" + startupmsg);
+				EmbedBuilder embedBuilder = new EmbedBuilder().setTitle("Status").setColor(Color.GREEN).setFooter("Hello World!").setDescription(jda.getSelfUser().getAsMention() + " is now online;" + startupmsg);
 				jda.getTextChannelById(852342009288851516L).sendMessageEmbeds(embedBuilder.build()).queue();
 			} catch(Exception e) {
 				System.out.println(ANSI_GREEN + "[" + dtf.format(LocalDateTime.now()) + "]: " + ANSI_RED + "Error Sending Startup Message" + ANSI_RESET);
@@ -125,6 +125,7 @@ public class Bot {
 		//		jda.upsertCommand(new CommandData("rps", "Rock Paper Scissors")
 		//				.addOptions(new OptionData(OptionType.STRING, "move", "Rock Paper or Scissors? (r,p,s)").setRequired(true))
 		//				).queue();
+jda.updateCommands().queue(); 
 	}
 	public static void main(String[] args) throws LoginException, InterruptedException {
 		commandPrompt();
@@ -139,7 +140,7 @@ public class Bot {
 		while(true) {
 			String cmd = sc.nextLine().toLowerCase();
 
-			if(cmd.startsWith("start ")) {
+			if(cmd.startsWith("start")) {
 				System.out.println("Token: ");
 				String TOKEN = sc.nextLine();
 				System.out.println(ANSI_GREEN + "[" + dtf.format(LocalDateTime.now()) + "]: " + ANSI_RESET + "Starting Bot...");
@@ -151,12 +152,12 @@ public class Bot {
 				continue;
 			}
 
-			if(cmd.equals("shutdown")) {
+			if(cmd.startsWith("shutdown")) {
 				System.out.println(ANSI_GREEN + "[" + dtf.format(LocalDateTime.now()) + "]: " + ANSI_RESET + "Shutting Down Bot...");
 				if(jda != null) {
 					try {
-						EmbedBuilder embedBuilder = new EmbedBuilder().setTitle("Status").setColor(Color.RED).setFooter("Goodbye World...").setDescription(jda.getSelfUser().getAsMention() + " is currently offline due to some maintenance!" + cmd.replaceFirst("shutdown", ""));
-						jda.getTextChannelById(852342009288851516L).sendMessageEmbeds(embedBuilder.build()).queue();
+						EmbedBuilder embedBuilder = new EmbedBuilder().setTitle("Status").setColor(Color.RED).setFooter("Goodbye World...").setDescription(jda.getSelfUser().getAsMention() + " is going offline;" + cmd.replaceFirst("shutdown", ""));
+						jda.getTextChannelById(852342009288851516L).sendMessageEmbeds(embedBuilder.build()).complete();
 					} catch(Exception e) {
 						System.out.println(ANSI_GREEN + "[" + dtf.format(LocalDateTime.now()) + "]: " + ANSI_RED + "Error Sending Shutdown Message" + ANSI_RESET);
 					}
