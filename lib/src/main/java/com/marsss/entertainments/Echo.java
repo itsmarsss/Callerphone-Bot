@@ -12,6 +12,6 @@ public class Echo {
 	}
 
 	public static String getHelp() {
-		return "`echo <arg>` - Echos your message for all to \"hear\"!";
+		return "`echo <arg>` - Echo your message for everyone to \"hear\"!";
 	}
 }

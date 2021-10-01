@@ -38,8 +38,11 @@ public class RoleInfo {
 		}
 		if (MEMBERS_WITH_ROLE.length() > 0) {
 			MEMBERS_WITH_ROLE = MEMBERS_WITH_ROLE.substring(0, MEMBERS_WITH_ROLE.length()-2);
-			MEMBERS_WITH_ROLE = MEMBERS_WITH_ROLE.substring(0, 1024);
-			MEMBERS_WITH_ROLE = MEMBERS_WITH_ROLE.substring(0, MEMBERS_WITH_ROLE.lastIndexOf(",")) + "`...`";
+			if(MEMBERS_WITH_ROLE.length() > 1024) {
+				MEMBERS_WITH_ROLE = MEMBERS_WITH_ROLE.substring(0, 1000);
+				MEMBERS_WITH_ROLE = MEMBERS_WITH_ROLE.substring(0, MEMBERS_WITH_ROLE.lastIndexOf(","));
+				MEMBERS_WITH_ROLE = MEMBERS_WITH_ROLE + "` + " + (role.getGuild().getMembers().size() - (MEMBERS_WITH_ROLE.length() - MEMBERS_WITH_ROLE.replaceAll("@", "").length())) + " more`";
+			}
 		}else
 			MEMBERS_WITH_ROLE = "No member has this Role.";
 
@@ -57,12 +60,12 @@ public class RoleInfo {
 				.addBlankField(false)
 				.addField("Is Mentionable", ISMENTIONABLE, true)
 				.addField("Is Public Role", ISPUBLICROLE, true);
-		
+
 
 		return RleInfEmd.build();
 	}
 
 	public static String getHelp() {
-		return "`roleinfo` <role>` - Get information about this role!";
+		return "`roleinfo` <role>` - Get information about this role.";
 	}
 }

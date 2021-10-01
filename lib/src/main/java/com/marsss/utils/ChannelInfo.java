@@ -6,6 +6,7 @@ import java.time.format.DateTimeFormatter;
 import com.marsss.entertainments.Colour;
 
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.Category;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.VoiceChannel;
@@ -83,7 +84,7 @@ public class ChannelInfo {
 
 		EmbedBuilder ChnlInfEmd = new EmbedBuilder()
 				.setColor(COLOR)
-				.setDescription("🗂�? **Channel information for " + chnl.getAsMention() + ":**")
+				.setDescription("🗂 **Channel information for " + chnl.getAsMention() + ":**")
 				.addField("Name", NAME, false)
 				.addField("Type", TYPE, false)
 				.addField("Bitrate", BITRATE + "kbps", false)
@@ -98,7 +99,36 @@ public class ChannelInfo {
 		return ChnlInfEmd.build();
 	}
 	
+	public static MessageEmbed categorychannelinfo(Category chnl) {
+		Color COLOR = Colour.randColor();
+		String NAME = chnl.getName();
+		String TYPE = String.valueOf(chnl.getType());
+		String TEXTCHANNELS = String.valueOf(chnl.getTextChannels().size());
+		String VOICECHANNELS = String.valueOf(chnl.getVoiceChannels().size());
+		String ID = chnl.getId();
+		String DATE_CREATED = chnl.getTimeCreated().format(DateTimeFormatter.RFC_1123_DATE_TIME);
+		String POSITION = String.valueOf(chnl.getPosition());
+
+		if(NAME == null) {
+			NAME = "No Name";
+		}
+
+
+		EmbedBuilder ChnlInfEmd = new EmbedBuilder()
+				.setColor(COLOR)
+				.setDescription("🗂 **Category information for " + chnl.getAsMention() + ":**")
+				.addField("Name", NAME, false)
+				.addField("Type", TYPE, false)
+				.addField("TextChannels", TEXTCHANNELS, false)
+				.addField("VoiceChannels", VOICECHANNELS, false)
+				.addField("ID", ID, false)
+				.addField("Creation Date", DATE_CREATED, false)
+				.addField("Position", POSITION, false);
+
+		return ChnlInfEmd.build();
+	}
+	
 	public static String getHelp() {
-		return "`channelinfo` <channel>` - Get information about this channel!";
+		return "`channelinfo` <channel>` - Get information about the channel.";
 	}
 }

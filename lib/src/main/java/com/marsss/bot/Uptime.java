@@ -27,7 +27,7 @@ public class Uptime {
 		UPTIME = replaceLast(UPTIME, ", ", "");
 		UPTIME = replaceLast(UPTIME, ",", " and");
 
-		return "**I've been online for** " + UPTIME;
+		return "I've been online for " + UPTIME;
 	}
 	
 	private static String replaceLast(final String text, final String regex, final String replacement) {
@@ -35,7 +35,7 @@ public class Uptime {
     }
 
 	public static String getHelp() {
-		return "`uptime` - See how long I've been online!";
+		return "`uptime` - Gets the bot's uptime.";
 	}
 	
 }

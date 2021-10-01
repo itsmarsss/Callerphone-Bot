@@ -54,8 +54,8 @@ public class Colour {
 	}
 
 	public static String getHelp() {
-		return "`color` - Get a random color in hex and rgb\n" +
-				"`colorrgb <r><g><b>` - Get the hex value of that color\n" +
-				"`colorhex <hex>` - Get the rgb value of that color";
+		return "`color` - Get a random color in hex and rgb value\n" +
+				"`colorrgb <r><g><b>` - Get the hex value of rgb\n" +
+				"`colorhex <hex>` - Get the rgb value of hex";
 	}
 }

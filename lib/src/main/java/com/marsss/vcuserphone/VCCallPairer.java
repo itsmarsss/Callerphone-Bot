@@ -22,7 +22,7 @@ public class VCCallPairer {
 					audio.setReceiverVCID(vcchannel.getId());
 					audio.setReceiverChannelID(CHANNELID);
 					audio.setConnected(true);
-					connectTo(vcchannel, i, true);
+					connectTo(vcchannel, i);
 
 					String MEMBERSRECEIVER = "";
 
@@ -61,7 +61,6 @@ public class VCCallPairer {
 				}else if(audio.getCallerVCID().equals("empty")) {
 					audio.setCallerVCID(vcchannel.getId());
 					audio.setCallerChannelID(CHANNELID);
-					connectTo(vcchannel, i, false);
 					message.reply("Calling...").queue();
 					return;
 				}
@@ -70,24 +69,27 @@ public class VCCallPairer {
 		message.reply("Hmmm, I was unable to find an open port!");
 	}
 
-	private static void connectTo(VoiceChannel channel, int port, boolean receiver) {
+	private static void connectTo(VoiceChannel channel, int port) {
 		Guild guild = channel.getGuild();
 		AudioManager audioManager = guild.getAudioManager();
-		if(receiver) {
-			CallerAudioHandler callerhandler = new CallerAudioHandler();
-			ReceiverAudioHandler receiverhandler = new ReceiverAudioHandler();
+		CallerAudioHandler callerhandler = new CallerAudioHandler();
+		ReceiverAudioHandler receiverhandler = new ReceiverAudioHandler();
 
-			callerhandler.setPort(port);
-			receiverhandler.setPort(port);
+		callerhandler.setPort(port);
+		receiverhandler.setPort(port);
 
-			Bot.jda.getVoiceChannelById(AudioStorage.audio[port].getCallerVCID()).getGuild().getAudioManager().setSendingHandler(callerhandler);
+		Bot.jda.getVoiceChannelById(AudioStorage.audio[port].getCallerVCID()).getGuild().getAudioManager()
+		.setSendingHandler(callerhandler);
 
-			audioManager.setSendingHandler(receiverhandler);
+		audioManager
+		.setSendingHandler(receiverhandler);
 
-			Bot.jda.getVoiceChannelById(AudioStorage.audio[port].getCallerVCID()).getGuild().getAudioManager().setReceivingHandler(callerhandler);
+		Bot.jda.getVoiceChannelById(AudioStorage.audio[port].getCallerVCID()).getGuild().getAudioManager()
+		.setReceivingHandler(callerhandler);
 
-			audioManager.setReceivingHandler(receiverhandler);
-		}
+		audioManager
+		.setReceivingHandler(receiverhandler);
+
 	}
 
 	private static String replaceLast(final String text, final String regex, final String replacement) {

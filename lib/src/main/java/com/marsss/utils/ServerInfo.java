@@ -110,4 +110,8 @@ public class ServerInfo {
 		return SvrInfEmd.build();
 	}
 
+	public static String getHelp() {
+		return "`serverinfo` - Get information about the server.";
+	}
+
 }

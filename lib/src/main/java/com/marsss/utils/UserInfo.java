@@ -11,7 +11,6 @@ import net.dv8tion.jda.api.entities.Role;
 
 public class UserInfo {
 	public static MessageEmbed userinfo(Member mmbr) {
-
 		Color COLOR = null;
 		String NAME = mmbr.getEffectiveName();
 		String TAG = mmbr.getUser().getName() + "#" + mmbr.getUser().getDiscriminator();
@@ -39,6 +38,13 @@ public class UserInfo {
 		if (ROLES.length() > 0) {
 			ROLES = ROLES.substring(0, ROLES.length()-2);
 			COLOR = mmbr.getRoles().get(0).getColor();
+			if(ROLES.length() > 1024) {
+				ROLES = ROLES.substring(0, 1000);
+				ROLES = ROLES.substring(0, ROLES.lastIndexOf(","));
+				ROLES = ROLES + "` + " + (mmbr.getRoles().size() - (ROLES.length() - ROLES.replaceAll("@", "").length())) + " more`";
+			}else {
+				ROLES = ROLES.substring(0, ROLES.lastIndexOf(","));
+			}
 		}else
 			ROLES = "No roles on this server.";
 
@@ -69,7 +75,7 @@ public class UserInfo {
 	}
 
 	public static String getHelp() {
-		return "`userinfo` - Get information about you!\n" +
+		return "`userinfo` - Get information about yourself\n" +
 		"`userinfo <mention>` - Get information about this member!";
 	}
 

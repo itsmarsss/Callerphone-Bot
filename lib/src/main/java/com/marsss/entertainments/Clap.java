@@ -3,14 +3,14 @@ package com.marsss.entertainments;
 public class Clap {
 
 	public static String clap(String []args) {
-		StringBuilder MESSAGE = new StringBuilder("ğŸ‘?");
+		StringBuilder MESSAGE = new StringBuilder("ğŸ‘");
 		for(int i = 0; i < args.length; i++) {
-			MESSAGE.append(args[i]).append("ğŸ‘?");
+			MESSAGE.append(args[i]).append("ğŸ‘");
 		}
 		return MESSAGE.toString();
 	}
 	
 	public static String getHelp() {
-		return "`clap` - Add meaning to your messages by having the ğŸ‘? emoji between every word!";
+		return "`clap` - Add meaning to your messages by having the ğŸ‘ emoji between every word.";
 	}
 }

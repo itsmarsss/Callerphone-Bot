@@ -7,36 +7,39 @@ import com.marsss.bot.*;
 import com.marsss.entertainments.*;
 import com.marsss.utils.*;
 
-import net.dv8tion.jda.api.entities.ChannelType;
+import net.dv8tion.jda.api.entities.GuildChannel;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
 public class CommandListener extends ListenerAdapter {
 	public void onGuildMessageReceived(GuildMessageReceivedEvent event) {
+
+		if(!event.getChannel().canTalk())
+			return;
+
 		Member MEMBER = event.getMember();
 		Message MESSAGE = event.getMessage();
 
-		String prefix = ";";
+		String CONTENT = MESSAGE.getContentRaw();
 
-		String content = MESSAGE.getContentRaw();
-
-		String args[] = content.split("\\s+");
+		String args[] = CONTENT.split("\\s+");
 
 		try {
-			
+
 			if(MEMBER.getUser().isBot())
 				return;
-			
+
 		}catch(NullPointerException npe) {}
 
-		if(!args[0].startsWith(prefix))
+		if(!args[0].startsWith(";"))
 			return;
 
 		// Utils
-		switch(args[0]) {
+		utils : switch(args[0]) {
 
 
 
@@ -54,22 +57,62 @@ public class CommandListener extends ListenerAdapter {
 
 		case ";channelinfo":
 			List<TextChannel> CHANNELS = MESSAGE.getMentionedChannels();
+			GuildChannel CHANNEL;
+
+			try {  
+				CHANNEL = Bot.jda.getGuildChannelById(Long.parseLong(args[1]));
+			} catch(Exception e){  
+				CHANNEL = null; 
+			} 
+
 			if(CHANNELS.size() > 0) {
-				if(CHANNELS.get(0).getType() == ChannelType.TEXT) {
-					MESSAGE.replyEmbeds(ChannelInfo.textchannelinfo(CHANNELS.get(0))).queue();
-				}
-			}else if(MEMBER.getVoiceState().inVoiceChannel()) {
-				MESSAGE.replyEmbeds(ChannelInfo.voicechannelinfo(MEMBER.getVoiceState().getChannel())).queue();
-				break;
-			}else if(MESSAGE.getMentionedChannels().size() == 0) {
+				if(CHANNEL == null) 
+					CHANNEL = CHANNELS.get(0);
+			}else if(CHANNEL == null) {
+				//				MESSAGE.reply("Getting info").queue(message -> {
+				//					message.editMessage("").queue();
+				//					message.editMessageEmbeds(ChannelInfo.textchannelinfo(event.getChannel())).queue();
+				//				});
 				MESSAGE.replyEmbeds(ChannelInfo.textchannelinfo(event.getChannel())).queue();
+				break;
 			}
-			break;
 
+			switch(CHANNEL.getType()) {
 
+			case TEXT:
+				MESSAGE.replyEmbeds(ChannelInfo.textchannelinfo(Bot.jda.getTextChannelById(CHANNEL.getId()))).queue();
+				break utils;
+			case VOICE:
+				MESSAGE.replyEmbeds(ChannelInfo.voicechannelinfo(Bot.jda.getVoiceChannelById(CHANNEL.getId()))).queue();
+				break utils;
+			case CATEGORY:
+				MESSAGE.replyEmbeds(ChannelInfo.categorychannelinfo(Bot.jda.getCategoryById(CHANNEL.getId()))).queue();
+				break utils;
+			default:
+				MESSAGE.reply("Channel not recognized").queue();
+				break utils;
+
+			}
 
 		case ";roleinfo":
-			MESSAGE.replyEmbeds(RoleInfo.roleinfo(MESSAGE.getMentionedRoles().get(0))).queue();
+			List<Role> ROLES = MESSAGE.getMentionedRoles();
+			Role ROLE;
+
+			try {
+				ROLE = Bot.jda.getRoleById(Long.parseLong(args[1]));
+			}catch(Exception e) {
+				ROLE = null;
+			}
+
+			if(ROLES.size() > 0) {
+				if(ROLE == null)
+					ROLE = ROLES.get(0);
+			}else if(ROLE == null) {
+				MESSAGE.reply("Please specify a role").queue();
+				break;
+			}
+
+			MESSAGE.replyEmbeds(RoleInfo.roleinfo(ROLE)).queue();
 			break;
 
 
@@ -81,23 +124,40 @@ public class CommandListener extends ListenerAdapter {
 
 
 		case ";userinfo":
-			if(MESSAGE.getMentionedMembers().size() == 0) {
+			List<Member> USERS = MESSAGE.getMentionedMembers();
+			Member USER;
+
+			try {
+				USER = event.getGuild().getMemberById(Long.parseLong(args[1]));
+			}catch(Exception e) {
+				USER = null;
+			}
+
+			if(USERS.size() > 0) {
+				if(USER == null)
+					USER = USERS.get(0);
+			}else if(USER == null) {
 				MESSAGE.replyEmbeds(UserInfo.userinfo(MEMBER)).queue();
-			}else {
-				MESSAGE.replyEmbeds(UserInfo.userinfo(MESSAGE.getMentionedMembers().get(0))).queue();
 				break;
 			}
+
+			MESSAGE.replyEmbeds(UserInfo.userinfo(USER)).queue();
+			break;
 
 
 
 		case ";poll":
-			content = content.replace(";poll ", "");
+			CONTENT = CONTENT.replace(";poll ", "");
 			event.getChannel().sendMessage(event.getAuthor().getName() + " launched a poll:").complete();
-			event.getChannel().sendMessageEmbeds(Polls.newpoll(content)).queue(message -> {
+			event.getChannel().sendMessageEmbeds(Polls.newpoll(CONTENT)).queue(message -> {
 				message.addReaction("✅").queue();
-				message.addReaction("�?�").queue();
+				message.addReaction("❌").queue();
 			});
-			return;
+			break;
+
+
+
+
 		}
 
 
@@ -173,8 +233,8 @@ public class CommandListener extends ListenerAdapter {
 
 
 		case ";eightball":
-			content = content.replace(";eightball ", "");
-			MESSAGE.reply(EightBall.eightball(content)).queue();
+			CONTENT = CONTENT.replace(";eightball ", "");
+			MESSAGE.reply(EightBall.eightball(CONTENT)).queue();
 			break;
 
 

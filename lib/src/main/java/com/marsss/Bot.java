@@ -59,12 +59,11 @@ public class Bot {
 					.setChunkingFilter(ChunkingFilter.ALL)
 					.setMemberCachePolicy(MemberCachePolicy.ALL)
 					.build();
-			
+
 			jda.addEventListener(new CommandListener());
-			jda.addEventListener(new VCUserphoneListener());
-			jda.addEventListener(new OnPrivateMessage());
+			jda.addEventListener(new OnOtherEvent());
 			jda.addEventListener(new OnSlashCommand());
-			jda.addEventListener(new OnButtonClick());
+			jda.addEventListener(new VCUserphoneListener());
 
 			for(int i = 0; i < AudioStorage.audio.length; i++) {
 				AudioStorage.audio[i] = new Audio(new ConcurrentLinkedQueue<>(), "empty", "", new ConcurrentLinkedQueue<>(), "", "", false);
@@ -75,7 +74,7 @@ public class Bot {
 			System.out.println("Server List: ");
 			for(Guild g : jda.getGuilds())
 				System.out.println(g.getName());
-			
+
 
 			System.out.println(ANSI_GREEN + "[" + dtf.format(LocalDateTime.now()) + "]: " + ANSI_RESET + "Bot Online");
 			try {
@@ -84,7 +83,7 @@ public class Bot {
 			} catch(Exception e) {
 				System.out.println(ANSI_GREEN + "[" + dtf.format(LocalDateTime.now()) + "]: " + ANSI_RED + "Error Sending Startup Message" + ANSI_RESET);
 			}
-			
+
 		}catch(Exception e) {
 			System.err.println(e.getMessage());
 		}
@@ -125,7 +124,7 @@ public class Bot {
 		//		jda.upsertCommand(new CommandData("rps", "Rock Paper Scissors")
 		//				.addOptions(new OptionData(OptionType.STRING, "move", "Rock Paper or Scissors? (r,p,s)").setRequired(true))
 		//				).queue();
-jda.updateCommands().queue(); 
+		//jda.updateCommands().queue(); 
 	}
 	public static void main(String[] args) throws LoginException, InterruptedException {
 		commandPrompt();
@@ -138,7 +137,7 @@ jda.updateCommands().queue();
 				+ "Welcome to Userphone Bot Command Line (UBCL)!" + ANSI_RESET);
 
 		while(true) {
-			String cmd = sc.nextLine().toLowerCase();
+			String cmd = sc.nextLine();
 
 			if(cmd.startsWith("start")) {
 				System.out.println("Token: ");
@@ -185,7 +184,7 @@ jda.updateCommands().queue();
 			}
 
 			if(cmd.equals("presence")) {
-				if(jda != null) {
+				if(jda == null) {
 					System.out.println(ANSI_GREEN + "[" + dtf.format(LocalDateTime.now()) + "]: " + ANSI_RESET + "Bot Is Offline");
 					continue;
 				}
@@ -237,10 +236,9 @@ jda.updateCommands().queue();
 
 						} else if(msg.equals("watching")) {
 							System.out.println("Status Message: ");
-							sc.nextLine();
 							String watch = sc.nextLine();
 							System.out.println("Watching: " + watch);
-							act = Activity.competing(sc.nextLine());
+							act = Activity.watching(sc.nextLine());
 							break;
 
 						}
@@ -298,6 +296,7 @@ jda.updateCommands().queue();
 					System.out.println("Time created: " + timeCreated);
 					System.out.println("Id: " + id);
 					System.out.println("Shard info: " + jda.getShardInfo().getShardString());
+					System.out.println("Guilds: " + jda.getGuilds().size());
 					continue;
 				}
 				System.out.println(ANSI_GREEN + "[" + dtf.format(LocalDateTime.now()) + "]: " + ANSI_RESET + "Bot Is Offline");

@@ -29,7 +29,7 @@ public class BotInfo {
 	}
 
 	public static String getHelp() {
-		return "`botinfo` - Get information about me!";
+		return "`botinfo` - Get information about the bot.";
 	}
 
 }

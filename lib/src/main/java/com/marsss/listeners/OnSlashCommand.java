@@ -2,7 +2,6 @@ package com.marsss.listeners;
 
 import com.marsss.Bot;
 import com.marsss.entertainments.*;
-import com.marsss.utils.Commands;
 import com.marsss.utils.Help;
 import com.marsss.utils.Polls;
 
@@ -63,11 +62,6 @@ public class OnSlashCommand extends ListenerAdapter {
 		if(event.getName().equals("ping")) {
 			Bot.jda.getRestPing().queue(
 					(ping) -> event.replyFormat("**Reset ping:** %sms \n**WS ping:** %sms", ping, Bot.jda.getGatewayPing()).queue());
-			return;
-		}
-
-		if(event.getName().equals("commands")) {
-			event.replyEmbeds(Commands.commands()).queue();
 			return;
 		}
 

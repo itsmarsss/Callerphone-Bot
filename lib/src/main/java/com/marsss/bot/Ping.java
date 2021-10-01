@@ -6,6 +6,6 @@ public class Ping {
 	}
 	
 	public static String getHelp() {
-		return "`ping` - Get's my ping!";
+		return "`ping` - Gets the bot's ping.";
 	}
 }

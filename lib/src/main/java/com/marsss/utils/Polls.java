@@ -19,6 +19,6 @@ public class Polls {
 	}
 
 	public static String getHelp() {
-		return "`poll <msg>` - Create a poll for server members to vote!";
+		return "`poll <msg>` - Create a poll for server members to vote.";
 	}
 }
