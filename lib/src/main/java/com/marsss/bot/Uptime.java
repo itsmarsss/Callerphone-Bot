@@ -16,13 +16,13 @@ public class Uptime {
 		final long SECONDS = DURATION / 1000L % 60;
 		final long MILLISECONDS = DURATION % 1000;
 
-		String UPTIME = (YEARS == 0 ? "" : "**" + YEARS + "** Years, ") + 
-				(MONTHS == 0 ? "" : "**" + MONTHS + "** Months, ") + 
-				(DAYS == 0 ? "" : "**" + DAYS + "** Days, ") + 
-				(HOURS == 0 ? "" : "**" + HOURS + "** Hours, ") + 
-				(MINUTES == 0 ? "" : "**" + MINUTES + "** Minutes, ") + 
-				(SECONDS == 0 ? "" : "**" + SECONDS + "** Seconds, ") + 
-				(MILLISECONDS == 0 ? "" : "**" + MILLISECONDS + "** Milliseconds, ");
+		String UPTIME = (YEARS == 0 ? "" : "**" + YEARS + "** years, ") + 
+				(MONTHS == 0 ? "" : "**" + MONTHS + "** months, ") + 
+				(DAYS == 0 ? "" : "**" + DAYS + "** days, ") + 
+				(HOURS == 0 ? "" : "**" + HOURS + "** hours, ") + 
+				(MINUTES == 0 ? "" : "**" + MINUTES + "** minutes, ") + 
+				(SECONDS == 0 ? "" : "**" + SECONDS + "** seconds, ") + 
+				(MILLISECONDS == 0 ? "" : "**" + MILLISECONDS + "** milliseconds, ");
 
 		UPTIME = replaceLast(UPTIME, ", ", "");
 		UPTIME = replaceLast(UPTIME, ",", " and");
