@@ -21,30 +21,51 @@ public class Colour {
 	}
 
 	public static MessageEmbed colorhex(String hex) {
-		hex = hex.replaceFirst("#", "");
-		String RGB = Color.decode("#" + hex.replaceFirst("#", "")).toString();
-		RGB = RGB.substring(15, RGB.length()-1)
-				.replaceAll("[rgb=]", "")
-				.replaceAll(",", ", ");
-		EmbedBuilder ColorEmd = new EmbedBuilder()
-				.setTitle("Color")
-				.setDescription("**Hex:** #" + hex + "\n**RGB:** " + RGB)
-				.setColor(Integer.parseInt(hex, 16));
+		try {
+			hex = hex.replaceFirst("#", "");
+			String RGB = Color.decode("#" + hex.replaceFirst("#", "")).toString();
+			RGB = RGB.substring(15, RGB.length()-1)
+					.replaceAll("[rgb=]", "")
+					.replaceAll(",", ", ");
+			EmbedBuilder ColorEmd = new EmbedBuilder()
+					.setTitle("Color")
+					.setDescription("**Hex:** #" + hex + "\n**RGB:** " + RGB)
+					.setColor(Integer.parseInt(hex, 16));
+			return ColorEmd.build();
+		}catch (Exception e) {}
 
+		EmbedBuilder ColorEmd = new EmbedBuilder()
+				.setTitle("Error")
+				.setDescription("Please provide a valid hex value")
+				.setColor(Color.red);
 		return ColorEmd.build();
+
 	}
 
 	public static MessageEmbed colorrgb(String r, String g, String b) {
-		String HEX = String.format("%02X%02X%02X", 
-				Integer.parseInt(r), 
-				Integer.parseInt(g), 
-				Integer.parseInt(b));
+
 		EmbedBuilder ColorEmd = new EmbedBuilder()
-				.setTitle("Color")
-				.setDescription("**Hex:** #" + HEX + "\n**RGB:** " + r + ", " + g + ", " + b)
-				.setColor(Integer.parseInt(HEX, 16));
+				.setTitle("Error")
+				.setDescription("Please provide a valid rgb value")
+				.setColor(Color.red);
+
+		if(Integer.parseInt(r) > 255 || Integer.parseInt(g) > 255 || Integer.parseInt(b) > 255)
+			return ColorEmd.build();
+
+		try {
+			String HEX = String.format("%02X%02X%02X", 
+					Integer.parseInt(r), 
+					Integer.parseInt(g), 
+					Integer.parseInt(b));
+			EmbedBuilder ColorEmd2 = new EmbedBuilder()
+					.setTitle("Color")
+					.setDescription("**Hex:** #" + HEX + "\n**RGB:** " + r + ", " + g + ", " + b)
+					.setColor(Integer.parseInt(HEX, 16));
+			return ColorEmd2.build();
+		}catch(Exception e) {}
 
 		return ColorEmd.build();
+
 	}
 
 	public static Color randColor() {
@@ -54,8 +75,8 @@ public class Colour {
 	}
 
 	public static String getHelp() {
-		return "`color` - Get a random color in hex and rgb value\n" +
-				"`colorrgb <r><g><b>` - Get the hex value of rgb\n" +
-				"`colorhex <hex>` - Get the rgb value of hex";
+		return "`u?color` - Get a random color in hex and rgb value\n" +
+				"`u?colorrgb <r><g><b>` - Get the hex value of rgb\n" +
+				"`u?colorhex <hex>` - Get the rgb value of hex";
 	}
 }

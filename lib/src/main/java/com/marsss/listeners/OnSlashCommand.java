@@ -54,7 +54,7 @@ public class OnSlashCommand extends ListenerAdapter {
 			event.reply(event.getUser().getName() + " launched a poll:").complete();
 			event.getChannel().sendMessageEmbeds(Polls.newpoll(qst)).queue(message -> {
 				message.addReaction("✅").queue();
-				message.addReaction("�?�").queue();
+				message.addReaction("❌").queue();
 			});
 			return;
 		}

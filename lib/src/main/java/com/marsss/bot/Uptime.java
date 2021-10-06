@@ -29,13 +29,13 @@ public class Uptime {
 
 		return "I've been online for " + UPTIME;
 	}
-	
+
 	private static String replaceLast(final String text, final String regex, final String replacement) {
-        return text.replaceFirst("(?s)(.*)" + regex, "$1" + replacement);
-    }
+		return text.replaceFirst("(?s)(.*)" + regex, "$1" + replacement);
+	}
 
 	public static String getHelp() {
-		return "`uptime` - Gets the bot's uptime.";
+		return "`u?uptime` - Gets the bot's uptime.";
 	}
-	
+
 }

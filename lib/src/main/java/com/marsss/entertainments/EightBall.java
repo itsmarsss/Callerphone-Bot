@@ -32,7 +32,7 @@ public class EightBall {
 	}
 	
 	public static String getHelp() {
-		return "`8ball <question>` - Help you answer questions.";
+		return "`u?8ball <question>` - Help you answer questions.";
 	}
 }
 

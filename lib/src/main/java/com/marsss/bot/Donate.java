@@ -6,6 +6,6 @@ public class Donate {
 	}
 	
 	public static String getHelp() {
-		return "`donate` - Help us out by donating.";
+		return "`u?donate` - Help us out by donating.";
 	}
 }

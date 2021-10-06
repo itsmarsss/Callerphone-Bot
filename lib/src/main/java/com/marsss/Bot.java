@@ -56,6 +56,7 @@ public class Bot {
 		try {
 			jda = JDABuilder.createDefault(token, intent)
 					.enableCache(CacheFlag.VOICE_STATE)
+					.enableCache(CacheFlag.ROLE_TAGS)
 					.setChunkingFilter(ChunkingFilter.ALL)
 					.setMemberCachePolicy(MemberCachePolicy.ALL)
 					.build();
@@ -237,7 +238,6 @@ public class Bot {
 						} else if(msg.equals("watching")) {
 							System.out.println("Status Message: ");
 							String watch = sc.nextLine();
-							System.out.println("Watching: " + watch);
 							act = Activity.watching(sc.nextLine());
 							break;
 

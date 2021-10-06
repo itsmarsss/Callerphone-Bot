@@ -40,7 +40,7 @@ public class VCCallPairer {
 
 					for(Member m : jda.getVoiceChannelById(audio.getCallerVCID()).getGuild().getSelfMember().getVoiceState().getChannel().getMembers()) {
 						if(!(m.getUser() == jda.getSelfUser())) {
-							MEMBERSCALLER += m.getEffectiveName() + ", ";
+							MEMBERSCALLER += m.getUser().getAsTag() + ", ";
 						}
 					}
 					if (MEMBERSCALLER.length() > 0) {
@@ -95,4 +95,15 @@ public class VCCallPairer {
 	private static String replaceLast(final String text, final String regex, final String replacement) {
 		return text.replaceFirst("(?s)(.*)" + regex, "$1" + replacement);
 	}
+
+	public static String callHelp() {
+		return "`u?call` - Call someone from another server.";
+
+	}
+
+	public static String hangupHelp() {
+		return "`u?hangup` - Hangup a pending call or existing call.";
+
+	}
+
 }

@@ -19,11 +19,11 @@ public class VCUserphoneListener extends ListenerAdapter {
 
 		Message MESSAGE = event.getMessage();
 		String args[] = MESSAGE.getContentRaw().toLowerCase().split("\\s+");
-		SWITCH : switch (args[0]) {
+		SWITCH : switch (args[0].toLowerCase()) {
 
 
 
-		case ";hangup":
+		case "u?hangup":
 			if(!event.getMember().getVoiceState().inVoiceChannel()) {
 				MESSAGE.reply("You are not in a voice channel.").queue();
 				break;
@@ -37,30 +37,36 @@ public class VCUserphoneListener extends ListenerAdapter {
 					CALLER = jda.getVoiceChannelById(a.getCallerVCID()).getGuild();
 					RECEIVER = jda.getVoiceChannelById(a.getReceiverVCID()).getGuild();
 				}catch(Exception e) {}
-				
-				if(CALLER == null || RECEIVER == null)
+
+				if(CALLER == null && RECEIVER == null) {
+					a.resetAudio();
 					continue;
+				}
 
 				if(CALLER.getId().equals(g.getId())) {
 					AudioManager CALLERAM = CALLER.getAudioManager();
 					CALLERAM.closeAudioConnection();
 
-					AudioManager RECEIVERAM = RECEIVER.getAudioManager();
-					RECEIVERAM.closeAudioConnection();
+					if(RECEIVER != null) {
+						AudioManager RECEIVERAM = RECEIVER.getAudioManager();
+						RECEIVERAM.closeAudioConnection();
+						jda.getTextChannelById(a.getReceiverChannelID()).sendMessage("The other party hung up the phone.").queue();
+					}
 
 					jda.getTextChannelById(a.getCallerChannelID()).sendMessage("You hung up the phone.").queue();
-					jda.getTextChannelById(a.getReceiverChannelID()).sendMessage("The other party hung up the phone.").queue();
 					a.resetAudio();
 					break SWITCH;
 				}else if(RECEIVER.getId().equals(g.getId())) {
-					AudioManager CALLERAM = CALLER.getAudioManager();
-					CALLERAM.closeAudioConnection();
-
 					AudioManager RECEIVERAM = RECEIVER.getAudioManager();
 					RECEIVERAM.closeAudioConnection();
 
+					if(CALLER != null) {
+						AudioManager CALLERAM = CALLER.getAudioManager();
+						CALLERAM.closeAudioConnection();
+						jda.getTextChannelById(a.getCallerChannelID()).sendMessage("The other party hung up the phone.").queue();
+					}
+
 					jda.getTextChannelById(a.getReceiverChannelID()).sendMessage("You hung up the phone.").queue();
-					jda.getTextChannelById(a.getCallerChannelID()).sendMessage("The other party hung up the phone.").queue();
 					a.resetAudio();
 					break SWITCH;
 				}
@@ -70,23 +76,23 @@ public class VCUserphoneListener extends ListenerAdapter {
 
 
 
-		case ";call":
+		case "u?call":
 			if(event.getGuild().getSelfMember().getVoiceState().inVoiceChannel()) {
-				event.getMessage().reply("I am currently connected to " + event.getGuild().getSelfMember().getVoiceState().getChannel().getAsMention()).queue();
-				return;
+				event.getMessage().reply("Sorry, I am currently connected to " + event.getGuild().getSelfMember().getVoiceState().getChannel().getAsMention()).queue();
+				break;
 			}
 			GuildVoiceState GVS = event.getMember().getVoiceState();
 			if(!GVS.inVoiceChannel()) {
 				event.getMessage().reply("You have to be in a voicechannel that I have access to.").queue();
-				return;
+				break;
 			}
 			if(!event.getGuild().getSelfMember().hasPermission(GVS.getChannel(), Permission.VOICE_CONNECT)) {
 				event.getMessage().reply("I do not have access to " + GVS.getChannel().getAsMention()).queue();
-				return;
+				break;
 			}
 			if(!event.getGuild().getSelfMember().hasPermission(GVS.getChannel(), Permission.VOICE_SPEAK)) {
 				event.getMessage().reply("I do not have access to speak in" + GVS.getChannel().getAsMention()).queue();
-				return;
+				break;
 			}
 			AudioManager audioManager = event.getGuild().getAudioManager();
 

@@ -8,10 +8,13 @@ public class Echo {
 		for(int i = 0; i < args.length; i++) {
 			ECHO.append(" ").append(args[i]);
 		}
+		if(ECHO.toString().isBlank()) {
+			return "What do you want me to echo?";
+		}
 		return ECHO.toString();
 	}
 
 	public static String getHelp() {
-		return "`echo <arg>` - Echo your message for everyone to \"hear\"!";
+		return "`u?echo <arg>` - Echo your message for everyone to \"hear\"!";
 	}
 }

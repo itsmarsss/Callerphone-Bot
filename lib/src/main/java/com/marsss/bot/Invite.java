@@ -14,14 +14,14 @@ public class Invite {
 		EmbedBuilder InvEmd = new EmbedBuilder()
 				.setColor(COLOR)
 				.addField("Add me to your server", "[Invite Link](https://discord.com/api/oauth2/authorize?client_id=849713468348956692&permissions=8&scope=bot%20applications.commands)", true)
-				.addField("Join the Community and Support Server", "[Server Invite](https://discord.gg/jcYKsfw48p)", true)
-				.addField("Support Us", "[Userphones' Patreon](https://www.patreon.com/itsmarsss)", true)
+				.addField("Join the Community and Support Server", "[Server Link](https://discord.gg/jcYKsfw48p)", true)
+				.addField("Support Us", "[Patreon Link](https://www.patreon.com/itsmarsss)", true)
 				.setFooter("Have a nice day");
 		return InvEmd.build();
 	}
 
 	public static String getHelp() {
-		return "`invite` - Get invites and links related to this bot.";
+		return "`u?invite` - Get invites and links related to this bot.";
 	}
 	
 }

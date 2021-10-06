@@ -35,27 +35,31 @@ public class CommandListener extends ListenerAdapter {
 
 		}catch(NullPointerException npe) {}
 
-		if(!args[0].startsWith(";"))
+		if(!args[0].toLowerCase().startsWith("u?"))
 			return;
 
 		// Utils
-		utils : switch(args[0]) {
+		utils : switch(args[0].toLowerCase()) {
 
 
 
-		case ";help":
-			MESSAGE.replyEmbeds(Help.help(args[1])).queue();
+		case "u?help":
+			if(args.length > 1) {
+				MESSAGE.replyEmbeds(Help.help(args[1])).queue();
+				break;
+			}
+			MESSAGE.replyEmbeds(Help.help("")).queue();
 			break;
 
 
 
-		case ";botinfo":
+		case "u?botinfo":
 			MESSAGE.replyEmbeds(BotInfo.botinfo()).queue();
 			break;
 
 
 
-		case ";channelinfo":
+		case "u?channelinfo":
 			List<TextChannel> CHANNELS = MESSAGE.getMentionedChannels();
 			GuildChannel CHANNEL;
 
@@ -94,7 +98,7 @@ public class CommandListener extends ListenerAdapter {
 
 			}
 
-		case ";roleinfo":
+		case "u?roleinfo":
 			List<Role> ROLES = MESSAGE.getMentionedRoles();
 			Role ROLE;
 
@@ -117,13 +121,13 @@ public class CommandListener extends ListenerAdapter {
 
 
 
-		case ";serverinfo":
+		case "u?serverinfo":
 			MESSAGE.replyEmbeds(ServerInfo.serverinfo(event.getGuild())).queue();
 			break;
 
 
 
-		case ";userinfo":
+		case "u?userinfo":
 			List<Member> USERS = MESSAGE.getMentionedMembers();
 			Member USER;
 
@@ -146,8 +150,8 @@ public class CommandListener extends ListenerAdapter {
 
 
 
-		case ";poll":
-			CONTENT = CONTENT.replace(";poll ", "");
+		case "u?poll":
+			CONTENT = CONTENT.replace("u?poll ", "");
 			event.getChannel().sendMessage(event.getAuthor().getName() + " launched a poll:").complete();
 			event.getChannel().sendMessageEmbeds(Polls.newpoll(CONTENT)).queue(message -> {
 				message.addReaction("✅").queue();
@@ -162,30 +166,36 @@ public class CommandListener extends ListenerAdapter {
 
 
 		// Bot
-		switch (args[0]) {
+		switch (args[0].toLowerCase()) {
 
 
 
-		case ";donate":
+		case "u?about":
+			MESSAGE.replyEmbeds(About.about()).queue();
+			break;
+
+
+
+		case "u?donate":
 			MESSAGE.reply(Donate.donate()).queue();
 			break;
 
 
 
-		case ";invite":
+		case "u?invite":
 			MESSAGE.replyEmbeds(Invite.invite()).queue();
 			break;
 
 
 
-		case ";ping":
+		case "u?ping":
 			Bot.jda.getRestPing().queue(
 					(ping) -> MESSAGE.replyFormat("**Reset ping:** %sms \n**WS ping:** %sms", ping, Bot.jda.getGatewayPing()).queue());
 			break;
 
 
 
-		case ";uptime":
+		case "u?uptime":
 			MESSAGE.reply(Uptime.uptime()).queue();
 			break;
 
@@ -195,45 +205,44 @@ public class CommandListener extends ListenerAdapter {
 
 
 		// Entertainments
-		switch (args[0]) {
+		switch (args[0].toLowerCase()) {
 
 
 
-		case ";clap":
-			args[0] = "";
+		case "u?clap":
 			MESSAGE.reply(Clap.clap(args)).queue();
 			break;
 
 
 
-		case ";color":
+		case "u?color":
 			MESSAGE.replyEmbeds(Colour.color()).queue();
 			break;
 
 
 
-		case ";colorhex":
+		case "u?colorhex":
 			MESSAGE.replyEmbeds(Colour.colorhex(args[1])).queue();
 			break;
 
 
 
-		case ";colorrgb":
+		case "u?colorrgb":
 			MESSAGE.replyEmbeds(Colour.colorrgb(args[1], args[2], args[3])).queue();
 			break;
 
 
 
 
-		case ";echo":
+		case "u?echo":
 			args[0] = "";
 			MESSAGE.reply(Echo.echo(args)).queue();
 			break;
 
 
 
-		case ";eightball":
-			CONTENT = CONTENT.replace(";eightball ", "");
+		case "u?8ball":
+			CONTENT = CONTENT.replace("u?8ball ", "");
 			MESSAGE.reply(EightBall.eightball(CONTENT)).queue();
 			break;
 
