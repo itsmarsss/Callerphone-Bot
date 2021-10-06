@@ -40,7 +40,7 @@ public class VCCallPairer {
 
 					for(Member m : jda.getVoiceChannelById(audio.getCallerVCID()).getGuild().getSelfMember().getVoiceState().getChannel().getMembers()) {
 						if(!(m.getUser() == jda.getSelfUser())) {
-							MEMBERSCALLER += m.getAsMention() + ", ";
+							MEMBERSCALLER += m.getEffectiveName() + ", ";
 						}
 					}
 					if (MEMBERSCALLER.length() > 0) {
