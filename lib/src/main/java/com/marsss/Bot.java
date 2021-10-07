@@ -65,6 +65,9 @@ public class Bot {
 			jda.addEventListener(new OnOtherEvent());
 			jda.addEventListener(new OnSlashCommand());
 			jda.addEventListener(new VCUserphoneListener());
+			jda.addEventListener(new OnMuted());
+			jda.addEventListener(new OnDeafened());
+			jda.addEventListener(new OnDisconnection());
 
 			for(int i = 0; i < AudioStorage.audio.length; i++) {
 				AudioStorage.audio[i] = new Audio(new ConcurrentLinkedQueue<>(), "empty", "", new ConcurrentLinkedQueue<>(), "", "", false);
@@ -203,10 +206,9 @@ public class Bot {
 							break;
 						} else if(msg.equals("competing")) {
 							System.out.println("Status Message: ");
-							sc.nextLine();
 							String comp = sc.nextLine();
 							System.out.println("Competing: " + comp);
-							act = Activity.competing(sc.nextLine());
+							act = Activity.competing(comp);
 							break;
 
 						} else if(msg.equals("listening")) {
@@ -214,7 +216,7 @@ public class Bot {
 							sc.nextLine();
 							String song = sc.nextLine();
 							System.out.println("Listening: " + song);
-							act = Activity.listening(sc.nextLine());
+							act = Activity.listening(song);
 							break;
 
 						} else if(msg.equals("playing")) {
@@ -237,8 +239,10 @@ public class Bot {
 
 						} else if(msg.equals("watching")) {
 							System.out.println("Status Message: ");
+							sc.nextLine();
 							String watch = sc.nextLine();
-							act = Activity.watching(sc.nextLine());
+							System.out.println("Watching: " + watch);
+							act = Activity.watching(watch);
 							break;
 
 						}
@@ -258,11 +262,11 @@ public class Bot {
 							s = OnlineStatus.IDLE;
 							break;
 
-						} else if(msg.equals("do not disturb")) {
+						} else if(msg.equals("dnd")) {
 							s = OnlineStatus.DO_NOT_DISTURB;
 							break;
 
-						} else if(msg.equals("invisible")) {
+						} else if(msg.equals("invis")) {
 							s = OnlineStatus.INVISIBLE;
 							break;
 

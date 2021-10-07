@@ -129,6 +129,6 @@ public class ChannelInfo {
 	}
 	
 	public static String getHelp() {
-		return "`channelinfo` <channel>` - Get information about the channel.";
+		return "`channelinfo <channel>` - Get information about the channel.";
 	}
 }

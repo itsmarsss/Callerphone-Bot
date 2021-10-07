@@ -28,7 +28,7 @@ public class VCCallPairer {
 
 					for(Member m : vcchannel.getMembers()) {
 						if(!(m.getUser() == jda.getSelfUser())) {
-							MEMBERSRECEIVER += m.getAsMention() + ", ";
+							MEMBERSRECEIVER += m.getUser().getAsTag() + ", ";
 						}
 					}
 					if (MEMBERSRECEIVER.length() > 0) {

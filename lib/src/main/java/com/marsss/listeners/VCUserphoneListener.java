@@ -24,15 +24,34 @@ public class VCUserphoneListener extends ListenerAdapter {
 
 
 		case "u?hangup":
-			if(!event.getMember().getVoiceState().inVoiceChannel()) {
-				MESSAGE.reply("You are not in a voice channel.").queue();
-				break;
+			String VC;
+
+			if(event.getMember().getVoiceState().inVoiceChannel()) {
+				VC = event.getMember().getVoiceState().getChannel().getId();
+			}else {
+				MESSAGE.reply("You are not in the call channel.").queue();
+				return;
 			}
 			Guild g = event.getGuild();
+
+			if(!hasCall(g.getId())) {
+				MESSAGE.reply("There is no call in this server.").queue();
+				break;
+			}
+
+			if(!inCallChannel(VC)) {
+				MESSAGE.reply("You are not in the call channel.").queue();
+				break;
+			}
+
 			JDA jda = Bot.jda;
+
+
 			for(Audio a : AudioStorage.audio) {
+
 				Guild CALLER = null;
 				Guild RECEIVER = null;
+
 				try {
 					CALLER = jda.getVoiceChannelById(a.getCallerVCID()).getGuild();
 					RECEIVER = jda.getVoiceChannelById(a.getReceiverVCID()).getGuild();
@@ -42,6 +61,7 @@ public class VCUserphoneListener extends ListenerAdapter {
 					a.resetAudio();
 					continue;
 				}
+
 
 				if(CALLER.getId().equals(g.getId())) {
 					AudioManager CALLERAM = CALLER.getAudioManager();
@@ -53,7 +73,7 @@ public class VCUserphoneListener extends ListenerAdapter {
 						jda.getTextChannelById(a.getReceiverChannelID()).sendMessage("The other party hung up the phone.").queue();
 					}
 
-					jda.getTextChannelById(a.getCallerChannelID()).sendMessage("You hung up the phone.").queue();
+					MESSAGE.reply("You hung up the phone.").queue();
 					a.resetAudio();
 					break SWITCH;
 				}else if(RECEIVER.getId().equals(g.getId())) {
@@ -66,11 +86,14 @@ public class VCUserphoneListener extends ListenerAdapter {
 						jda.getTextChannelById(a.getCallerChannelID()).sendMessage("The other party hung up the phone.").queue();
 					}
 
-					jda.getTextChannelById(a.getReceiverChannelID()).sendMessage("You hung up the phone.").queue();
+					MESSAGE.reply("You hung up the phone.").queue();
 					a.resetAudio();
 					break SWITCH;
 				}
 			}
+
+
+
 			MESSAGE.reply("I was not able to find the call...").queue();
 			break;
 
@@ -109,5 +132,26 @@ public class VCUserphoneListener extends ListenerAdapter {
 
 
 		}
+	}
+
+	private boolean hasCall(String g) {
+		for(Audio a : AudioStorage.audio) {
+			try {
+				if(Bot.jda.getVoiceChannelById(a.callerVCID).getGuild().getId().equals(g) || 
+						Bot.jda.getVoiceChannelById(a.receiverVCID).getGuild().getId().equals(g)) {
+					return true;
+				}
+			}catch(Exception e) {}
+		}
+		return false;
+	}
+
+	private boolean inCallChannel(String VC) {
+		for(Audio a : AudioStorage.audio) {
+			if(a.callerVCID.equals(VC) || a.receiverVCID.equals(VC)) {
+				return true;
+			}
+		}
+		return false;
 	}
 }

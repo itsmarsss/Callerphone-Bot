@@ -66,6 +66,6 @@ public class RoleInfo {
 	}
 
 	public static String getHelp() {
-		return "`roleinfo` <role>` - Get information about this role.";
+		return "`roleinfo <role>` - Get information about this role.";
 	}
 }
