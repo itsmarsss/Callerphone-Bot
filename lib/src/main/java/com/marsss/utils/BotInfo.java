@@ -17,15 +17,15 @@ public class BotInfo {
 				"\n**Avatar url:** [link](" + jda.getSelfUser().getAvatarUrl() + ")"+ 
 				"\n**Time created:** " + dtf.format(jda.getSelfUser().getTimeCreated()) + 
 				"\n**Id:** " + jda.getSelfUser().getId() +
-				"\n**Shard info:** " + jda.getShardInfo().getShardString() + 
+				"\n**Shard info:** [" + (jda.getShardInfo().getShardId() + 1) + "/" + jda.getShardInfo().getShardTotal() + "]" + 
 				"\n**Servers:** " + jda.getGuilds().size();
-		
+
 		EmbedBuilder BotInfo = new EmbedBuilder()
 				.setTitle("**Bot Info**")
 				.setDescription(DESC);
-		
+
 		return BotInfo.build();
-		
+
 	}
 
 	public static String getHelp() {

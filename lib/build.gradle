@@ -37,7 +37,7 @@ jar {
 }
 
 dependencies {
-    implementation group: 'net.dv8tion', name: 'JDA', version: '4.3.0_330'
+    implementation group: 'net.dv8tion', name: 'JDA', version: '4.3.0_315'
     implementation group: 'com.jagrosh', name: 'jda-utilities', version: '3.0.5'
     implementation group: 'me.duncte123', name: 'botCommons', version: '2.1.2'
     implementation group: 'ch.qos.logback', name: 'logback-classic', version: '1.2.3'

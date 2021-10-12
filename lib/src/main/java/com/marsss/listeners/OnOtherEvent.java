@@ -3,13 +3,20 @@ package com.marsss.listeners;
 import java.awt.Color;
 import java.time.OffsetDateTime;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.marsss.Bot;
+
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.DisconnectEvent;
 import net.dv8tion.jda.api.events.ResumedEvent;
+import net.dv8tion.jda.api.events.ShutdownEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
 public class OnOtherEvent extends ListenerAdapter{
+	public static Logger logger = LoggerFactory.getLogger(OnOtherEvent.class);
 	private static OffsetDateTime timeDisconnected = OffsetDateTime.now();
 	private static int disconnectCount = 0;
 	public void onDisconnect(DisconnectEvent event) {
@@ -17,7 +24,13 @@ public class OnOtherEvent extends ListenerAdapter{
 	}
 
 	public void onResumed(ResumedEvent event)  {
-		TextChannel CHANNEL = event.getJDA().getTextChannelById(852338750519640116L);
+		logger.warn("Bot disconnected for: " + 
+				(OffsetDateTime.now().getHour() - timeDisconnected.getHour())  + " hour(s) " +
+				(OffsetDateTime.now().getMinute() - timeDisconnected.getMinute()) + " minute(s) " +
+				(OffsetDateTime.now().getSecond() - timeDisconnected.getSecond()) + " second(s) and " +
+				(timeDisconnected.getNano() /1000000) + "\n" + disconnectCount + "times!");
+		
+		TextChannel CHANNEL = event.getJDA().getTextChannelById("852338750519640116");
 		EmbedBuilder Emd = new EmbedBuilder().setColor(Color.RED).setTitle("Disconnected");
 		disconnectCount++;
 		Emd.setDescription("The bot disconnected for " +
@@ -27,5 +40,10 @@ public class OnOtherEvent extends ListenerAdapter{
 				(timeDisconnected.getNano() /1000000) + " milliseconds due to connectivity issues.\n" +
 				"Response number: " + event.getResponseNumber()).setTimestamp(OffsetDateTime.now()).setFooter("The bot disconnected " + disconnectCount + " times already since the last startup.");
 		CHANNEL.sendMessageEmbeds(Emd.build()).queue();
+	}
+
+	public void onShutdown(ShutdownEvent event) {
+		EmbedBuilder embedBuilder = new EmbedBuilder().setTitle("Status").setColor(Color.RED).setFooter("Goodbye World...").setDescription(Bot.jda.getSelfUser().getAsMention() + " is going offline.");
+		Bot.jda.getTextChannelById("852342009288851516").sendMessageEmbeds(embedBuilder.build()).queue();;
 	}
 }

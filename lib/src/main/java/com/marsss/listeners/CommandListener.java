@@ -17,7 +17,7 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
 public class CommandListener extends ListenerAdapter {
 	public void onGuildMessageReceived(GuildMessageReceivedEvent event) {
-
+		
 		if(!event.getChannel().canTalk())
 			return;
 
@@ -38,6 +38,12 @@ public class CommandListener extends ListenerAdapter {
 		if(!args[0].toLowerCase().startsWith("u?"))
 			return;
 
+		if(CONTENT.trim().equals("<@" + Bot.jda.getSelfUser().getId() + ">")) {
+			MESSAGE.reply("My prefix is `u?`, do `u?help` for a list of commands!").queue();
+			return;
+		}
+		
+		
 		// Utils
 		utils : switch(args[0].toLowerCase()) {
 

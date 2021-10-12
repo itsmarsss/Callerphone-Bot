@@ -5,9 +5,10 @@ import java.awt.Color;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 
+import com.marsss.Bot;
 import com.marsss.bot.*;
 import com.marsss.entertainments.*;
-import com.marsss.vcuserphone.*;
+import com.marsss.vccallerphone.*;
 
 public class Help {
 	public static MessageEmbed help(String name) {
@@ -196,7 +197,7 @@ public class Help {
 		EmbedBuilder HelpEmd = new EmbedBuilder()
 				.setTitle(TITLE)
 				.setDescription(DESC)
-				.setFooter("Hope you found this useful!")
+				.setFooter("Hope you found this useful!", Bot.jda.getSelfUser().getAvatarUrl())
 				.setColor(COLOR);
 
 		return HelpEmd.build();

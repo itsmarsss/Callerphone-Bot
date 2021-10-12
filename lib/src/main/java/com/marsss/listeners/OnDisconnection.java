@@ -1,8 +1,8 @@
 package com.marsss.listeners;
 
 import com.marsss.Bot;
-import com.marsss.vcuserphone.AudioStorage;
-import com.marsss.vcuserphone.AudioStorage.Audio;
+import com.marsss.vccallerphone.AudioStorage;
+import com.marsss.vccallerphone.AudioStorage.Audio;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
@@ -13,6 +13,10 @@ import net.dv8tion.jda.api.managers.AudioManager;
 
 public class OnDisconnection extends ListenerAdapter {
 	public void onGuildVoiceLeave(GuildVoiceLeaveEvent event) {
+		if(!VCCallerphoneListener.hasCall(event.getGuild().getId())) {
+			return;
+		}
+		
 		if(event.getMember().getUser() == Bot.jda.getSelfUser()) {
 			disconnect(event.getGuild(), "I was disconnected.");
 			return;
@@ -25,6 +29,10 @@ public class OnDisconnection extends ListenerAdapter {
 
 
 	public void onGuildVoiceMove(GuildVoiceMoveEvent event) {
+		if(!VCCallerphoneListener.hasCall(event.getGuild().getId())) {
+			return;
+		}		
+		
 		if(event.getMember().getUser() == Bot.jda.getSelfUser()) {
 			disconnect(event.getGuild(), "I was moved to another channel");
 			return;
@@ -57,10 +65,10 @@ public class OnDisconnection extends ListenerAdapter {
 				if(RECEIVER != null) {
 					AudioManager RECEIVERAM = RECEIVER.getAudioManager();
 					RECEIVERAM.closeAudioConnection();
-					jda.getTextChannelById(a.getReceiverChannelID()).sendMessage("The other party hung up the phone. (" + S + " on the other server)").queue();
+					jda.getTextChannelById(a.getReceiverChannelID()).sendMessage(Bot.Userphone + "The other party hung up the phone. (" + S + " on the other server)").queue();
 				}
 
-				jda.getTextChannelById(a.getCallerChannelID()).sendMessage("You hung up the phone. (" + S + ")").queue();
+				jda.getTextChannelById(a.getCallerChannelID()).sendMessage(Bot.Userphone + "You hung up the phone. (" + S + ")").queue();
 				a.resetAudio();
 				return;
 			}else if(RECEIVER.getId().equals(g.getId())) {
@@ -70,10 +78,10 @@ public class OnDisconnection extends ListenerAdapter {
 				if(CALLER != null) {
 					AudioManager CALLERAM = CALLER.getAudioManager();
 					CALLERAM.closeAudioConnection();
-					jda.getTextChannelById(a.getCallerChannelID()).sendMessage("The other party hung up the phone. (" + S + " on ther other server)").queue();
+					jda.getTextChannelById(a.getCallerChannelID()).sendMessage(Bot.Userphone + "The other party hung up the phone. (" + S + " on the other server)").queue();
 				}
 
-				jda.getTextChannelById(a.getReceiverChannelID()).sendMessage("You hung up the phone. (" + S + ")").queue();
+				jda.getTextChannelById(a.getReceiverChannelID()).sendMessage(Bot.Userphone + "You hung up the phone. (" + S + ")").queue();
 				a.resetAudio();
 			}
 		}

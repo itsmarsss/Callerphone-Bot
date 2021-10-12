@@ -6,6 +6,8 @@ public class Uptime {
 
 	public static String uptime() {
 
+		// https://github.com/DV8FromTheWorld/Yui/blob/master/src/main/java/net/dv8tion/discord/commands/UptimeCommand.java {
+
 		final long DURATION = ManagementFactory.getRuntimeMXBean().getUptime();
 
 		final long YEARS = DURATION / 31104000000L;
@@ -33,6 +35,8 @@ public class Uptime {
 	private static String replaceLast(final String text, final String regex, final String replacement) {
 		return text.replaceFirst("(?s)(.*)" + regex, "$1" + replacement);
 	}
+
+	// }
 
 	public static String getHelp() {
 		return "`u?uptime` - Gets the bot's uptime.";

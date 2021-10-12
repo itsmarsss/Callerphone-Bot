@@ -1,18 +1,21 @@
 package com.marsss;
 
 import java.awt.Color;
-import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.EnumSet;
 import java.util.Scanner;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import javax.security.auth.login.LoginException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.marsss.listeners.*;
-import com.marsss.vcuserphone.AudioStorage;
-import com.marsss.vcuserphone.AudioStorage.Audio;
+import com.marsss.tccallerphone.ConvoStorage;
+import com.marsss.tccallerphone.ConvoStorage.Convo;
+import com.marsss.vccallerphone.AudioStorage;
+import com.marsss.vccallerphone.AudioStorage.Audio;
 
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
@@ -31,6 +34,10 @@ import net.dv8tion.jda.api.utils.cache.CacheFlag;
 
 public class Bot {
 
+	public static Logger logger = LoggerFactory.getLogger(Bot.class);
+	
+	public static final String Userphone = "<:CallerphoneBot:892780263136960522>";
+
 	public static JDA jda;
 	public static final String ANSI_RESET = "\u001B[0m";
 	public static final String ANSI_BLACK = "\u001B[30m";
@@ -41,7 +48,6 @@ public class Bot {
 	public static final String ANSI_PURPLE = "\u001B[35m";
 	public static final String ANSI_CYAN = "\u001B[36m";
 	public static final String ANSI_WHITE = "\u001B[37m";
-	private static final DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
 	private static final EnumSet<GatewayIntent> intent = EnumSet.of(
 			GatewayIntent.GUILD_MEMBERS,
 			GatewayIntent.GUILD_MESSAGES,
@@ -52,7 +58,7 @@ public class Bot {
 			GatewayIntent.GUILD_INVITES,
 			GatewayIntent.DIRECT_MESSAGES);
 
-	private static void BotInit(String token, String startupmsg) throws InterruptedException {
+	private static void BotInit(String token, String startupmsg) throws InterruptedException, LoginException {
 		try {
 			jda = JDABuilder.createDefault(token, intent)
 					.enableCache(CacheFlag.VOICE_STATE)
@@ -64,10 +70,16 @@ public class Bot {
 			jda.addEventListener(new CommandListener());
 			jda.addEventListener(new OnOtherEvent());
 			jda.addEventListener(new OnSlashCommand());
-			jda.addEventListener(new VCUserphoneListener());
+			jda.addEventListener(new TCCallerphoneListener());
+			jda.addEventListener(new VCCallerphoneListener());
 			jda.addEventListener(new OnMuted());
 			jda.addEventListener(new OnDeafened());
 			jda.addEventListener(new OnDisconnection());
+			
+			for(int i = 0; i < ConvoStorage.convo.length; i++) {
+				ConvoStorage.convo[i] = new Convo(new ConcurrentLinkedQueue<>(), "empty", "", false);
+			}
+
 
 			for(int i = 0; i < AudioStorage.audio.length; i++) {
 				AudioStorage.audio[i] = new Audio(new ConcurrentLinkedQueue<>(), "empty", "", new ConcurrentLinkedQueue<>(), "", "", false);
@@ -76,22 +88,22 @@ public class Bot {
 			jda.awaitReady();
 
 			System.out.println("Server List: ");
-			for(Guild g : jda.getGuilds())
-				System.out.println(g.getName());
+			for(Guild g : jda.getGuilds()) {
+				logger.info("Server: " + g.getName());
+			}
+			
+			logger.info("Bot online");
 
-
-			System.out.println(ANSI_GREEN + "[" + dtf.format(LocalDateTime.now()) + "]: " + ANSI_RESET + "Bot Online");
 			try {
 				EmbedBuilder embedBuilder = new EmbedBuilder().setTitle("Status").setColor(Color.GREEN).setFooter("Hello World!").setDescription(jda.getSelfUser().getAsMention() + " is now online;" + startupmsg);
-				jda.getTextChannelById(852342009288851516L).sendMessageEmbeds(embedBuilder.build()).queue();
+				jda.getTextChannelById("852342009288851516").sendMessageEmbeds(embedBuilder.build()).queue();
 			} catch(Exception e) {
-				System.out.println(ANSI_GREEN + "[" + dtf.format(LocalDateTime.now()) + "]: " + ANSI_RED + "Error Sending Startup Message" + ANSI_RESET);
+				logger.error("Error Sending Startup Message");
 			}
 
 		}catch(Exception e) {
-			System.err.println(e.getMessage());
+			System.err.println(e);
 		}
-
 
 		//jda.upsertCommand(new CommandData("ping", "Get the my ping")).queue();
 
@@ -137,8 +149,7 @@ public class Bot {
 	private static void commandPrompt() throws LoginException, InterruptedException {
 		Scanner sc = new Scanner(System.in);
 
-		System.out.println(ANSI_RED + "Bot Loaded...\n"
-				+ "Welcome to Userphone Bot Command Line (UBCL)!" + ANSI_RESET);
+		logger.info("\n{}Command Line Loaded...{}\nWelcome to Callerphone Bot Command Line (CBCL)!");
 
 		while(true) {
 			String cmd = sc.nextLine();
@@ -146,55 +157,33 @@ public class Bot {
 			if(cmd.startsWith("start")) {
 				System.out.println("Token: ");
 				String TOKEN = sc.nextLine();
-				System.out.println(ANSI_GREEN + "[" + dtf.format(LocalDateTime.now()) + "]: " + ANSI_RESET + "Starting Bot...");
+				logger.info("Starting Bot...");
 				if(jda != null) {
-					System.out.println(ANSI_GREEN + "[" + dtf.format(LocalDateTime.now()) + "]: " + ANSI_RESET + "Bot Is Online Right Now");
+					logger.info("Bot Is Online Right Now");
 				} else {
 					BotInit(TOKEN, cmd.replaceFirst("start", ""));
 				}
 				continue;
 			}
 
-			if(cmd.startsWith("shutdown")) {
-				System.out.println(ANSI_GREEN + "[" + dtf.format(LocalDateTime.now()) + "]: " + ANSI_RESET + "Shutting Down Bot...");
+			if(cmd.equals("shutdown")) {
+				logger.info("Shutting Down Bot...");
 				if(jda != null) {
-					try {
-						EmbedBuilder embedBuilder = new EmbedBuilder().setTitle("Status").setColor(Color.RED).setFooter("Goodbye World...").setDescription(jda.getSelfUser().getAsMention() + " is going offline;" + cmd.replaceFirst("shutdown", ""));
-						jda.getTextChannelById(852342009288851516L).sendMessageEmbeds(embedBuilder.build()).complete();
-					} catch(Exception e) {
-						System.out.println(ANSI_GREEN + "[" + dtf.format(LocalDateTime.now()) + "]: " + ANSI_RED + "Error Sending Shutdown Message" + ANSI_RESET);
-					}
 					jda.shutdown();
 				}
-				System.out.println(ANSI_GREEN + "[" + dtf.format(LocalDateTime.now()) + "]: " + ANSI_RESET + "Bot Offline");
-				sc.close();
-				System.exit(0);
-			}
-
-			if(cmd.equals("estop")) {
-				System.out.println(ANSI_GREEN + "[" + dtf.format(LocalDateTime.now()) + "]: " + ANSI_RESET + "Shutting Down Bot...");
-				if(jda != null) {
-					try {
-						EmbedBuilder embedBuilder = new EmbedBuilder().setTitle("Status").setColor(Color.BLACK).setFooter("Goodbye World... (Emergency Shutdown)").setDescription(jda.getSelfUser().getAsMention() + " is currently offline due to some maintenance!" + cmd.replaceFirst("shutdown", ""));
-						jda.getTextChannelById(852342009288851516L).sendMessageEmbeds(embedBuilder.build()).queue();
-					} catch(Exception e) {
-						System.out.println(ANSI_GREEN + "[" + dtf.format(LocalDateTime.now()) + "]: " + ANSI_RED + "Error Sending Shutdown Message" + ANSI_RESET);
-					}
-					jda.shutdownNow();
-				}
-				System.out.println(ANSI_GREEN + "[" + dtf.format(LocalDateTime.now()) + "]: " + ANSI_RESET + "Bot Offline");
+				logger.info("Bot Offline");
 				sc.close();
 				System.exit(0);
 			}
 
 			if(cmd.equals("presence")) {
 				if(jda == null) {
-					System.out.println(ANSI_GREEN + "[" + dtf.format(LocalDateTime.now()) + "]: " + ANSI_RESET + "Bot Is Offline");
+					logger.info("Bot Is Offline");
 					continue;
 				}
 
 				Activity act = null;
-				System.out.println(ANSI_GREEN + "[" + dtf.format(LocalDateTime.now()) + "]: " + ANSI_RESET + "Change Presence...");
+				logger.info("Change Presence...");
 				try {
 					while(true) {
 
@@ -206,6 +195,7 @@ public class Bot {
 							break;
 						} else if(msg.equals("competing")) {
 							System.out.println("Status Message: ");
+							sc.nextLine();
 							String comp = sc.nextLine();
 							System.out.println("Competing: " + comp);
 							act = Activity.competing(comp);
@@ -229,8 +219,8 @@ public class Bot {
 
 						} else if(msg.equals("streaming")) {
 							System.out.println("Title Message: ");
-							String title = sc.nextLine();
 							sc.nextLine();
+							String title = sc.nextLine();
 							System.out.println("Stream Link: ");
 							String link = sc.nextLine();
 							System.out.println("Title: " + title + "\n" + "Link: " + link);
@@ -253,7 +243,7 @@ public class Bot {
 					while(true) {
 						System.out.println("Online Status: ");
 						String msg = sc.next().toLowerCase();
-
+						
 						if(msg.equals("online")) {
 							s = OnlineStatus.ONLINE;
 							break;
@@ -279,11 +269,11 @@ public class Bot {
 						continue;
 					}
 
-					System.out.println(ANSI_GREEN + "[" + dtf.format(LocalDateTime.now()) + "]: " + ANSI_RED + "Bot Is Offline" + ANSI_RESET);
+					logger.info("Bot Is Offline");
 					continue;
 
 				} catch(Exception e) {
-					System.out.println(ANSI_GREEN + "[" + dtf.format(LocalDateTime.now()) + "]: " + ANSI_RED + "Input error, please try again" + ANSI_RESET);
+					logger.error("Input error, please try again");
 					break;
 				}
 
@@ -303,7 +293,7 @@ public class Bot {
 					System.out.println("Guilds: " + jda.getGuilds().size());
 					continue;
 				}
-				System.out.println(ANSI_GREEN + "[" + dtf.format(LocalDateTime.now()) + "]: " + ANSI_RESET + "Bot Is Offline");
+				logger.info("Bot Is Offline");
 				continue;
 			}
 
@@ -323,7 +313,7 @@ public class Bot {
 			//            }
 
 			if(!cmd.equals(""))
-				System.out.println(ANSI_GREEN + "[" + dtf.format(LocalDateTime.now()) + "]: " + ANSI_RESET + "Unknown Command");
+				logger.debug("Unknown Command");
 
 		}
 	}
