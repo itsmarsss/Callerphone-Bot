@@ -102,7 +102,7 @@ public class Bot {
 			}
 
 		}catch(Exception e) {
-			System.err.println(e);
+			logger.error(e.toString());
 		}
 
 		//jda.upsertCommand(new CommandData("ping", "Get the my ping")).queue();
