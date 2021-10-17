@@ -24,7 +24,7 @@ public class OnOtherEvent extends ListenerAdapter{
 	}
 
 	public void onResumed(ResumedEvent event)  {
-		TextChannel CHANNEL = event.getJDA().getTextChannelById("852338750519640116");
+		final TextChannel CHANNEL = event.getJDA().getTextChannelById("852338750519640116");
 		EmbedBuilder Emd = new EmbedBuilder().setColor(Color.RED).setTitle("Disconnected");
 		
 		disconnectCount++;

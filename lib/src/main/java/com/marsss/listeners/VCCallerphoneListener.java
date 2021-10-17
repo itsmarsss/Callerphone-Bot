@@ -19,16 +19,16 @@ public class VCCallerphoneListener extends ListenerAdapter {
 	private static final String Callerphone = Bot.Callerphone;
 	public void onGuildMessageReceived(GuildMessageReceivedEvent event) {
 
-		Message MESSAGE = event.getMessage();
-		String args[] = MESSAGE.getContentRaw().toLowerCase().split("\\s+");
-		Member selfmember = event.getGuild().getSelfMember();
-		AudioManager am = event.getGuild().getAudioManager();
-		Guild g = event.getGuild();
+		final Message MESSAGE = event.getMessage();
+		final String args[] = MESSAGE.getContentRaw().toLowerCase().split("\\s+");
+		final Member selfmember = event.getGuild().getSelfMember();
+		final AudioManager am = event.getGuild().getAudioManager();
+		final Guild g = event.getGuild();
 
-		SWITCH : switch (args[0].toLowerCase()) {
+		SWITCH : switch (args[0].toLowerCase().replaceFirst(Bot.Prefix, "")) {
 
 
-		case "u?hangup":
+		case "hangup":
 			String VC;
 
 			if(event.getMember().getVoiceState().inVoiceChannel()) {
@@ -48,7 +48,7 @@ public class VCCallerphoneListener extends ListenerAdapter {
 				break;
 			}
 
-			JDA jda = Bot.jda;
+			final JDA jda = Bot.jda;
 
 
 			for(Audio a : AudioStorage.audio) {
@@ -68,11 +68,11 @@ public class VCCallerphoneListener extends ListenerAdapter {
 
 
 				if(CALLER.getId().equals(g.getId())) {
-					AudioManager CALLERAM = CALLER.getAudioManager();
+					final AudioManager CALLERAM = CALLER.getAudioManager();
 					CALLERAM.closeAudioConnection();
 
 					if(RECEIVER != null) {
-						AudioManager RECEIVERAM = RECEIVER.getAudioManager();
+						final AudioManager RECEIVERAM = RECEIVER.getAudioManager();
 						RECEIVERAM.closeAudioConnection();
 						jda.getTextChannelById(a.getReceiverChannelID()).sendMessage(Callerphone + "The other party hung up the phone.").queue();
 					}
@@ -81,11 +81,11 @@ public class VCCallerphoneListener extends ListenerAdapter {
 					a.resetAudio();
 					break SWITCH;
 				}else if(RECEIVER.getId().equals(g.getId())) {
-					AudioManager RECEIVERAM = RECEIVER.getAudioManager();
+					final AudioManager RECEIVERAM = RECEIVER.getAudioManager();
 					RECEIVERAM.closeAudioConnection();
 
 					if(CALLER != null) {
-						AudioManager CALLERAM = CALLER.getAudioManager();
+						final AudioManager CALLERAM = CALLER.getAudioManager();
 						CALLERAM.closeAudioConnection();
 						jda.getTextChannelById(a.getCallerChannelID()).sendMessage(Callerphone + "The other party hung up the phone.").queue();
 					}
@@ -103,12 +103,12 @@ public class VCCallerphoneListener extends ListenerAdapter {
 
 
 
-		case "u?voicecall":
+		case "voicecall":
 			if(event.getGuild().getSelfMember().getVoiceState().inVoiceChannel()) {
 				event.getMessage().reply(Callerphone + "Sorry, I am currently connected to " + event.getGuild().getSelfMember().getVoiceState().getChannel().getAsMention()).queue();
 				break;
 			}
-			GuildVoiceState GVS = event.getMember().getVoiceState();
+			final GuildVoiceState GVS = event.getMember().getVoiceState();
 			if(!GVS.inVoiceChannel()) {
 				event.getMessage().reply(Callerphone + "You have to be in a voicechannel that I have access to.").queue();
 				break;
@@ -121,7 +121,7 @@ public class VCCallerphoneListener extends ListenerAdapter {
 				event.getMessage().reply(Callerphone + "I do not have access to speak in" + GVS.getChannel().getAsMention()).queue();
 				break;
 			}
-			AudioManager audioManager = event.getGuild().getAudioManager();
+			final AudioManager audioManager = event.getGuild().getAudioManager();
 
 			//		if(audioManager.isAttemptingToConnect()) {
 			//			event.getMessage().reply("I'm already trying to connect! Chill out...").queue();
@@ -135,7 +135,7 @@ public class VCCallerphoneListener extends ListenerAdapter {
 
 
 
-		case "u?deafen":
+		case "deafen":
 			if(!selfmember.getVoiceState().inVoiceChannel()) {
 				MESSAGE.reply(Callerphone + "I am not in a voice channel.").queue();
 				break;
@@ -158,7 +158,7 @@ public class VCCallerphoneListener extends ListenerAdapter {
 
 
 
-		case "u?undeafen":
+		case "undeafen":
 			if(!selfmember.getVoiceState().inVoiceChannel()) {
 				MESSAGE.reply(Callerphone + "I am not in a voice channel.").queue();
 				break;
@@ -184,7 +184,7 @@ public class VCCallerphoneListener extends ListenerAdapter {
 
 
 
-		case "u?mute":
+		case "mute":
 			if(!selfmember.getVoiceState().inVoiceChannel()) {
 				MESSAGE.reply(Callerphone + "I am not in a voice channel.").queue();
 				break;
@@ -207,7 +207,7 @@ public class VCCallerphoneListener extends ListenerAdapter {
 
 
 
-		case "u?unmute":
+		case "unmute":
 			if(!selfmember.getVoiceState().inVoiceChannel()) {
 				MESSAGE.reply(Callerphone + "I am not in a voice channel.").queue();
 				break;

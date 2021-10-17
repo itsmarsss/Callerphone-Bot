@@ -9,7 +9,7 @@ import net.dv8tion.jda.api.entities.MessageEmbed;
 
 public class Polls {
 	public static MessageEmbed newpoll(String qst) {
-		Color COLOR = Colour.randColor();
+		final Color COLOR = Colour.randColor();
 		EmbedBuilder PollEmd = new EmbedBuilder()
 				.setTitle("**POLL**")
 				.setColor(COLOR)

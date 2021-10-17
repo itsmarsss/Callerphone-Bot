@@ -13,9 +13,9 @@ import net.dv8tion.jda.api.entities.MessageEmbed;
 
 public class About {
 	public static MessageEmbed about() {
-		JDA jda = Bot.jda;
+		final JDA jda = Bot.jda;
 
-		StringBuilder desc = new StringBuilder()
+		final StringBuilder desc = new StringBuilder()
 				.append("[Invite link](https://discord.com/api/oauth2/authorize?client_id=849713468348956692&permissions=274914888704&scope=bot%20applications.commands)")
 				.append("\n[Support server](https://discord.gg/jcYKsfw48p)")
 				.append("\n[Bot listing](https://top.gg/bot/849713468348956692)")
@@ -69,7 +69,7 @@ public class About {
 		if (-1000 < bytes && bytes < 1000) {
 			return bytes + " B";
 		}
-		CharacterIterator ci = new StringCharacterIterator("kMGTPE");
+		final CharacterIterator ci = new StringCharacterIterator("kMGTPE");
 		while (bytes <= -999_950 || bytes >= 999_950) {
 			bytes /= 1000;
 			ci.next();

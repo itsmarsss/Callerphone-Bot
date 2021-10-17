@@ -14,7 +14,7 @@ public class OnDeafened extends ListenerAdapter {
 		if(event.getMember().getUser() != Bot.jda.getSelfUser())
 			return;
 
-		GuildVoiceState VS = event.getGuild().getSelfMember().getVoiceState();
+		final GuildVoiceState VS = event.getGuild().getSelfMember().getVoiceState();
 		String VC;
 		if(VS.inVoiceChannel()) {
 			VC = VS.getChannel().getId();

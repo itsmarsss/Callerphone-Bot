@@ -1,5 +1,6 @@
 package com.marsss.listeners;
 
+import com.marsss.Bot;
 import com.marsss.music.*;
 
 import net.dv8tion.jda.api.entities.Message;
@@ -8,66 +9,66 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
 public class MusicListener extends ListenerAdapter {
 	public void onGuildMessageReceived(GuildMessageReceivedEvent event) {
-		Message MESSAGE = event.getMessage();
-		String CONTENT = MESSAGE.getContentRaw().toLowerCase();
+		final Message MESSAGE = event.getMessage();
+		final String CONTENT = MESSAGE.getContentRaw().toLowerCase();
 
-		if(!CONTENT.toLowerCase().startsWith("u?") || MESSAGE.getAuthor().isBot())
+		if(!CONTENT.toLowerCase().startsWith(Bot.Prefix) || MESSAGE.getAuthor().isBot())
 			return;
 		
 
-		String args[] = CONTENT.toLowerCase().split("\\s+");
+		final String args[] = CONTENT.toLowerCase().split("\\s+");
 
-		switch (args[0].toLowerCase()) {
+		switch (args[0].toLowerCase().replaceFirst(Bot.Prefix, "")) {
 
-		case "u?clear":
+		case "clear":
 			Clear.clear(event);
 			break;
 
-		case "u?leave":
+		case "leave":
 			Leave.leave(event);
 			break;
 			
-		case "u?join":
+		case "join":
 			Join.join(event);
 			break;
 
-		case "u?play":
+		case "play":
 			Play.play(event);
 			break;
 
-		case "u?pause":
+		case "pause":
 			Pause.pause(event);
 			break;
 
-		case "u?resume":
+		case "resume":
 			Resume.resume(event);
 			break;
 
-		case "u?nowplaying":
+		case "nowplaying":
 			NowPlaying.nowplaying(event);
 			break;
 
-		case "u?queue":
+		case "queue":
 			Queue.queue(event);
 			break;
 
-		case "u?skip":
+		case "skip":
 			Skip.skip(event);
 			break;
 			
-		case "u?setmarker":
+		case "setmarker":
 			Marker.marker(event);
 			break;
 
-		case"u?setvolume":
+		case"setvolume":
 			Volume.volume(event);
 			break;
 
-		case"u?remove":
+		case"remove":
 			Remove.remove(event);
 			break;
 		
-		case"u?back":
+		case"back":
 			Back.back(event);
 			break;
 		}

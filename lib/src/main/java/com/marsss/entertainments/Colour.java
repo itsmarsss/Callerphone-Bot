@@ -8,10 +8,10 @@ import net.dv8tion.jda.api.entities.MessageEmbed;
 
 public class Colour {
 	public static MessageEmbed color(){
-		Random rand = new Random();
+		final Random rand = new Random();
 		int r = rand.nextInt(256), g = rand.nextInt(256), b = rand.nextInt(256);
-		Color COLOR = new Color(r, g, b);
-		String hex = String.format("%02X%02X%02X", r, g, b);
+		final Color COLOR = new Color(r, g, b);
+		final String hex = String.format("%02X%02X%02X", r, g, b);
 		EmbedBuilder ColorEmd = new EmbedBuilder()
 				.setTitle("Color")
 				.setDescription("**Hex:** #" + hex + "\n**RGB:** " + r + ", " + g + ", " + b)
@@ -53,7 +53,7 @@ public class Colour {
 			if(Integer.parseInt(r) > 255 || Integer.parseInt(g) > 255 || Integer.parseInt(b) > 255)
 				return ColorEmd.build();
 
-			String HEX = String.format("%02X%02X%02X", 
+			final String HEX = String.format("%02X%02X%02X", 
 					Integer.parseInt(r), 
 					Integer.parseInt(g), 
 					Integer.parseInt(b));
@@ -69,8 +69,8 @@ public class Colour {
 	}
 
 	public static Color randColor() {
-		Random rand = new Random();
-		int r = rand.nextInt(256), g = rand.nextInt(256), b = rand.nextInt(256);
+		final Random rand = new Random();
+		final int r = rand.nextInt(256), g = rand.nextInt(256), b = rand.nextInt(256);
 		return new Color(r, g, b);
 	}
 

@@ -44,8 +44,8 @@ public class OnDisconnection extends ListenerAdapter {
 	}
 
 	private void disconnect(Guild G, String S) {
-		JDA jda = Bot.jda;
-		Guild g = G;
+		final JDA jda = Bot.jda;
+		final Guild g = G;
 		for(Audio a : AudioStorage.audio) {
 			Guild CALLER = null;
 			Guild RECEIVER = null;
@@ -73,7 +73,7 @@ public class OnDisconnection extends ListenerAdapter {
 				a.resetAudio();
 				return;
 			}else if(RECEIVER.getId().equals(g.getId())) {
-				AudioManager RECEIVERAM = RECEIVER.getAudioManager();
+				final AudioManager RECEIVERAM = RECEIVER.getAudioManager();
 				RECEIVERAM.closeAudioConnection();
 
 				if(CALLER != null) {

@@ -13,11 +13,11 @@ import net.dv8tion.jda.api.entities.TextChannel;
 public class TCCallPairer {
 	private static final String Callerphone = Bot.Callerphone;
 	public static void onCallCommand(TextChannel tcchannel, Message message) {
-		Logger logger = LoggerFactory.getLogger(TCCallPairer.class);
-		String CHANNELID = tcchannel.getId();
-		JDA jda = Bot.jda;
+		final Logger logger = LoggerFactory.getLogger(TCCallPairer.class);
+		final String CHANNELID = tcchannel.getId();
+		final JDA jda = Bot.jda;
 		for(int i = 0; i < ConvoStorage.convo.length; i++) {
-			Convo convo = ConvoStorage.convo[i];
+			final Convo convo = ConvoStorage.convo[i];
 			if(!convo.getConnected()) {
 				if(!convo.getCallerTCID().equals("empty")) {
 					convo.setReceiverTCID(CHANNELID);

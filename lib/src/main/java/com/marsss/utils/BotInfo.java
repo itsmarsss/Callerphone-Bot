@@ -13,10 +13,10 @@ import net.dv8tion.jda.api.entities.MessageEmbed;
 public class BotInfo {
 
 	public static MessageEmbed botinfo() {
-		JDA jda = Bot.jda;
-		Color COLOR = Colour.randColor();
-		DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
-		String DESC = "**Tag of the bot:** " + jda.getSelfUser().getAsTag() + 
+		final JDA jda = Bot.jda;
+		final Color COLOR = Colour.randColor();
+		final DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
+		final String DESC = "**Tag of the bot:** " + jda.getSelfUser().getAsTag() + 
 				"\n**Avatar url:** [link](" + jda.getSelfUser().getAvatarUrl() + ")"+ 
 				"\n**Time created:** " + dtf.format(jda.getSelfUser().getTimeCreated()) + 
 				"\n**Id:** " + jda.getSelfUser().getId() +

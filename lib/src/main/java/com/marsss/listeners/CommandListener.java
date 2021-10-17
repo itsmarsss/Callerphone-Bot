@@ -8,6 +8,7 @@ import com.marsss.bot.*;
 import com.marsss.entertainments.*;
 import com.marsss.utils.*;
 
+import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.GuildChannel;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
@@ -22,12 +23,12 @@ public class CommandListener extends ListenerAdapter {
 		if(!event.getChannel().canTalk())
 			return;
 
-		Member MEMBER = event.getMember();
-		Message MESSAGE = event.getMessage();
+		final Member MEMBER = event.getMember();
+		final Message MESSAGE = event.getMessage();
 
 		String CONTENT = MESSAGE.getContentRaw();
 
-		String args[] = CONTENT.split("\\s+");
+		final String args[] = CONTENT.split("\\s+");
 
 		try {
 
@@ -37,20 +38,20 @@ public class CommandListener extends ListenerAdapter {
 		}catch(Exception e) {}
 
 		if(CONTENT.startsWith("<@!" + Bot.jda.getSelfUser().getId() + ">")) {
-			MESSAGE.reply("My prefix is `u?`, do `u?help` for a list of commands!").queue();
+			MESSAGE.reply("My prefix is `" + Bot.Prefix + "`, do `" + Bot.Prefix + "help` for a list of commands!").queue();
 			return;
 		}
 
-		if(!args[0].toLowerCase().startsWith("u?"))
+		if(!args[0].toLowerCase().startsWith(Bot.Prefix))
 			return;
 
 
 		// Utils
-		utils : switch(args[0].toLowerCase()) {
+		utils : switch(args[0].toLowerCase().replaceFirst(Bot.Prefix, "")) {
 
 
 
-		case "u?help":
+		case "help":
 			if(args.length > 1) {
 				MESSAGE.replyEmbeds(Help.help(args[1])).queue();
 				break;
@@ -60,13 +61,13 @@ public class CommandListener extends ListenerAdapter {
 
 
 
-		case "u?botinfo":
+		case "botinfo":
 			MESSAGE.replyEmbeds(BotInfo.botinfo()).queue();
 			break;
 
 			
 			
-		case "u?search":
+		case "search":
 			
 			if(CONTENT.substring(8, CONTENT.length()).isBlank()) {
 				MESSAGE.reply("Please enter a search query!").queue();
@@ -83,7 +84,7 @@ public class CommandListener extends ListenerAdapter {
 			}
 
 
-		case "u?channelinfo":
+		case "channelinfo":
 			List<TextChannel> CHANNELS = MESSAGE.getMentionedChannels();
 			GuildChannel CHANNEL;
 
@@ -122,8 +123,8 @@ public class CommandListener extends ListenerAdapter {
 
 			}
 
-		case "u?roleinfo":
-			List<Role> ROLES = MESSAGE.getMentionedRoles();
+		case "roleinfo":
+			final List<Role> ROLES = MESSAGE.getMentionedRoles();
 			Role ROLE;
 
 			try {
@@ -145,14 +146,14 @@ public class CommandListener extends ListenerAdapter {
 
 
 
-		case "u?serverinfo":
+		case "serverinfo":
 			MESSAGE.replyEmbeds(ServerInfo.serverinfo(event.getGuild())).queue();
 			break;
 
 
 
-		case "u?userinfo":
-			List<Member> USERS = MESSAGE.getMentionedMembers();
+		case "userinfo":
+			final List<Member> USERS = MESSAGE.getMentionedMembers();
 			Member USER;
 
 			try {
@@ -174,7 +175,11 @@ public class CommandListener extends ListenerAdapter {
 
 
 
-		case "u?poll":
+		case "poll":
+			if(!event.getGuild().getSelfMember().hasPermission(Permission.MESSAGE_ADD_REACTION)) {
+				MESSAGE.reply("I need `Add Reaction` permission for this command to work").queue();
+				break;
+			}
 			CONTENT = CONTENT.substring(7, CONTENT.length());
 			event.getChannel().sendMessage(event.getAuthor().getName() + " launched a poll:").complete();
 			event.getChannel().sendMessageEmbeds(Polls.newpoll(CONTENT)).queue(message -> {
@@ -190,36 +195,36 @@ public class CommandListener extends ListenerAdapter {
 
 
 		// Bot
-		switch (args[0].toLowerCase()) {
+		switch (args[0].toLowerCase().replaceFirst(Bot.Prefix, "")) {
 
 
 
-		case "u?about":
+		case "about":
 			MESSAGE.replyEmbeds(About.about()).queue();
 			break;
 
 
 
-		case "u?donate":
+		case "donate":
 			MESSAGE.reply(Donate.donate()).queue();
 			break;
 
 
 
-		case "u?invite":
+		case "invite":
 			MESSAGE.replyEmbeds(Invite.invite()).queue();
 			break;
 
 
 
-		case "u?ping":
+		case "ping":
 			Bot.jda.getRestPing().queue(
 					(ping) -> MESSAGE.replyFormat("**Reset ping:** %sms \n**WS ping:** %sms", ping, Bot.jda.getGatewayPing()).queue());
 			break;
 
 
 
-		case "u?uptime":
+		case "uptime":
 			MESSAGE.reply(Uptime.uptime()).queue();
 			break;
 
@@ -229,11 +234,11 @@ public class CommandListener extends ListenerAdapter {
 
 
 		// Entertainments
-		switch (args[0].toLowerCase()) {
+		switch (args[0].toLowerCase().replaceFirst(Bot.Prefix, "")) {
 
 
 
-		case "u?clap":
+		case "clap":
 			MESSAGE.reply(Clap.clap(args)).queue();
 			break;
 
@@ -245,13 +250,13 @@ public class CommandListener extends ListenerAdapter {
 
 
 
-		case "u?colorhex":
+		case "colorhex":
 			MESSAGE.replyEmbeds(Colour.colorhex(args[1])).queue();
 			break;
 
 
 
-		case "u?colorrgb":
+		case "colorrgb":
 			if(args.length < 4) {
 				MESSAGE.reply("Please provide r g b values").queue();
 				break;
@@ -261,15 +266,15 @@ public class CommandListener extends ListenerAdapter {
 
 
 
-		case "u?echo":
+		case "echo":
 			args[0] = "";
 			MESSAGE.reply(Echo.echo(args)).queue();
 			break;
 
 
 
-		case "u?8ball":
-			String qst = CONTENT.substring(7, CONTENT.length()).trim();
+		case "8ball":
+			final String qst = CONTENT.substring(7, CONTENT.length()).trim();
 			if(!qst.isBlank()) {
 				MESSAGE.reply(EightBall.eightball(qst)).queue();
 				break;

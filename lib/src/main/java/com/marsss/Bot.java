@@ -34,10 +34,10 @@ import net.dv8tion.jda.api.utils.cache.CacheFlag;
 
 public class Bot {
 
-	public static String brainURL = "http://api.brainshop.ai/get?bid=160403&key=FFFNOBQEMnANoVn1&uid=[uid]&msg=[msg]";
+	public static final Logger logger = LoggerFactory.getLogger(Bot.class);
 	
-	public static Logger logger = LoggerFactory.getLogger(Bot.class);
-	
+	public static final String brainURL = "http://api.brainshop.ai/get?bid=160403&key=FFFNOBQEMnANoVn1&uid=[uid]&msg=[msg]";
+	public static final String Prefix = "c?";
 	public static final String Callerphone = "<:CallerphoneEmote:899051549173637120> ";
 	public static final String ThumbsUp = "👍";
 

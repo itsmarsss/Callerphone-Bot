@@ -16,11 +16,11 @@ import net.dv8tion.jda.api.managers.AudioManager;
 public class VCCallPairer {
 	private static final String Callerphone = Bot.Callerphone;
 	public static void onCallCommand(VoiceChannel vcchannel, Message message) {
-		Logger logger = LoggerFactory.getLogger(VCCallPairer.class);
-		String CHANNELID = message.getChannel().getId();
-		JDA jda = Bot.jda;
+		final Logger logger = LoggerFactory.getLogger(VCCallPairer.class);
+		final String CHANNELID = message.getChannel().getId();
+		final JDA jda = Bot.jda;
 		for(int i = 0; i < AudioStorage.audio.length; i++) {
-			Audio audio = AudioStorage.audio[i];
+			final Audio audio = AudioStorage.audio[i];
 			if(!audio.getConnected()) {
 				if(!audio.getCallerVCID().equals("empty")) {
 					audio.setReceiverVCID(vcchannel.getId());
@@ -76,10 +76,10 @@ public class VCCallPairer {
 	}
 
 	private static void connectTo(VoiceChannel channel, int port) {
-		Guild guild = channel.getGuild();
-		AudioManager audioManager = guild.getAudioManager();
-		CallerAudioHandler callerhandler = new CallerAudioHandler();
-		ReceiverAudioHandler receiverhandler = new ReceiverAudioHandler();
+		final Guild guild = channel.getGuild();
+		final AudioManager audioManager = guild.getAudioManager();
+		final CallerAudioHandler callerhandler = new CallerAudioHandler();
+		final ReceiverAudioHandler receiverhandler = new ReceiverAudioHandler();
 
 		callerhandler.setPort(port);
 		receiverhandler.setPort(port);

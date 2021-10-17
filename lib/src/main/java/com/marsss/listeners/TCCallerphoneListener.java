@@ -17,20 +17,20 @@ public class TCCallerphoneListener extends ListenerAdapter {
 	private static final String Callerphone = Bot.Callerphone;
 	public void onGuildMessageReceived(GuildMessageReceivedEvent event) {
 
-		Message MESSAGE = event.getMessage();
-		String MESSAGERAW = MESSAGE.getContentRaw();
-		String args[] = MESSAGERAW.toLowerCase().split("\\s+");
-		SWITCH : switch (args[0].toLowerCase()) {
+		final Message MESSAGE = event.getMessage();
+		final String MESSAGERAW = MESSAGE.getContentRaw();
+		final String args[] = MESSAGERAW.toLowerCase().split("\\s+");
+		SWITCH : switch (args[0].toLowerCase().replaceFirst(Bot.Prefix, "")) {
 
 
 
-		case "u?endchat":
+		case "endchat":
 			if(!hasCall(event.getChannel().getId())) {
 				MESSAGE.reply(Callerphone + "There is no call to end!").queue();
 				break;
 			}
 
-			JDA jda = Bot.jda;
+			final JDA jda = Bot.jda;
 
 			for(Convo c : ConvoStorage.convo) {
 				TextChannel CALLER = null;
@@ -51,8 +51,8 @@ public class TCCallerphoneListener extends ListenerAdapter {
 						RECEIVER.sendMessage(Callerphone + "The other party hung up the phone.").queue();
 					}
 					
-					String callerID = c.getCallerTCID();
-					String receiverID = c.getReceiverTCID();
+					final String callerID = c.getCallerTCID();
+					final String receiverID = c.getReceiverTCID();
 					
 					String data = "";
 					for(String m : c.getMessages())
@@ -62,11 +62,11 @@ public class TCCallerphoneListener extends ListenerAdapter {
 					
 					MESSAGE.reply(Callerphone + "You hung up the phone.").queue();
 					LocalDateTime now = LocalDateTime.now();
-					String month = String.valueOf(now.getMonthValue());
-					String day = String.valueOf(now.getDayOfMonth());
-					String hour = String.valueOf(now.getHour());
-					String minute = String.valueOf(now.getMinute());
-					String ID = month + day + hour + minute + callerID + receiverID;			
+					final String month = String.valueOf(now.getMonthValue());
+					final String day = String.valueOf(now.getDayOfMonth());
+					final String hour = String.valueOf(now.getHour());
+					final String minute = String.valueOf(now.getMinute());
+					final String ID = month + day + hour + minute + callerID + receiverID;			
 
 					final String DATA = data;
 					jda.getTextChannelById("897290511000404008").sendMessage("**ID:** " + ID).addFile(DATA.getBytes(), ID + ".txt").queue();
@@ -77,8 +77,8 @@ public class TCCallerphoneListener extends ListenerAdapter {
 						CALLER.sendMessage(Callerphone + "The other party hung up the phone.").queue();
 					}
 					
-					String callerID = c.getCallerTCID();
-					String receiverID = c.getReceiverTCID();
+					final String callerID = c.getCallerTCID();
+					final String receiverID = c.getReceiverTCID();
 					
 					String data = "";
 					for(String m : c.getMessages())
@@ -108,7 +108,7 @@ public class TCCallerphoneListener extends ListenerAdapter {
 
 
 
-		case "u?chatcall":
+		case "chatcall":
 			if(hasCall(event.getChannel().getId())) {
 				MESSAGE.reply(Callerphone + "There is already a call going on!").queue();
 				break;

@@ -19,13 +19,13 @@ public class Search {
 
 		query = query.substring(1, query.length());
 		
-		String url = "https://www.duckduckgo.com/html" + "?q=" + query;	 
+		final String url = "https://www.duckduckgo.com/html" + "?q=" + query;	 
 
-		Document doc = Jsoup.connect(url).get();
+		final Document doc = Jsoup.connect(url).get();
 
-		Elements links = doc.getElementById("links").getElementsByClass("results_links");
+		final Elements links = doc.getElementById("links").getElementsByClass("results_links");
 
-		Color COLOR = Colour.randColor();
+		final Color COLOR = Colour.randColor();
 
 		EmbedBuilder GglEmd = new EmbedBuilder()
 				.setColor(COLOR)
@@ -33,7 +33,7 @@ public class Search {
 
 		for(int i = 0; i < 3; i++) {
 			try {
-				Element currlink = links.get(i).getElementsByClass("links_main").first().getElementsByTag("a").first();
+				final Element currlink = links.get(i).getElementsByClass("links_main").first().getElementsByTag("a").first();
 
 				String title = currlink.text();
 				String snippet = links.get(i).getElementsByClass("result__snippet").first().text();

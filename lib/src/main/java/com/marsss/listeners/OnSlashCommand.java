@@ -11,8 +11,8 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 public class OnSlashCommand extends ListenerAdapter {
 	public void onSlashCommand(SlashCommandEvent event) {
 		if(event.getName().equals("clap")) {
-			String msg = event.getOption("message").getAsString();
-			String []args = msg.split("\\s+");
+			final String msg = event.getOption("message").getAsString();
+			final String []args = msg.split("\\s+");
 			event.reply(Clap.clap(args)).queue();
 			return;
 		}
@@ -23,13 +23,13 @@ public class OnSlashCommand extends ListenerAdapter {
 		}
 
 		if(event.getName().equals("colorhex")) {
-			String hex = event.getOption("hex").getAsString();
+			final String hex = event.getOption("hex").getAsString();
 			event.replyEmbeds(Colour.colorhex(hex)).queue();
 			return;
 		}
 
 		if(event.getName().equals("colorrgb")) {
-			String r = event.getOption("red").getAsString(), 
+			final String r = event.getOption("red").getAsString(), 
 					g = event.getOption("green").getAsString(), 
 					b = event.getOption("blue").getAsString();
 			event.replyEmbeds(Colour.colorrgb(r, g, b)).queue();
@@ -37,24 +37,24 @@ public class OnSlashCommand extends ListenerAdapter {
 		}
 
 		if(event.getName().equals("echo")) {
-			String msg = event.getOption("message").getAsString();
-			String []args = msg.split("\\s+");
+			final String msg = event.getOption("message").getAsString();
+			final String []args = msg.split("\\s+");
 			event.reply(Echo.echo(args)).queue();
 			return;
 		}
 
 		if(event.getName().equals("eightball")) {
-			String qst = event.getOption("question").getAsString();
+			final String qst = event.getOption("question").getAsString();
 			event.reply(EightBall.eightball(qst)).queue();
 			return;
 		}
 
 		if(event.getName().equals("pollnew")) {
-			String qst = event.getOption("question").getAsString();
+			final String qst = event.getOption("question").getAsString();
 			event.reply(event.getUser().getName() + " launched a poll:").complete();
 			event.getChannel().sendMessageEmbeds(Polls.newpoll(qst)).queue(message -> {
-				message.addReaction("✅").queue();
-				message.addReaction("❌").queue();
+				message.addReaction("âœ…").queue();
+				message.addReaction("â�Œ").queue();
 			});
 			return;
 		}
@@ -66,7 +66,7 @@ public class OnSlashCommand extends ListenerAdapter {
 		}
 
 		if(event.getName().equals("help")) {
-			String cmd = event.getOption("command").getAsString();
+			final String cmd = event.getOption("command").getAsString();
 			event.replyEmbeds(Help.help(cmd)).queue();
 			return;
 		}

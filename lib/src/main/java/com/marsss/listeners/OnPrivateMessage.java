@@ -16,14 +16,14 @@ public class OnPrivateMessage extends ListenerAdapter {
 		if(event.getAuthor().isBot()) {
 			return;
 		}
-		Logger logger = LoggerFactory.getLogger(OnPrivateMessage.class);
+		final 	Logger logger = LoggerFactory.getLogger(OnPrivateMessage.class);
 		String msg = event.getMessage().getContentRaw();
 		msg = msg.replaceAll("\\s+", "+");
 
 		
 		try {
-			URL url = new URL(Bot.brainURL.replace("[uid]", event.getChannel().getId()).replace("[msg]", msg));
-			Scanner sc = new Scanner(url.openStream());
+			final URL url = new URL(Bot.brainURL.replace("[uid]", event.getChannel().getId()).replace("[msg]", msg));
+			final Scanner sc = new Scanner(url.openStream());
 
 			String s = sc.nextLine();
 
