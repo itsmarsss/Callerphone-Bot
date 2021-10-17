@@ -10,7 +10,6 @@ import com.sedmelluq.discord.lavaplayer.track.AudioTrackInfo;
 
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
-import net.dv8tion.jda.api.requests.restaction.MessageAction;
 
 public class Queue {
 	public static void queue(GuildMessageReceivedEvent event) {
@@ -23,7 +22,7 @@ public class Queue {
 			return;
 		}
 
-		final MessageAction messageAction = MESSAGE.reply("**Current Queue:**\n");
+		final StringBuilder message = new StringBuilder("> Current Queue:\n");
 
 		int index = 0;
 		
@@ -32,18 +31,18 @@ public class Queue {
 
 			index++;
 			
-			messageAction.append("**#")
+			message.append("**#")
 			.append(String.valueOf(index) + "**")
-			.append(" `")
+			.append(" \"")
 			.append(String.valueOf(info.title))
 			.append(" by ")
 			.append(info.author)
-			.append("` [`")
+			.append("\" [\"")
 			.append(formatTime(track.getDuration()))
-			.append("`]\n");
+			.append("\"]\n");
 		}
 
-		messageAction.queue();
+		MESSAGE.reply(message.toString().getBytes(), "Queue.java").queue();
 	}
 
 	private static String formatTime(long timeInMillis) {

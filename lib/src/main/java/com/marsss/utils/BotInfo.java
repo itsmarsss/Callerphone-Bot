@@ -33,7 +33,7 @@ public class BotInfo {
 	}
 
 	public static String getHelp() {
-		return "`u?botinfo` - Get information about the bot.";
+		return "`" + Bot.Prefix + "botinfo` - Get information about the bot.";
 	}
 
 }

@@ -1,6 +1,9 @@
 package com.marsss.entertainments;
 
 import java.util.Random;
+
+import com.marsss.Bot;
+
 import java.awt.Color;
 
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -75,8 +78,8 @@ public class Colour {
 	}
 
 	public static String getHelp() {
-		return "`u?color` - Get a random color in hex and rgb value\n" +
-				"`u?colorrgb <r> <g> <b>` - Get the hex value of rgb\n" +
-				"`u?colorhex <hex>` - Get the rgb value of hex";
+		return "`" + Bot.Prefix + "color` - Get a random color in hex and rgb value\n" +
+				"`" + Bot.Prefix + "colorrgb <r> <g> <b>` - Get the hex value of rgb\n" +
+				"`" + Bot.Prefix + "colorhex <hex>` - Get the rgb value of hex";
 	}
 }

@@ -2,6 +2,8 @@ package com.marsss.entertainments;
 
 import java.util.Random;
 
+import com.marsss.Bot;
+
 public class EightBall {
 	public static String eightball(String qst){
 		String [] answerlist = new String[20];
@@ -32,7 +34,7 @@ public class EightBall {
 	}
 	
 	public static String getHelp() {
-		return "`u?8ball <hard question>` - Help you answer questions.";
+		return "`" + Bot.Prefix + "8ball <hard question>` - Help you answer questions.";
 	}
 }
 

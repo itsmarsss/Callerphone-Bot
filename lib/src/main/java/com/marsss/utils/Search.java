@@ -8,6 +8,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import com.marsss.Bot;
 import com.marsss.entertainments.Colour;
 
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -62,7 +63,7 @@ public class Search {
 	}
 
 	public static String getHelp() {
-		return "`u?search <query>` - Search for something quickly on the web with title, snippet, and link!";
+		return "`" + Bot.Prefix + "search <query>` - Search for something quickly on the web with title, snippet, and link!";
 	}
 
 }

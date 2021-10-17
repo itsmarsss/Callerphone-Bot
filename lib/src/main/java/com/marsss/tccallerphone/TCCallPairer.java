@@ -44,12 +44,12 @@ public class TCCallPairer {
 	}
 	
 	public static String callHelp() {
-		return "`u?chatcall <anon/empty>` - Chat with someone from another server with text.";
+		return "`" + Bot.Prefix + "chatcall <anon/empty>` - Chat with someone from another server with text.";
 
 	}
 
 	public static String hangupHelp() {
-		return "`u?endchat` - End a pending or existing chat.";
+		return "`" + Bot.Prefix + "endchat` - End a pending or existing chat.";
 
 	}
 	

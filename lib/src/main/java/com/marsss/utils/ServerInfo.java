@@ -3,6 +3,8 @@ package com.marsss.utils;
 import java.awt.Color;
 import java.time.format.DateTimeFormatter;
 
+import com.marsss.Bot;
+
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.MessageEmbed;
@@ -110,7 +112,7 @@ public class ServerInfo {
 	}
 
 	public static String getHelp() {
-		return "`u?serverinfo` - Get information about the server.";
+		return "`" + Bot.Prefix + "serverinfo` - Get information about the server.";
 	}
 
 }

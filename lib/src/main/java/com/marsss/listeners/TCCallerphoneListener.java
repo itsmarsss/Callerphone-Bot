@@ -20,7 +20,7 @@ public class TCCallerphoneListener extends ListenerAdapter {
 		final Message MESSAGE = event.getMessage();
 		final String MESSAGERAW = MESSAGE.getContentRaw();
 		final String args[] = MESSAGERAW.toLowerCase().split("\\s+");
-		SWITCH : switch (args[0].toLowerCase().replaceFirst(Bot.Prefix, "")) {
+		SWITCH : switch (args[0].toLowerCase().replace(Bot.Prefix, "")) {
 
 
 

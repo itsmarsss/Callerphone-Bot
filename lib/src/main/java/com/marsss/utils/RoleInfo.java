@@ -3,6 +3,8 @@ package com.marsss.utils;
 import java.awt.Color;
 import java.time.format.DateTimeFormatter;
 
+import com.marsss.Bot;
+
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
@@ -67,6 +69,6 @@ public class RoleInfo {
 	}
 
 	public static String getHelp() {
-		return "`u?roleinfo <@role/id>` - Get information about this role.";
+		return "`" + Bot.Prefix + "roleinfo <@role/id>` - Get information about this role.";
 	}
 }

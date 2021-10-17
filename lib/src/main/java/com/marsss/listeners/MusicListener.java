@@ -17,8 +17,7 @@ public class MusicListener extends ListenerAdapter {
 		
 
 		final String args[] = CONTENT.toLowerCase().split("\\s+");
-
-		switch (args[0].toLowerCase().replaceFirst(Bot.Prefix, "")) {
+		switch (args[0].toLowerCase().replace(Bot.Prefix, "")) {
 
 		case "clear":
 			Clear.clear(event);
@@ -60,15 +59,15 @@ public class MusicListener extends ListenerAdapter {
 			Marker.marker(event);
 			break;
 
-		case"setvolume":
+		case "setvolume":
 			Volume.volume(event);
 			break;
 
-		case"remove":
+		case "remove":
 			Remove.remove(event);
 			break;
 		
-		case"back":
+		case "back":
 			Back.back(event);
 			break;
 		}

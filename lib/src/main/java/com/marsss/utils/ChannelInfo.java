@@ -3,6 +3,8 @@ package com.marsss.utils;
 import java.awt.Color;
 import java.time.format.DateTimeFormatter;
 
+import com.marsss.Bot;
+
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Category;
 import net.dv8tion.jda.api.entities.MessageEmbed;
@@ -124,6 +126,6 @@ public class ChannelInfo {
 	}
 	
 	public static String getHelp() {
-		return "`u?channelinfo <#channel/id/empty>` - Get information about the channel.";
+		return "`" + Bot.Prefix + "channelinfo <#channel/id/empty>` - Get information about the channel.";
 	}
 }

@@ -80,7 +80,7 @@ public class About {
 	// }
 
 	public static String getHelp() {
-		return "`u?about` - Introduces you to this bot";
+		return "`" + Bot.Prefix + "about` - Introduces you to this bot";
 
 	}
 

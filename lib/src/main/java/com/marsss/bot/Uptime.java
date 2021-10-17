@@ -2,6 +2,8 @@ package com.marsss.bot;
 
 import java.lang.management.ManagementFactory;
 
+import com.marsss.Bot;
+
 public class Uptime {
 
 	public static String uptime() {
@@ -65,7 +67,7 @@ public class Uptime {
 	// }
 
 	public static String getHelp() {
-		return "`u?uptime` - Gets the bot's uptime.";
+		return "`" + Bot.Prefix + "uptime` - Gets the bot's uptime.";
 	}
 
 }

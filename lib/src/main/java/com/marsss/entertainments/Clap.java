@@ -1,5 +1,7 @@
 package com.marsss.entertainments;
 
+import com.marsss.Bot;
+
 public class Clap {
 
 	public static String clap(String []args) {
@@ -11,6 +13,6 @@ public class Clap {
 	}
 	
 	public static String getHelp() {
-		return "`u?clap` - Add meaning to your messages by having the 👏 emoji between every word.";
+		return "`" + Bot.Prefix + "clap` - Add meaning to your messages by having the 👏 emoji between every word.";
 	}
 }

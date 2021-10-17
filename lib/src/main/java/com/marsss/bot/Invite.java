@@ -2,6 +2,7 @@ package com.marsss.bot;
 
 import java.awt.Color;
 
+import com.marsss.Bot;
 import com.marsss.entertainments.Colour;
 
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -21,7 +22,7 @@ public class Invite {
 	}
 
 	public static String getHelp() {
-		return "`u?invite` - Get invites and links related to this bot.";
+		return "`" + Bot.Prefix + "invite` - Get invites and links related to this bot.";
 	}
 	
 }

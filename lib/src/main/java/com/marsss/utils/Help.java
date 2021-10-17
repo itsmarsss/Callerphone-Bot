@@ -252,7 +252,7 @@ public class Help {
 		}
 		
 
-		Color COLOR = Colour.randColor();
+		final Color COLOR = Colour.randColor();
 		EmbedBuilder HelpEmd = new EmbedBuilder()
 				.setTitle(TITLE)
 				.setDescription(DESC)
@@ -267,18 +267,18 @@ public class Help {
 		EmbedBuilder CateEmd = new EmbedBuilder()
 				.setColor(COLOR)
 				.setTitle("Categories")
-				.addField("Bot", "all commands related to the bot will be here, do `u?help bot` for more information", false)
-				.addField("Entertainment", "all entertainment commands will be in this category, do `u?help entertainment` for more information", false)
-				.addField("Utils", "all utility commands will be in this category, do `u?help utils` for more information", false)
-				.addField("TCUserphone", "all text call callerphone commands will be in this category, do `u?help tccall` for more information", false)
-				.addField("VCUserphone", "all voice call callerphone commands will be in this category, do `u?help vccall` for more information", false)
-				.addField("Music", "all music commands will be in this category, do `u?help music` for more information", false)
-				.setFooter("Type `u?help <category name>` to see their commands");
+				.addField("Bot", "all commands related to the bot will be here, do `" + Bot.Prefix + "help bot` for more information", false)
+				.addField("Entertainment", "all entertainment commands will be in this category, do `" + Bot.Prefix + "help entertainment` for more information", false)
+				.addField("Utils", "all utility commands will be in this category, do `" + Bot.Prefix + "help utils` for more information", false)
+				.addField("TCUserphone", "all text call callerphone commands will be in this category, do `" + Bot.Prefix + "help tccall` for more information", false)
+				.addField("VCUserphone", "all voice call callerphone commands will be in this category, do `" + Bot.Prefix + "help vccall` for more information", false)
+				.addField("Music", "all music commands will be in this category, do `" + Bot.Prefix + "help music` for more information", false)
+				.setFooter("Type `" + Bot.Prefix + "help <category name>` to see their commands");
 
 		return CateEmd.build();
 	}
 
 	public static String getHelp() {
-		return "`u?help` - help help help";
+		return "`" + Bot.Prefix + "help` - help help help";
 	}
 }

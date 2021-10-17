@@ -47,7 +47,7 @@ public class CommandListener extends ListenerAdapter {
 
 
 		// Utils
-		utils : switch(args[0].toLowerCase().replaceFirst(Bot.Prefix, "")) {
+		utils : switch(args[0].toLowerCase().replace(Bot.Prefix, "")) {
 
 
 
@@ -195,7 +195,7 @@ public class CommandListener extends ListenerAdapter {
 
 
 		// Bot
-		switch (args[0].toLowerCase().replaceFirst(Bot.Prefix, "")) {
+		switch (args[0].toLowerCase().replace(Bot.Prefix, "")) {
 
 
 
@@ -234,7 +234,7 @@ public class CommandListener extends ListenerAdapter {
 
 
 		// Entertainments
-		switch (args[0].toLowerCase().replaceFirst(Bot.Prefix, "")) {
+		switch (args[0].toLowerCase().replace(Bot.Prefix, "")) {
 
 
 

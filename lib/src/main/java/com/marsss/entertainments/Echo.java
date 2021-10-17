@@ -1,5 +1,7 @@
 package com.marsss.entertainments;
 
+import com.marsss.Bot;
+
 public class Echo {
 
 	public static String echo(String []args){
@@ -15,6 +17,6 @@ public class Echo {
 	}
 
 	public static String getHelp() {
-		return "`u?echo <arg>` - Echo your message for everyone to \"hear\"!";
+		return "`" + Bot.Prefix + "echo <arg>` - Echo your message for everyone to \"hear\"!";
 	}
 }

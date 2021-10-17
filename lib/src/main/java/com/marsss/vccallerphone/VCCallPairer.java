@@ -103,32 +103,32 @@ public class VCCallPairer {
 	}
 
 	public static String callHelp() {
-		return "`u?voicecall <anon/empty>` - Voice call someone from another server.";
+		return "`" + Bot.Prefix + "voicecall <anon/empty>` - Voice call someone from another server.";
 
 	}
 
 	public static String hangupHelp() {
-		return "`u?hangup` - Hangup a pending or existing VC call.";
+		return "`" + Bot.Prefix + "hangup` - Hangup a pending or existing VC call.";
 
 	}
 	
 	public static String muteHelp() {
-		return "`u?mute` - Mute the bot.";
+		return "`" + Bot.Prefix + "mute` - Mute the bot.";
 
 	}
 	
 	public static String unmuteHelp() {
-		return "`u?unmute` - Unmute the bot.";
+		return "`" + Bot.Prefix + "unmute` - Unmute the bot.";
 
 	}
 	
 	public static String deafenHelp() {
-		return "`u?deafen` - Deafen the bot.";
+		return "`" + Bot.Prefix + "deafen` - Deafen the bot.";
 
 	}
 	
 	public static String undeafenHelp() {
-		return "`u?undeafen` - Undeafen the bot.";
+		return "`" + Bot.Prefix + "undeafen` - Undeafen the bot.";
 
 	}
 

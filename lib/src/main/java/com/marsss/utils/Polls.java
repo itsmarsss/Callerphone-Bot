@@ -2,6 +2,7 @@ package com.marsss.utils;
 
 import java.awt.Color;
 
+import com.marsss.Bot;
 import com.marsss.entertainments.Colour;
 
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -19,6 +20,6 @@ public class Polls {
 	}
 
 	public static String getHelp() {
-		return "`u?poll <msg>` - Create a poll for server members to vote.";
+		return "`" + Bot.Prefix + "poll <msg>` - Create a poll for server members to vote.";
 	}
 }

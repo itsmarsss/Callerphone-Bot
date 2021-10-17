@@ -25,7 +25,7 @@ public class VCCallerphoneListener extends ListenerAdapter {
 		final AudioManager am = event.getGuild().getAudioManager();
 		final Guild g = event.getGuild();
 
-		SWITCH : switch (args[0].toLowerCase().replaceFirst(Bot.Prefix, "")) {
+		SWITCH : switch (args[0].toLowerCase().replace(Bot.Prefix, "")) {
 
 
 		case "hangup":

@@ -3,6 +3,8 @@ package com.marsss.utils;
 import java.awt.Color;
 import java.time.format.DateTimeFormatter;
 
+import com.marsss.Bot;
+
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
@@ -75,7 +77,7 @@ public class UserInfo {
 	}
 
 	public static String getHelp() {
-		return "`userinfo <@user/id/empty>` - Get information about this member!";
+		return "`" + Bot.Prefix + "userinfo <@user/id/empty>` - Get information about this member!";
 	}
 
 }
