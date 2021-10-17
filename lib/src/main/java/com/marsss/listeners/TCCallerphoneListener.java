@@ -14,6 +14,7 @@ import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
 public class TCCallerphoneListener extends ListenerAdapter {
+	private static final String Callerphone = Bot.Callerphone;
 	public void onGuildMessageReceived(GuildMessageReceivedEvent event) {
 
 		Message MESSAGE = event.getMessage();
@@ -25,7 +26,7 @@ public class TCCallerphoneListener extends ListenerAdapter {
 
 		case "u?endchat":
 			if(!hasCall(event.getChannel().getId())) {
-				MESSAGE.reply(Bot.Userphone + "There is no call to end!").queue();
+				MESSAGE.reply(Callerphone + "There is no call to end!").queue();
 				break;
 			}
 
@@ -47,7 +48,7 @@ public class TCCallerphoneListener extends ListenerAdapter {
 
 				if(CALLER.getId().equals(event.getChannel().getId())) {
 					if(RECEIVER != null) {
-						RECEIVER.sendMessage(Bot.Userphone + "The other party hung up the phone.").queue();
+						RECEIVER.sendMessage(Callerphone + "The other party hung up the phone.").queue();
 					}
 					
 					String callerID = c.getCallerTCID();
@@ -59,7 +60,7 @@ public class TCCallerphoneListener extends ListenerAdapter {
 					
 					c.resetMessage();
 					
-					MESSAGE.reply(Bot.Userphone + "You hung up the phone.").queue();
+					MESSAGE.reply(Callerphone + "You hung up the phone.").queue();
 					LocalDateTime now = LocalDateTime.now();
 					String month = String.valueOf(now.getMonthValue());
 					String day = String.valueOf(now.getDayOfMonth());
@@ -73,7 +74,7 @@ public class TCCallerphoneListener extends ListenerAdapter {
 					break SWITCH;
 				}else if(RECEIVER.getId().equals(event.getChannel().getId())) {
 					if(CALLER != null) {
-						CALLER.sendMessage(Bot.Userphone + "The other party hung up the phone.").queue();
+						CALLER.sendMessage(Callerphone + "The other party hung up the phone.").queue();
 					}
 					
 					String callerID = c.getCallerTCID();
@@ -85,7 +86,7 @@ public class TCCallerphoneListener extends ListenerAdapter {
 					
 					c.resetMessage();
 					
-					MESSAGE.reply(Bot.Userphone + "You hung up the phone.").queue();
+					MESSAGE.reply(Callerphone + "You hung up the phone.").queue();
 					LocalDateTime now = LocalDateTime.now();
 					String month = String.valueOf(now.getMonthValue());
 					String day = String.valueOf(now.getDayOfMonth());
@@ -102,14 +103,14 @@ public class TCCallerphoneListener extends ListenerAdapter {
 
 
 
-			MESSAGE.reply(Bot.Userphone + "I was not able to find the call...").queue();
+			MESSAGE.reply(Callerphone + "I was not able to find the call...").queue();
 			break;
 
 
 
 		case "u?chatcall":
 			if(hasCall(event.getChannel().getId())) {
-				MESSAGE.reply(Bot.Userphone + "There is already a call going on!").queue();
+				MESSAGE.reply(Callerphone + "There is already a call going on!").queue();
 				break;
 			}
 

@@ -8,6 +8,7 @@ import net.dv8tion.jda.api.entities.MessageEmbed;
 import com.marsss.Bot;
 import com.marsss.bot.*;
 import com.marsss.entertainments.*;
+import com.marsss.tccallerphone.*;
 import com.marsss.vccallerphone.*;
 
 public class Help {
@@ -56,8 +57,17 @@ public class Help {
 					+ Help.getHelp() + "\n"
 					+ Polls.getHelp() + "\n"
 					+ RoleInfo.getHelp() + "\n"
+					+ Search.getHelp() + "\n"
 					+ ServerInfo.getHelp() + "\n"
 					+ UserInfo.getHelp();
+			break;
+
+
+
+		case "tccall":
+			TITLE = "TCCall Commands";
+			DESC = TCCallPairer.callHelp() + "\n"
+					+ TCCallPairer.hangupHelp();
 			break;
 
 
@@ -65,10 +75,19 @@ public class Help {
 		case "vccall":
 			TITLE = "VCCall Commands";
 			DESC = VCCallPairer.callHelp() + "\n"
-					+ VCCallPairer.hangupHelp();
+					+ VCCallPairer.hangupHelp() + "\n"
+					+ VCCallPairer.muteHelp() + "\n"
+					+ VCCallPairer.unmuteHelp() + "\n"
+					+ VCCallPairer.deafenHelp() + "\n"
+					+ VCCallPairer.undeafenHelp();
 			break;
 
 
+			
+		case "music":
+			TITLE = "Music Commands";
+			DESC = "there are loads hun";
+			break;
 
 		}
 
@@ -153,6 +172,10 @@ public class Help {
 			TITLE = "Poll";
 			DESC = Polls.getHelp();
 			break;
+		case "search":
+			TITLE = "Search";
+			DESC = Search.getHelp() + "\nWe use Duckduckgo, so [here](https://help.duckduckgo.com/duckduckgo-help-pages/results/syntax/) are the syntax for searching!";
+			break;
 		case "roleinfo":
 			TITLE = "Roleinfo";
 			DESC = RoleInfo.getHelp();
@@ -172,26 +195,62 @@ public class Help {
 
 
 
-		// Userphone
+		// Voicephone
 
 		switch(name) {
 
 
 
-		case "call":
-			TITLE = "Call";
+		case "voicecall":
+			TITLE = "voiceCall";
 			DESC = VCCallPairer.callHelp();
 			break;
 		case "hangup":
 			TITLE = "Hangup";
 			DESC = VCCallPairer.hangupHelp();
 			break;
+		case "mute":
+			TITLE = "Mute";
+			DESC = VCCallPairer.muteHelp();
+			break;
+		case "unmute":
+			TITLE = "Unmute";
+			DESC = VCCallPairer.unmuteHelp();
+			break;
+		case "deafen":
+			TITLE = "Deafen";
+			DESC = VCCallPairer.deafenHelp();
+			break;
+		case "undeafen":
+			TITLE = "Undeafen";
+			DESC = VCCallPairer.undeafenHelp();
+			break;
 
-			
-			
+
 		}
 
 
+		
+		
+		// Textphone
+		
+		switch(name) {
+
+
+
+		case "chatcall":
+			TITLE = "Chatcall";
+			DESC = TCCallPairer.callHelp();
+			break;
+		case "endchat":
+			TITLE = "Endchat";
+			DESC = TCCallPairer.hangupHelp();
+			break;
+
+
+
+		}
+		
 
 		Color COLOR = Colour.randColor();
 		EmbedBuilder HelpEmd = new EmbedBuilder()
@@ -211,13 +270,15 @@ public class Help {
 				.addField("Bot", "all commands related to the bot will be here, do `u?help bot` for more information", false)
 				.addField("Entertainment", "all entertainment commands will be in this category, do `u?help entertainment` for more information", false)
 				.addField("Utils", "all utility commands will be in this category, do `u?help utils` for more information", false)
-				.addField("VCUserphone", "all voice call userphone commands will be in this category, do `u?help vccall` for more information", false)
+				.addField("TCUserphone", "all text call callerphone commands will be in this category, do `u?help tccall` for more information", false)
+				.addField("VCUserphone", "all voice call callerphone commands will be in this category, do `u?help vccall` for more information", false)
+				.addField("Music", "all music commands will be in this category, do `u?help music` for more information", false)
 				.setFooter("Type `u?help <category name>` to see their commands");
 
 		return CateEmd.build();
 	}
 
 	public static String getHelp() {
-		return "`help` - help help help";
+		return "`u?help` - help help help";
 	}
 }

@@ -1,5 +1,6 @@
 package com.marsss.listeners;
 
+import java.io.IOException;
 import java.util.List;
 
 import com.marsss.Bot;
@@ -17,7 +18,7 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
 public class CommandListener extends ListenerAdapter {
 	public void onGuildMessageReceived(GuildMessageReceivedEvent event) {
-		
+
 		if(!event.getChannel().canTalk())
 			return;
 
@@ -33,17 +34,17 @@ public class CommandListener extends ListenerAdapter {
 			if(MEMBER.getUser().isBot())
 				return;
 
-		}catch(NullPointerException npe) {}
+		}catch(Exception e) {}
+
+		if(CONTENT.startsWith("<@!" + Bot.jda.getSelfUser().getId() + ">")) {
+			MESSAGE.reply("My prefix is `u?`, do `u?help` for a list of commands!").queue();
+			return;
+		}
 
 		if(!args[0].toLowerCase().startsWith("u?"))
 			return;
 
-		if(CONTENT.trim().equals("<@" + Bot.jda.getSelfUser().getId() + ">")) {
-			MESSAGE.reply("My prefix is `u?`, do `u?help` for a list of commands!").queue();
-			return;
-		}
-		
-		
+
 		// Utils
 		utils : switch(args[0].toLowerCase()) {
 
@@ -63,6 +64,23 @@ public class CommandListener extends ListenerAdapter {
 			MESSAGE.replyEmbeds(BotInfo.botinfo()).queue();
 			break;
 
+			
+			
+		case "u?search":
+			
+			if(CONTENT.substring(8, CONTENT.length()).isBlank()) {
+				MESSAGE.reply("Please enter a search query!").queue();
+				break;
+			}
+			
+			try {
+				MESSAGE.replyEmbeds(Search.search(CONTENT.substring(8, CONTENT.length()))).queue();
+				break;
+			} catch (IOException e1) {
+				e1.printStackTrace();
+				MESSAGE.reply("Error getting links").queue();
+				break;
+			}
 
 
 		case "u?channelinfo":
@@ -157,11 +175,11 @@ public class CommandListener extends ListenerAdapter {
 
 
 		case "u?poll":
-			CONTENT = CONTENT.replace("u?poll ", "");
+			CONTENT = CONTENT.substring(7, CONTENT.length());
 			event.getChannel().sendMessage(event.getAuthor().getName() + " launched a poll:").complete();
 			event.getChannel().sendMessageEmbeds(Polls.newpoll(CONTENT)).queue(message -> {
 				message.addReaction("✅").queue();
-				message.addReaction("❌").queue();
+				message.addReaction("❎").queue();
 			});
 			break;
 
@@ -234,9 +252,12 @@ public class CommandListener extends ListenerAdapter {
 
 
 		case "u?colorrgb":
+			if(args.length < 4) {
+				MESSAGE.reply("Please provide r g b values").queue();
+				break;
+			}
 			MESSAGE.replyEmbeds(Colour.colorrgb(args[1], args[2], args[3])).queue();
 			break;
-
 
 
 
@@ -248,8 +269,12 @@ public class CommandListener extends ListenerAdapter {
 
 
 		case "u?8ball":
-			CONTENT = CONTENT.replace("u?8ball ", "");
-			MESSAGE.reply(EightBall.eightball(CONTENT)).queue();
+			String qst = CONTENT.substring(7, CONTENT.length()).trim();
+			if(!qst.isBlank()) {
+				MESSAGE.reply(EightBall.eightball(qst)).queue();
+				break;
+			}
+			MESSAGE.reply("Please specify a question!").queue();
 			break;
 
 

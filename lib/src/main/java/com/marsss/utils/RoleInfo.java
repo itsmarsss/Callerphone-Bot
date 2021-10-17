@@ -48,24 +48,25 @@ public class RoleInfo {
 
 		EmbedBuilder RleInfEmd = new EmbedBuilder()
 				.setColor(COLOR)
-				.setDescription("🗂 **Role information for " + role.getAsMention() + ":**")
+				.setDescription("📝 **Role information for " + role.getAsMention() + ":**")
 				.addField("Name", NAME, false)
-				.addField("ID", ID, false)
 				.addField("Permissions", PERMISSIONS, false)
 				.addField("Members With Role", MEMBERS_WITH_ROLE, false)
 				.addField("Creation Date", DATE_CREATED, false)
 				.addField("Position", POSITION, false)
-				.addField("Is Hoisted", ISHOISTED, true)
-				.addField("Is Managed", ISMANAGED, true)
-				.addBlankField(false)
-				.addField("Is Mentionable", ISMENTIONABLE, true)
-				.addField("Is Public Role", ISPUBLICROLE, true);
+				.addField("Apart from online", ISHOISTED, true)
+				.addField("Integration", ISMANAGED, true)
+				.addField(" ", " ", true)
+				.addField("Mentionable", ISMENTIONABLE, true)
+				.addField("Public Role", ISPUBLICROLE, true)
+				.addField(" ", " ", true)
+				.setFooter("ID: " + ID);
 
 
 		return RleInfEmd.build();
 	}
 
 	public static String getHelp() {
-		return "`roleinfo <role>` - Get information about this role.";
+		return "`u?roleinfo <@role/id>` - Get information about this role.";
 	}
 }

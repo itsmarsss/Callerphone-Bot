@@ -14,7 +14,7 @@ import net.dv8tion.jda.api.entities.VoiceChannel;
 import net.dv8tion.jda.api.managers.AudioManager;
 
 public class VCCallPairer {
-
+	private static final String Callerphone = Bot.Callerphone;
 	public static void onCallCommand(VoiceChannel vcchannel, Message message) {
 		Logger logger = LoggerFactory.getLogger(VCCallPairer.class);
 		String CHANNELID = message.getChannel().getId();
@@ -52,12 +52,12 @@ public class VCCallPairer {
 					}else
 						MEMBERSCALLER = "no one :(";
 
-					jda.getTextChannelById(audio.getCallerChannelID()).sendMessage(Bot.Userphone + "Someone picked up the phone!").queue();
-					jda.getTextChannelById(audio.getCallerChannelID()).sendMessage(Bot.Userphone + "You are in a call with " + MEMBERSRECEIVER).queue();
+					jda.getTextChannelById(audio.getCallerChannelID()).sendMessage(Callerphone + "Someone picked up the phone!").queue();
+					jda.getTextChannelById(audio.getCallerChannelID()).sendMessage(Callerphone + "You are in a call with " + MEMBERSRECEIVER).queue();
 					
-					message.reply(Bot.Userphone + "Calling...").queue();
-					message.getChannel().sendMessage(Bot.Userphone + "Someone picked up the phone!").queue();
-					message.getChannel().sendMessage(Bot.Userphone + "You are in a call with " + MEMBERSCALLER).queue();
+					message.reply(Callerphone + "Calling...").queue();
+					message.getChannel().sendMessage(Callerphone + "Someone picked up the phone!").queue();
+					message.getChannel().sendMessage(Callerphone + "You are in a call with " + MEMBERSCALLER).queue();
 
 					logger.info("From VC: " + audio.getCallerVCID() + " - To VC: " + audio.getReceiverVCID());
 					logger.info("From Guild: " + jda.getVoiceChannelById(audio.getCallerChannelID()).getGuild() + " - To Guild: " + jda.getVoiceChannelById(audio.getReceiverChannelID()).getGuild());
@@ -66,12 +66,12 @@ public class VCCallPairer {
 				}else if(audio.getCallerVCID().equals("empty")) {
 					audio.setCallerVCID(vcchannel.getId());
 					audio.setCallerChannelID(CHANNELID);
-					message.reply(Bot.Userphone + "Calling...").queue();
+					message.reply(Callerphone + "Calling...").queue();
 					return;
 				}
 			}
 		}
-		message.reply(Bot.Userphone + "Hmmm, I was unable to find an open port!").queue();
+		message.reply(Callerphone + "Hmmm, I was unable to find an open port!").queue();
 		logger.warn("Port not found");
 	}
 
@@ -103,12 +103,32 @@ public class VCCallPairer {
 	}
 
 	public static String callHelp() {
-		return "`u?call` - Call someone from another server.";
+		return "`u?voicecall <anon/empty>` - Voice call someone from another server.";
 
 	}
 
 	public static String hangupHelp() {
-		return "`u?hangup` - Hangup a pending call or existing call.";
+		return "`u?hangup` - Hangup a pending or existing VC call.";
+
+	}
+	
+	public static String muteHelp() {
+		return "`u?mute` - Mute the bot.";
+
+	}
+	
+	public static String unmuteHelp() {
+		return "`u?unmute` - Unmute the bot.";
+
+	}
+	
+	public static String deafenHelp() {
+		return "`u?deafen` - Deafen the bot.";
+
+	}
+	
+	public static String undeafenHelp() {
+		return "`u?undeafen` - Undeafen the bot.";
 
 	}
 

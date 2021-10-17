@@ -34,10 +34,14 @@ import net.dv8tion.jda.api.utils.cache.CacheFlag;
 
 public class Bot {
 
+	public static String brainURL = "http://api.brainshop.ai/get?bid=160403&key=FFFNOBQEMnANoVn1&uid=[uid]&msg=[msg]";
+	
 	public static Logger logger = LoggerFactory.getLogger(Bot.class);
 	
-	public static final String Userphone = "<:CallerphoneBot:892780263136960522>";
+	public static final String Callerphone = "<:CallerphoneEmote:899051549173637120> ";
+	public static final String ThumbsUp = "👍";
 
+	
 	public static JDA jda;
 	public static final String ANSI_RESET = "\u001B[0m";
 	public static final String ANSI_BLACK = "\u001B[30m";
@@ -70,11 +74,15 @@ public class Bot {
 			jda.addEventListener(new CommandListener());
 			jda.addEventListener(new OnOtherEvent());
 			jda.addEventListener(new OnSlashCommand());
+			jda.addEventListener(new OnPrivateMessage());
 			jda.addEventListener(new TCCallerphoneListener());
 			jda.addEventListener(new VCCallerphoneListener());
 			jda.addEventListener(new OnMuted());
 			jda.addEventListener(new OnDeafened());
 			jda.addEventListener(new OnDisconnection());
+			jda.addEventListener(new MusicListener());
+			
+			
 			
 			for(int i = 0; i < ConvoStorage.convo.length; i++) {
 				ConvoStorage.convo[i] = new Convo(new ConcurrentLinkedQueue<>(), "empty", "", false);
@@ -86,6 +94,8 @@ public class Bot {
 			}
 
 			jda.awaitReady();
+			
+			jda.getPresence().setActivity(Activity.watching("u?help | have fun"));
 
 			System.out.println("Server List: ");
 			for(Guild g : jda.getGuilds()) {
@@ -107,7 +117,7 @@ public class Bot {
 
 		//jda.upsertCommand(new CommandData("ping", "Get the my ping")).queue();
 
-		//		jda.upsertCommand(new CommandData("help", "Learn more about my comamnds"))
+		//		jda.upsertCommand(new CommandData("help", "Learn more about my commands"))
 		//		.addOptions(new OptionData(OptionType.STRING, "command", "The command you want to learn more about").setRequired(true))
 		//		.queue();
 

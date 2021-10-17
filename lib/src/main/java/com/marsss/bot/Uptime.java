@@ -31,6 +31,32 @@ public class Uptime {
 
 		return "I've been online for " + UPTIME;
 	}
+	
+	public static String uptimeabt() {
+
+		// https://github.com/DV8FromTheWorld/Yui/blob/master/src/main/java/net/dv8tion/discord/commands/UptimeCommand.java {
+
+		final long DURATION = ManagementFactory.getRuntimeMXBean().getUptime();
+
+		final long YEARS = DURATION / 31104000000L;
+		final long MONTHS = DURATION / 2592000000L % 12;
+		final long DAYS = DURATION / 86400000L % 30;
+		final long HOURS = DURATION / 3600000L % 24;
+		final long MINUTES = DURATION / 60000L % 60;
+		final long SECONDS = DURATION / 1000L % 60;
+
+		String UPTIME = (YEARS == 0 ? "" : YEARS + "y ") + 
+				(MONTHS == 0 ? "" : MONTHS + "M ") + 
+				(DAYS == 0 ? "" : DAYS + "d ") + 
+				(HOURS == 0 ? "" : HOURS + "h ") + 
+				(MINUTES == 0 ? "" : MINUTES + "m ") + 
+				(SECONDS == 0 ? "" : SECONDS + "s ");
+
+		UPTIME = replaceLast(UPTIME, ", ", "");
+		UPTIME = replaceLast(UPTIME, ",", " and");
+
+		return UPTIME;
+	}
 
 	private static String replaceLast(final String text, final String regex, final String replacement) {
 		return text.replaceFirst("(?s)(.*)" + regex, "$1" + replacement);

@@ -3,8 +3,6 @@ package com.marsss.utils;
 import java.awt.Color;
 import java.time.format.DateTimeFormatter;
 
-import com.marsss.entertainments.Colour;
-
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Category;
 import net.dv8tion.jda.api.entities.MessageEmbed;
@@ -14,7 +12,6 @@ import net.dv8tion.jda.api.entities.VoiceChannel;
 public class ChannelInfo {
 
 	public static MessageEmbed textchannelinfo(TextChannel chnl) {
-		Color COLOR = Colour.randColor();
 		String NAME = chnl.getName();
 		String TOPIC = chnl.getTopic();
 		String TYPE = chnl.getType().name();
@@ -40,25 +37,24 @@ public class ChannelInfo {
 		}
 
 		EmbedBuilder ChnlInfEmd = new EmbedBuilder()
-				.setColor(COLOR)
-				.setDescription("🗂 **Channel information for " + chnl.getAsMention() + ":**")
+				.setColor(Color.cyan)
+				.setDescription("🗨️ **Channel information for " + chnl.getAsMention() + ":**")
 				.addField("Name", NAME, false)
-				.addField("Topic", TOPIC, false)
-				.addField("Type", TYPE, false)
-				.addField("Slowmode", SLOWMODE + "s", false)
-				.addField("ID", ID, false)
-				.addField("Creation Date", DATE_CREATED, false)
-				.addField("Parent", PARENT, false)
-				.addField("Position", POSITION, false)
-				.addField("Is News", ISNEWS, true)
-				.addField("Is NSFW", ISNSFW, true)
-				.addField("Is Synced", ISSYNCED, true);
+				.addField("Topic", TOPIC, true)
+				.addField("Type", TYPE, true)
+				.addField("Slowmode", SLOWMODE + "s", true)
+				.addField("Creation Date", DATE_CREATED, true)
+				.addField("Parent", PARENT, true)
+				.addField("Position", POSITION, true)
+				.addField("News", ISNEWS, true)
+				.addField("NSFW", ISNSFW, true)
+				.addField("Synced", ISSYNCED, true)
+				.setFooter("ID: " + ID);
 
 		return ChnlInfEmd.build();
 	}
 
 	public static MessageEmbed voicechannelinfo(VoiceChannel chnl) {
-		Color COLOR = Colour.randColor();
 		String NAME = chnl.getName();
 		String TYPE = String.valueOf(chnl.getType());
 		String BITRATE = String.valueOf(chnl.getBitrate());
@@ -83,24 +79,23 @@ public class ChannelInfo {
 		}
 
 		EmbedBuilder ChnlInfEmd = new EmbedBuilder()
-				.setColor(COLOR)
-				.setDescription("🗂 **Channel information for " + chnl.getAsMention() + ":**")
+				.setColor(Color.cyan)
+				.setDescription("📻 **Channel information for " + chnl.getAsMention() + ":**")
 				.addField("Name", NAME, false)
 				.addField("Type", TYPE, false)
-				.addField("Bitrate", BITRATE + "kbps", false)
-				.addField("Region", REGION, false)
-				.addField("User Limit", USERLIMIT, false)
-				.addField("ID", ID, false)
+				.addField("Bitrate", BITRATE + "kbps", true)
+				.addField("Region", REGION, true)
+				.addField("User Limit", USERLIMIT, true)
 				.addField("Creation Date", DATE_CREATED, false)
-				.addField("Parent", PARENT, false)
-				.addField("Position", POSITION, false)
-				.addField("Is Synced", ISSYNCED, false);
+				.addField("Parent", PARENT, true)
+				.addField("Position", POSITION, true)
+				.addField("Synced", ISSYNCED, true)
+				.setFooter("ID: " + ID);
 
 		return ChnlInfEmd.build();
 	}
 	
 	public static MessageEmbed categorychannelinfo(Category chnl) {
-		Color COLOR = Colour.randColor();
 		String NAME = chnl.getName();
 		String TYPE = String.valueOf(chnl.getType());
 		String TEXTCHANNELS = String.valueOf(chnl.getTextChannels().size());
@@ -115,20 +110,20 @@ public class ChannelInfo {
 
 
 		EmbedBuilder ChnlInfEmd = new EmbedBuilder()
-				.setColor(COLOR)
-				.setDescription("🗂 **Category information for " + chnl.getAsMention() + ":**")
+				.setColor(Color.cyan)
+				.setDescription("📁 **Category information for " + chnl.getAsMention() + ":**")
 				.addField("Name", NAME, false)
-				.addField("Type", TYPE, false)
-				.addField("TextChannels", TEXTCHANNELS, false)
-				.addField("VoiceChannels", VOICECHANNELS, false)
-				.addField("ID", ID, false)
+				.addField("Type", TYPE, true)
+				.addField("TextChannels", TEXTCHANNELS, true)
+				.addField("VoiceChannels", VOICECHANNELS, true)
 				.addField("Creation Date", DATE_CREATED, false)
-				.addField("Position", POSITION, false);
+				.addField("Position", POSITION, false)
+				.setFooter("ID: " + ID);
 
 		return ChnlInfEmd.build();
 	}
 	
 	public static String getHelp() {
-		return "`channelinfo <channel>` - Get information about the channel.";
+		return "`u?channelinfo <#channel/id/empty>` - Get information about the channel.";
 	}
 }

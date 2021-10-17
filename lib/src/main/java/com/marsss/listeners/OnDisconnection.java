@@ -12,6 +12,7 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.managers.AudioManager;
 
 public class OnDisconnection extends ListenerAdapter {
+	private static final String Callerphone = Bot.Callerphone;
 	public void onGuildVoiceLeave(GuildVoiceLeaveEvent event) {
 		if(!VCCallerphoneListener.hasCall(event.getGuild().getId())) {
 			return;
@@ -65,10 +66,10 @@ public class OnDisconnection extends ListenerAdapter {
 				if(RECEIVER != null) {
 					AudioManager RECEIVERAM = RECEIVER.getAudioManager();
 					RECEIVERAM.closeAudioConnection();
-					jda.getTextChannelById(a.getReceiverChannelID()).sendMessage(Bot.Userphone + "The other party hung up the phone. (" + S + " on the other server)").queue();
+					jda.getTextChannelById(a.getReceiverChannelID()).sendMessage(Callerphone + "The other party hung up the phone. (" + S + " on the other server)").queue();
 				}
 
-				jda.getTextChannelById(a.getCallerChannelID()).sendMessage(Bot.Userphone + "You hung up the phone. (" + S + ")").queue();
+				jda.getTextChannelById(a.getCallerChannelID()).sendMessage(Callerphone + "You hung up the phone. (" + S + ")").queue();
 				a.resetAudio();
 				return;
 			}else if(RECEIVER.getId().equals(g.getId())) {
@@ -78,10 +79,10 @@ public class OnDisconnection extends ListenerAdapter {
 				if(CALLER != null) {
 					AudioManager CALLERAM = CALLER.getAudioManager();
 					CALLERAM.closeAudioConnection();
-					jda.getTextChannelById(a.getCallerChannelID()).sendMessage(Bot.Userphone + "The other party hung up the phone. (" + S + " on the other server)").queue();
+					jda.getTextChannelById(a.getCallerChannelID()).sendMessage(Callerphone + "The other party hung up the phone. (" + S + " on the other server)").queue();
 				}
 
-				jda.getTextChannelById(a.getReceiverChannelID()).sendMessage(Bot.Userphone + "You hung up the phone. (" + S + ")").queue();
+				jda.getTextChannelById(a.getReceiverChannelID()).sendMessage(Callerphone + "You hung up the phone. (" + S + ")").queue();
 				a.resetAudio();
 			}
 		}

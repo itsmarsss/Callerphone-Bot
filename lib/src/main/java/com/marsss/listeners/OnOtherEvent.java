@@ -24,15 +24,16 @@ public class OnOtherEvent extends ListenerAdapter{
 	}
 
 	public void onResumed(ResumedEvent event)  {
+		TextChannel CHANNEL = event.getJDA().getTextChannelById("852338750519640116");
+		EmbedBuilder Emd = new EmbedBuilder().setColor(Color.RED).setTitle("Disconnected");
+		
+		disconnectCount++;
 		logger.warn("Bot disconnected for: " + 
 				(OffsetDateTime.now().getHour() - timeDisconnected.getHour())  + " hour(s) " +
 				(OffsetDateTime.now().getMinute() - timeDisconnected.getMinute()) + " minute(s) " +
 				(OffsetDateTime.now().getSecond() - timeDisconnected.getSecond()) + " second(s) and " +
-				(timeDisconnected.getNano() /1000000) + "\n" + disconnectCount + "times!");
+				(timeDisconnected.getNano() /1000000) + " | " + disconnectCount + " time(s)!");
 		
-		TextChannel CHANNEL = event.getJDA().getTextChannelById("852338750519640116");
-		EmbedBuilder Emd = new EmbedBuilder().setColor(Color.RED).setTitle("Disconnected");
-		disconnectCount++;
 		Emd.setDescription("The bot disconnected for " +
 				(OffsetDateTime.now().getHour() - timeDisconnected.getHour())  + " hour(s) " +
 				(OffsetDateTime.now().getMinute() - timeDisconnected.getMinute()) + " minute(s) " +

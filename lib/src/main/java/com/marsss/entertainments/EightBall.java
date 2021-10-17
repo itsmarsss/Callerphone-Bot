@@ -8,7 +8,7 @@ public class EightBall {
 		answerlist[0] = "It is certain.";
 		answerlist[1] = "It is decidedly so.";
 		answerlist[2] = "Without a doubt.";
-		answerlist[3] = "Yes � definitely.";
+		answerlist[3] = "Yes – definitely.";
 		answerlist[4] = "You may rely on it.";
 		answerlist[5] = "As I see it, yes.";
 		answerlist[6] = "Most likely.";
@@ -28,11 +28,11 @@ public class EightBall {
 		Random rand = new Random();
 		int ANSWER = rand.nextInt(answerlist.length);
 
-		return "Answer to `" + qst + "` is... " + answerlist[ANSWER];
+		return "🎱 Answer to `" + qst + "` is... " + answerlist[ANSWER];
 	}
 	
 	public static String getHelp() {
-		return "`u?8ball <question>` - Help you answer questions.";
+		return "`u?8ball <hard question>` - Help you answer questions.";
 	}
 }
 

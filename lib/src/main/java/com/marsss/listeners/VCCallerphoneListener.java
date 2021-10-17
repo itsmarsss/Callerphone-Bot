@@ -9,18 +9,23 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.GuildVoiceState;
+import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.managers.AudioManager;
 
 public class VCCallerphoneListener extends ListenerAdapter {
+	private static final String Callerphone = Bot.Callerphone;
 	public void onGuildMessageReceived(GuildMessageReceivedEvent event) {
 
 		Message MESSAGE = event.getMessage();
 		String args[] = MESSAGE.getContentRaw().toLowerCase().split("\\s+");
-		SWITCH : switch (args[0].toLowerCase()) {
+		Member selfmember = event.getGuild().getSelfMember();
+		AudioManager am = event.getGuild().getAudioManager();
+		Guild g = event.getGuild();
 
+		SWITCH : switch (args[0].toLowerCase()) {
 
 
 		case "u?hangup":
@@ -29,18 +34,17 @@ public class VCCallerphoneListener extends ListenerAdapter {
 			if(event.getMember().getVoiceState().inVoiceChannel()) {
 				VC = event.getMember().getVoiceState().getChannel().getId();
 			}else {
-				MESSAGE.reply(Bot.Userphone + "You are not in the call channel.").queue();
+				MESSAGE.reply(Callerphone + "You are not in the call channel.").queue();
 				return;
 			}
-			Guild g = event.getGuild();
 
 			if(!hasCall(g.getId())) {
-				MESSAGE.reply(Bot.Userphone + "There is no call in this server.").queue();
+				MESSAGE.reply(Callerphone + "There is no call in this server.").queue();
 				break;
 			}
 
 			if(!inCallChannel(VC)) {
-				MESSAGE.reply(Bot.Userphone + "You are not in the call channel.").queue();
+				MESSAGE.reply(Callerphone + "You are not in the call channel.").queue();
 				break;
 			}
 
@@ -70,10 +74,10 @@ public class VCCallerphoneListener extends ListenerAdapter {
 					if(RECEIVER != null) {
 						AudioManager RECEIVERAM = RECEIVER.getAudioManager();
 						RECEIVERAM.closeAudioConnection();
-						jda.getTextChannelById(a.getReceiverChannelID()).sendMessage(Bot.Userphone + "The other party hung up the phone.").queue();
+						jda.getTextChannelById(a.getReceiverChannelID()).sendMessage(Callerphone + "The other party hung up the phone.").queue();
 					}
 
-					MESSAGE.reply(Bot.Userphone + "You hung up the phone.").queue();
+					MESSAGE.reply(Callerphone + "You hung up the phone.").queue();
 					a.resetAudio();
 					break SWITCH;
 				}else if(RECEIVER.getId().equals(g.getId())) {
@@ -83,10 +87,10 @@ public class VCCallerphoneListener extends ListenerAdapter {
 					if(CALLER != null) {
 						AudioManager CALLERAM = CALLER.getAudioManager();
 						CALLERAM.closeAudioConnection();
-						jda.getTextChannelById(a.getCallerChannelID()).sendMessage(Bot.Userphone + "The other party hung up the phone.").queue();
+						jda.getTextChannelById(a.getCallerChannelID()).sendMessage(Callerphone + "The other party hung up the phone.").queue();
 					}
 
-					MESSAGE.reply(Bot.Userphone + "You hung up the phone.").queue();
+					MESSAGE.reply(Callerphone + "You hung up the phone.").queue();
 					a.resetAudio();
 					break SWITCH;
 				}
@@ -94,27 +98,27 @@ public class VCCallerphoneListener extends ListenerAdapter {
 
 
 
-			MESSAGE.reply(Bot.Userphone + "I was not able to find the call...").queue();
+			MESSAGE.reply(Callerphone + "I was not able to find the call...").queue();
 			break;
 
 
 
 		case "u?voicecall":
 			if(event.getGuild().getSelfMember().getVoiceState().inVoiceChannel()) {
-				event.getMessage().reply(Bot.Userphone + "Sorry, I am currently connected to " + event.getGuild().getSelfMember().getVoiceState().getChannel().getAsMention()).queue();
+				event.getMessage().reply(Callerphone + "Sorry, I am currently connected to " + event.getGuild().getSelfMember().getVoiceState().getChannel().getAsMention()).queue();
 				break;
 			}
 			GuildVoiceState GVS = event.getMember().getVoiceState();
 			if(!GVS.inVoiceChannel()) {
-				event.getMessage().reply(Bot.Userphone + "You have to be in a voicechannel that I have access to.").queue();
+				event.getMessage().reply(Callerphone + "You have to be in a voicechannel that I have access to.").queue();
 				break;
 			}
 			if(!event.getGuild().getSelfMember().hasPermission(GVS.getChannel(), Permission.VOICE_CONNECT)) {
-				event.getMessage().reply(Bot.Userphone + "I do not have access to " + GVS.getChannel().getAsMention()).queue();
+				event.getMessage().reply(Callerphone + "I do not have access to " + GVS.getChannel().getAsMention()).queue();
 				break;
 			}
 			if(!event.getGuild().getSelfMember().hasPermission(GVS.getChannel(), Permission.VOICE_SPEAK)) {
-				event.getMessage().reply(Bot.Userphone + "I do not have access to speak in" + GVS.getChannel().getAsMention()).queue();
+				event.getMessage().reply(Callerphone + "I do not have access to speak in" + GVS.getChannel().getAsMention()).queue();
 				break;
 			}
 			AudioManager audioManager = event.getGuild().getAudioManager();
@@ -125,9 +129,107 @@ public class VCCallerphoneListener extends ListenerAdapter {
 			//		}
 
 			audioManager.openAudioConnection(GVS.getChannel());
-			event.getMessage().reply(Bot.Userphone + "Connected to " + GVS.getChannel().getAsMention()).queue();
+			event.getMessage().reply(Callerphone + "Connected to " + GVS.getChannel().getAsMention()).queue();
 			VCCallPairer.onCallCommand(event.getMember().getVoiceState().getChannel(), event.getMessage());
 			break;
+
+
+
+		case "u?deafen":
+			if(!selfmember.getVoiceState().inVoiceChannel()) {
+				MESSAGE.reply(Callerphone + "I am not in a voice channel.").queue();
+				break;
+			}
+
+			if(!hasCall(g.getId())) {
+				MESSAGE.reply(Callerphone + "There is no call in this server.").queue();
+				break;
+			}
+
+			if(!selfmember.getVoiceState().getChannel().getId().equals(event.getMember().getVoiceState().getChannel().getId())) {
+				MESSAGE.reply(Callerphone + "You are not in the same voice channel as me.").queue();
+				break;
+			}
+
+			if(!am.isSelfDeafened()) {
+				am.setSelfDeafened(true);
+				break;
+			}
+
+
+
+		case "u?undeafen":
+			if(!selfmember.getVoiceState().inVoiceChannel()) {
+				MESSAGE.reply(Callerphone + "I am not in a voice channel.").queue();
+				break;
+			}
+			
+			if(!hasCall(g.getId())) {
+				MESSAGE.reply(Callerphone + "There is no call in this server.").queue();
+				break;
+			}
+
+			if(!selfmember.getVoiceState().getChannel().getId().equals(event.getMember().getVoiceState().getChannel().getId())) {
+				MESSAGE.reply(Callerphone+ "You are not in the same voice channel as me.").queue();
+				break;
+			}
+
+			if(selfmember.getVoiceState().isGuildDeafened() && !selfmember.hasPermission(Permission.VOICE_DEAF_OTHERS)) {
+				MESSAGE.reply(Callerphone + "I do not have permission to undeafen!").queue();
+				break;
+			}else if(!am.isSelfDeafened()) {
+				am.setSelfDeafened(false);
+				break;
+			}
+
+
+
+		case "u?mute":
+			if(!selfmember.getVoiceState().inVoiceChannel()) {
+				MESSAGE.reply(Callerphone + "I am not in a voice channel.").queue();
+				break;
+			}
+			
+			if(!hasCall(g.getId())) {
+				MESSAGE.reply(Callerphone + "There is no call in this server.").queue();
+				break;
+			}
+
+			if(!selfmember.getVoiceState().getChannel().getId().equals(event.getMember().getVoiceState().getChannel().getId())) {
+				MESSAGE.reply(Callerphone + "You are not in the same voice channel as me.").queue();
+				break;
+			}
+
+			if(!am.isSelfMuted()) {
+				am.setSelfMuted(true);
+				break;
+			}
+
+
+
+		case "u?unmute":
+			if(!selfmember.getVoiceState().inVoiceChannel()) {
+				MESSAGE.reply(Callerphone + "I am not in a voice channel.").queue();
+				break;
+			}
+
+			if(!hasCall(g.getId())) {
+				MESSAGE.reply(Callerphone + "There is no call in this server.").queue();
+				break;
+			}
+			
+			if(!selfmember.getVoiceState().getChannel().getId().equals(event.getMember().getVoiceState().getChannel().getId())) {
+				MESSAGE.reply(Callerphone + "You are not in the same voice channel as me.").queue();
+				break;
+			}
+
+			if(selfmember.getVoiceState().isGuildDeafened() && !selfmember.hasPermission(Permission.VOICE_MUTE_OTHERS)) {
+				MESSAGE.reply(Callerphone + "I do not have permission to unmute!").queue();
+				break;
+			}else if(!am.isSelfMuted()) {
+				am.setSelfDeafened(false);
+				break;
+			}
 
 
 

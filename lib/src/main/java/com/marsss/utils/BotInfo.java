@@ -1,8 +1,10 @@
 package com.marsss.utils;
 
+import java.awt.Color;
 import java.time.format.DateTimeFormatter;
 
 import com.marsss.Bot;
+import com.marsss.entertainments.Colour;
 
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
@@ -12,6 +14,7 @@ public class BotInfo {
 
 	public static MessageEmbed botinfo() {
 		JDA jda = Bot.jda;
+		Color COLOR = Colour.randColor();
 		DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
 		String DESC = "**Tag of the bot:** " + jda.getSelfUser().getAsTag() + 
 				"\n**Avatar url:** [link](" + jda.getSelfUser().getAvatarUrl() + ")"+ 
@@ -21,6 +24,7 @@ public class BotInfo {
 				"\n**Servers:** " + jda.getGuilds().size();
 
 		EmbedBuilder BotInfo = new EmbedBuilder()
+				.setColor(COLOR)
 				.setTitle("**Bot Info**")
 				.setDescription(DESC);
 
@@ -29,7 +33,7 @@ public class BotInfo {
 	}
 
 	public static String getHelp() {
-		return "`botinfo` - Get information about the bot.";
+		return "`u?botinfo` - Get information about the bot.";
 	}
 
 }

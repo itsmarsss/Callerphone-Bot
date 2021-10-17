@@ -56,16 +56,16 @@ public class UserInfo {
 		EmbedBuilder UsrInfEmd = new EmbedBuilder()
 				.setColor(COLOR)
 				.setDescription("🗂 **User information for " + mmbr.getAsMention() + ":**")
-				.addField("Name", NAME, false)
-				.addField("Tag", TAG, false)
-				.addField("ID", ID, false)
+				.addField("Name", NAME, true)
+				.addField("Tag", TAG, true)
 				.addField("Permissions", PERMISSIONS, false)
 				.addField("Roles", ROLES, false)
-				.addField("Joined Guild", GUILD_JOIN_DATE, false)
-				.addField("Joined Discord", DISCORD_JOINED_DATE, false)
-				.addField("Avatar URL", "[link](" + AVATAR + ")", false)
-				.addField("Is Owner", ISOWNER, true)
-				.addField("Is Pending", ISPENDING, true);
+				.addField("Joined Guild", GUILD_JOIN_DATE, true)
+				.addField("Joined Discord", DISCORD_JOINED_DATE, true)
+				.addField("Avatar URL", "[link](" + AVATAR + ")", true)
+				.addField("Owner", ISOWNER, true)
+				.addField("Verifying", ISPENDING, true)
+				.setFooter("ID: " + ID);
 
 		if (AVATAR != "No Avatar") {
 			UsrInfEmd.setThumbnail(AVATAR);
@@ -75,8 +75,7 @@ public class UserInfo {
 	}
 
 	public static String getHelp() {
-		return "`userinfo` - Get information about yourself\n" +
-		"`userinfo <mention>` - Get information about this member!";
+		return "`userinfo <@user/id/empty>` - Get information about this member!";
 	}
 
 }
