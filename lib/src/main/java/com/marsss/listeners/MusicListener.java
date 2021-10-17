@@ -1,6 +1,6 @@
 package com.marsss.listeners;
 
-import com.marss.music.*;
+import com.marsss.music.*;
 
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
