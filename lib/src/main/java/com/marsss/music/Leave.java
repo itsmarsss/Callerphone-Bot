@@ -23,17 +23,26 @@ public class Leave {
 		final Member member = event.getMember();
 		final GuildVoiceState memberVoiceState = member.getVoiceState();
 
+		if (!memberVoiceState.inVoiceChannel()) {
+			MESSAGE.reply("You need to be in a voice channel for this command to work").queue();
+			return;
+		}
+
 		if (!memberVoiceState.getChannel().equals(selfVoiceState.getChannel())) {
 			MESSAGE.reply("You need to be in the same voice channel as me for this command to work").queue();
 			return;
 		}
 
 		final GuildMusicManager musicManager = PlayerManager.getInstance().getMusicManager(event.getGuild());
+		musicManager.audioPlayer.destroy();
 		musicManager.scheduler.queue.clear();
 		musicManager.scheduler.index = 0;
-		
+
 		event.getGuild().getAudioManager().closeAudioConnection();
 		event.getMessage().addReaction(Bot.ThumbsUp).queue();
-		event.getMessage().reply("Left Voice channel!").queue();
+		event.getMessage().reply("Left voice channel").queue();
+	}
+	public static String getHelp() {
+		return "`" + Bot.Prefix + "leave` - Leaves voice channel.";
 	}
 }

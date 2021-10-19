@@ -5,6 +5,7 @@ import com.marsss.music.lavaplayer.GuildMusicManager;
 import com.marsss.music.lavaplayer.PlayerManager;
 import com.marsss.utils.Help;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
+import com.sedmelluq.discord.lavaplayer.track.AudioTrackInfo;
 
 import net.dv8tion.jda.api.entities.GuildVoiceState;
 import net.dv8tion.jda.api.entities.Member;
@@ -24,7 +25,12 @@ public class Jump {
 
 		final Member member = event.getMember();
 		final GuildVoiceState memberVoiceState = member.getVoiceState();
-
+		
+        if (!memberVoiceState.inVoiceChannel()) {
+            MESSAGE.reply("You need to be in a voice channel for this command to work").queue();
+            return;
+        }
+        
 		if (!memberVoiceState.getChannel().equals(selfVoiceState.getChannel())) {
 			MESSAGE.reply("You need to be in the same voice channel as me for this command to work").queue();
 			return;
@@ -40,13 +46,19 @@ public class Jump {
 		final GuildMusicManager musicManager = PlayerManager.getInstance().getMusicManager(event.getGuild());
 		final AudioPlayer audioPlayer = musicManager.audioPlayer;
 
-		if(index < 1 || index >= musicManager.scheduler.queue.size()) {
+		if(index < 1 || index > musicManager.scheduler.queue.size()) {
 			MESSAGE.reply("Index out of bounds!").queue();
 			return;
 		}
-		audioPlayer.playTrack(musicManager.scheduler.queue.get(0));
+		audioPlayer.playTrack(musicManager.scheduler.queue.get(index));
 		MESSAGE.addReaction(Bot.ThumbsUp).queue();
 		MESSAGE.reply("Playing track `" + index + "`").queue();
-
+		if(musicManager.scheduler.announce) {
+			final AudioTrackInfo info = audioPlayer.getPlayingTrack().getInfo();
+			MESSAGE.getTextChannel().sendMessageFormat("Now playing `%s` by `%s` *(Link: <%s>)*", info.title, info.author, info.uri).queue();
+		}
+	}
+	public static String getHelp() {
+		return "`" + Bot.Prefix + "jump <track index>` - Jumps to indexed track.";
 	}
 }

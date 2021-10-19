@@ -4,7 +4,6 @@ import com.marsss.Bot;
 import com.marsss.music.lavaplayer.GuildMusicManager;
 import com.marsss.music.lavaplayer.PlayerManager;
 import com.marsss.utils.Help;
-import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackInfo;
 
 import net.dv8tion.jda.api.entities.GuildVoiceState;
@@ -25,19 +24,18 @@ public class Remove {
 
 		final Member member = event.getMember();
 		final GuildVoiceState memberVoiceState = member.getVoiceState();
-
+		
+        if (!memberVoiceState.inVoiceChannel()) {
+            MESSAGE.reply("You need to be in a voice channel for this command to work").queue();
+            return;
+        }
+        
 		if (!memberVoiceState.getChannel().equals(selfVoiceState.getChannel())) {
 			MESSAGE.reply("You need to be in the same voice channel as me for this command to work").queue();
 			return;
 		}
 
 		final GuildMusicManager musicManager = PlayerManager.getInstance().getMusicManager(event.getGuild());
-		final AudioPlayer audioPlayer = musicManager.audioPlayer;
-
-		if (audioPlayer.getPlayingTrack() == null) {
-			MESSAGE.reply("There is no track playing currently").queue();
-			return;
-		}
 
 		int index;
 
@@ -61,7 +59,6 @@ public class Remove {
 		musicManager.scheduler.queue.remove(index-1);
 		if(index <= musicManager.scheduler.index) {
 			musicManager.scheduler.index--;
-			System.out.println(musicManager.scheduler.index);
 		}
 
 		if(index == musicManager.scheduler.index+1) {
@@ -70,7 +67,8 @@ public class Remove {
 
 		MESSAGE.addReaction(Bot.ThumbsUp).queue();
 		MESSAGE.reply("Removed index `" + index + "`: `" + title + "` by `" + author + "`").queue();
-
-
+	}
+	public static String getHelp() {
+		return "`" + Bot.Prefix + "remove <track index>` - Removes the indexed track.";
 	}
 }

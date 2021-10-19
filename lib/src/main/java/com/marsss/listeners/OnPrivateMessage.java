@@ -18,8 +18,7 @@ public class OnPrivateMessage extends ListenerAdapter {
 		}
 		final 	Logger logger = LoggerFactory.getLogger(OnPrivateMessage.class);
 		String msg = event.getMessage().getContentRaw();
-		msg = msg.replaceAll("\\s+", "+");
-
+		msg = msg.replaceAll("\\s+", "%20");
 		
 		try {
 			final URL url = new URL(Bot.brainURL.replace("[uid]", event.getChannel().getId()).replace("[msg]", msg));

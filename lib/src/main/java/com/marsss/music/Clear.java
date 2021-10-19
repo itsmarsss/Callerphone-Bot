@@ -22,7 +22,12 @@ public class Clear {
 
 		final Member member = event.getMember();
 		final GuildVoiceState memberVoiceState = member.getVoiceState();
-
+		
+        if (!memberVoiceState.inVoiceChannel()) {
+            MESSAGE.reply("You need to be in a voice channel for this command to work").queue();
+            return;
+        }
+        
 		if (!memberVoiceState.getChannel().equals(selfVoiceState.getChannel())) {
 			MESSAGE.reply("You need to be in the same voice channel as me for this command to work").queue();
 			return;
@@ -31,8 +36,12 @@ public class Clear {
 
 		final GuildMusicManager musicManager = PlayerManager.getInstance().getMusicManager(event.getGuild());
 		musicManager.scheduler.queue.clear();
+		musicManager.audioPlayer.destroy();
 		musicManager.scheduler.index = 0;
 		MESSAGE.addReaction(Bot.ThumbsUp).queue();
-		MESSAGE.reply("Queue Cleared!").queue();
+		MESSAGE.reply("Queue cleared").queue();
+	}
+	public static String getHelp() {
+		return "`" + Bot.Prefix + "clear` - Clears queue.";
 	}
 }

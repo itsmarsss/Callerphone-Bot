@@ -3,6 +3,7 @@ package com.marsss.music;
 import java.util.LinkedList;
 import java.util.concurrent.TimeUnit;
 
+import com.marsss.Bot;
 import com.marsss.music.lavaplayer.GuildMusicManager;
 import com.marsss.music.lavaplayer.PlayerManager;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
@@ -28,29 +29,33 @@ public class Queue {
 		
 		for (AudioTrack track : queue) {
 			final AudioTrackInfo info = track.getInfo();
-
+			
 			index++;
 			
-			message.append("**#")
-			.append(String.valueOf(index) + "**")
+			message.append("#")
+			.append(String.valueOf(index) + ": ")
 			.append(" \"")
-			.append(String.valueOf(info.title))
+			.append(String.valueOf(info.title).replace("\"", "'"))
 			.append(" by ")
-			.append(info.author)
-			.append("\" [\"")
+			.append(info.author.replace("\"", "'"))
+			.append("\" [")
 			.append(formatTime(track.getDuration()))
-			.append("\"]\n");
+			.append("]\n");
 		}
 
 		MESSAGE.reply(message.toString().getBytes(), "Queue.java").queue();
 	}
 
-	private static String formatTime(long timeInMillis) {
-		final long hours = timeInMillis / TimeUnit.HOURS.toMillis(1);
-		final long minutes = timeInMillis / TimeUnit.MINUTES.toMillis(1);
-		final long seconds = timeInMillis % TimeUnit.MINUTES.toMillis(1) / TimeUnit.SECONDS.toMillis(1);
+	private static String formatTime(long millis) {
 
-		return String.format("%02d:%02d:%02d", hours, minutes, seconds);
+		return String.format("%02d:%02d:%02d", 
+				TimeUnit.MILLISECONDS.toHours(millis),
+				TimeUnit.MILLISECONDS.toMinutes(millis) -  
+				TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(millis)),
+				TimeUnit.MILLISECONDS.toSeconds(millis) - 
+				TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(millis))); 
 	}
-
+	public static String getHelp() {
+		return "`" + Bot.Prefix + "queue` - Shows audio player queue";
+	}
 }

@@ -9,6 +9,7 @@ import com.marsss.Bot;
 
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 
 public class About {
@@ -25,6 +26,10 @@ public class About {
 				.append("\n");
 
 		jda.getShardInfo();
+		long users = 0;
+		for(Guild g : jda.getGuilds()) {
+			users += g.getMemberCount();
+		}
 		EmbedBuilder AbtEmd = new EmbedBuilder()
 				.setAuthor("By " + jda.getUserById("841028865995964477").getAsTag(), null, jda.getUserById("841028865995964477").getAvatarUrl())
 				.setColor(Color.cyan)
@@ -40,7 +45,8 @@ public class About {
 								jda.getVoiceChannels().size() + " voice channels", true)
 
 				.addField("Users",
-						jda.getUsers().size() + " users", true)
+						users + " users\n" +
+						jda.getUsers().size() + " unique users", true)
 
 				.addField("CPU Usage",
 						(String.valueOf(ManagementFactory.getOperatingSystemMXBean().getSystemLoadAverage()).startsWith("-")) ? ("Unavailable") : (ManagementFactory.getOperatingSystemMXBean().getSystemLoadAverage() + "%") + "\n" +
@@ -54,8 +60,8 @@ public class About {
 						Uptime.uptimeabt(), true)
 				
 				.addField("Info",
-						"Made with Java <:Java:899050421572739072>" +
-				"and Java Discord Api <:JDA:899083802989695037>", false)
+						"Made in Java <:Java:899050421572739072>" +
+				" with Java Discord Api <:JDA:899083802989695037>", false)
 
 				.setFooter("One of the many bots in the sequel...");
 

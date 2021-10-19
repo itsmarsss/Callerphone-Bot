@@ -4,6 +4,7 @@ import com.marsss.Bot;
 import com.marsss.music.lavaplayer.GuildMusicManager;
 import com.marsss.music.lavaplayer.PlayerManager;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
+import com.sedmelluq.discord.lavaplayer.track.AudioTrackInfo;
 
 import net.dv8tion.jda.api.entities.GuildVoiceState;
 import net.dv8tion.jda.api.entities.Member;
@@ -23,7 +24,12 @@ public class Skip {
 
 		final Member member = event.getMember();
 		final GuildVoiceState memberVoiceState = member.getVoiceState();
-
+		
+        if (!memberVoiceState.inVoiceChannel()) {
+            MESSAGE.reply("You need to be in a voice channel for this command to work").queue();
+            return;
+        }
+        
 		if (!memberVoiceState.getChannel().equals(selfVoiceState.getChannel())) {
 			MESSAGE.reply("You need to be in the same voice channel as me for this command to work").queue();
 			return;
@@ -47,10 +53,15 @@ public class Skip {
 		
 		audioPlayer.playTrack(musicManager.scheduler.queue.get(musicManager.scheduler.index).makeClone());
 		musicManager.scheduler.index++;
-		System.out.println(musicManager.scheduler.index);
 
 		MESSAGE.addReaction(Bot.ThumbsUp).queue();
-		MESSAGE.reply("Skipped the current track").queue();
+		MESSAGE.reply("Playing next track").queue();
+		if(musicManager.scheduler.announce) {
+			final AudioTrackInfo info = audioPlayer.getPlayingTrack().getInfo();
+			MESSAGE.getTextChannel().sendMessageFormat("Now playing `%s` by `%s` *(Link: <%s>)*", info.title, info.author, info.uri).queue();
+		}
 	}
-
+	public static String getHelp() {
+		return "`" + Bot.Prefix + "skip` - Skips to next track.";
+	}
 }

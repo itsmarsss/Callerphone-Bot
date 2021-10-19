@@ -12,6 +12,7 @@ public class AudioStorage {
 		public String receiverChannelID;
 		public boolean isConnected;
 
+
 		public Audio(Queue<byte[]> caller, String callerVCID, String callerChannelID, Queue<byte[]> receiver, String receiverVCID, String receiverChannelID, boolean isConnected){
 			this.caller = caller;
 			this.callerVCID = callerVCID;

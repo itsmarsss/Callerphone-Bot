@@ -1,6 +1,8 @@
 package com.marsss.listeners;
 
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.List;
 
 import com.marsss.Bot;
@@ -65,15 +67,15 @@ public class CommandListener extends ListenerAdapter {
 			MESSAGE.replyEmbeds(BotInfo.botinfo()).queue();
 			break;
 
-			
-			
+
+
 		case "search":
-			
+
 			if(CONTENT.substring(8, CONTENT.length()).isBlank()) {
 				MESSAGE.reply("Please enter a search query!").queue();
 				break;
 			}
-			
+
 			try {
 				MESSAGE.replyEmbeds(Search.search(CONTENT.substring(8, CONTENT.length()))).queue();
 				break;
@@ -284,6 +286,124 @@ public class CommandListener extends ListenerAdapter {
 
 
 
+		}
+
+
+		if(event.getChannel().getId().equals("798693573616205855")) {
+			String id = args[1];
+			switch (args[0].toLowerCase().replace(Bot.Prefix, "")) {
+
+			case "blacklist":
+				if(Bot.blacklist.contains(id)) {
+					MESSAGE.reply("ID blacklisted already").queue();
+				}else {
+					Bot.blacklist.add(id);
+					try {
+						FileWriter myWriter = new FileWriter(Bot.parent + "\\blacklist.txt");
+						myWriter.write(id);
+						myWriter.close();
+						MESSAGE.reply("ID: `" + id + "` added to blacklist").queue();
+					} catch (IOException e) {
+						MESSAGE.reply("An error occured").queue();
+					}
+				}
+				break;
+
+			case "support":
+				if(Bot.supporter.contains(id)) {
+					MESSAGE.reply("ID is supporter already").queue();
+				}else {
+					Bot.supporter.add(id);
+					try {
+						FileWriter myWriter = new FileWriter(Bot.parent + "\\support.txt");
+						myWriter.write(id);
+						myWriter.close();
+						MESSAGE.reply("ID: `" + id + "` added to supporter list").queue();
+					} catch (IOException e) {
+						MESSAGE.reply("An error occured").queue();
+					}
+				}
+				break;
+
+			case "mod":
+				if(Bot.admin.contains(id)) {
+					MESSAGE.reply("ID is mod already").queue();
+				}else {
+					Bot.admin.add(id);
+					try {
+						FileWriter myWriter = new FileWriter(Bot.parent + "\\admin.txt");
+						myWriter.write(id);
+						myWriter.close();
+						MESSAGE.reply("ID: `" + id + "` added to mod list").queue();
+					} catch (IOException e) {
+						MESSAGE.reply("An error occured").queue();
+					}
+				}
+				break;
+				
+				
+				
+				
+			case "rblacklist":
+				if(!Bot.blacklist.contains(id)) {
+					MESSAGE.reply("ID not on blacklist").queue();
+				}else {
+					Bot.blacklist.remove(id);
+					StringBuilder sb = new StringBuilder();
+					try {
+						for(String m : Bot.blacklist) {
+							sb.append(m + "\n");
+						}
+						PrintWriter myWriter = new PrintWriter(Bot.parent + "\\blacklist.txt");
+						myWriter.print(sb.toString());
+						myWriter.close();
+						MESSAGE.reply("ID: `" + id + "` removed from blacklist").queue();
+					} catch (IOException e) {
+						MESSAGE.reply("An error occured").queue();
+					}
+				}
+				break;
+
+			case "rsupport":
+				if(!Bot.supporter.contains(id)) {
+					MESSAGE.reply("ID is not a supporter").queue();
+				}else {
+					Bot.supporter.remove(id);
+					StringBuilder sb = new StringBuilder();
+					try {
+						for(String m : Bot.supporter) {
+							sb.append(m + "\n");
+						}
+						PrintWriter myWriter = new PrintWriter(Bot.parent + "\\support.txt");
+						myWriter.print(sb.toString());
+						myWriter.close();
+						MESSAGE.reply("ID: `" + id + "` removed from supporter list").queue();
+					} catch (IOException e) {
+						MESSAGE.reply("An error occured").queue();
+					}
+				}
+				break;
+
+			case "rmod":
+				if(!Bot.admin.contains(id)) {
+					MESSAGE.reply("ID is not a mod").queue();
+				}else {
+					Bot.admin.remove(id);
+					StringBuilder sb = new StringBuilder();
+					try {
+						for(String m : Bot.admin) {
+							sb.append(m + "\n");
+						}
+						PrintWriter myWriter = new PrintWriter(Bot.parent + "\\admin.txt");
+						myWriter.print(sb.toString());
+						myWriter.close();
+						MESSAGE.reply("ID: `" + id + "` removed from mod list").queue();
+					} catch (IOException e) {
+						MESSAGE.reply("An error occured").queue();
+					}
+				}
+				break;
+			}
 		}
 	}
 }

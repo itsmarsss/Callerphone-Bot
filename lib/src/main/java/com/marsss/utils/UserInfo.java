@@ -44,8 +44,6 @@ public class UserInfo {
 				ROLES = ROLES.substring(0, 1000);
 				ROLES = ROLES.substring(0, ROLES.lastIndexOf(","));
 				ROLES = ROLES + "` + " + (mmbr.getRoles().size() - (ROLES.length() - ROLES.replaceAll("@", "").length())) + " more`";
-			}else {
-				ROLES = ROLES.substring(0, ROLES.lastIndexOf(","));
 			}
 		}else
 			ROLES = "No roles on this server.";

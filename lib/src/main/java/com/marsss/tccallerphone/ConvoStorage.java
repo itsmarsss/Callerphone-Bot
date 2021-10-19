@@ -10,12 +10,18 @@ public class ConvoStorage {
 
 		public String receiverTCID;
 		public boolean isConnected;
+		
+		public long lastMessage;
+		
+		public boolean report;
 
-		public Convo(Queue<String> messages, String callerTCID, String receiverTCID, boolean isConnected) {
+		public Convo(Queue<String> messages, String callerTCID, String receiverTCID, boolean isConnected, int lastMessage, boolean report) {
 			this.messages = messages;
 			this.callerTCID = callerTCID;
 			this.receiverTCID = receiverTCID;
 			this.isConnected = isConnected;
+			this.lastMessage = lastMessage;
+			this.report = report;
 		}
 
 		// Get
@@ -61,6 +67,7 @@ public class ConvoStorage {
 			callerTCID = "empty";
 			receiverTCID = "";
 			isConnected = false;
+			lastMessage = 0;
 		}
 	}
 	public static Convo[] convo = new Convo[10000];

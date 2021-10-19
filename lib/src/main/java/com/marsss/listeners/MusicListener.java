@@ -2,6 +2,7 @@ package com.marsss.listeners;
 
 import com.marsss.Bot;
 import com.marsss.music.*;
+import com.marsss.music.lavaplayer.PlayerManager;
 
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
@@ -34,6 +35,10 @@ public class MusicListener extends ListenerAdapter {
 		case "play":
 			Play.play(event);
 			break;
+			
+		case "playlist":
+			Playlist.playlist(event);
+			break;
 
 		case "pause":
 			Pause.pause(event);
@@ -55,11 +60,11 @@ public class MusicListener extends ListenerAdapter {
 			Skip.skip(event);
 			break;
 			
-		case "setmarker":
-			Marker.marker(event);
+		case "seek":
+			Seek.seek(event);
 			break;
 
-		case "setvolume":
+		case "volume":
 			Volume.volume(event);
 			break;
 
@@ -70,7 +75,50 @@ public class MusicListener extends ListenerAdapter {
 		case "back":
 			Back.back(event);
 			break;
+			
+		case "fastforward":
+			FastForward.fastforward(event);
+			break;
+			
+		case "rewind":
+			Rewind.rewind(event);
+			break;
+			
+		case "shuffle":
+			Shuffle.shuffle(event);
+			break;
+			
+		case "jump":
+			Jump.jump(event);
+			break;
+			
+		case "announce":
+			boolean a = PlayerManager.getInstance().getMusicManager(event.getGuild()).scheduler.announce;
+			if(a) {
+				PlayerManager.getInstance().getMusicManager(event.getGuild()).scheduler.announce = false;
+			}else {
+				PlayerManager.getInstance().getMusicManager(event.getGuild()).scheduler.announce = true;
+			}
+			MESSAGE.reply("Set announce to `" + PlayerManager.getInstance().getMusicManager(event.getGuild()).scheduler.announce + "`").queue();
+			break;
+		
+		case "loop":
+			boolean l = PlayerManager.getInstance().getMusicManager(event.getGuild()).scheduler.loop;
+			if(l) {
+				PlayerManager.getInstance().getMusicManager(event.getGuild()).scheduler.loop = false;
+			}else {
+				PlayerManager.getInstance().getMusicManager(event.getGuild()).scheduler.loop = true;
+			}
+			MESSAGE.reply("Set loop to `" + PlayerManager.getInstance().getMusicManager(event.getGuild()).scheduler.loop + "`").queue();
+			break;
+			
 		}
 
+	}
+	public static String announceHelp() {
+		return "`" + Bot.Prefix + "announce` - Toggle announce playing song.";
+	}
+	public static String loopHelp() {
+		return "`" + Bot.Prefix + "loop` - Toggle looping queue.";
 	}
 }

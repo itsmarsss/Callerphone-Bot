@@ -4,6 +4,7 @@ import com.marsss.Bot;
 import com.marsss.music.lavaplayer.GuildMusicManager;
 import com.marsss.music.lavaplayer.PlayerManager;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
+import com.sedmelluq.discord.lavaplayer.track.AudioTrackInfo;
 
 import net.dv8tion.jda.api.entities.GuildVoiceState;
 import net.dv8tion.jda.api.entities.Member;
@@ -23,7 +24,12 @@ public class Back {
 
 		final Member member = event.getMember();
 		final GuildVoiceState memberVoiceState = member.getVoiceState();
-
+		
+        if (!memberVoiceState.inVoiceChannel()) {
+            MESSAGE.reply("You need to be in a voice channel for this command to work").queue();
+            return;
+        }
+        
 		if (!memberVoiceState.inVoiceChannel()) {
 			MESSAGE.reply("You need to be in a voice channel for this command to work").queue();
 			return;
@@ -54,6 +60,13 @@ public class Back {
 		musicManager.scheduler.index--;
 		audioPlayer.playTrack(musicManager.scheduler.queue.get(musicManager.scheduler.index-1).makeClone());
 		MESSAGE.addReaction(Bot.ThumbsUp).queue();
-		MESSAGE.reply("Backed the current track").queue();
+		MESSAGE.reply("Playing previous track").queue();
+		if(musicManager.scheduler.announce) {
+			final AudioTrackInfo info = audioPlayer.getPlayingTrack().getInfo();
+			MESSAGE.getTextChannel().sendMessageFormat("Now playing `%s` by `%s` *(Link: <%s>)*", info.title, info.author, info.uri).queue();
+		}
+	}
+	public static String getHelp() {
+		return "`" + Bot.Prefix + "back` - Plays previous track.";
 	}
 }

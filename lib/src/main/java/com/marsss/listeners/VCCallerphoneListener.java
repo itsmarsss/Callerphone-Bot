@@ -24,10 +24,51 @@ public class VCCallerphoneListener extends ListenerAdapter {
 		final Member selfmember = event.getGuild().getSelfMember();
 		final AudioManager am = event.getGuild().getAudioManager();
 		final Guild g = event.getGuild();
+		
+		if(!args[0].startsWith(Bot.Prefix))
+			return;
 
 		SWITCH : switch (args[0].toLowerCase().replace(Bot.Prefix, "")) {
 
-
+		case "reportcall":
+			if(!hasCall(event.getGuild().getId())) {
+				MESSAGE.reply(Callerphone + "There isn't a call going on!").queue();
+				break;
+			}
+			for (Audio a : AudioStorage.audio) {
+				if(!a.getConnected()) {
+					break SWITCH;
+				}
+				if(a.getCallerChannelID().equals(event.getChannel().getId())) {
+					final StringBuilder members = new StringBuilder();
+					for(Member m : 
+						Bot.jda.getVoiceChannelById(a.getReceiverVCID()).getMembers()) {
+						members.append(m.getUser().getAsTag())
+						.append("(" + m.getId() + ")")
+						.append("\n");
+					}
+					Bot.jda.getTextChannelById("897290511000404008").sendMessage("**Reported users:**").addFile(members.toString().getBytes(), "reported.txt").queue();
+					MESSAGE.reply(Callerphone + "Call reported!").queue();
+					break SWITCH;
+				}
+				
+				if(a.getReceiverChannelID().equals(event.getChannel().getId())) {
+					final StringBuilder members = new StringBuilder();
+					for(Member m : 
+						Bot.jda.getVoiceChannelById(a.getReceiverVCID()).getMembers()) {
+						members.append(m.getUser().getAsTag())
+						.append("(" + m.getId() + ")")
+						.append("\n");
+					}
+					Bot.jda.getTextChannelById("897290511000404008").sendMessage("**Reported users:**").addFile(members.toString().getBytes(), "reported.txt").queue();
+					MESSAGE.reply(Callerphone + "Call reported!").queue();
+					break SWITCH;
+				}
+			}
+			MESSAGE.reply(Callerphone + "Something went wrong, couldn't report call.").queue();
+			break;
+		
+		
 		case "hangup":
 			String VC;
 
@@ -69,10 +110,14 @@ public class VCCallerphoneListener extends ListenerAdapter {
 
 				if(CALLER.getId().equals(g.getId())) {
 					final AudioManager CALLERAM = CALLER.getAudioManager();
+					CALLERAM.setSendingHandler(null);
+					CALLERAM.setReceivingHandler(null);
 					CALLERAM.closeAudioConnection();
 
 					if(RECEIVER != null) {
 						final AudioManager RECEIVERAM = RECEIVER.getAudioManager();
+						RECEIVERAM.setSendingHandler(null);
+						RECEIVERAM.setReceivingHandler(null);
 						RECEIVERAM.closeAudioConnection();
 						jda.getTextChannelById(a.getReceiverChannelID()).sendMessage(Callerphone + "The other party hung up the phone.").queue();
 					}
@@ -82,10 +127,14 @@ public class VCCallerphoneListener extends ListenerAdapter {
 					break SWITCH;
 				}else if(RECEIVER.getId().equals(g.getId())) {
 					final AudioManager RECEIVERAM = RECEIVER.getAudioManager();
+					RECEIVERAM.setSendingHandler(null);
+					RECEIVERAM.setReceivingHandler(null);
 					RECEIVERAM.closeAudioConnection();
 
 					if(CALLER != null) {
 						final AudioManager CALLERAM = CALLER.getAudioManager();
+						CALLERAM.setSendingHandler(null);
+						CALLERAM.setReceivingHandler(null);
 						CALLERAM.closeAudioConnection();
 						jda.getTextChannelById(a.getCallerChannelID()).sendMessage(Callerphone + "The other party hung up the phone.").queue();
 					}
@@ -104,33 +153,37 @@ public class VCCallerphoneListener extends ListenerAdapter {
 
 
 		case "voicecall":
+			if(Bot.blacklist.contains(event.getAuthor().getId())) {
+				MESSAGE.reply("Sorry you are blacklisted, submit an appeal at our support server").queue();
+				break;
+			}
 			if(event.getGuild().getSelfMember().getVoiceState().inVoiceChannel()) {
-				event.getMessage().reply(Callerphone + "Sorry, I am currently connected to " + event.getGuild().getSelfMember().getVoiceState().getChannel().getAsMention()).queue();
+				MESSAGE.reply(Callerphone + "Sorry, I am currently connected to " + event.getGuild().getSelfMember().getVoiceState().getChannel().getAsMention()).queue();
 				break;
 			}
 			final GuildVoiceState GVS = event.getMember().getVoiceState();
 			if(!GVS.inVoiceChannel()) {
-				event.getMessage().reply(Callerphone + "You have to be in a voicechannel that I have access to.").queue();
+				MESSAGE.reply(Callerphone + "You have to be in a voicechannel that I have access to.").queue();
 				break;
 			}
 			if(!event.getGuild().getSelfMember().hasPermission(GVS.getChannel(), Permission.VOICE_CONNECT)) {
-				event.getMessage().reply(Callerphone + "I do not have access to " + GVS.getChannel().getAsMention()).queue();
+				MESSAGE.reply(Callerphone + "I do not have access to " + GVS.getChannel().getAsMention()).queue();
 				break;
 			}
 			if(!event.getGuild().getSelfMember().hasPermission(GVS.getChannel(), Permission.VOICE_SPEAK)) {
-				event.getMessage().reply(Callerphone + "I do not have access to speak in" + GVS.getChannel().getAsMention()).queue();
+				MESSAGE.reply(Callerphone + "I do not have access to speak in" + GVS.getChannel().getAsMention()).queue();
 				break;
 			}
 			final AudioManager audioManager = event.getGuild().getAudioManager();
 
 			//		if(audioManager.isAttemptingToConnect()) {
-			//			event.getMessage().reply("I'm already trying to connect! Chill out...").queue();
+			//			MESSAGE.reply("I'm already trying to connect! Chill out...").queue();
 			//			return;
 			//		}
 
 			audioManager.openAudioConnection(GVS.getChannel());
-			event.getMessage().reply(Callerphone + "Connected to " + GVS.getChannel().getAsMention()).queue();
-			VCCallPairer.onCallCommand(event.getMember().getVoiceState().getChannel(), event.getMessage());
+			MESSAGE.reply(Callerphone + "Connected to " + GVS.getChannel().getAsMention()).queue();
+			VCCallPairer.onCallCommand(event.getMember().getVoiceState().getChannel(), MESSAGE);
 			break;
 
 
@@ -236,11 +289,11 @@ public class VCCallerphoneListener extends ListenerAdapter {
 		}
 	}
 
-	static boolean hasCall(String g) {
+	public static boolean hasCall(String g) {
 		for(Audio a : AudioStorage.audio) {
 			try {
-				if(Bot.jda.getVoiceChannelById(a.callerVCID).getGuild().getId().equals(g) || 
-						Bot.jda.getVoiceChannelById(a.receiverVCID).getGuild().getId().equals(g)) {
+				if((Bot.jda.getVoiceChannelById(a.callerVCID).getGuild().getId().equals(g) || 
+						Bot.jda.getVoiceChannelById(a.receiverVCID).getGuild().getId().equals(g)) && a.isConnected) {
 					return true;
 				}
 			}catch(Exception e) {}

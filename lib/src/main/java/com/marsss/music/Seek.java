@@ -1,5 +1,7 @@
 package com.marsss.music;
 
+import java.util.concurrent.TimeUnit;
+
 import com.marsss.Bot;
 import com.marsss.music.lavaplayer.GuildMusicManager;
 import com.marsss.music.lavaplayer.PlayerManager;
@@ -11,8 +13,8 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
-public class Rewind {
-	public static void rewind(GuildMessageReceivedEvent event) {
+public class Seek {
+	public static void seek(GuildMessageReceivedEvent event) {
 		final Member self = event.getGuild().getSelfMember();
 		final GuildVoiceState selfVoiceState = self.getVoiceState();
 		final Message MESSAGE = event.getMessage();
@@ -42,25 +44,63 @@ public class Rewind {
 			MESSAGE.reply("There is no track playing currently").queue();
 			return;
 		}
-		
-		long t;
+
+		String []time = event.getMessage().getContentRaw().toLowerCase().split("\\s+")[1].split(":");
+		// 1h2m3s123ms
+
+		int hour = 0;
+		int minute = 0;
+		int second = 0;
+
+		int count = -1;
 		try {
-			t = Math.abs(Long.parseLong(MESSAGE.getContentRaw().split("\\s+")[1]))*1000;
+			for(int i = time.length-1; i > -1; i--) {
+				count++;
+				switch (count) {
+
+				case 0:
+					second = Integer.parseInt(time[i]);
+					continue;
+				case 1:
+					minute = Integer.parseInt(time[i]);
+					continue;
+				case 2:
+					hour = Integer.parseInt(time[i]);
+					continue;
+				default:
+					MESSAGE.replyEmbeds(Help.help("seek")).queue();
+					return;
+					
+				}
+			}
 		}catch(Exception e) {
-			MESSAGE.replyEmbeds(Help.help("rewind")).queue();
+			MESSAGE.replyEmbeds(Help.help("seek")).queue();
 			return;
 		}
 
-		if(audioPlayer.getPlayingTrack().getPosition()-t < 1) {
-			MESSAGE.reply("Too many seconds").queue();
+		long position = hour*3600000 + minute*60000 + second*1000;
+
+		if(position == 0) {
+			position = 1;
+		}else if(position >= musicManager.audioPlayer.getPlayingTrack().getDuration()) {
+			MESSAGE.reply("Position `" + formatTime(position) + "` does not exist").queue();
 			return;
 		}
-		
-		audioPlayer.getPlayingTrack().setPosition(audioPlayer.getPlayingTrack().getPosition()-t);
+
+		audioPlayer.getPlayingTrack().setPosition(position);
 		MESSAGE.addReaction(Bot.ThumbsUp).queue();
-		MESSAGE.reply("Rewinded `" + t/1000 + "` seconds").queue();
+		MESSAGE.reply("Set position to `" + event.getMessage().getContentRaw().toLowerCase().split("\\s+")[1] + "`").queue();
+	}
+	private static String formatTime(long millis) {
+
+		return String.format("%02d:%02d:%02d", 
+				TimeUnit.MILLISECONDS.toHours(millis),
+				TimeUnit.MILLISECONDS.toMinutes(millis) -  
+				TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(millis)),
+				TimeUnit.MILLISECONDS.toSeconds(millis) - 
+				TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(millis))); 
 	}
 	public static String getHelp() {
-		return "`" + Bot.Prefix + "rewind <seconds>` - Rewinds a specific number of seconds on current track.";
+		return "`" + Bot.Prefix + "seek <h:m:s>` - Change the position where you want to play the track.";
 	}
 }

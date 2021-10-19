@@ -1,8 +1,14 @@
 package com.marsss;
 
 import java.awt.Color;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.net.URLDecoder;
 import java.time.OffsetDateTime;
 import java.util.EnumSet;
+import java.util.LinkedList;
 import java.util.Scanner;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -12,6 +18,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.marsss.listeners.*;
+import com.marsss.tccallerphone.Annihilator;
 import com.marsss.tccallerphone.ConvoStorage;
 import com.marsss.tccallerphone.ConvoStorage.Convo;
 import com.marsss.vccallerphone.AudioStorage;
@@ -35,6 +42,12 @@ import net.dv8tion.jda.api.utils.cache.CacheFlag;
 public class Bot {
 
 	public static final Logger logger = LoggerFactory.getLogger(Bot.class);
+
+	public static String parent;
+	
+	public static LinkedList <String> blacklist = new LinkedList<>();
+	public static LinkedList <String> supporter = new LinkedList<>();
+	public static LinkedList <String> admin = new LinkedList<>();
 	
 	public static final String brainURL = "http://api.brainshop.ai/get?bid=160403&key=FFFNOBQEMnANoVn1&uid=[uid]&msg=[msg]";
 	public static final String Prefix = "c?";
@@ -43,15 +56,7 @@ public class Bot {
 
 	
 	public static JDA jda;
-	public static final String ANSI_RESET = "\u001B[0m";
-	public static final String ANSI_BLACK = "\u001B[30m";
-	public static final String ANSI_RED = "\u001B[31m";
-	public static final String ANSI_GREEN = "\u001B[32m";
-	public static final String ANSI_YELLOW = "\u001B[33m";
-	public static final String ANSI_BLUE = "\u001B[34m";
-	public static final String ANSI_PURPLE = "\u001B[35m";
-	public static final String ANSI_CYAN = "\u001B[36m";
-	public static final String ANSI_WHITE = "\u001B[37m";
+
 	private static final EnumSet<GatewayIntent> intent = EnumSet.of(
 			GatewayIntent.GUILD_MEMBERS,
 			GatewayIntent.GUILD_MESSAGES,
@@ -85,7 +90,7 @@ public class Bot {
 			
 			
 			for(int i = 0; i < ConvoStorage.convo.length; i++) {
-				ConvoStorage.convo[i] = new Convo(new ConcurrentLinkedQueue<>(), "empty", "", false);
+				ConvoStorage.convo[i] = new Convo(new ConcurrentLinkedQueue<>(), "empty", "", false, 0, false);
 			}
 
 
@@ -95,7 +100,7 @@ public class Bot {
 
 			jda.awaitReady();
 			
-			jda.getPresence().setActivity(Activity.watching("u?help | have fun"));
+			jda.getPresence().setActivity(Activity.watching("c?help | have fun"));
 
 			System.out.println("Server List: ");
 			for(Guild g : jda.getGuilds()) {
@@ -111,6 +116,16 @@ public class Bot {
 				logger.error("Error Sending Startup Message");
 			}
 
+			Annihilator kill = new Annihilator();
+			kill.run();
+			
+			parent = URLDecoder.decode(new File(Bot.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getParentFile().getPath(), "UTF-8");
+			
+			getBlack(new File(parent + "\\blacklist.txt"));
+			getSupport(new File(parent + "\\support.txt"));
+			getAdmin(new File(parent + "\\admin.txt"));
+			
+			
 		}catch(Exception e) {
 			logger.error(e.toString());
 		}
@@ -151,6 +166,45 @@ public class Bot {
 		//				.addOptions(new OptionData(OptionType.STRING, "move", "Rock Paper or Scissors? (r,p,s)").setRequired(true))
 		//				).queue();
 		//jda.updateCommands().queue(); 
+	}
+	private static void getAdmin(File file) throws IOException {
+		BufferedReader br = new BufferedReader(new FileReader(file));
+		try {
+		    String line = br.readLine();
+
+		    while (line != null) {
+		    	admin.add(line);
+		        line = br.readLine();
+		    }
+		} finally {
+		    br.close();
+		}
+	}
+	private static void getSupport(File file) throws IOException {
+		BufferedReader br = new BufferedReader(new FileReader(file));
+		try {
+		    String line = br.readLine();
+
+		    while (line != null) {
+		    	supporter.add(line);
+		        line = br.readLine();
+		    }
+		} finally {
+		    br.close();
+		}
+	}
+	private static void getBlack(File file) throws IOException {
+		BufferedReader br = new BufferedReader(new FileReader(file));
+		try {
+		    String line = br.readLine();
+
+		    while (line != null) {
+		    	blacklist.add(line);
+		        line = br.readLine();
+		    }
+		} finally {
+		    br.close();
+		}
 	}
 	public static void main(String[] args) throws LoginException, InterruptedException {
 		commandPrompt();
@@ -308,13 +362,13 @@ public class Bot {
 			}
 
 			if(cmd.equals("help")) {
-				System.out.println(ANSI_BLUE + 
+				System.out.println( 
 						"Option 1: start <msg> = To start the bot\n" +
 						"Option 2: shutdown <msg> = To shutdown the bot\n" +
 						"Option 3: estop <msg> = To emergency shutdown the bot\n" +
 						"Option 4: presence = To set presence\n" +
 						"Option 6: info = To get info of the bot\n" +
-						"Option 7: help = UBCL help (this)" + ANSI_RESET);
+						"Option 7: help = UBCL help (this)");
 				continue;
 			}
 

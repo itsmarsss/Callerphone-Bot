@@ -8,6 +8,8 @@ import net.dv8tion.jda.api.entities.MessageEmbed;
 import com.marsss.Bot;
 import com.marsss.bot.*;
 import com.marsss.entertainments.*;
+import com.marsss.listeners.MusicListener;
+import com.marsss.music.*;
 import com.marsss.tccallerphone.*;
 import com.marsss.vccallerphone.*;
 
@@ -67,7 +69,8 @@ public class Help {
 		case "tccall":
 			TITLE = "TCCall Commands";
 			DESC = TCCallPairer.callHelp() + "\n"
-					+ TCCallPairer.hangupHelp();
+					+ TCCallPairer.hangupHelp() + "\n"
+					+ TCCallPairer.reportHelp();
 			break;
 
 
@@ -79,14 +82,34 @@ public class Help {
 					+ VCCallPairer.muteHelp() + "\n"
 					+ VCCallPairer.unmuteHelp() + "\n"
 					+ VCCallPairer.deafenHelp() + "\n"
-					+ VCCallPairer.undeafenHelp();
+					+ VCCallPairer.undeafenHelp() + "\n"
+					+ VCCallPairer.reportHelp();
 			break;
 
 
-			
+
 		case "music":
 			TITLE = "Music Commands";
-			DESC = "there are loads hun";
+			DESC = Join.getHelp() + "\n"
+					+ Leave.getHelp() + "\n"
+					+ Play.getHelp() + "\n"
+					+ Playlist.getHelp() + "\n"
+					+ Pause.getHelp() + "\n"
+					+ Resume.getHelp() + "\n"
+					+ Skip.getHelp() + "\n"
+					+ Back.getHelp() + "\n"
+					+ NowPlaying.getHelp() + "\n"
+					+ Queue.getHelp() + "\n"
+					+ Remove.getHelp() + "\n"
+					+ Jump.getHelp() + "\n"
+					+ Shuffle.getHelp() + "\n"
+					+ Clear.getHelp() + "\n"
+					+ Volume.getHelp() + "\n"
+					+ Seek.getHelp() + "\n"
+					+ FastForward.getHelp() + "\n"
+					+ Rewind.getHelp() + "\n"
+					+ MusicListener.announceHelp() + "\n"
+					+ MusicListener.loopHelp();
 			break;
 
 		}
@@ -225,15 +248,19 @@ public class Help {
 			TITLE = "Undeafen";
 			DESC = VCCallPairer.undeafenHelp();
 			break;
+		case "report":
+			TITLE = "Report";
+			DESC = VCCallPairer.reportHelp();
+			break;
 
 
 		}
 
 
-		
-		
+
+
 		// Textphone
-		
+
 		switch(name) {
 
 
@@ -246,26 +273,115 @@ public class Help {
 			TITLE = "Endchat";
 			DESC = TCCallPairer.hangupHelp();
 			break;
-
-
+		case "report":
+			TITLE = "Report";
+			DESC = TCCallPairer.reportHelp();
+			break;
 
 		}
-		
 
-		final Color COLOR = Colour.randColor();
+
+
+
+		// Music
+
+		switch(name) {
+
+		case "join":
+			TITLE = "Join";
+			DESC = Join.getHelp();
+			break;
+		case "leave":
+			TITLE = "Leave";
+			DESC = Leave.getHelp();
+			break;
+		case "play":
+			TITLE = "Play";
+			DESC = Play.getHelp();
+			break;
+		case "playlist":
+			TITLE = "Playlist";
+			DESC = Playlist.getHelp();
+			break;
+		case "pause":
+			TITLE = "Pause";
+			DESC = Pause.getHelp();
+			break;
+		case "resume":
+			TITLE = "Resume";
+			DESC = Resume.getHelp();
+			break;
+		case "skip":
+			TITLE = "Skip";
+			DESC = Skip.getHelp();
+			break;
+		case "back":
+			TITLE = "Back";
+			DESC = Back.getHelp();
+			break;
+		case "nowplaying":
+			TITLE = "NowPlaying";
+			DESC = NowPlaying.getHelp();
+			break;
+		case "queue":
+			TITLE = "Queue";
+			DESC = Queue.getHelp();
+			break;
+		case "remove":
+			TITLE = "Remove";
+			DESC = Remove.getHelp();
+			break;
+		case "jump":
+			TITLE = "Jump";
+			DESC = Jump.getHelp();
+			break;
+		case "shuffle":
+			TITLE = "Shuffle";
+			DESC = Shuffle.getHelp();
+			break;
+		case "clear":
+			TITLE = "Clear";
+			DESC = Clear.getHelp();
+			break;
+		case "volume":
+			TITLE = "Volume";
+			DESC = Volume.getHelp();
+			break;
+		case "seek":
+			TITLE = "Seek";
+			DESC = Seek.getHelp();
+			break;
+		case "fastforward":
+			TITLE = "FastForward";
+			DESC = FastForward.getHelp();
+			break;
+		case "rewind":
+			TITLE = "Rewind";
+			DESC = Rewind.getHelp();
+			break;
+		case "announce":
+			TITLE = "Announce";
+			DESC = MusicListener.announceHelp();
+			break;
+		case "loop":
+			TITLE = "Loop";
+			DESC = MusicListener.loopHelp();
+			break;
+
+		}
+
 		EmbedBuilder HelpEmd = new EmbedBuilder()
 				.setTitle(TITLE)
 				.setDescription(DESC)
 				.setFooter("Hope you found this useful!", Bot.jda.getSelfUser().getAvatarUrl())
-				.setColor(COLOR);
+				.setColor(new Color(114, 137, 218));
 
 		return HelpEmd.build();
 	}
 
 	private static MessageEmbed helpCategories() {
-		Color COLOR = Colour.randColor();
 		EmbedBuilder CateEmd = new EmbedBuilder()
-				.setColor(COLOR)
+				.setColor(new Color(114, 137, 218))
 				.setTitle("Categories")
 				.addField("Bot", "all commands related to the bot will be here, do `" + Bot.Prefix + "help bot` for more information", false)
 				.addField("Entertainment", "all entertainment commands will be in this category, do `" + Bot.Prefix + "help entertainment` for more information", false)
@@ -273,7 +389,7 @@ public class Help {
 				.addField("TCUserphone", "all text call callerphone commands will be in this category, do `" + Bot.Prefix + "help tccall` for more information", false)
 				.addField("VCUserphone", "all voice call callerphone commands will be in this category, do `" + Bot.Prefix + "help vccall` for more information", false)
 				.addField("Music", "all music commands will be in this category, do `" + Bot.Prefix + "help music` for more information", false)
-				.setFooter("Type `" + Bot.Prefix + "help <category name>` to see their commands");
+				.setFooter("Type `" + Bot.Prefix + "help <category name>` to see category commands");
 
 		return CateEmd.build();
 	}

@@ -32,7 +32,11 @@ public class Join {
 		final VoiceChannel memberChannel = memberVoiceState.getChannel();
 
 		audioManager.openAudioConnection(memberChannel);
+		audioManager.setSelfDeafened(true);
 		MESSAGE.addReaction(Bot.ThumbsUp).queue();
 		MESSAGE.reply("Connected to " + memberChannel.getAsMention()).queue();
+	}
+	public static String getHelp() {
+		return "`" + Bot.Prefix + "join` - Joins voice channel.";
 	}
 }

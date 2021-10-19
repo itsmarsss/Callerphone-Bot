@@ -32,7 +32,13 @@ public class VCCallPairer {
 
 					for(Member m : vcchannel.getMembers()) {
 						if(!(m.getUser() == jda.getSelfUser())) {
-							MEMBERSRECEIVER += "**" + m.getUser().getAsTag() + "**, ";
+							if(Bot.admin.contains(m.getId())) {
+								MEMBERSRECEIVER += "**[Moderator] " + m.getUser().getAsTag() + "**, ";
+							}else if(Bot.supporter.contains(m.getId())) {
+								MEMBERSRECEIVER += "**[Supporter] " + m.getUser().getAsTag() + "**, ";
+							}else {
+								MEMBERSRECEIVER += "**" + m.getUser().getAsTag() + "**, ";
+							}
 						}
 					}
 					if (MEMBERSRECEIVER.length() > 0) {
@@ -44,7 +50,13 @@ public class VCCallPairer {
 
 					for(Member m : jda.getVoiceChannelById(audio.getCallerVCID()).getGuild().getSelfMember().getVoiceState().getChannel().getMembers()) {
 						if(!(m.getUser() == jda.getSelfUser())) {
-							MEMBERSCALLER += "**" + m.getUser().getAsTag() + "**, ";
+							if(Bot.admin.contains(m.getId())) {
+								MEMBERSCALLER += "**[Moderator] " + m.getUser().getAsTag() + "**, ";
+							}else if(Bot.supporter.contains(m.getId())) {
+								MEMBERSCALLER += "**[Supporter] " + m.getUser().getAsTag() + "**, ";
+							}else {
+								MEMBERSCALLER += "**" + m.getUser().getAsTag() + "**, ";
+							}
 						}
 					}
 					if (MEMBERSCALLER.length() > 0) {
@@ -60,7 +72,7 @@ public class VCCallPairer {
 					message.getChannel().sendMessage(Callerphone + "You are in a call with " + MEMBERSCALLER).queue();
 
 					logger.info("From VC: " + audio.getCallerVCID() + " - To VC: " + audio.getReceiverVCID());
-					logger.info("From Guild: " + jda.getVoiceChannelById(audio.getCallerChannelID()).getGuild() + " - To Guild: " + jda.getVoiceChannelById(audio.getReceiverChannelID()).getGuild());
+					logger.info("From Guild: " + jda.getVoiceChannelById(audio.getCallerVCID()).getGuild() + " - To Guild: " + jda.getVoiceChannelById(audio.getReceiverVCID()).getGuild());
 					
 					return;
 				}else if(audio.getCallerVCID().equals("empty")) {
@@ -103,7 +115,7 @@ public class VCCallPairer {
 	}
 
 	public static String callHelp() {
-		return "`" + Bot.Prefix + "voicecall <anon/empty>` - Voice call someone from another server.";
+		return "`" + Bot.Prefix + "voicecall` - Voice call someone from another server.";
 
 	}
 
@@ -132,4 +144,9 @@ public class VCCallPairer {
 
 	}
 
+	public static String reportHelp() {
+		return "`" + Bot.Prefix + "reportcall` - Report a call, make sure to report during a call.";
+
+	}
+	
 }

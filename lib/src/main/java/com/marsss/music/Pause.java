@@ -22,7 +22,12 @@ public class Pause {
 
 		final Member member = event.getMember();
 		final GuildVoiceState memberVoiceState = member.getVoiceState();
-
+		
+        if (!memberVoiceState.inVoiceChannel()) {
+            MESSAGE.reply("You need to be in a voice channel for this command to work").queue();
+            return;
+        }
+        
 		if (!memberVoiceState.getChannel().equals(selfVoiceState.getChannel())) {
 			MESSAGE.reply("You need to be in the same voice channel as me for this command to work").queue();
 			return;
@@ -35,5 +40,7 @@ public class Pause {
 		MESSAGE.addReaction(Bot.ThumbsUp).queue();
 		MESSAGE.reply("Player paused").queue();
 	}
-
+	public static String getHelp() {
+		return "`" + Bot.Prefix + "pause` - Pauses the current track.";
+	}
 }
