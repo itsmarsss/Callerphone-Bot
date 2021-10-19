@@ -152,7 +152,7 @@ public class VCCallerphoneListener extends ListenerAdapter {
 
 
 
-		case "voicecall":
+		case "call":
 			if(Bot.blacklist.contains(event.getAuthor().getId())) {
 				MESSAGE.reply("Sorry you are blacklisted, submit an appeal at our support server").queue();
 				break;

@@ -42,7 +42,7 @@ public class Volume {
 		try {
 			volume = Integer.parseInt(event.getMessage().getContentRaw().split("\\s+")[1]);
 		}catch(Exception e) {
-			MESSAGE.replyEmbeds(Help.help("volume")).queue();
+			MESSAGE.replyEmbeds(Help.help("volume", false)).queue();
 			return;
 		}
 

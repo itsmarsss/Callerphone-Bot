@@ -39,7 +39,7 @@ public class Jump {
 		try{
 			index = Integer.parseInt(MESSAGE.getContentRaw().split("\\s+")[1]);
 		}catch(Exception e) {
-			MESSAGE.replyEmbeds(Help.help("jump")).queue();
+			MESSAGE.replyEmbeds(Help.help("jump", false)).queue();
 			return;
 		}
 		
@@ -50,7 +50,7 @@ public class Jump {
 			MESSAGE.reply("Index out of bounds!").queue();
 			return;
 		}
-		audioPlayer.playTrack(musicManager.scheduler.queue.get(index));
+		audioPlayer.playTrack(musicManager.scheduler.queue.get(index-1).makeClone());
 		MESSAGE.addReaction(Bot.ThumbsUp).queue();
 		MESSAGE.reply("Playing track `" + index + "`").queue();
 		if(musicManager.scheduler.announce) {

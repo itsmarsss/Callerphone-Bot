@@ -20,6 +20,7 @@ public class TCCallerphoneListener extends ListenerAdapter {
 		final Message MESSAGE = event.getMessage();
 		final String MESSAGERAW = MESSAGE.getContentRaw();
 		final String args[] = MESSAGERAW.toLowerCase().split("\\s+");
+		
 		SWITCH : switch (args[0].toLowerCase().replace(Bot.Prefix, "")) {
 
 
@@ -115,7 +116,7 @@ public class TCCallerphoneListener extends ListenerAdapter {
 
 
 
-		case "chatcall":
+		case "chat":
 			if(Bot.blacklist.contains(event.getAuthor().getId())) {
 				MESSAGE.reply("Sorry you are blacklisted, submit an appeal at our support server").queue();
 				break;
@@ -148,6 +149,15 @@ public class TCCallerphoneListener extends ListenerAdapter {
 
 
 		default:
+			if(args[0].toLowerCase().equals(Bot.Prefix + "support"))
+				break;
+			
+			if(args[0].toLowerCase().equals(Bot.Prefix + "blacklist"))
+				break;
+			
+			if(args[0].toLowerCase().equals(Bot.Prefix + "mod"))
+				break;
+			
 			if(Bot.blacklist.contains(event.getAuthor().getId())) {
 				break;
 			}
@@ -170,11 +180,11 @@ public class TCCallerphoneListener extends ListenerAdapter {
 					c.lastMessage = System.currentTimeMillis();
 					try {
 						if(Bot.admin.contains(event.getAuthor().getId())) {
-							Bot.jda.getTextChannelById(c.getReceiverTCID()).sendMessage("***[Moderator]* " + MESSAGE.getAuthor().getAsTag() + "**: " + MESSAGERAW).queue();
+							Bot.jda.getTextChannelById(c.getReceiverTCID()).sendMessage("***[Moderator]* " + MESSAGE.getAuthor().getAsTag() + "**: " + MESSAGE.getContentDisplay()).queue();
 						}else if(Bot.supporter.contains(event.getAuthor().getId())) {
-							Bot.jda.getTextChannelById(c.getReceiverTCID()).sendMessage("***[Supporter]* " + MESSAGE.getAuthor().getAsTag() + "**: " + MESSAGERAW).queue();
+							Bot.jda.getTextChannelById(c.getReceiverTCID()).sendMessage("***[Supporter]* " + MESSAGE.getAuthor().getAsTag() + "**: " + MESSAGE.getContentDisplay()).queue();
 						}else {
-							Bot.jda.getTextChannelById(c.getReceiverTCID()).sendMessage("**" + MESSAGE.getAuthor().getAsTag() + "**: " + MESSAGERAW).queue();
+							Bot.jda.getTextChannelById(c.getReceiverTCID()).sendMessage("**" + MESSAGE.getAuthor().getAsTag() + "**: " + MESSAGE.getContentDisplay()).queue();
 						}
 					}catch(Exception e) {
 						final String callerID = c.getCallerTCID();
@@ -206,11 +216,11 @@ public class TCCallerphoneListener extends ListenerAdapter {
 					c.lastMessage = System.currentTimeMillis();
 					try {
 						if(Bot.admin.contains(event.getAuthor().getId())) {
-							Bot.jda.getTextChannelById(c.getCallerTCID()).sendMessage("***[Moderator]* " + MESSAGE.getAuthor().getAsTag() + "**: " + MESSAGERAW).queue();
+							Bot.jda.getTextChannelById(c.getCallerTCID()).sendMessage("***[Moderator]* " + MESSAGE.getAuthor().getAsTag() + "**: " + MESSAGE.getContentDisplay()).queue();
 						}else if(Bot.supporter.contains(event.getAuthor().getId())) {
-							Bot.jda.getTextChannelById(c.getCallerTCID()).sendMessage("***[Admin]* " + MESSAGE.getAuthor().getAsTag() + "**: " + MESSAGERAW).queue();
+							Bot.jda.getTextChannelById(c.getCallerTCID()).sendMessage("***[Admin]* " + MESSAGE.getAuthor().getAsTag() + "**: " + MESSAGE.getContentDisplay()).queue();
 						}else {
-							Bot.jda.getTextChannelById(c.getCallerTCID()).sendMessage("**" + MESSAGE.getAuthor().getAsTag() + "**: " + MESSAGERAW).queue();
+							Bot.jda.getTextChannelById(c.getCallerTCID()).sendMessage("**" + MESSAGE.getAuthor().getAsTag() + "**: " + MESSAGE.getContentDisplay()).queue();
 						}
 					}catch(Exception e) {
 						final String callerID = c.getCallerTCID();

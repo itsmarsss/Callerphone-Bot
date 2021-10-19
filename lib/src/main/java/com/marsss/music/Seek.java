@@ -68,13 +68,13 @@ public class Seek {
 					hour = Integer.parseInt(time[i]);
 					continue;
 				default:
-					MESSAGE.replyEmbeds(Help.help("seek")).queue();
+					MESSAGE.replyEmbeds(Help.help("seek", false)).queue();
 					return;
 					
 				}
 			}
 		}catch(Exception e) {
-			MESSAGE.replyEmbeds(Help.help("seek")).queue();
+			MESSAGE.replyEmbeds(Help.help("seek", false)).queue();
 			return;
 		}
 

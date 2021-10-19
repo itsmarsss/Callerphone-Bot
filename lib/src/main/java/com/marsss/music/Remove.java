@@ -42,12 +42,12 @@ public class Remove {
 		try {
 			index = Integer.parseInt(MESSAGE.getContentRaw().split("\\s+")[1]);
 		}catch(Exception e) {
-			MESSAGE.replyEmbeds(Help.help("remove")).queue();
+			MESSAGE.replyEmbeds(Help.help("remove", false)).queue();
 			return;
 		}
 
-		if(index < 1 || index >= musicManager.scheduler.queue.size()) {
-			MESSAGE.reply("Index not found!");
+		if(index < 1 || index > musicManager.scheduler.queue.size()) {
+			MESSAGE.reply("Index out of bounds!");
 			return;
 		}
 

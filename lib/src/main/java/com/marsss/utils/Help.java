@@ -8,15 +8,16 @@ import net.dv8tion.jda.api.entities.MessageEmbed;
 import com.marsss.Bot;
 import com.marsss.bot.*;
 import com.marsss.entertainments.*;
+import com.marsss.listeners.CommandListener;
 import com.marsss.listeners.MusicListener;
 import com.marsss.music.*;
 import com.marsss.tccallerphone.*;
 import com.marsss.vccallerphone.*;
 
 public class Help {
-	public static MessageEmbed help(String name) {
+	public static MessageEmbed help(String name, boolean admin) {
 		if(name == "") {
-			return helpCategories();
+			return helpCategories(admin);
 		}
 
 		String TITLE = "Sorry.";
@@ -111,7 +112,26 @@ public class Help {
 					+ MusicListener.announceHelp() + "\n"
 					+ MusicListener.loopHelp();
 			break;
+			
+			
+			
+		case "report":
+			TITLE = "Report Commands";
+			DESC = TCCallPairer.reportHelp() + "\n"
+					+ VCCallPairer.reportHelp();
+			break;
 
+			
+		case "mod":
+			TITLE = "Mod";
+			if(admin) {
+				DESC = CommandListener.supportHelp() + "\n"
+						+ CommandListener.blacklistHelp();
+				break;
+			}
+			DESC = "You do not have permission to access this category.";
+			break;
+			
 		}
 
 
@@ -248,7 +268,7 @@ public class Help {
 			TITLE = "Undeafen";
 			DESC = VCCallPairer.undeafenHelp();
 			break;
-		case "report":
+		case "reportcall":
 			TITLE = "Report";
 			DESC = VCCallPairer.reportHelp();
 			break;
@@ -273,8 +293,8 @@ public class Help {
 			TITLE = "Endchat";
 			DESC = TCCallPairer.hangupHelp();
 			break;
-		case "report":
-			TITLE = "Report";
+		case "reportchat":
+			TITLE = "Reportchat";
 			DESC = TCCallPairer.reportHelp();
 			break;
 
@@ -379,7 +399,7 @@ public class Help {
 		return HelpEmd.build();
 	}
 
-	private static MessageEmbed helpCategories() {
+	private static MessageEmbed helpCategories(boolean admin) {
 		EmbedBuilder CateEmd = new EmbedBuilder()
 				.setColor(new Color(114, 137, 218))
 				.setTitle("Categories")
@@ -390,7 +410,9 @@ public class Help {
 				.addField("VCUserphone", "all voice call callerphone commands will be in this category, do `" + Bot.Prefix + "help vccall` for more information", false)
 				.addField("Music", "all music commands will be in this category, do `" + Bot.Prefix + "help music` for more information", false)
 				.setFooter("Type `" + Bot.Prefix + "help <category name>` to see category commands");
-
+		if(admin) {
+			CateEmd.addField("Moderator only", "all moderator commands will be in this category, do `" + Bot.Prefix + "help mod` for more information", false);
+		}
 		return CateEmd.build();
 	}
 

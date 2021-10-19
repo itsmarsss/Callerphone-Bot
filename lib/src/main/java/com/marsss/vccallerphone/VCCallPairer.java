@@ -115,12 +115,12 @@ public class VCCallPairer {
 	}
 
 	public static String callHelp() {
-		return "`" + Bot.Prefix + "voicecall` - Voice call someone from another server.";
+		return "`" + Bot.Prefix + "call` - Voice call someone from another server.";
 
 	}
 
 	public static String hangupHelp() {
-		return "`" + Bot.Prefix + "hangup` - Hangup a pending or existing VC call.";
+		return "`" + Bot.Prefix + "hangup` - Hangup a pending or existing call.";
 
 	}
 	

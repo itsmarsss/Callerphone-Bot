@@ -46,7 +46,7 @@ public class Play {
 		CONTENT = CONTENT.replace(Bot.Prefix + "play ", "");
 
 		if (!isUrl(CONTENT)) {
-			CONTENT = "ytsearch:" + CONTENT;
+			CONTENT = "scsearch:" + CONTENT;
 		}
 		
 		MESSAGE.addReaction("🔎").queue();

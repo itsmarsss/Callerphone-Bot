@@ -17,7 +17,7 @@ public class About {
 		final JDA jda = Bot.jda;
 
 		final StringBuilder desc = new StringBuilder()
-				.append("[Invite link](https://discord.com/api/oauth2/authorize?client_id=849713468348956692&permissions=274914888704&scope=bot%20applications.commands)")
+				.append("[Invite link](https://discord.com/api/oauth2/authorize?client_id=849713468348956692&permissions=49663040&scope=bot%20applications.commands)")
 				.append("\n[Support server](https://discord.gg/jcYKsfw48p)")
 				.append("\n[Bot listing](https://top.gg/bot/849713468348956692)")
 				.append("\n[Upvote bot](https://top.gg/bot/849713468348956692/vote)")
@@ -31,7 +31,7 @@ public class About {
 			users += g.getMemberCount();
 		}
 		EmbedBuilder AbtEmd = new EmbedBuilder()
-				.setAuthor("By " + jda.getUserById("841028865995964477").getAsTag(), null, jda.getUserById("841028865995964477").getAvatarUrl())
+				.setAuthor("by " + jda.getUserById("841028865995964477").getAsTag(), null, jda.getUserById("841028865995964477").getAvatarUrl())
 				.setColor(Color.cyan)
 				.setTitle("**About:**")
 				.setDescription(desc)

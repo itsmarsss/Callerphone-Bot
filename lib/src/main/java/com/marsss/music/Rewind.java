@@ -47,7 +47,7 @@ public class Rewind {
 		try {
 			t = Math.abs(Long.parseLong(MESSAGE.getContentRaw().split("\\s+")[1]))*1000;
 		}catch(Exception e) {
-			MESSAGE.replyEmbeds(Help.help("rewind")).queue();
+			MESSAGE.replyEmbeds(Help.help("rewind", false)).queue();
 			return;
 		}
 

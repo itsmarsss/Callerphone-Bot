@@ -47,7 +47,7 @@ public class FastForward {
 		try {
 			t = Math.abs(Long.parseLong(MESSAGE.getContentRaw().split("\\s+")[1]))*1000;
 		}catch(Exception e) {
-			MESSAGE.replyEmbeds(Help.help("fastforward")).queue();
+			MESSAGE.replyEmbeds(Help.help("fastforward", false)).queue();
 			return;
 		}
 

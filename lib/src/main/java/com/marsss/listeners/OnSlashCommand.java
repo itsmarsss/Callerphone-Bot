@@ -1,74 +1,302 @@
 package com.marsss.listeners;
 
+import java.io.IOException;
+
 import com.marsss.Bot;
+import com.marsss.bot.*;
 import com.marsss.entertainments.*;
+import com.marsss.utils.BotInfo;
 import com.marsss.utils.Help;
 import com.marsss.utils.Polls;
+import com.marsss.utils.Search;
 
+import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
 public class OnSlashCommand extends ListenerAdapter {
 	public void onSlashCommand(SlashCommandEvent event) {
-		if(event.getName().equals("clap")) {
-			final String msg = event.getOption("message").getAsString();
-			final String []args = msg.split("\\s+");
-			event.reply(Clap.clap(args)).queue();
+		if(!event.isFromGuild()) {
+			privateChannel(event);
 			return;
 		}
+		final Member MEMBER = event.getMember();
 
-		if(event.getName().equals("color")) {
-			event.replyEmbeds(Colour.color()).queue();
-			return;
-		}
+		try {
 
-		if(event.getName().equals("colorhex")) {
-			final String hex = event.getOption("hex").getAsString();
-			event.replyEmbeds(Colour.colorhex(hex)).queue();
-			return;
-		}
+			if(MEMBER.getUser().isBot())
+				return;
 
-		if(event.getName().equals("colorrgb")) {
-			final String r = event.getOption("red").getAsString(), 
-					g = event.getOption("green").getAsString(), 
-					b = event.getOption("blue").getAsString();
-			event.replyEmbeds(Colour.colorrgb(r, g, b)).queue();
-			return;
-		}
+		}catch(Exception e) {}
 
-		if(event.getName().equals("echo")) {
-			final String msg = event.getOption("message").getAsString();
-			final String []args = msg.split("\\s+");
-			event.reply(Echo.echo(args)).queue();
-			return;
-		}
+		// Utils
+		switch(event.getName()) {
 
-		if(event.getName().equals("eightball")) {
-			final String qst = event.getOption("question").getAsString();
-			event.reply(EightBall.eightball(qst)).queue();
-			return;
-		}
 
-		if(event.getName().equals("pollnew")) {
-			final String qst = event.getOption("question").getAsString();
-			event.reply(event.getUser().getName() + " launched a poll:").complete();
-			event.getChannel().sendMessageEmbeds(Polls.newpoll(qst)).queue(message -> {
-				message.addReaction("âœ…").queue();
-				message.addReaction("â�Œ").queue();
+
+		case "help":
+			if(!event.getGuild().getSelfMember().hasPermission(Permission.MESSAGE_EMBED_LINKS)) {
+				event.reply("I need `Embed Links` permission for this command to work").setEphemeral(true).queue();
+				break;
+			}
+			boolean admin = false;
+			if(Bot.admin.contains(MEMBER.getId())) {
+				admin = true;
+			}
+			try {
+				event.replyEmbeds(Help.help(event.getOption("command").getAsString(), admin)).queue();
+			}catch(Exception e) {
+				event.replyEmbeds(Help.help("", admin)).queue();
+			}
+			break;
+
+
+
+		case "botinfo":
+			if(!event.getGuild().getSelfMember().hasPermission(Permission.MESSAGE_EMBED_LINKS)) {
+				event.reply("I need `Embed Links` permission for this command to work").setEphemeral(true).queue();
+				break;
+			}
+			event.replyEmbeds(BotInfo.botinfo()).queue();
+			break;
+
+
+
+		case "search":
+			if(!event.getGuild().getSelfMember().hasPermission(Permission.MESSAGE_EMBED_LINKS)) {
+				event.reply("I need `Embed Links` permission for this command to work").setEphemeral(true).queue();
+				break;
+			}
+
+			try {
+				event.replyEmbeds(Search.search(" " + event.getOption("query").getAsString())).queue();
+				break;
+			} catch (IOException e1) {
+				e1.printStackTrace();
+				event.reply("Error getting links").setEphemeral(true).queue();
+				break;
+			}
+
+		case "poll":
+			if(!event.getGuild().getSelfMember().hasPermission(Permission.MESSAGE_ADD_REACTION)) {
+				event.reply("I need `Add Reaction` permission for this command to work").setEphemeral(true).queue();
+				break;
+			}
+			if(!event.getGuild().getSelfMember().hasPermission(Permission.MESSAGE_EMBED_LINKS)) {
+				event.reply("I need `Embed Links` permission for this command to work").setEphemeral(true).queue();
+				break;
+			}
+			event.reply(MEMBER.getEffectiveName() + " launched a poll:").complete();
+			event.getChannel().sendMessageEmbeds(Polls.newpoll(event.getOption("question").getAsString())).queue(message -> {
+				message.addReaction("✅").queue();
+				message.addReaction("❎").queue();
 			});
-			return;
-		}
+			break;
 
-		if(event.getName().equals("ping")) {
+
+		case "about":
+			if(!event.getGuild().getSelfMember().hasPermission(Permission.MESSAGE_EMBED_LINKS)) {
+				event.reply("I need `Embed Links` permission for this command to work").setEphemeral(true).queue();
+				break;
+			}
+			event.replyEmbeds(About.about()).queue();
+			break;
+
+
+
+		case "donate":
+			if(!event.getGuild().getSelfMember().hasPermission(Permission.MESSAGE_EMBED_LINKS)) {
+				event.reply("I need `Embed Links` permission for this command to work").setEphemeral(true).queue();
+				break;
+			}
+			event.reply(Donate.donate()).queue();
+			break;
+
+
+
+		case "invite":
+			if(!event.getGuild().getSelfMember().hasPermission(Permission.MESSAGE_EMBED_LINKS)) {
+				event.reply("I need `Embed Links` permission for this command to work").setEphemeral(true).queue();
+				break;
+			}
+			event.replyEmbeds(Invite.invite()).queue();
+			break;
+
+
+
+		case "ping":
 			Bot.jda.getRestPing().queue(
 					(ping) -> event.replyFormat("**Reset ping:** %sms \n**WS ping:** %sms", ping, Bot.jda.getGatewayPing()).queue());
-			return;
-		}
+			break;
 
-		if(event.getName().equals("help")) {
-			final String cmd = event.getOption("command").getAsString();
-			event.replyEmbeds(Help.help(cmd)).queue();
-			return;
+
+
+		case "uptime":
+			event.reply(Uptime.uptime()).queue();
+			break;
+
+
+		case "clap":
+			event.reply(Clap.clap(("holder " + event.getOption("message").getAsString()).split("\\s+"))).queue();
+			break;
+
+		case "color":
+			if(!event.getGuild().getSelfMember().hasPermission(Permission.MESSAGE_EMBED_LINKS)) {
+				event.reply("I need `Embed Links` permission for this command to work").setEphemeral(true).queue();
+				break;
+			}
+			event.replyEmbeds(Colour.color()).queue();
+			break;
+
+
+
+		case "colorhex":
+			if(!event.getGuild().getSelfMember().hasPermission(Permission.MESSAGE_EMBED_LINKS)) {
+				event.reply("I need `Embed Links` permission for this command to work").setEphemeral(true).queue();
+				break;
+			}
+
+			event.replyEmbeds(Colour.colorhex(event.getOption("hex").getAsString())).queue();
+			break;
+
+
+
+		case "colorrgb":
+			if(!event.getGuild().getSelfMember().hasPermission(Permission.MESSAGE_EMBED_LINKS)) {
+				event.reply("I need `Embed Links` permission for this command to work").setEphemeral(true).queue();
+				break;
+			}
+
+			event.replyEmbeds(Colour.colorrgb(event.getOption("r").getAsString(), event.getOption("g").getAsString(), event.getOption("b").getAsString())).queue();
+			break;
+
+
+
+		case "echo":
+			event.reply(Echo.echo(("holder " + event.getOption("message").getAsString()).split("\\s+"))).queue();
+			break;
+
+
+
+		case "eightball":
+			event.reply(EightBall.eightball(event.getOption("question").getAsString())).queue();
+			break;
+
+
+		}
+	}
+	private static void privateChannel(SlashCommandEvent event) {
+		final Member MEMBER = event.getMember();
+
+		try {
+
+			if(MEMBER.getUser().isBot())
+				return;
+
+		}catch(Exception e) {}
+
+		// Utils
+		switch(event.getName()) {
+
+
+
+		case "help":
+			boolean admin = false;
+			if(Bot.admin.contains(MEMBER.getId())) {
+				admin = true;
+			}
+			event.replyEmbeds(Help.help(event.getOption("command").getAsString(), admin)).queue();
+			break;
+
+
+
+		case "botinfo":
+			event.replyEmbeds(BotInfo.botinfo()).queue();
+			break;
+
+
+
+		case "search":
+			try {
+				event.replyEmbeds(Search.search(" " + event.getOption("query").getAsString())).queue();
+				break;
+			} catch (IOException e1) {
+				e1.printStackTrace();
+				event.reply("Error getting links").setEphemeral(true).queue();
+				break;
+			}
+
+
+
+		case "poll":
+			event.reply("Poll all by yourself ;-;").queue();
+			break;
+
+
+		case "about":
+			event.replyEmbeds(About.about()).queue();
+			break;
+
+
+
+		case "donate":
+			event.reply(Donate.donate()).queue();
+			break;
+
+
+
+		case "invite":
+			event.replyEmbeds(Invite.invite()).queue();
+			break;
+
+
+
+		case "ping":
+			Bot.jda.getRestPing().queue(
+					(ping) -> event.replyFormat("**Reset ping:** %sms \n**WS ping:** %sms", ping, Bot.jda.getGatewayPing()).queue());
+			break;
+
+
+
+		case "uptime":
+			event.reply(Uptime.uptime()).queue();
+			break;
+
+
+		case "clap":
+			event.reply(Clap.clap(("holder " + event.getOption("message").getAsString()).split("\\s+"))).queue();
+			break;
+
+		case "color":
+			event.replyEmbeds(Colour.color()).queue();
+			break;
+
+
+
+		case "colorhex":
+			event.replyEmbeds(Colour.colorhex(event.getOption("hex").getAsString())).queue();
+			break;
+
+
+
+		case "colorrgb":
+			event.replyEmbeds(Colour.colorrgb(event.getOption("r").getAsString(), event.getOption("g").getAsString(), event.getOption("b").getAsString())).queue();
+			break;
+
+
+
+		case "echo":
+			event.reply(Echo.echo(("holder " + event.getOption("message").getAsString()).split("\\s+"))).queue();
+			break;
+
+
+
+		case "eightball":
+			event.reply(EightBall.eightball(event.getOption("question").getAsString())).queue();
+			break;
+
+
 		}
 	}
 }

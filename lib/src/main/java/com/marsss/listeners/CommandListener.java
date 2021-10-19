@@ -54,23 +54,40 @@ public class CommandListener extends ListenerAdapter {
 
 
 		case "help":
-			if(args.length > 1) {
-				MESSAGE.replyEmbeds(Help.help(args[1])).queue();
+			if(!event.getGuild().getSelfMember().hasPermission(Permission.MESSAGE_EMBED_LINKS)) {
+				MESSAGE.reply("I need `Embed Links` permission for this command to work").queue();
 				break;
 			}
-			MESSAGE.replyEmbeds(Help.help("")).queue();
+			boolean admin = false;
+			if(Bot.admin.contains(event.getAuthor().getId())) {
+				admin = true;
+			}
+			if(args.length > 1) {
+				
+				MESSAGE.replyEmbeds(Help.help(args[1], admin)).queue();
+				break;
+			}
+
+			MESSAGE.replyEmbeds(Help.help("", admin)).queue();
 			break;
 
 
 
 		case "botinfo":
+			if(!event.getGuild().getSelfMember().hasPermission(Permission.MESSAGE_EMBED_LINKS)) {
+				MESSAGE.reply("I need `Embed Links` permission for this command to work").queue();
+				break;
+			}
 			MESSAGE.replyEmbeds(BotInfo.botinfo()).queue();
 			break;
 
 
 
 		case "search":
-
+			if(!event.getGuild().getSelfMember().hasPermission(Permission.MESSAGE_EMBED_LINKS)) {
+				MESSAGE.reply("I need `Embed Links` permission for this command to work").queue();
+				break;
+			}
 			if(CONTENT.substring(8, CONTENT.length()).isBlank()) {
 				MESSAGE.reply("Please enter a search query!").queue();
 				break;
@@ -87,6 +104,10 @@ public class CommandListener extends ListenerAdapter {
 
 
 		case "channelinfo":
+			if(!event.getGuild().getSelfMember().hasPermission(Permission.MESSAGE_EMBED_LINKS)) {
+				MESSAGE.reply("I need `Embed Links` permission for this command to work").queue();
+				break;
+			}
 			List<TextChannel> CHANNELS = MESSAGE.getMentionedChannels();
 			GuildChannel CHANNEL;
 
@@ -126,6 +147,10 @@ public class CommandListener extends ListenerAdapter {
 			}
 
 		case "roleinfo":
+			if(!event.getGuild().getSelfMember().hasPermission(Permission.MESSAGE_EMBED_LINKS)) {
+				MESSAGE.reply("I need `Embed Links` permission for this command to work").queue();
+				break;
+			}
 			final List<Role> ROLES = MESSAGE.getMentionedRoles();
 			Role ROLE;
 
@@ -149,12 +174,20 @@ public class CommandListener extends ListenerAdapter {
 
 
 		case "serverinfo":
+			if(!event.getGuild().getSelfMember().hasPermission(Permission.MESSAGE_EMBED_LINKS)) {
+				MESSAGE.reply("I need `Embed Links` permission for this command to work").queue();
+				break;
+			}
 			MESSAGE.replyEmbeds(ServerInfo.serverinfo(event.getGuild())).queue();
 			break;
 
 
 
 		case "userinfo":
+			if(!event.getGuild().getSelfMember().hasPermission(Permission.MESSAGE_EMBED_LINKS)) {
+				MESSAGE.reply("I need `Embed Links` permission for this command to work").queue();
+				break;
+			}
 			final List<Member> USERS = MESSAGE.getMentionedMembers();
 			Member USER;
 
@@ -182,6 +215,10 @@ public class CommandListener extends ListenerAdapter {
 				MESSAGE.reply("I need `Add Reaction` permission for this command to work").queue();
 				break;
 			}
+			if(!event.getGuild().getSelfMember().hasPermission(Permission.MESSAGE_EMBED_LINKS)) {
+				MESSAGE.reply("I need `Embed Links` permission for this command to work").queue();
+				break;
+			}
 			CONTENT = CONTENT.substring(7, CONTENT.length());
 			event.getChannel().sendMessage(event.getAuthor().getName() + " launched a poll:").complete();
 			event.getChannel().sendMessageEmbeds(Polls.newpoll(CONTENT)).queue(message -> {
@@ -202,18 +239,30 @@ public class CommandListener extends ListenerAdapter {
 
 
 		case "about":
+			if(!event.getGuild().getSelfMember().hasPermission(Permission.MESSAGE_EMBED_LINKS)) {
+				MESSAGE.reply("I need `Embed Links` permission for this command to work").queue();
+				break;
+			}
 			MESSAGE.replyEmbeds(About.about()).queue();
 			break;
 
 
 
 		case "donate":
+			if(!event.getGuild().getSelfMember().hasPermission(Permission.MESSAGE_EMBED_LINKS)) {
+				MESSAGE.reply("I need `Embed Links` permission for this command to work").queue();
+				break;
+			}
 			MESSAGE.reply(Donate.donate()).queue();
 			break;
 
 
 
 		case "invite":
+			if(!event.getGuild().getSelfMember().hasPermission(Permission.MESSAGE_EMBED_LINKS)) {
+				MESSAGE.reply("I need `Embed Links` permission for this command to work").queue();
+				break;
+			}
 			MESSAGE.replyEmbeds(Invite.invite()).queue();
 			break;
 
@@ -246,19 +295,34 @@ public class CommandListener extends ListenerAdapter {
 
 
 
-		case "u?color":
+		case "color":
+			if(!event.getGuild().getSelfMember().hasPermission(Permission.MESSAGE_EMBED_LINKS)) {
+				MESSAGE.reply("I need `Embed Links` permission for this command to work").queue();
+				break;
+			}
 			MESSAGE.replyEmbeds(Colour.color()).queue();
 			break;
 
 
 
 		case "colorhex":
+			if(!event.getGuild().getSelfMember().hasPermission(Permission.MESSAGE_EMBED_LINKS)) {
+				MESSAGE.reply("I need `Embed Links` permission for this command to work").queue();
+				break;
+			}
+			if(args.length < 2) {
+				MESSAGE.reply("Please provide hex value").queue();
+			}
 			MESSAGE.replyEmbeds(Colour.colorhex(args[1])).queue();
 			break;
 
 
 
 		case "colorrgb":
+			if(!event.getGuild().getSelfMember().hasPermission(Permission.MESSAGE_EMBED_LINKS)) {
+				MESSAGE.reply("I need `Embed Links` permission for this command to work").queue();
+				break;
+			}
 			if(args.length < 4) {
 				MESSAGE.reply("Please provide r g b values").queue();
 				break;
@@ -289,121 +353,155 @@ public class CommandListener extends ListenerAdapter {
 		}
 
 
-		if(event.getChannel().getId().equals("798693573616205855")) {
-			String id = args[1];
-			switch (args[0].toLowerCase().replace(Bot.Prefix, "")) {
+		if(Bot.admin.contains(event.getAuthor().getId())) {
+			try {
+				String id = args[1];
+				switch (args[0].toLowerCase().replace(Bot.Prefix, "")) {
 
-			case "blacklist":
-				if(Bot.blacklist.contains(id)) {
-					MESSAGE.reply("ID blacklisted already").queue();
-				}else {
-					Bot.blacklist.add(id);
-					try {
-						FileWriter myWriter = new FileWriter(Bot.parent + "\\blacklist.txt");
-						myWriter.write(id);
-						myWriter.close();
-						MESSAGE.reply("ID: `" + id + "` added to blacklist").queue();
-					} catch (IOException e) {
-						MESSAGE.reply("An error occured").queue();
-					}
-				}
-				break;
-
-			case "support":
-				if(Bot.supporter.contains(id)) {
-					MESSAGE.reply("ID is supporter already").queue();
-				}else {
-					Bot.supporter.add(id);
-					try {
-						FileWriter myWriter = new FileWriter(Bot.parent + "\\support.txt");
-						myWriter.write(id);
-						myWriter.close();
-						MESSAGE.reply("ID: `" + id + "` added to supporter list").queue();
-					} catch (IOException e) {
-						MESSAGE.reply("An error occured").queue();
-					}
-				}
-				break;
-
-			case "mod":
-				if(Bot.admin.contains(id)) {
-					MESSAGE.reply("ID is mod already").queue();
-				}else {
-					Bot.admin.add(id);
-					try {
-						FileWriter myWriter = new FileWriter(Bot.parent + "\\admin.txt");
-						myWriter.write(id);
-						myWriter.close();
-						MESSAGE.reply("ID: `" + id + "` added to mod list").queue();
-					} catch (IOException e) {
-						MESSAGE.reply("An error occured").queue();
-					}
-				}
-				break;
-				
-				
-				
-				
-			case "rblacklist":
-				if(!Bot.blacklist.contains(id)) {
-					MESSAGE.reply("ID not on blacklist").queue();
-				}else {
-					Bot.blacklist.remove(id);
-					StringBuilder sb = new StringBuilder();
-					try {
-						for(String m : Bot.blacklist) {
-							sb.append(m + "\n");
+				case "blacklist":
+					if(Bot.blacklist.contains(id)) {
+						MESSAGE.reply("ID blacklisted already").queue();
+					}else {
+						Bot.blacklist.add(id);
+						StringBuilder sb = new StringBuilder();
+						try {
+							for(String m : Bot.blacklist) {
+								sb.append(m + "\n");
+							}
+							FileWriter myWriter = new FileWriter(Bot.parent + "\\blacklist.txt");
+							myWriter.write(sb.toString());
+							myWriter.close();
+							MESSAGE.reply("ID: `" + id + "` added to blacklist").queue();
+						} catch (IOException e) {
+							MESSAGE.reply("An error occured").queue();
 						}
-						PrintWriter myWriter = new PrintWriter(Bot.parent + "\\blacklist.txt");
-						myWriter.print(sb.toString());
-						myWriter.close();
-						MESSAGE.reply("ID: `" + id + "` removed from blacklist").queue();
-					} catch (IOException e) {
-						MESSAGE.reply("An error occured").queue();
 					}
-				}
-				break;
+					break;
 
-			case "rsupport":
-				if(!Bot.supporter.contains(id)) {
-					MESSAGE.reply("ID is not a supporter").queue();
-				}else {
-					Bot.supporter.remove(id);
-					StringBuilder sb = new StringBuilder();
-					try {
-						for(String m : Bot.supporter) {
-							sb.append(m + "\n");
+				case "support":
+					if(Bot.supporter.contains(id)) {
+						MESSAGE.reply("ID is supporter already").queue();
+					}else {
+						Bot.supporter.add(id);
+						StringBuilder sb = new StringBuilder();
+						try {
+							for(String m : Bot.supporter) {
+								sb.append(m + "\n");
+							}
+							FileWriter myWriter = new FileWriter(Bot.parent + "\\support.txt");
+							myWriter.write(sb.toString());
+							myWriter.close();
+							MESSAGE.reply("ID: `" + id + "` added to supporter list").queue();
+						} catch (IOException e) {
+							MESSAGE.reply("An error occured").queue();
 						}
-						PrintWriter myWriter = new PrintWriter(Bot.parent + "\\support.txt");
-						myWriter.print(sb.toString());
-						myWriter.close();
-						MESSAGE.reply("ID: `" + id + "` removed from supporter list").queue();
-					} catch (IOException e) {
-						MESSAGE.reply("An error occured").queue();
 					}
-				}
-				break;
+					break;
 
-			case "rmod":
-				if(!Bot.admin.contains(id)) {
-					MESSAGE.reply("ID is not a mod").queue();
-				}else {
-					Bot.admin.remove(id);
-					StringBuilder sb = new StringBuilder();
-					try {
-						for(String m : Bot.admin) {
-							sb.append(m + "\n");
+				case "mod":
+					if(Bot.admin.contains(id)) {
+						MESSAGE.reply("ID is mod already").queue();
+					}else {
+						Bot.admin.add(id);
+						StringBuilder sb = new StringBuilder();
+						try {
+							for(String m : Bot.admin) {
+								sb.append(m + "\n");
+							}
+							FileWriter myWriter = new FileWriter(Bot.parent + "\\admin.txt");
+							myWriter.write(sb.toString());
+							myWriter.close();
+							MESSAGE.reply("ID: `" + id + "` added to mod list").queue();
+						} catch (IOException e) {
+							MESSAGE.reply("An error occured").queue();
 						}
-						PrintWriter myWriter = new PrintWriter(Bot.parent + "\\admin.txt");
-						myWriter.print(sb.toString());
-						myWriter.close();
-						MESSAGE.reply("ID: `" + id + "` removed from mod list").queue();
-					} catch (IOException e) {
-						MESSAGE.reply("An error occured").queue();
 					}
+					break;
+
+
+
+
+				case "rblacklist":
+					if(!Bot.blacklist.contains(id)) {
+						MESSAGE.reply("ID not on blacklist").queue();
+					}else {
+						Bot.blacklist.remove(id);
+						StringBuilder sb = new StringBuilder();
+						try {
+							for(String m : Bot.blacklist) {
+								sb.append(m + "\n");
+							}
+							PrintWriter myWriter = new PrintWriter(Bot.parent + "/blacklist.txt");
+							myWriter.print(sb.toString());
+							myWriter.close();
+							MESSAGE.reply("ID: `" + id + "` removed from blacklist").queue();
+						} catch (IOException e) {
+							MESSAGE.reply("An error occured").queue();
+						}
+					}
+					break;
+
+				case "rsupport":
+					if(!Bot.supporter.contains(id)) {
+						MESSAGE.reply("ID is not a supporter").queue();
+					}else {
+						Bot.supporter.remove(id);
+						StringBuilder sb = new StringBuilder();
+						try {
+							for(String m : Bot.supporter) {
+								sb.append(m + "\n");
+							}
+							PrintWriter myWriter = new PrintWriter(Bot.parent + "/support.txt");
+							myWriter.print(sb.toString());
+							myWriter.close();
+							MESSAGE.reply("ID: `" + id + "` removed from supporter list").queue();
+						} catch (IOException e) {
+							MESSAGE.reply("An error occured").queue();
+						}
+					}
+					break;
+
+				case "rmod":
+					if(!Bot.admin.contains(id)) {
+						MESSAGE.reply("ID is not a mod").queue();
+					}else {
+						if(id.equals("841028865995964477")) {
+							MESSAGE.reply("You cannot remove this mod").queue();
+							break;
+						}
+						Bot.admin.remove(id);
+						StringBuilder sb = new StringBuilder();
+						try {
+							for(String m : Bot.admin) {
+								sb.append(m + "\n");
+							}
+							PrintWriter myWriter = new PrintWriter(Bot.parent + "/admin.txt");
+							myWriter.print(sb.toString());
+							myWriter.close();
+							MESSAGE.reply("ID: `" + id + "` removed from mod list").queue();
+						} catch (IOException e) {
+							MESSAGE.reply("An error occured").queue();
+						}
+					}
+					break;
 				}
-				break;
-			}
+			} catch(Exception e) {}
 		}
 	}
+	
+	public static String supportHelp() {
+		return "`" + Bot.Prefix + "support <id>` - Adds id to supporter list.\n" +
+				"`" + Bot.Prefix + "rsupport <id>` - Removes id from supporter list.";
+	}
+	
+	public static String adminHelp() {
+		return "`" + Bot.Prefix + "mod <id>` - Adds id to mod list.\n" +
+				"`" + Bot.Prefix + "rmod <id>` - Removes id from mod list.";
+	}
+	
+	public static String blacklistHelp() {
+		return "`" + Bot.Prefix + "blacklist <id>` - Adds id to blacklist.\n" +
+				"`" + Bot.Prefix + "rblacklist <id>` - Removes id from blacklist.";
+	}
+	
 }

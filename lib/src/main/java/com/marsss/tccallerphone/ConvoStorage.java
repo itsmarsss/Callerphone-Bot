@@ -68,6 +68,7 @@ public class ConvoStorage {
 			receiverTCID = "";
 			isConnected = false;
 			lastMessage = 0;
+			report = false;
 		}
 	}
 	public static Convo[] convo = new Convo[10000];

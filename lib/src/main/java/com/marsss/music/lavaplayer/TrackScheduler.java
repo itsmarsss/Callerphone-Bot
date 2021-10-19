@@ -31,7 +31,7 @@ public class TrackScheduler extends AudioEventAdapter {
 	}
 
 	public void nextTrack() {
-		if(index == this.queue.size() && loop) {
+		if(index == this.queue.size()+1 && loop) {
 			index = 0;
 		}else {
 			this.player.startTrack(this.queue.get(index).makeClone(), false);

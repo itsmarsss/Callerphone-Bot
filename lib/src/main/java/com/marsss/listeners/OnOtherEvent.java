@@ -6,13 +6,10 @@ import java.time.OffsetDateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.marsss.Bot;
-
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.DisconnectEvent;
 import net.dv8tion.jda.api.events.ResumedEvent;
-import net.dv8tion.jda.api.events.ShutdownEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
 public class OnOtherEvent extends ListenerAdapter{
@@ -43,8 +40,4 @@ public class OnOtherEvent extends ListenerAdapter{
 		CHANNEL.sendMessageEmbeds(Emd.build()).queue();
 	}
 
-	public void onShutdown(ShutdownEvent event) {
-		EmbedBuilder embedBuilder = new EmbedBuilder().setTitle("Status").setColor(Color.RED).setFooter("Goodbye World...").setDescription(Bot.jda.getSelfUser().getAsMention() + " is going offline.");
-		Bot.jda.getTextChannelById("852342009288851516").sendMessageEmbeds(embedBuilder.build()).queue();;
-	}
 }

@@ -14,7 +14,7 @@ public class Invite {
 		final Color COLOR = Colour.randColor();
 		EmbedBuilder InvEmd = new EmbedBuilder()
 				.setColor(COLOR)
-				.addField("Add me to your server", "[Invite Link](https://discord.com/api/oauth2/authorize?client_id=849713468348956692&permissions=274914888704&scope=bot%20applications.commands)", true)
+				.addField("Add me to your server", "[Invite Link](https://discord.com/api/oauth2/authorize?client_id=849713468348956692&permissions=49663040&scope=bot%20applications.commands)", true)
 				.addField("Join the Community and Support Server", "[Server Link](https://discord.gg/jcYKsfw48p)", true)
 				.addField("Support Us", "[Patreon Link](https://www.patreon.com/itsmarsss)", true)
 				.setFooter("Have a nice day");
