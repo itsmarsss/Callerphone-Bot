@@ -18,7 +18,7 @@ public class OnDisconnection extends ListenerAdapter {
 	public void onGuildVoiceLeave(GuildVoiceLeaveEvent event) {
 
 		if(event.getMember().getUser() == Bot.jda.getSelfUser()) {
-			AudioManager audioManager = event.getGuild().getAudioManager();
+			final AudioManager audioManager = event.getGuild().getAudioManager();
 			audioManager.setSelfDeafened(false);
 			final GuildMusicManager musicManager = PlayerManager.getInstance().getMusicManager(event.getGuild());
 			musicManager.audioPlayer.destroy();
@@ -28,7 +28,7 @@ public class OnDisconnection extends ListenerAdapter {
 
 		}
 
-		if(!VCCallerphoneListener.hasCall(event.getGuild().getId())) {
+		if(!hasCall(event.getGuild().getId())) {
 			return;
 		}
 
@@ -108,6 +108,18 @@ public class OnDisconnection extends ListenerAdapter {
 				a.resetAudio();
 			}
 		}
+	}
+	
+	public static boolean hasCall(String g) {
+		for(Audio a : AudioStorage.audio) {
+			try {
+				if(Bot.jda.getVoiceChannelById(a.callerVCID).getGuild().getId().equals(g) || 
+						Bot.jda.getVoiceChannelById(a.receiverVCID).getGuild().getId().equals(g)) {
+					return true;
+				}
+			}catch(Exception e) {}
+		}
+		return false;
 	}
 
 }

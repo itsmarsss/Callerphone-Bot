@@ -23,6 +23,7 @@ public class VCCallPairer {
 			final Audio audio = AudioStorage.audio[i];
 			if(!audio.getConnected()) {
 				if(!audio.getCallerVCID().equals("empty")) {
+					
 					audio.setReceiverVCID(vcchannel.getId());
 					audio.setReceiverChannelID(CHANNELID);
 					audio.setConnected(true);

@@ -13,9 +13,7 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
 public class OnPrivateMessage extends ListenerAdapter {
 	public void onPrivateMessageReceived(PrivateMessageReceivedEvent event) {
-		if(event.getAuthor().isBot()) {
-			return;
-		}
+
 		final 	Logger logger = LoggerFactory.getLogger(OnPrivateMessage.class);
 		String msg = event.getMessage().getContentRaw();
 		msg = msg.replaceAll("\\s+", "%20");

@@ -18,7 +18,10 @@ import net.dv8tion.jda.api.managers.AudioManager;
 public class VCCallerphoneListener extends ListenerAdapter {
 	private static final String Callerphone = Bot.Callerphone;
 	public void onGuildMessageReceived(GuildMessageReceivedEvent event) {
-
+		
+		if(!event.getChannel().canTalk())
+			return;
+		
 		final Message MESSAGE = event.getMessage();
 		final String args[] = MESSAGE.getContentRaw().toLowerCase().split("\\s+");
 		final Member selfmember = event.getGuild().getSelfMember();
@@ -37,6 +40,7 @@ public class VCCallerphoneListener extends ListenerAdapter {
 			}
 			for (Audio a : AudioStorage.audio) {
 				if(!a.getConnected()) {
+					MESSAGE.reply("No call to report").queue();
 					break SWITCH;
 				}
 				if(a.getCallerChannelID().equals(event.getChannel().getId())) {
@@ -102,7 +106,7 @@ public class VCCallerphoneListener extends ListenerAdapter {
 					RECEIVER = jda.getVoiceChannelById(a.getReceiverVCID()).getGuild();
 				}catch(Exception e) {}
 
-				if(CALLER == null && RECEIVER == null) {
+				if((CALLER == null && RECEIVER == null) || (CALLER == null)) {
 					a.resetAudio();
 					continue;
 				}

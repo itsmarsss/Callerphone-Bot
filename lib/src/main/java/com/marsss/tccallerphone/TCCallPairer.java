@@ -20,6 +20,7 @@ public class TCCallPairer {
 			final Convo convo = ConvoStorage.convo[i];
 			if(!convo.getConnected()) {
 				if(!convo.getCallerTCID().equals("empty")) {
+
 					convo.setReceiverTCID(CHANNELID);
 					convo.setConnected(true);
 
@@ -30,7 +31,7 @@ public class TCCallPairer {
 					
 					logger.info("From TC: " + convo.getCallerTCID() + " - To TC: " + convo.getReceiverTCID());
 					logger.info("From Guild: " + jda.getTextChannelById(convo.getCallerTCID()).getGuild().getId() + " - To Guild: " + jda.getTextChannelById(convo.getReceiverTCID()).getGuild().getId());
-				
+					convo.lastMessage = System.currentTimeMillis();
 					return;
 				}else if(convo.getCallerTCID().equals("empty")) {
 					convo.setCallerTCID(CHANNELID);

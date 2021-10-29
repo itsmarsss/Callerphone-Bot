@@ -94,7 +94,9 @@ public class Help {
 			DESC = Join.getHelp() + "\n"
 					+ Leave.getHelp() + "\n"
 					+ Play.getHelp() + "\n"
+					+ Playsc.getHelp() + "\n"
 					+ Playlist.getHelp() + "\n"
+					+ Playlistsc.getHelp() + "\n"
 					+ Pause.getHelp() + "\n"
 					+ Resume.getHelp() + "\n"
 					+ Skip.getHelp() + "\n"
@@ -319,9 +321,16 @@ public class Help {
 			TITLE = "Play";
 			DESC = Play.getHelp();
 			break;
+		case "playsc":
+			TITLE = "Playsc";
+			DESC = Playsc.getHelp();
 		case "playlist":
 			TITLE = "Playlist";
 			DESC = Playlist.getHelp();
+			break;
+		case "playlistsc":
+			TITLE = "Playlistsc";
+			DESC = Playlistsc.getHelp();
 			break;
 		case "pause":
 			TITLE = "Pause";
@@ -406,8 +415,8 @@ public class Help {
 				.addField("Bot", "all commands related to the bot will be here, do `" + Bot.Prefix + "help bot` for more information", false)
 				.addField("Entertainment", "all entertainment commands will be in this category, do `" + Bot.Prefix + "help entertainment` for more information", false)
 				.addField("Utils", "all utility commands will be in this category, do `" + Bot.Prefix + "help utils` for more information", false)
-				.addField("TCUserphone", "all text call callerphone commands will be in this category, do `" + Bot.Prefix + "help tccall` for more information", false)
-				.addField("VCUserphone", "all voice call callerphone commands will be in this category, do `" + Bot.Prefix + "help vccall` for more information", false)
+				.addField("TC Callerphone", "all text call callerphone commands will be in this category, do `" + Bot.Prefix + "help tccall` for more information", false)
+				.addField("VC Callerphone", "all voice call callerphone commands will be in this category, do `" + Bot.Prefix + "help vccall` for more information", false)
 				.addField("Music", "all music commands will be in this category, do `" + Bot.Prefix + "help music` for more information", false)
 				.setFooter("Type `" + Bot.Prefix + "help <category name>` to see category commands");
 		if(admin) {

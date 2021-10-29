@@ -19,9 +19,12 @@ public class About {
 		final StringBuilder desc = new StringBuilder()
 				.append("[Invite link](https://discord.com/api/oauth2/authorize?client_id=849713468348956692&permissions=49663040&scope=bot%20applications.commands)")
 				.append("\n[Support server](https://discord.gg/jcYKsfw48p)")
-				.append("\n[Bot listing](https://top.gg/bot/849713468348956692)")
-				.append("\n[Upvote bot](https://top.gg/bot/849713468348956692/vote)")
-				.append("\n[Upvote support server](https://top.gg/servers/798428155907801089/vote)")
+				.append("\n[Bot listing (top.gg)](https://top.gg/bot/849713468348956692)")
+				.append("\n[Upvote bot (top.gg)](https://top.gg/bot/849713468348956692/vote)")
+				.append("\n[Bot listing (dbl)](https://discordbotlist.com/bots/callerphone)")
+				.append("\n[Upvote bot (dbl)](https://discordbotlist.com/bots/callerphone/upvote)")
+				.append("\n[Upvote support server (top.gg)](https://top.gg/servers/798428155907801089/vote)")
+				.append("\n[Upvote support server (dbl)](https://discordbotlist.com/servers/legendary-bot-official-server/upvote)")
 
 				.append("\n");
 

@@ -16,11 +16,14 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 public class TCCallerphoneListener extends ListenerAdapter {
 	private static final String Callerphone = Bot.Callerphone;
 	public void onGuildMessageReceived(GuildMessageReceivedEvent event) {
-
+		
+		if(!event.getChannel().canTalk())
+			return;
+		
 		final Message MESSAGE = event.getMessage();
 		final String MESSAGERAW = MESSAGE.getContentRaw();
 		final String args[] = MESSAGERAW.toLowerCase().split("\\s+");
-		
+
 		SWITCH : switch (args[0].toLowerCase().replace(Bot.Prefix, "")) {
 
 
@@ -42,7 +45,7 @@ public class TCCallerphoneListener extends ListenerAdapter {
 					RECEIVER = jda.getTextChannelById(c.getReceiverTCID());
 				}catch(Exception e) {}
 
-				if(CALLER == null && RECEIVER == null) {
+				if((CALLER == null && RECEIVER == null) || (CALLER == null)) {
 					c.resetMessage();
 					continue;
 				}
@@ -54,6 +57,8 @@ public class TCCallerphoneListener extends ListenerAdapter {
 
 					final String callerID = c.getCallerTCID();
 					final String receiverID = c.getReceiverTCID();
+
+					boolean report = c.report;
 
 					String data = "";
 					for(String m : c.getMessages())
@@ -72,7 +77,7 @@ public class TCCallerphoneListener extends ListenerAdapter {
 
 					final String DATA = data;
 
-					if(c.report) {
+					if(report) {
 						jda.getTextChannelById("897290511000404008").sendMessage("**ID:** " + ID).addFile(DATA.getBytes(), ID + ".txt").queue();
 					}
 
@@ -84,6 +89,8 @@ public class TCCallerphoneListener extends ListenerAdapter {
 
 					final String callerID = c.getCallerTCID();
 					final String receiverID = c.getReceiverTCID();
+
+					boolean report = c.report;
 
 					String data = "";
 					for(String m : c.getMessages())
@@ -101,7 +108,7 @@ public class TCCallerphoneListener extends ListenerAdapter {
 
 					final String DATA = data;
 
-					if(c.report) {
+					if(report) {
 						jda.getTextChannelById("897290511000404008").sendMessage("**ID:** " + ID).addFile(DATA.getBytes(), ID + ".txt").queue();
 					}
 
@@ -136,11 +143,12 @@ public class TCCallerphoneListener extends ListenerAdapter {
 			}
 			for (Convo c : ConvoStorage.convo) {
 				if(!c.getConnected()) {
+					MESSAGE.reply("No chat to report").queue();
 					break SWITCH;
 				}
 				if(c.getCallerTCID().equals(event.getChannel().getId()) || c.getReceiverTCID().equals(event.getChannel().getId())) {
 					c.report = true;
-					MESSAGE.reply(Callerphone + "Call reported!").queue();
+					MESSAGE.reply(Callerphone + "Chat reported!").queue();
 					break SWITCH;
 				}
 			}
@@ -151,13 +159,13 @@ public class TCCallerphoneListener extends ListenerAdapter {
 		default:
 			if(args[0].toLowerCase().equals(Bot.Prefix + "support"))
 				break;
-			
+
 			if(args[0].toLowerCase().equals(Bot.Prefix + "blacklist"))
 				break;
-			
+
 			if(args[0].toLowerCase().equals(Bot.Prefix + "mod"))
 				break;
-			
+
 			if(Bot.blacklist.contains(event.getAuthor().getId())) {
 				break;
 			}
@@ -218,7 +226,7 @@ public class TCCallerphoneListener extends ListenerAdapter {
 						if(Bot.admin.contains(event.getAuthor().getId())) {
 							Bot.jda.getTextChannelById(c.getCallerTCID()).sendMessage("***[Moderator]* " + MESSAGE.getAuthor().getAsTag() + "**: " + MESSAGE.getContentDisplay()).queue();
 						}else if(Bot.supporter.contains(event.getAuthor().getId())) {
-							Bot.jda.getTextChannelById(c.getCallerTCID()).sendMessage("***[Admin]* " + MESSAGE.getAuthor().getAsTag() + "**: " + MESSAGE.getContentDisplay()).queue();
+							Bot.jda.getTextChannelById(c.getCallerTCID()).sendMessage("***[Supporter]* " + MESSAGE.getAuthor().getAsTag() + "**: " + MESSAGE.getContentDisplay()).queue();
 						}else {
 							Bot.jda.getTextChannelById(c.getCallerTCID()).sendMessage("**" + MESSAGE.getAuthor().getAsTag() + "**: " + MESSAGE.getContentDisplay()).queue();
 						}
@@ -255,7 +263,7 @@ public class TCCallerphoneListener extends ListenerAdapter {
 	private boolean hasCall(String tc) {
 		for(Convo c : ConvoStorage.convo) {
 			try {
-				if((tc.equals(c.getCallerTCID()) || tc.equals(c.getReceiverTCID())) && c.isConnected) {
+				if((tc.equals(c.getCallerTCID()) || tc.equals(c.getReceiverTCID()))) {
 					return true;
 				}
 			}catch(Exception e) {}

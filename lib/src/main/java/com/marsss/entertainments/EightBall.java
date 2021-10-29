@@ -37,4 +37,3 @@ public class EightBall {
 		return "`" + Bot.Prefix + "8ball <hard question>` - Help you answer questions.";
 	}
 }
-

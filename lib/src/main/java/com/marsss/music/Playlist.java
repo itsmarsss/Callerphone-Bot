@@ -63,6 +63,6 @@ public class Playlist {
 	}
 	
 	public static String getHelp() {
-		return "`" + Bot.Prefix + "playlist <query>` - Searches for a playlist with the query and plays it.";
+		return "`" + Bot.Prefix + "playlist <query/link>` - Searches for a playlist with the query on Youtube and plays it.";
 	}
 }

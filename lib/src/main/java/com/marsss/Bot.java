@@ -65,7 +65,6 @@ public class Bot {
 			GatewayIntent.GUILD_MESSAGES,
 			GatewayIntent.GUILD_MESSAGE_REACTIONS,
 			GatewayIntent.GUILD_VOICE_STATES,
-			GatewayIntent.GUILD_PRESENCES,
 			GatewayIntent.GUILD_EMOJIS,
 			GatewayIntent.GUILD_INVITES,
 			GatewayIntent.DIRECT_MESSAGES);
@@ -151,64 +150,69 @@ public class Bot {
 			logger.error(e.toString());
 		}
 
-//		jda.upsertCommand(new CommandData("help", "Learn more about my commands")
-//				.addOptions(new OptionData(OptionType.STRING, "command", "Which command/category you want to learn more about?").setRequired(false)))
-//		.queue();
-//
-//		jda.upsertCommand(new CommandData("botinfo", "Get the bot's info")).queue();
-//
-//		jda.upsertCommand(new CommandData("search", "Search the web")
-//				.addOptions(new OptionData(OptionType.STRING, "query", "What do you want to search?").setRequired(true)))
-//		.queue();
-//
-//		jda.upsertCommand(new CommandData("poll", "Creates a poll for members to vote")
-//				.addOptions(new OptionData(OptionType.STRING, "question", "What are we voting for?").setRequired(true)))
-//		.queue();
-//
-//		
-//		jda.upsertCommand(new CommandData("about", "About Callerphone")).queue();
-//		jda.upsertCommand(new CommandData("donate", "Help us out by donating")).queue();
-//		jda.upsertCommand(new CommandData("ping", "Get the bot's ping")).queue();
-//		jda.upsertCommand(new CommandData("invite", "Invite Callerphone")).queue();
-//		jda.upsertCommand(new CommandData("ping", "Get the bot's ping")).queue();
-//		jda.upsertCommand(new CommandData("uptime", "Get the bot's uptime")).queue();
-//
-//
-//
-//		jda.upsertCommand(new CommandData("clap", "Claps your message")
-//				.addOptions(new OptionData(OptionType.STRING, "message", "What do you want to clap?").setRequired(true)))
-//				.queue();
-//		
-//		jda.upsertCommand(new CommandData("color", "Get a random color")).queue();
-//
-//		jda.upsertCommand(new CommandData("colorrgb", "COLORS!")
-//				.addOptions(new OptionData(OptionType.INTEGER, "r", "Red value").setRequired(true))
-//				.addOptions(new OptionData(OptionType.INTEGER, "g", "Green value").setRequired(true))
-//				.addOptions(new OptionData(OptionType.INTEGER, "b", "Blue value").setRequired(true)))
-//				.queue();
-//
-//		jda.upsertCommand(new CommandData("colorhex", "COLORS!")
-//				.addOptions(new OptionData(OptionType.STRING, "hex", "Hexcode").setRequired(true)))
-//				.queue();
-//
-//		jda.upsertCommand(new CommandData("echo", "Echos your message")
-//				.addOptions(new OptionData(OptionType.STRING, "message", "What do you want to echo?").setRequired(true)))
-//				.queue();
-//
-//		jda.upsertCommand(new CommandData("eightball", "Help you decide things")
-//				.addOptions(new OptionData(OptionType.STRING, "question", "What do you want to ask?").setRequired(true)))
-//				.queue();
+		//		jda.upsertCommand(new CommandData("help", "Learn more about my commands")
+		//				.addOptions(new OptionData(OptionType.STRING, "command", "Which command/category you want to learn more about?").setRequired(false)))
+		//		.queue();
+		//
+		//		jda.upsertCommand(new CommandData("botinfo", "Get the bot's info")).queue();
+		//
+		//		jda.upsertCommand(new CommandData("search", "Search the web")
+		//				.addOptions(new OptionData(OptionType.STRING, "query", "What do you want to search?").setRequired(true)))
+		//		.queue();
+		//
+		//		jda.upsertCommand(new CommandData("poll", "Creates a poll for members to vote")
+		//				.addOptions(new OptionData(OptionType.STRING, "question", "What are we voting for?").setRequired(true)))
+		//		.queue();
+		//
+		//		
+		//		jda.upsertCommand(new CommandData("about", "About Callerphone")).queue();
+		//		jda.upsertCommand(new CommandData("donate", "Help us out by donating")).queue();
+		//		jda.upsertCommand(new CommandData("ping", "Get the bot's ping")).queue();
+		//		jda.upsertCommand(new CommandData("invite", "Invite Callerphone")).queue();
+		//		jda.upsertCommand(new CommandData("ping", "Get the bot's ping")).queue();
+		//		jda.upsertCommand(new CommandData("uptime", "Get the bot's uptime")).queue();
+		//
+		//
+		//
+		//		jda.upsertCommand(new CommandData("clap", "Claps your message")
+		//				.addOptions(new OptionData(OptionType.STRING, "message", "What do you want to clap?").setRequired(true)))
+		//				.queue();
+		//		
+		//		jda.upsertCommand(new CommandData("color", "Get a random color")).queue();
+		//
+		//		jda.upsertCommand(new CommandData("colorrgb", "COLORS!")
+		//				.addOptions(new OptionData(OptionType.INTEGER, "r", "Red value").setRequired(true))
+		//				.addOptions(new OptionData(OptionType.INTEGER, "g", "Green value").setRequired(true))
+		//				.addOptions(new OptionData(OptionType.INTEGER, "b", "Blue value").setRequired(true)))
+		//				.queue();
+		//
+		//		jda.upsertCommand(new CommandData("colorhex", "COLORS!")
+		//				.addOptions(new OptionData(OptionType.STRING, "hex", "Hexcode").setRequired(true)))
+		//				.queue();
+		//
+		//		jda.upsertCommand(new CommandData("echo", "Echos your message")
+		//				.addOptions(new OptionData(OptionType.STRING, "message", "What do you want to echo?").setRequired(true)))
+		//				.queue();
+		//
+		//		jda.upsertCommand(new CommandData("eightball", "Help you decide things")
+		//				.addOptions(new OptionData(OptionType.STRING, "question", "What do you want to ask?").setRequired(true)))
+		//				.queue();
 
 
 	}
-	
+
 	private static void kill() {
 		for(Convo c : ConvoStorage.convo) {
-			if(!c.isConnected) {
-				continue;
-			}
+
 			if(System.currentTimeMillis()-c.lastMessage >= 300000) {
 				final String callerID = c.getCallerTCID();
+				if(!c.isConnected) {
+					try {
+						Bot.jda.getTextChannelById(callerID).sendMessage(Bot.Callerphone + "Took to long for someone to pick up :(").queue();
+					}catch(Exception ex) {}
+					c.resetMessage();
+					continue;
+				}
 				final String receiverID = c.getReceiverTCID();
 
 				String data = "";
@@ -236,7 +240,7 @@ public class Bot {
 			}
 		}
 	}
-	
+
 	private static void getAdmin(File file) throws IOException {
 		BufferedReader br = new BufferedReader(new FileReader(file));
 		try {

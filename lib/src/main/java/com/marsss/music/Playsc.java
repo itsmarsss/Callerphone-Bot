@@ -12,8 +12,8 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
-public class Play {
-	public static void play(GuildMessageReceivedEvent event) {
+public class Playsc {
+public static void playsc(GuildMessageReceivedEvent event) {
 		
 		if(VCCallerphoneListener.hasCall(event.getGuild().getId())) {
 			event.getMessage().reply("You cannot play music during a voice call").queue();
@@ -43,13 +43,14 @@ public class Play {
 			return;
 		}
 
-		CONTENT = CONTENT.replace(Bot.Prefix + "play ", "");
+		CONTENT = CONTENT.replace(Bot.Prefix + "playsc ", "");
 
 		if (!isUrl(CONTENT)) {
-			CONTENT = "ytsearch:" + CONTENT;
+			CONTENT = "scsearch:" + CONTENT;
 		}
 		
 		MESSAGE.addReaction("🔎").queue();
+		MESSAGE.addReaction("☁️").queue();
 		PlayerManager.getInstance().loadAndPlay(MESSAGE, CONTENT, true);
 	}
 
@@ -63,6 +64,6 @@ public class Play {
 	}
 	
 	public static String getHelp() {
-		return "`" + Bot.Prefix + "play <query/link>` - Searches for a video with the query on YouTube and plays it.";
+		return "`" + Bot.Prefix + "playsc <query/link>` - Searches for a track with the query on SoundCloud and plays it.";
 	}
 }

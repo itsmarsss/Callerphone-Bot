@@ -10,6 +10,10 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
 public class MusicListener extends ListenerAdapter {
 	public void onGuildMessageReceived(GuildMessageReceivedEvent event) {
+		
+		if(!event.getChannel().canTalk())
+			return;
+		
 		final Message MESSAGE = event.getMessage();
 		final String CONTENT = MESSAGE.getContentRaw().toLowerCase();
 
@@ -35,11 +39,19 @@ public class MusicListener extends ListenerAdapter {
 		case "play":
 			Play.play(event);
 			break;
+		
+		case "playsc":
+			Playsc.playsc(event);
+			break;
 			
 		case "playlist":
 			Playlist.playlist(event);
 			break;
 
+		case "playlistsc":
+			Playlistsc.playlistsc(event);
+			break;
+			
 		case "pause":
 			Pause.pause(event);
 			break;

@@ -69,5 +69,4 @@ public class Uptime {
 	public static String getHelp() {
 		return "`" + Bot.Prefix + "uptime` - Gets the bot's uptime.";
 	}
-
 }
