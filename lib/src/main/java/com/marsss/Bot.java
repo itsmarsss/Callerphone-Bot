@@ -9,6 +9,7 @@ import java.net.URLDecoder;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.util.EnumSet;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Scanner;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -49,8 +50,10 @@ public class Bot {
 	public static String parent;
 
 	public static LinkedList <String> blacklist = new LinkedList<>();
-	public static LinkedList <String> supporter = new LinkedList<>();
+	public static HashMap <String, String> prefix = new HashMap<String, String>();
 	public static LinkedList <String> admin = new LinkedList<>();
+	
+	public static LinkedList <String> filter = new LinkedList<>();
 
 	public static final String brainURL = "http:api.brainshop.ai/get?bid=160403&key=FFFNOBQEMnANoVn1&uid=[uid]&msg=[msg]";
 	public static final String Prefix = "c?";
@@ -92,12 +95,12 @@ public class Bot {
 
 
 			for(int i = 0; i < ConvoStorage.convo.length; i++) {
-				ConvoStorage.convo[i] = new Convo(new ConcurrentLinkedQueue<>(), "empty", "", false, 0, false);
+				ConvoStorage.convo[i] = new Convo(new ConcurrentLinkedQueue<>(), "empty", "", false, 0, true, true, false, false, false);
 			}
 
 
 			for(int i = 0; i < AudioStorage.audio.length; i++) {
-				AudioStorage.audio[i] = new Audio(new ConcurrentLinkedQueue<>(), "empty", "", new ConcurrentLinkedQueue<>(), "", "", false);
+				AudioStorage.audio[i] = new Audio(new ConcurrentLinkedQueue<>(), "empty", "", new ConcurrentLinkedQueue<>(), "", "", false, false, false);
 			}
 
 			jda.awaitReady();
@@ -127,9 +130,9 @@ public class Bot {
 			}
 
 			try {
-				getSupport(new File(parent + "/support.txt"));
+				getPrefix(new File(parent + "/prefix.txt"));
 			}catch(Exception e) {
-				logger.error("Create support.txt");
+				logger.error("Create prefix.txt");
 			}
 
 			try{
@@ -137,7 +140,13 @@ public class Bot {
 			}catch(Exception e) {
 				logger.error("Create admin.txt");
 			}
-
+			
+			try{
+				getFilter(new File(parent + "/filter.txt"));
+			}catch(Exception e) {
+				logger.error("Create filter.txt");
+			}
+			
 			ScheduledExecutorService ses = Executors.newSingleThreadScheduledExecutor();
 			ses.scheduleAtFixedRate(new Runnable() {
 				@Override
@@ -254,13 +263,13 @@ public class Bot {
 			br.close();
 		}
 	}
-	private static void getSupport(File file) throws IOException {
+	private static void getPrefix(File file) throws IOException {
 		BufferedReader br = new BufferedReader(new FileReader(file));
 		try {
 			String line = br.readLine();
-
 			while (line != null) {
-				supporter.add(line);
+				int split = line.indexOf("|");
+				prefix.put(line.substring(0, split), line.substring(split+1, line.length()));
 				line = br.readLine();
 			}
 		} finally {
@@ -274,6 +283,19 @@ public class Bot {
 
 			while (line != null) {
 				blacklist.add(line);
+				line = br.readLine();
+			}
+		} finally {
+			br.close();
+		}
+	}
+	private static void getFilter(File file) throws IOException {
+		BufferedReader br = new BufferedReader(new FileReader(file));
+		try {
+			String line = br.readLine();
+
+			while (line != null) {
+				filter.add(line);
 				line = br.readLine();
 			}
 		} finally {

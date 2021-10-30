@@ -70,6 +70,7 @@ public class Help {
 		case "tccall":
 			TITLE = "TCCall Commands";
 			DESC = TCCallPairer.callHelp() + "\n"
+					+ TCCallPairer.uncenscallHelp() + "\n"
 					+ TCCallPairer.hangupHelp() + "\n"
 					+ TCCallPairer.reportHelp();
 			break;
@@ -246,8 +247,8 @@ public class Help {
 
 
 
-		case "voicecall":
-			TITLE = "voiceCall";
+		case "call":
+			TITLE = "Call";
 			DESC = VCCallPairer.callHelp();
 			break;
 		case "hangup":
@@ -287,9 +288,13 @@ public class Help {
 
 
 
-		case "chatcall":
-			TITLE = "Chatcall";
+		case "chat":
+			TITLE = "Chat";
 			DESC = TCCallPairer.callHelp();
+			break;
+		case "chatuncens":
+			TITLE = "UncensoredChatCall";
+			DESC = TCCallPairer.uncenscallHelp();
 			break;
 		case "endchat":
 			TITLE = "Endchat";

@@ -16,19 +16,21 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 public class TCCallerphoneListener extends ListenerAdapter {
 	private static final String Callerphone = Bot.Callerphone;
 	public void onGuildMessageReceived(GuildMessageReceivedEvent event) {
-		
+
 		if(!event.getChannel().canTalk())
 			return;
-		
+
 		final Message MESSAGE = event.getMessage();
-		final String MESSAGERAW = MESSAGE.getContentRaw();
+		String MESSAGERAW = MESSAGE.getContentDisplay();
 		final String args[] = MESSAGERAW.toLowerCase().split("\\s+");
+		
+		SWITCH : switch (args[0].replace(Bot.Prefix, "")) {
 
-		SWITCH : switch (args[0].toLowerCase().replace(Bot.Prefix, "")) {
 
 
-
-		case "endchat":
+		case "endchat":		
+			if(!args[0].startsWith(Bot.Prefix))
+			return;
 			if(!hasCall(event.getChannel().getId())) {
 				MESSAGE.reply(Callerphone + "There is no call to end!").queue();
 				break;
@@ -124,6 +126,8 @@ public class TCCallerphoneListener extends ListenerAdapter {
 
 
 		case "chat":
+			if(!args[0].startsWith(Bot.Prefix))
+				return;
 			if(Bot.blacklist.contains(event.getAuthor().getId())) {
 				MESSAGE.reply("Sorry you are blacklisted, submit an appeal at our support server").queue();
 				break;
@@ -132,11 +136,38 @@ public class TCCallerphoneListener extends ListenerAdapter {
 				MESSAGE.reply(Callerphone + "There is already a call going on!").queue();
 				break;
 			}
+			boolean anon = false;
+			if(args.length >= 2) {
+				if(args[1].equalsIgnoreCase("anon")) {
+					anon = true;
+				}
+			}
+			TCCallPairer.onCallCommand(event.getChannel(), MESSAGE, true, anon);
+			break;
 
-			TCCallPairer.onCallCommand(event.getChannel(), MESSAGE);
+		case "chatuncens":
+			if(!args[0].startsWith(Bot.Prefix))
+				return;
+			if(Bot.blacklist.contains(event.getAuthor().getId())) {
+				MESSAGE.reply("Sorry you are blacklisted, submit an appeal at our support server").queue();
+				break;
+			}
+			if(hasCall(event.getChannel().getId())) {
+				MESSAGE.reply(Callerphone + "There is already a call going on!").queue();
+				break;
+			}
+			boolean anoncens = false;
+			if(args.length >= 2) {
+				if(args[1].equalsIgnoreCase("anon")) {
+					anoncens = true;
+				}
+			}
+			TCCallPairer.onCallCommand(event.getChannel(), MESSAGE, false, anoncens);
 			break;
 
 		case "reportchat":
+			if(!args[0].startsWith(Bot.Prefix))
+				return;
 			if(!hasCall(event.getChannel().getId())) {
 				MESSAGE.reply(Callerphone + "There isn't a chat going on!").queue();
 				break;
@@ -183,16 +214,35 @@ public class TCCallerphoneListener extends ListenerAdapter {
 				if(!c.getConnected()) {
 					break SWITCH;
 				}
+
+				c.addMessage("Caller " + MESSAGE.getAuthor().getAsTag() + "(" + MESSAGE.getAuthor().getId() + ")" + ": " + MESSAGERAW);
+				c.lastMessage = System.currentTimeMillis();
+
+				if(MESSAGERAW.length() > 3500)
+					MESSAGERAW = ":x: I sent a message too long for Callerphone to handle! :x:";
+
 				if(c.getCallerTCID().equals(event.getChannel().getId())) {
-					c.addMessage("Caller " + MESSAGE.getAuthor().getAsTag() + "(" + MESSAGE.getAuthor().getId() + ")" + ": " + MESSAGERAW);
-					c.lastMessage = System.currentTimeMillis();
+					if(c.RFF) {
+						for(String ftr : Bot.filter) {
+							String rep = "";
+							for(int i = 0; i < ftr.length(); i++) {
+								rep+="#";
+							}
+							MESSAGERAW = MESSAGERAW.replaceAll("(?i)" + ftr, rep);
+						}
+					}
+
 					try {
-						if(Bot.admin.contains(event.getAuthor().getId())) {
-							Bot.jda.getTextChannelById(c.getReceiverTCID()).sendMessage("***[Moderator]* " + MESSAGE.getAuthor().getAsTag() + "**: " + MESSAGE.getContentDisplay()).queue();
-						}else if(Bot.supporter.contains(event.getAuthor().getId())) {
-							Bot.jda.getTextChannelById(c.getReceiverTCID()).sendMessage("***[Supporter]* " + MESSAGE.getAuthor().getAsTag() + "**: " + MESSAGE.getContentDisplay()).queue();
+						if(c.CAnon) {
+							Bot.jda.getTextChannelById(c.getReceiverTCID()).sendMessage("**DiscordUser#0000**: " + MESSAGERAW).queue();
 						}else {
-							Bot.jda.getTextChannelById(c.getReceiverTCID()).sendMessage("**" + MESSAGE.getAuthor().getAsTag() + "**: " + MESSAGE.getContentDisplay()).queue();
+							if(Bot.admin.contains(event.getAuthor().getId())) {
+								Bot.jda.getTextChannelById(c.getReceiverTCID()).sendMessage("***[Moderator]* " + MESSAGE.getAuthor().getAsTag() + "**: " + MESSAGERAW).queue();
+							}else if(Bot.prefix.containsKey(event.getAuthor().getId())) {
+								Bot.jda.getTextChannelById(c.getReceiverTCID()).sendMessage("***[" + Bot.prefix.get(event.getAuthor().getId()) + "]* " + MESSAGE.getAuthor().getAsTag() + "**: " + MESSAGERAW).queue();
+							}else {
+								Bot.jda.getTextChannelById(c.getReceiverTCID()).sendMessage("**" + MESSAGE.getAuthor().getAsTag() + "**: " + MESSAGERAW).queue();
+							}
 						}
 					}catch(Exception e) {
 						final String callerID = c.getCallerTCID();
@@ -204,7 +254,7 @@ public class TCCallerphoneListener extends ListenerAdapter {
 
 						c.resetMessage();
 						try {
-							Bot.jda.getTextChannelById(receiverID).sendMessage(Callerphone + "The other party hung up.").queue();
+							Bot.jda.getTextChannelById(receiverID).sendMessage(Callerphone + "Connection error, call ended.").queue();
 						}catch(Exception ex) {}
 						LocalDateTime now = LocalDateTime.now();
 						String month = String.valueOf(now.getMonthValue());
@@ -220,15 +270,28 @@ public class TCCallerphoneListener extends ListenerAdapter {
 					}
 					break SWITCH;
 				}else if(c.getReceiverTCID().equals(event.getChannel().getId())) {
-					c.addMessage("Receiver " + MESSAGE.getAuthor().getAsTag() + "(" + MESSAGE.getAuthor().getId() + ")" + ": " + MESSAGERAW);
-					c.lastMessage = System.currentTimeMillis();
+					if(c.CFF) {
+						for(String ftr : Bot.filter) {
+							String rep = "";
+							for(int i = 0; i < ftr.length(); i++) {
+								rep+="#";
+							}
+							MESSAGERAW = MESSAGERAW.replaceAll("(?i)" + ftr, rep);
+						}
+					}
+
 					try {
-						if(Bot.admin.contains(event.getAuthor().getId())) {
-							Bot.jda.getTextChannelById(c.getCallerTCID()).sendMessage("***[Moderator]* " + MESSAGE.getAuthor().getAsTag() + "**: " + MESSAGE.getContentDisplay()).queue();
-						}else if(Bot.supporter.contains(event.getAuthor().getId())) {
-							Bot.jda.getTextChannelById(c.getCallerTCID()).sendMessage("***[Supporter]* " + MESSAGE.getAuthor().getAsTag() + "**: " + MESSAGE.getContentDisplay()).queue();
+						System.out.println(c.CAnon);
+						if(c.RAnon) {
+							Bot.jda.getTextChannelById(c.getCallerTCID()).sendMessage("**DiscordUser#0000**: " + MESSAGERAW).queue();
 						}else {
-							Bot.jda.getTextChannelById(c.getCallerTCID()).sendMessage("**" + MESSAGE.getAuthor().getAsTag() + "**: " + MESSAGE.getContentDisplay()).queue();
+							if(Bot.admin.contains(event.getAuthor().getId())) {
+								Bot.jda.getTextChannelById(c.getCallerTCID()).sendMessage("***[Moderator]* " + MESSAGE.getAuthor().getAsTag() + "**: " + MESSAGERAW).queue();
+							}else if(Bot.prefix.containsKey(event.getAuthor().getId())) {
+								Bot.jda.getTextChannelById(c.getCallerTCID()).sendMessage("***[" + Bot.prefix.get(event.getAuthor().getId()) + "]* " + MESSAGE.getAuthor().getAsTag() + "**: " + MESSAGERAW).queue();
+							}else {
+								Bot.jda.getTextChannelById(c.getCallerTCID()).sendMessage("**" + MESSAGE.getAuthor().getAsTag() + "**: " + MESSAGERAW).queue();
+							}
 						}
 					}catch(Exception e) {
 						final String callerID = c.getCallerTCID();
@@ -240,7 +303,7 @@ public class TCCallerphoneListener extends ListenerAdapter {
 
 						c.resetMessage();
 						try {
-							Bot.jda.getTextChannelById(callerID).sendMessage(Callerphone + "The other party hung up.").queue();
+							Bot.jda.getTextChannelById(callerID).sendMessage(Callerphone + "Connection error, call ended.").queue();
 						}catch(Exception ex) {}
 						LocalDateTime now = LocalDateTime.now();
 						String month = String.valueOf(now.getMonthValue());

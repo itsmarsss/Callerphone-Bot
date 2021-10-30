@@ -13,14 +13,24 @@ public class ConvoStorage {
 		
 		public long lastMessage;
 		
+		public boolean CFF;
+		public boolean RFF;
+		
+		public boolean CAnon;
+		public boolean RAnon;
+		
 		public boolean report;
 
-		public Convo(Queue<String> messages, String callerTCID, String receiverTCID, boolean isConnected, int lastMessage, boolean report) {
+		public Convo(Queue<String> messages, String callerTCID, String receiverTCID, boolean isConnected, int lastMessage, boolean CFF, boolean RFF, boolean CAnon, boolean RAnon, boolean report) {
 			this.messages = messages;
 			this.callerTCID = callerTCID;
 			this.receiverTCID = receiverTCID;
 			this.isConnected = isConnected;
 			this.lastMessage = lastMessage;
+			this.CFF = CFF;
+			this.RFF = RFF;
+			this.CAnon = CAnon;
+			this.RAnon = RAnon;
 			this.report = report;
 		}
 
@@ -68,6 +78,10 @@ public class ConvoStorage {
 			receiverTCID = "";
 			isConnected = false;
 			lastMessage = 0;
+			CFF = true;
+			CFF = true;
+			CAnon = false;
+			RAnon = false;
 			report = false;
 		}
 	}

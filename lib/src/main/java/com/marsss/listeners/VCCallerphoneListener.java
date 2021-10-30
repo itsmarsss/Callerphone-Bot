@@ -18,20 +18,20 @@ import net.dv8tion.jda.api.managers.AudioManager;
 public class VCCallerphoneListener extends ListenerAdapter {
 	private static final String Callerphone = Bot.Callerphone;
 	public void onGuildMessageReceived(GuildMessageReceivedEvent event) {
-		
+
 		if(!event.getChannel().canTalk())
 			return;
-		
+
 		final Message MESSAGE = event.getMessage();
 		final String args[] = MESSAGE.getContentRaw().toLowerCase().split("\\s+");
 		final Member selfmember = event.getGuild().getSelfMember();
 		final AudioManager am = event.getGuild().getAudioManager();
 		final Guild g = event.getGuild();
-		
-		if(!args[0].startsWith(Bot.Prefix))
+
+		if(!args[0].toLowerCase().startsWith(Bot.Prefix))
 			return;
 
-		SWITCH : switch (args[0].toLowerCase().replace(Bot.Prefix, "")) {
+		SWITCH : switch (args[0].replace(Bot.Prefix, "")) {
 
 		case "reportcall":
 			if(!hasCall(event.getGuild().getId())) {
@@ -55,7 +55,7 @@ public class VCCallerphoneListener extends ListenerAdapter {
 					MESSAGE.reply(Callerphone + "Call reported!").queue();
 					break SWITCH;
 				}
-				
+
 				if(a.getReceiverChannelID().equals(event.getChannel().getId())) {
 					final StringBuilder members = new StringBuilder();
 					for(Member m : 
@@ -71,8 +71,8 @@ public class VCCallerphoneListener extends ListenerAdapter {
 			}
 			MESSAGE.reply(Callerphone + "Something went wrong, couldn't report call.").queue();
 			break;
-		
-		
+
+
 		case "hangup":
 			String VC;
 
@@ -185,9 +185,16 @@ public class VCCallerphoneListener extends ListenerAdapter {
 			//			return;
 			//		}
 
+			boolean anon = false;
+			if(args.length >= 2) {
+				if(args[1].equalsIgnoreCase("anon")) {
+					anon = true;
+				}
+			}
+
 			audioManager.openAudioConnection(GVS.getChannel());
 			MESSAGE.reply(Callerphone + "Connected to " + GVS.getChannel().getAsMention()).queue();
-			VCCallPairer.onCallCommand(event.getMember().getVoiceState().getChannel(), MESSAGE);
+			VCCallPairer.onCallCommand(event.getMember().getVoiceState().getChannel(), MESSAGE, anon);
 			break;
 
 
@@ -220,7 +227,7 @@ public class VCCallerphoneListener extends ListenerAdapter {
 				MESSAGE.reply(Callerphone + "I am not in a voice channel.").queue();
 				break;
 			}
-			
+
 			if(!hasCall(g.getId())) {
 				MESSAGE.reply(Callerphone + "There is no call in this server.").queue();
 				break;
@@ -246,7 +253,7 @@ public class VCCallerphoneListener extends ListenerAdapter {
 				MESSAGE.reply(Callerphone + "I am not in a voice channel.").queue();
 				break;
 			}
-			
+
 			if(!hasCall(g.getId())) {
 				MESSAGE.reply(Callerphone + "There is no call in this server.").queue();
 				break;
@@ -274,7 +281,7 @@ public class VCCallerphoneListener extends ListenerAdapter {
 				MESSAGE.reply(Callerphone + "There is no call in this server.").queue();
 				break;
 			}
-			
+
 			if(!selfmember.getVoiceState().getChannel().getId().equals(event.getMember().getVoiceState().getChannel().getId())) {
 				MESSAGE.reply(Callerphone + "You are not in the same voice channel as me.").queue();
 				break;

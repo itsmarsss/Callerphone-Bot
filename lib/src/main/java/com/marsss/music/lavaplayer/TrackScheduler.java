@@ -20,7 +20,7 @@ public class TrackScheduler extends AudioEventAdapter {
 
 	public TrackScheduler(AudioPlayer player) {
 		this.announce = true;
-		this.loop = true;
+		this.loop = false;
 		this.index = 0;
 		this.player = player;
 		this.queue = new LinkedList<>();
@@ -33,7 +33,7 @@ public class TrackScheduler extends AudioEventAdapter {
 	public void nextTrack() {
 		if(index == this.queue.size() && loop) {
 			index = 0;
-		}else {
+		}else if(index < this.queue.size()){
 			this.player.startTrack(this.queue.get(index).makeClone(), false);
 			index++;
 			if(this.announce) {

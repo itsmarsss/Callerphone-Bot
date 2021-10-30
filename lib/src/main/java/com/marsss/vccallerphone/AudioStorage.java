@@ -10,16 +10,20 @@ public class AudioStorage {
 		public Queue<byte[]> receiver;
 		public String receiverVCID;
 		public String receiverChannelID;
+		public boolean CAnon;
+		public boolean RAnon;
 		public boolean isConnected;
 
 
-		public Audio(Queue<byte[]> caller, String callerVCID, String callerChannelID, Queue<byte[]> receiver, String receiverVCID, String receiverChannelID, boolean isConnected){
+		public Audio(Queue<byte[]> caller, String callerVCID, String callerChannelID, Queue<byte[]> receiver, String receiverVCID, String receiverChannelID, boolean CAnon, boolean RAnon, boolean isConnected){
 			this.caller = caller;
 			this.callerVCID = callerVCID;
 			this.callerChannelID = callerChannelID;
 			this.receiver = receiver;
 			this.receiverVCID = receiverVCID;
 			this.receiverChannelID = receiverChannelID;
+			this.CAnon = CAnon;
+			this.RAnon = RAnon;
 			this.isConnected = isConnected;
 		}
 		
@@ -84,6 +88,8 @@ public class AudioStorage {
 			receiver.clear();
 			receiverVCID = "";
 			receiverChannelID = "";
+			CAnon = false;
+			RAnon = false;
 			isConnected = false;
 		}
 

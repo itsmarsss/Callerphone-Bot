@@ -368,7 +368,7 @@ public class CommandListener extends ListenerAdapter {
 							for(String m : Bot.blacklist) {
 								sb.append(m + "\n");
 							}
-							FileWriter myWriter = new FileWriter(Bot.parent + "\\blacklist.txt");
+							FileWriter myWriter = new FileWriter(Bot.parent + "/blacklist.txt");
 							myWriter.write(sb.toString());
 							myWriter.close();
 							MESSAGE.reply("ID: `" + id + "` added to blacklist").queue();
@@ -378,20 +378,25 @@ public class CommandListener extends ListenerAdapter {
 					}
 					break;
 
-				case "support":
-					if(Bot.supporter.contains(id)) {
-						MESSAGE.reply("ID is supporter already").queue();
+				case "prefix":
+					if(Bot.prefix.containsKey(id)) {
+						MESSAGE.reply("ID has prefix already").queue();
 					}else {
-						Bot.supporter.add(id);
+						String prefix = args[2];
+						if(prefix.length() > 15) {
+							MESSAGE.reply("Prefix too long (max. length = 15)").queue();
+							break;
+						}
+						Bot.prefix.put(id, prefix);
 						StringBuilder sb = new StringBuilder();
 						try {
-							for(String m : Bot.supporter) {
-								sb.append(m + "\n");
+							for(String key : Bot.prefix.keySet()) {
+								sb.append(key + "|" + Bot.prefix.get(key) + "\n");
 							}
-							FileWriter myWriter = new FileWriter(Bot.parent + "\\support.txt");
+							FileWriter myWriter = new FileWriter(Bot.parent + "/prefix.txt");
 							myWriter.write(sb.toString());
 							myWriter.close();
-							MESSAGE.reply("ID: `" + id + "` added to supporter list").queue();
+							MESSAGE.reply("ID: `" + id + "` now has prefix `" + prefix + "`").queue();
 						} catch (IOException e) {
 							MESSAGE.reply("An error occured").queue();
 						}
@@ -408,7 +413,7 @@ public class CommandListener extends ListenerAdapter {
 							for(String m : Bot.admin) {
 								sb.append(m + "\n");
 							}
-							FileWriter myWriter = new FileWriter(Bot.parent + "\\admin.txt");
+							FileWriter myWriter = new FileWriter(Bot.parent + "/admin.txt");
 							myWriter.write(sb.toString());
 							myWriter.close();
 							MESSAGE.reply("ID: `" + id + "` added to mod list").queue();
@@ -441,20 +446,20 @@ public class CommandListener extends ListenerAdapter {
 					}
 					break;
 
-				case "rsupport":
-					if(!Bot.supporter.contains(id)) {
-						MESSAGE.reply("ID is not a supporter").queue();
+				case "rprefix":
+					if(!Bot.prefix.containsKey(id)) {
+						MESSAGE.reply("ID does not have a prefix").queue();
 					}else {
-						Bot.supporter.remove(id);
+						Bot.prefix.remove(id);
 						StringBuilder sb = new StringBuilder();
 						try {
-							for(String m : Bot.supporter) {
-								sb.append(m + "\n");
+							for(String key : Bot.prefix.keySet()) {
+								sb.append(key + "|" + Bot.prefix.get(key) + "\n");
 							}
-							PrintWriter myWriter = new PrintWriter(Bot.parent + "/support.txt");
+							PrintWriter myWriter = new PrintWriter(Bot.parent + "/prefix.txt");
 							myWriter.print(sb.toString());
 							myWriter.close();
-							MESSAGE.reply("ID: `" + id + "` removed from supporter list").queue();
+							MESSAGE.reply("ID: `" + id + "` no longer has a prefix").queue();
 						} catch (IOException e) {
 							MESSAGE.reply("An error occured").queue();
 						}
@@ -490,8 +495,8 @@ public class CommandListener extends ListenerAdapter {
 	}
 	
 	public static String supportHelp() {
-		return "`" + Bot.Prefix + "support <id>` - Adds id to supporter list.\n" +
-				"`" + Bot.Prefix + "rsupport <id>` - Removes id from supporter list.";
+		return "`" + Bot.Prefix + "prefix <id> <prefix>` - Give user a prefix.\n" +
+				"`" + Bot.Prefix + "rprefix <id>` - Removes user prefix.";
 	}
 	
 	public static String adminHelp() {

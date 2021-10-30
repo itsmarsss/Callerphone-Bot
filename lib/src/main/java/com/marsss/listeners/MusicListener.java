@@ -37,18 +37,22 @@ public class MusicListener extends ListenerAdapter {
 			break;
 
 		case "play":
+			MESSAGE.reply("`Tip:` Enjoying music commands? Join <https://discord.gg/9uDv5wwXjk> for a 100% free music bot in development!").queue();
 			Play.play(event);
 			break;
 		
 		case "playsc":
+			MESSAGE.reply("`Tip:` Enjoying music commands? Join <https://discord.gg/9uDv5wwXjk> for a 100% free music bot in development!").queue();
 			Playsc.playsc(event);
 			break;
 			
 		case "playlist":
+			MESSAGE.reply("`Tip:` Enjoying music commands? Join <https://discord.gg/9uDv5wwXjk> for a 100% free music bot in development!").queue();
 			Playlist.playlist(event);
 			break;
 
 		case "playlistsc":
+			MESSAGE.reply("`Tip:` Enjoying music commands? Join <https://discord.gg/9uDv5wwXjk> for a 100% free music bot in development!").queue();
 			Playlistsc.playlistsc(event);
 			break;
 			
