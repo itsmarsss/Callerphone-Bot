@@ -123,4 +123,13 @@ Why should you choose Callerphone over other bots that do similar things? Caller
 
 
 ## Support us?
-<a href="https://www.patreon.com/itsmarsss"><img alt="become a patreon" src="https://c5.patreon.com/external/logo/become_a_patron_button.png" height="35px"></a>
+<a href="https://www.patreon.com/itsmarsss"><img alt="become a patron" src="https://c5.patreon.com/external/logo/become_a_patron_button.png" height="35px"></a>
+
+## Top.gg!
+<a href="https://top.gg/bot/849713468348956692">
+  <img src="https://top.gg/api/widget/849713468348956692.svg">
+</a>
+
+## Discord Bot List!
+<a href="https://discordbotlist.com/bots/callerphone"><img alt="discord bot list" src="https://discordbotlist.com/_nuxt/img/discordbotlist-transparent.a1bdf59.svg" height="35px"></a>
+
