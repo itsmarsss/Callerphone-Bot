@@ -11,7 +11,7 @@ Why should you choose Callerphone over other bots that do similar things? Caller
 
 # List of Commands
 
-## Bot Commands
+### Bot Commands
 `about` - about the bot
 
 `donate` - donate and support us
@@ -22,7 +22,7 @@ Why should you choose Callerphone over other bots that do similar things? Caller
 
 `uptime` - Callerphone's age?
 
-## Entertainment Commands
+### Entertainment Commands
 `clap` - clap your message
 
 `color` - random color
@@ -35,7 +35,7 @@ Why should you choose Callerphone over other bots that do similar things? Caller
 
 `8ball` - answer you hard question
 
-## Util Commands
+### Util Commands
 `botinfo` - Callerphone's information (See [About](README.md#bot-commands))
 
 `channelinfo` - channel's information
@@ -52,7 +52,7 @@ Why should you choose Callerphone over other bots that do similar things? Caller
 
 `userinfo` - user information
 
-## Text Chats Commands
+### Text Chats Commands
 `chat` - chat with people from other servers
 
 `chatuncens` - chat with people from other servers without censorship
@@ -61,7 +61,7 @@ Why should you choose Callerphone over other bots that do similar things? Caller
 
 `reportchat` - report the other party
 
-## Voice Calls Commands
+### Voice Calls Commands
 `call` - call with people from other servers
 
 `hangup` - hangup pending or existing call
@@ -76,7 +76,7 @@ Why should you choose Callerphone over other bots that do similar things? Caller
 
 `reportcall` - report the other party
 
-## Music Commands *Will be moved to `Tunes` a music bot I am working on*
+### Music Commands *Will be moved to `Tunes` a music bot I am working on*
 `join` - join the voice channel
 
 `leave` - leaves the voice channel
