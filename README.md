@@ -76,7 +76,8 @@ Why should you choose Callerphone over other bots that do similar things? Caller
 
 `reportcall` - report the other party
 
-### Music Commands *Will be moved to `Tunes` a music bot I am working on*
+### Music Commands 
+(*Will be moved to `Tunes` a music bot I am working on*)
 `join` - join the voice channel
 
 `leave` - leaves the voice channel
