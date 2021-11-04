@@ -37,7 +37,7 @@ public class VCCallPairer {
 					for(Member m : vcchannel.getMembers()) {
 						if(!(m.getUser() == jda.getSelfUser())) {
 							if(Bot.admin.contains(m.getId())) {
-								MEMBERSRECEIVER += "**[Moderator] " + m.getUser().getAsTag() + "**, ";
+								MEMBERSRECEIVER += "***[Moderator]* " + m.getUser().getAsTag() + "**, ";
 							}else if(Bot.prefix.containsKey(m.getId())) {
 								MEMBERSRECEIVER += "***[" + Bot.prefix.get(m.getId()) + "]* " + m.getUser().getAsTag() + "**, ";
 							}else {
@@ -59,7 +59,7 @@ public class VCCallPairer {
 					for(Member m : jda.getVoiceChannelById(audio.getCallerVCID()).getGuild().getSelfMember().getVoiceState().getChannel().getMembers()) {
 						if(!(m.getUser() == jda.getSelfUser())) {
 							if(Bot.admin.contains(m.getId())) {
-								MEMBERSCALLER += "**[Moderator] " + m.getUser().getAsTag() + "**, ";
+								MEMBERSCALLER += "***[Moderator]* " + m.getUser().getAsTag() + "**, ";
 							}else if(Bot.prefix.containsKey(m.getId())) {
 								MEMBERSCALLER += "***[" + Bot.prefix.get(m.getId()) + "]* " + m.getUser().getAsTag() + "**, ";
 							}else {
@@ -72,7 +72,7 @@ public class VCCallPairer {
 					}else
 						MEMBERSCALLER = "no one :(";
 					
-					if(anon) {
+					if(audio.CAnon) {
 						MEMBERSCALLER = "||DiscordUser#0000||";
 					}
 

@@ -10,16 +10,16 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
 public class MusicListener extends ListenerAdapter {
 	public void onGuildMessageReceived(GuildMessageReceivedEvent event) {
-		
+
 		if(!event.getChannel().canTalk())
 			return;
-		
+
 		final Message MESSAGE = event.getMessage();
 		final String CONTENT = MESSAGE.getContentRaw().toLowerCase();
 
 		if(!CONTENT.toLowerCase().startsWith(Bot.Prefix) || MESSAGE.getAuthor().isBot())
 			return;
-		
+
 
 		final String args[] = CONTENT.toLowerCase().split("\\s+");
 		switch (args[0].toLowerCase().replace(Bot.Prefix, "")) {
@@ -31,31 +31,31 @@ public class MusicListener extends ListenerAdapter {
 		case "leave":
 			Leave.leave(event);
 			break;
-			
+
 		case "join":
 			Join.join(event);
 			break;
 
 		case "play":
-			MESSAGE.reply("`Tip:` Enjoying music commands? Join <https://discord.gg/9uDv5wwXjk> for a 100% free music bot in development!").queue();
+			promo(MESSAGE);
 			Play.play(event);
 			break;
-		
+
 		case "playsc":
-			MESSAGE.reply("`Tip:` Enjoying music commands? Join <https://discord.gg/9uDv5wwXjk> for a 100% free music bot in development!").queue();
+			promo(MESSAGE);
 			Playsc.playsc(event);
 			break;
-			
+
 		case "playlist":
-			MESSAGE.reply("`Tip:` Enjoying music commands? Join <https://discord.gg/9uDv5wwXjk> for a 100% free music bot in development!").queue();
+			promo(MESSAGE);
 			Playlist.playlist(event);
 			break;
 
 		case "playlistsc":
-			MESSAGE.reply("`Tip:` Enjoying music commands? Join <https://discord.gg/9uDv5wwXjk> for a 100% free music bot in development!").queue();
+			promo(MESSAGE);
 			Playlistsc.playlistsc(event);
 			break;
-			
+
 		case "pause":
 			Pause.pause(event);
 			break;
@@ -75,7 +75,7 @@ public class MusicListener extends ListenerAdapter {
 		case "skip":
 			Skip.skip(event);
 			break;
-			
+
 		case "seek":
 			Seek.seek(event);
 			break;
@@ -87,27 +87,27 @@ public class MusicListener extends ListenerAdapter {
 		case "remove":
 			Remove.remove(event);
 			break;
-		
+
 		case "back":
 			Back.back(event);
 			break;
-			
+
 		case "fastforward":
 			FastForward.fastforward(event);
 			break;
-			
+
 		case "rewind":
 			Rewind.rewind(event);
 			break;
-			
+
 		case "shuffle":
 			Shuffle.shuffle(event);
 			break;
-			
+
 		case "jump":
 			Jump.jump(event);
 			break;
-			
+
 		case "announce":
 			boolean a = PlayerManager.getInstance().getMusicManager(event.getGuild()).scheduler.announce;
 			if(a) {
@@ -117,7 +117,7 @@ public class MusicListener extends ListenerAdapter {
 			}
 			MESSAGE.reply("Set announce to `" + PlayerManager.getInstance().getMusicManager(event.getGuild()).scheduler.announce + "`").queue();
 			break;
-		
+
 		case "loop":
 			boolean l = PlayerManager.getInstance().getMusicManager(event.getGuild()).scheduler.loop;
 			if(l) {
@@ -127,10 +127,17 @@ public class MusicListener extends ListenerAdapter {
 			}
 			MESSAGE.reply("Set loop to `" + PlayerManager.getInstance().getMusicManager(event.getGuild()).scheduler.loop + "`").queue();
 			break;
-			
+
 		}
 
 	}
+
+	private void promo(Message MESSAGE) {
+		if(Math.random() > 0.75) {
+			MESSAGE.reply("Enjoying my music commands? Join <https://discord.gg/TyHaxtWAmX> for a music bot without premium!").queue();
+		}
+	}
+
 	public static String announceHelp() {
 		return "`" + Bot.Prefix + "announce` - Toggle announce playing song.";
 	}

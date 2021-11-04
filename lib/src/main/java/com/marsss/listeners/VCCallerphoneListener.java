@@ -304,7 +304,7 @@ public class VCCallerphoneListener extends ListenerAdapter {
 		for(Audio a : AudioStorage.audio) {
 			try {
 				if((Bot.jda.getVoiceChannelById(a.callerVCID).getGuild().getId().equals(g) || 
-						Bot.jda.getVoiceChannelById(a.receiverVCID).getGuild().getId().equals(g)) && a.isConnected) {
+						Bot.jda.getVoiceChannelById(a.receiverVCID).getGuild().getId().equals(g))) {
 					return true;
 				}
 			}catch(Exception e) {}

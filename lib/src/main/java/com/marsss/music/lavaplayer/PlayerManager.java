@@ -110,7 +110,7 @@ public class PlayerManager {
 
 			@Override
 			public void loadFailed(FriendlyException exception) {
-				//
+				message.getChannel().sendMessage("I encountered a minor problem playing the track...").queue();
 			}
 		});
 	}
