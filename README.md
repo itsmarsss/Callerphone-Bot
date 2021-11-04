@@ -131,4 +131,4 @@ Why should you choose Callerphone over other bots that do similar things? Caller
 </a>
 
 ## Support server!
-<a href="https://discord.gg/jcYKsfw48p"><img alt="support server" src="https://discord.com/api/guilds/798428155907801089/widget.json" height="35px"></a>
+<a href="https://discord.gg/jcYKsfw48p"><img alt="support server" src="https://pbs.twimg.com/media/DiPPB5vVQAAzPUP.jpg" height="35px"></a>
