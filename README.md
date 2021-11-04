@@ -122,6 +122,11 @@ Why should you choose Callerphone over other bots that do similar things? Caller
 `loop` - toggle loop
 
 
+# More Information
+
+## Support server!
+<a href="https://discord.gg/jcYKsfw48p"><img alt="support server" src="https://miro.medium.com/max/800/1*_AsB_hCguMYC-wEG2Bidmw.png" height="35px"></a>
+
 ## Support us?
 <a href="https://www.patreon.com/itsmarsss"><img alt="become a patron" src="https://c5.patreon.com/external/logo/become_a_patron_button.png" height="35px"></a>
 
@@ -129,6 +134,3 @@ Why should you choose Callerphone over other bots that do similar things? Caller
 <a href="https://top.gg/bot/849713468348956692">
   <img src="https://top.gg/api/widget/849713468348956692.svg" height="100px">
 </a>
-
-## Support server!
-<a href="https://discord.gg/jcYKsfw48p"><img alt="support server" src="https://pbs.twimg.com/media/DiPPB5vVQAAzPUP.jpg" height="35px"></a>
