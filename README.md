@@ -132,5 +132,8 @@ Why should you choose Callerphone over other bots that do similar things? Caller
 
 ## Top.gg!
 <a href="https://top.gg/bot/849713468348956692">
-  <img src="https://top.gg/api/widget/849713468348956692.svg" height="100px">
+  <img src="https://top.gg/api/widget/849713468348956692.svg">
 </a>
+
+## Discord Bot List!
+<a href="https://discordbotlist.com/bots/849713468348956692"><img src="https://discordbotlist.com/api/v1/bots/849713468348956692/widget"></a>
