@@ -120,3 +120,7 @@ Why should you choose Callerphone over other bots that do similar things? Caller
 `announce` - toggle announce
 
 `loop` - toggle loop
+
+
+## Support us?
+<a href="https://www.patreon.com/itsmarsss"><img alt="become a patron" src="https://c5.patreon.com/external/logo/become_a_patron_button.png" height="35px"></a>
