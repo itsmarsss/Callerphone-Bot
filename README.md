@@ -13,64 +13,110 @@ Why should you choose Callerphone over other bots that do similar things? Caller
 
 ## Bot Commands
 `about` - about the bot
+
 `donate` - donate and support us
+
 `invite` - invite Callerphone
+
 `ping` - Callerphone's ping
+
 `uptime` - Callerphone's age?
 
 ## Entertainment Commands
 `clap` - clap your message
+
 `color` - random color
+
 `colorrgb` - creates cool embed with provided rgb value
+
 `colorhex` - creates cool embed with provided hex value
+
 `echo` - echo your message
+
 `8ball` - answer you hard question
 
 ## Util Commands
-`botinfo` - Callerphone's information (See [About](/about/))
+`botinfo` - Callerphone's information (See [About](README.md#bot-commands))
+
 `channelinfo` - channel's information
+
 `help` - command help
+
 `poll` - create a poll
+
 `roleinfo` - role information
+
 `search` - search the web without leaving Discord
+
 `serverinfo` - server information
+
 `userinfo` - user information
 
 ## Text Chats Commands
 `chat` - chat with people from other servers
+
 `chatuncens` - chat with people from other servers without censorship
+
 `endchat` - end a pending or existing chat
+
 `reportchat` - report the other party
 
 ## Voice Calls Commands
 `call` - call with people from other servers
+
 `hangup` - hangup pending or existing call
+
 `mute` - mute the bot
+
 `unmute` - unmute the bot
+
 `deafen` - deafen the bot
+
 `undeafen` - undeafen the bot
+
 `reportcall` - report the other party
 
 ## Music Commands *Will be moved to `Tunes` a music bot I am working on*
 `join` - join the voice channel
+
 `leave` - leaves the voice channel
+
 `play` - plays track from YouTube search
+
 `play` - plays track from SoundCloud search
+
 `playlist` - plays a list of tracks from YouTube search
+
 `playlistsc` - plays a list of tracks from SoundCloud search
+
 `pause` - pause track
+
 `resume` - resume track
+
 `skip` - goes to next track
+
 `back` - goes to previous track
+
 `nowplaying` - shows current playing track
+
 `queue` - shows track queue
+
 `remove` - removes track
+
 `jump` - jump to track
+
 `shuffle` - shuffle queue
+
 `clear` - clear queue
+
 `volume` - volume of track
+
 `seek` - change position of track
+
 `fastforward` - fastforwards
+
 `rewind` - rewinds
+
 `announce` - toggle announce
+
 `loop` - toggle loop
