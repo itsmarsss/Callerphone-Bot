@@ -7,11 +7,11 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.net.URLDecoder;
 import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
+//import java.time.OffsetDateTime;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.Scanner;
+//import java.util.Scanner;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -31,7 +31,7 @@ import com.marsss.vccallerphone.AudioStorage.Audio;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
-import net.dv8tion.jda.api.OnlineStatus;
+//import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.TextChannel;
@@ -368,8 +368,8 @@ public class Bot {
 
 	private static void commandPrompt() throws LoginException, InterruptedException {
 		//Scanner sc = new Scanner(System.in);
-		BotInit("ODQ5NzEzNDY4MzQ4OTU2Njky.YLfLVQ.hEvy6QsCFm0TsmsBgJRuBvguMzs", "start");
 		logger.info("\n{}Command Line Loaded...{}\nWelcome to Callerphone Bot Command Line (CBCL)!");
+		BotInit("ODQ5NzEzNDY4MzQ4OTU2Njky.YLfLVQ.4siWnnOu3tYUDWcyfevVNb4EU7k", "start");
 
 //		while(true) {
 //			String cmd = sc.nextLine();
