@@ -1,18 +1,3 @@
-/*
- * Copyright 2021 Marsss (itsmarsss).
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package com.marsss.tccallerphone;
 
 import org.slf4j.Logger;
@@ -38,8 +23,8 @@ public class TCCallPairer {
 					if(!cens) {
 						tcchannel.sendMessage("This chat will be uncensored, if you do not wish to proceed please run `c?endchat`").queue();
 					}
-					convo.RFF = cens;
-					convo.RAnon = anon;
+					convo.setRFF(cens);
+					convo.setRAnon(anon);
 					convo.setReceiverTCID(CHANNELID);
 					convo.setConnected(true);
 
@@ -50,14 +35,14 @@ public class TCCallPairer {
 
 					logger.info("From TC: " + convo.getCallerTCID() + " - To TC: " + convo.getReceiverTCID());
 					logger.info("From Guild: " + jda.getTextChannelById(convo.getCallerTCID()).getGuild().getId() + " - To Guild: " + jda.getTextChannelById(convo.getReceiverTCID()).getGuild().getId());
-					convo.lastMessage = System.currentTimeMillis();
+					convo.setLastMessage(System.currentTimeMillis());
 					return;
 				}else if(convo.getCallerTCID().equals("empty")) {
 					if(!cens) {
 						tcchannel.sendMessage("This chat will be uncensored, if you do not wish to proceed please run `c?endchat`").queue();
 					}
-					convo.CFF = cens;
-					convo.CAnon = anon;
+					convo.setCFF(cens);
+					convo.setCAnon(anon);
 					convo.setCallerTCID(CHANNELID);
 					message.reply(Callerphone + "Calling...").queue();
 					return;

@@ -1,33 +1,18 @@
-/*
- * Copyright 2021 Marsss (itsmarsss).
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package com.marsss.vccallerphone;
 
 import java.util.Queue;
 
 public class AudioStorage {
 	public static class Audio {
-		public Queue<byte[]> caller;
-		public String callerVCID;
-		public String callerChannelID;
-		public Queue<byte[]> receiver;
-		public String receiverVCID;
-		public String receiverChannelID;
-		public boolean CAnon;
-		public boolean RAnon;
-		public boolean isConnected;
+		private Queue<byte[]> caller;
+		private String callerVCID;
+		private String callerChannelID;
+		private Queue<byte[]> receiver;
+		private String receiverVCID;
+		private String receiverChannelID;
+		private boolean CAnon;
+		private boolean RAnon;
+		private boolean isConnected;
 
 
 		public Audio(Queue<byte[]> caller, String callerVCID, String callerChannelID, Queue<byte[]> receiver, String receiverVCID, String receiverChannelID, boolean CAnon, boolean RAnon, boolean isConnected){
@@ -68,6 +53,14 @@ public class AudioStorage {
 			return receiverChannelID;	
 		}
 		
+		public boolean getCAnon() {
+			return CAnon;
+		}
+		
+		public boolean getRAnon() {
+			return RAnon;
+		}
+		
 		public boolean getConnected() {
 			return isConnected;	
 		}
@@ -90,6 +83,14 @@ public class AudioStorage {
 		
 		public void setReceiverChannelID(String ID) {
 			receiverChannelID = ID;
+		}
+		
+		public void setCAnon(boolean canon) {
+			CAnon = canon;
+		}
+		
+		public void setRAnon(boolean ranon) {
+			RAnon = ranon;
 		}
 		
 		public void setConnected(boolean bool) {

@@ -1,23 +1,6 @@
-/*
- * Copyright 2021 Marsss (itsmarsss).
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package com.marsss.listeners;
 
 import com.marsss.Bot;
-import com.marsss.music.lavaplayer.GuildMusicManager;
-import com.marsss.music.lavaplayer.PlayerManager;
 import com.marsss.vccallerphone.AudioStorage;
 import com.marsss.vccallerphone.AudioStorage.Audio;
 
@@ -31,17 +14,6 @@ import net.dv8tion.jda.api.managers.AudioManager;
 public class OnDisconnection extends ListenerAdapter {
 	private static final String Callerphone = Bot.Callerphone;
 	public void onGuildVoiceLeave(GuildVoiceLeaveEvent event) {
-
-		if(event.getMember().getUser() == Bot.jda.getSelfUser()) {
-			final AudioManager audioManager = event.getGuild().getAudioManager();
-			audioManager.setSelfDeafened(false);
-			final GuildMusicManager musicManager = PlayerManager.getInstance().getMusicManager(event.getGuild());
-			musicManager.audioPlayer.destroy();
-			musicManager.scheduler.queue.clear();
-			musicManager.scheduler.index = 0;
-			PlayerManager.getInstance().resetHandler(event.getGuild());
-
-		}
 
 		if(!hasCall(event.getGuild().getId())) {
 			return;
@@ -128,8 +100,8 @@ public class OnDisconnection extends ListenerAdapter {
 	public static boolean hasCall(String g) {
 		for(Audio a : AudioStorage.audio) {
 			try {
-				if(Bot.jda.getVoiceChannelById(a.callerVCID).getGuild().getId().equals(g) || 
-						Bot.jda.getVoiceChannelById(a.receiverVCID).getGuild().getId().equals(g)) {
+				if(Bot.jda.getVoiceChannelById(a.getCallerVCID()).getGuild().getId().equals(g) || 
+						Bot.jda.getVoiceChannelById(a.getReceiverVCID()).getGuild().getId().equals(g)) {
 					return true;
 				}
 			}catch(Exception e) {}

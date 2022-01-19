@@ -1,18 +1,3 @@
-/*
- * Copyright 2021 Marsss (itsmarsss).
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package com.marsss.listeners;
 
 import com.marsss.Bot;
@@ -66,7 +51,7 @@ public class VCCallerphoneListener extends ListenerAdapter {
 						.append("(" + m.getId() + ")")
 						.append("\n");
 					}
-					Bot.jda.getTextChannelById("897290511000404008").sendMessage("**Reported users:**").addFile(members.toString().getBytes(), "reported.txt").queue();
+					Bot.jda.getTextChannelById(Bot.reportchannel).sendMessage("**Reported users:**").addFile(members.toString().getBytes(), "reported.txt").queue();
 					MESSAGE.reply(Callerphone + "Call reported!").queue();
 					break SWITCH;
 				}
@@ -79,7 +64,7 @@ public class VCCallerphoneListener extends ListenerAdapter {
 						.append("(" + m.getId() + ")")
 						.append("\n");
 					}
-					Bot.jda.getTextChannelById("897290511000404008").sendMessage("**Reported users:**").addFile(members.toString().getBytes(), "reported.txt").queue();
+					Bot.jda.getTextChannelById(Bot.reportchannel).sendMessage("**Reported users:**").addFile(members.toString().getBytes(), "reported.txt").queue();
 					MESSAGE.reply(Callerphone + "Call reported!").queue();
 					break SWITCH;
 				}
@@ -193,6 +178,11 @@ public class VCCallerphoneListener extends ListenerAdapter {
 				MESSAGE.reply(Callerphone + "I do not have access to speak in" + GVS.getChannel().getAsMention()).queue();
 				break;
 			}
+			if(hasCall(g.getId())) {
+				MESSAGE.reply(Callerphone + "There is already a call in this server.").queue();
+				break;
+			}
+			
 			final AudioManager audioManager = event.getGuild().getAudioManager();
 
 			//		if(audioManager.isAttemptingToConnect()) {
@@ -318,8 +308,8 @@ public class VCCallerphoneListener extends ListenerAdapter {
 	public static boolean hasCall(String g) {
 		for(Audio a : AudioStorage.audio) {
 			try {
-				if((Bot.jda.getVoiceChannelById(a.callerVCID).getGuild().getId().equals(g) || 
-						Bot.jda.getVoiceChannelById(a.receiverVCID).getGuild().getId().equals(g))) {
+				if((Bot.jda.getVoiceChannelById(a.getCallerVCID()).getGuild().getId().equals(g) || 
+						Bot.jda.getVoiceChannelById(a.getReceiverVCID()).getGuild().getId().equals(g))) {
 					return true;
 				}
 			}catch(Exception e) {}
@@ -329,7 +319,7 @@ public class VCCallerphoneListener extends ListenerAdapter {
 
 	private boolean inCallChannel(String VC) {
 		for(Audio a : AudioStorage.audio) {
-			if(a.callerVCID.equals(VC) || a.receiverVCID.equals(VC)) {
+			if(a.getCallerVCID().equals(VC) || a.getReceiverVCID().equals(VC)) {
 				return true;
 			}
 		}

@@ -1,18 +1,3 @@
-/*
- * Copyright 2021 Marsss (itsmarsss).
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package com.marsss.utils;
 
 import java.awt.Color;
@@ -23,9 +8,6 @@ import net.dv8tion.jda.api.entities.MessageEmbed;
 import com.marsss.Bot;
 import com.marsss.bot.*;
 import com.marsss.entertainments.*;
-import com.marsss.listeners.CommandListener;
-import com.marsss.listeners.MusicListener;
-import com.marsss.music.*;
 import com.marsss.tccallerphone.*;
 import com.marsss.vccallerphone.*;
 
@@ -102,35 +84,6 @@ public class Help {
 					+ VCCallPairer.undeafenHelp() + "\n"
 					+ VCCallPairer.reportHelp();
 			break;
-
-
-
-		case "music":
-			TITLE = "Music Commands";
-			DESC = Join.getHelp() + "\n"
-					+ Leave.getHelp() + "\n"
-					+ Play.getHelp() + "\n"
-					+ Playsc.getHelp() + "\n"
-					+ Playlist.getHelp() + "\n"
-					+ Playlistsc.getHelp() + "\n"
-					+ Pause.getHelp() + "\n"
-					+ Resume.getHelp() + "\n"
-					+ Skip.getHelp() + "\n"
-					+ Back.getHelp() + "\n"
-					+ NowPlaying.getHelp() + "\n"
-					+ Queue.getHelp() + "\n"
-					+ Remove.getHelp() + "\n"
-					+ Jump.getHelp() + "\n"
-					+ Shuffle.getHelp() + "\n"
-					+ Clear.getHelp() + "\n"
-					+ Volume.getHelp() + "\n"
-					+ Seek.getHelp() + "\n"
-					+ FastForward.getHelp() + "\n"
-					+ Rewind.getHelp() + "\n"
-					+ MusicListener.announceHelp() + "\n"
-					+ MusicListener.loopHelp();
-			break;
-			
 			
 			
 		case "report":
@@ -138,17 +91,13 @@ public class Help {
 			DESC = TCCallPairer.reportHelp() + "\n"
 					+ VCCallPairer.reportHelp();
 			break;
-
 			
-		case "mod":
-			TITLE = "Mod";
-			if(admin) {
-				DESC = CommandListener.supportHelp() + "\n"
-						+ CommandListener.blacklistHelp();
-				break;
-			}
-			DESC = "You do not have permission to access this category.";
+			
+		case "music":
+			TITLE = "Music Commands";
+			DESC = "Callerphone no longer can play music, however I've created a new bot called **Tunes**...\nJoin [this](" + Bot.tunessupport + ") server for more information!";
 			break;
+
 			
 		}
 
@@ -235,7 +184,7 @@ public class Help {
 			break;
 		case "search":
 			TITLE = "Search";
-			DESC = Search.getHelp() + "\nWe use Duckduckgo, so [here](https://help.duckduckgo.com/duckduckgo-help-pages/results/syntax/) are the syntax for searching!";
+			DESC = Search.getHelp() + "\nWe use Duckduckgo, so click [here](https://help.duckduckgo.com/duckduckgo-help-pages/results/syntax/) for searching syntax!";
 			break;
 		case "roleinfo":
 			TITLE = "Roleinfo";
@@ -323,102 +272,6 @@ public class Help {
 		}
 
 
-
-
-		// Music
-
-		switch(name) {
-
-		case "join":
-			TITLE = "Join";
-			DESC = Join.getHelp();
-			break;
-		case "leave":
-			TITLE = "Leave";
-			DESC = Leave.getHelp();
-			break;
-		case "play":
-			TITLE = "Play";
-			DESC = Play.getHelp();
-			break;
-		case "playsc":
-			TITLE = "Playsc";
-			DESC = Playsc.getHelp();
-		case "playlist":
-			TITLE = "Playlist";
-			DESC = Playlist.getHelp();
-			break;
-		case "playlistsc":
-			TITLE = "Playlistsc";
-			DESC = Playlistsc.getHelp();
-			break;
-		case "pause":
-			TITLE = "Pause";
-			DESC = Pause.getHelp();
-			break;
-		case "resume":
-			TITLE = "Resume";
-			DESC = Resume.getHelp();
-			break;
-		case "skip":
-			TITLE = "Skip";
-			DESC = Skip.getHelp();
-			break;
-		case "back":
-			TITLE = "Back";
-			DESC = Back.getHelp();
-			break;
-		case "nowplaying":
-			TITLE = "NowPlaying";
-			DESC = NowPlaying.getHelp();
-			break;
-		case "queue":
-			TITLE = "Queue";
-			DESC = Queue.getHelp();
-			break;
-		case "remove":
-			TITLE = "Remove";
-			DESC = Remove.getHelp();
-			break;
-		case "jump":
-			TITLE = "Jump";
-			DESC = Jump.getHelp();
-			break;
-		case "shuffle":
-			TITLE = "Shuffle";
-			DESC = Shuffle.getHelp();
-			break;
-		case "clear":
-			TITLE = "Clear";
-			DESC = Clear.getHelp();
-			break;
-		case "volume":
-			TITLE = "Volume";
-			DESC = Volume.getHelp();
-			break;
-		case "seek":
-			TITLE = "Seek";
-			DESC = Seek.getHelp();
-			break;
-		case "fastforward":
-			TITLE = "FastForward";
-			DESC = FastForward.getHelp();
-			break;
-		case "rewind":
-			TITLE = "Rewind";
-			DESC = Rewind.getHelp();
-			break;
-		case "announce":
-			TITLE = "Announce";
-			DESC = MusicListener.announceHelp();
-			break;
-		case "loop":
-			TITLE = "Loop";
-			DESC = MusicListener.loopHelp();
-			break;
-
-		}
-
 		EmbedBuilder HelpEmd = new EmbedBuilder()
 				.setTitle(TITLE)
 				.setDescription(DESC)
@@ -437,10 +290,10 @@ public class Help {
 				.addField("Utils", "all utility commands will be in this category, do `" + Bot.Prefix + "help utils` for more information", false)
 				.addField("TC Callerphone", "all text call callerphone commands will be in this category, do `" + Bot.Prefix + "help tccall` for more information", false)
 				.addField("VC Callerphone", "all voice call callerphone commands will be in this category, do `" + Bot.Prefix + "help vccall` for more information", false)
-				.addField("Music", "all music commands will be in this category, do `" + Bot.Prefix + "help music` for more information", false)
+				.addField("Music", "Callerphone no longer can play music, however I've created a new bot called **Tunes**... Join [this](https:discord.gg/TyHaxtWAmX) server for more information!", false)
 				.setFooter("Type `" + Bot.Prefix + "help <category name>` to see category commands");
 		if(admin) {
-			CateEmd.addField("Moderator only", "all moderator commands will be in this category, do `" + Bot.Prefix + "help mod` for more information", false);
+			CateEmd.addField("Moderator only", "all moderator commands will be in this category, do `" + Bot.Prefix + "help mod` in dm for more information", false);
 		}
 		return CateEmd.build();
 	}

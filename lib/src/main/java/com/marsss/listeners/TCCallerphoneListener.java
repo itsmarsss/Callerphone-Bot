@@ -1,21 +1,7 @@
-/*
- * Copyright 2021 Marsss (itsmarsss).
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package com.marsss.listeners;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 
 import com.marsss.Bot;
 import com.marsss.tccallerphone.ConvoStorage;
@@ -38,14 +24,14 @@ public class TCCallerphoneListener extends ListenerAdapter {
 		final Message MESSAGE = event.getMessage();
 		String MESSAGERAW = MESSAGE.getContentDisplay();
 		final String args[] = MESSAGERAW.toLowerCase().split("\\s+");
-		
+
 		SWITCH : switch (args[0].replace(Bot.Prefix, "")) {
 
 
 
 		case "endchat":		
 			if(!args[0].startsWith(Bot.Prefix))
-			return;
+				return;
 			if(!hasCall(event.getChannel().getId())) {
 				MESSAGE.reply(Callerphone + "There is no call to end!").queue();
 				break;
@@ -59,6 +45,9 @@ public class TCCallerphoneListener extends ListenerAdapter {
 
 				try {
 					CALLER = jda.getTextChannelById(c.getCallerTCID());
+				}catch(Exception e) {}
+
+				try {
 					RECEIVER = jda.getTextChannelById(c.getReceiverTCID());
 				}catch(Exception e) {}
 
@@ -75,27 +64,28 @@ public class TCCallerphoneListener extends ListenerAdapter {
 					final String callerID = c.getCallerTCID();
 					final String receiverID = c.getReceiverTCID();
 
-					boolean report = c.report;
+					boolean report = c.getReport();
 
-					String data = "";
-					for(String m : c.getMessages())
-						data += m + "\n";
+					ArrayList<String> DATA = new ArrayList<String>(c.getMessages());
 
 					c.resetMessage();
 
-					MESSAGE.reply(Callerphone + "You hung up the phone.").queue();
-
-					LocalDateTime now = LocalDateTime.now();
-					final String month = String.valueOf(now.getMonthValue());
-					final String day = String.valueOf(now.getDayOfMonth());
-					final String hour = String.valueOf(now.getHour());
-					final String minute = String.valueOf(now.getMinute());
-					final String ID = month + day + hour + minute + callerID + receiverID;			
-
-					final String DATA = data;
+					MESSAGE.reply(Callerphone + "You hung up the phone.").queue();	
 
 					if(report) {
-						jda.getTextChannelById("897290511000404008").sendMessage("**ID:** " + ID).addFile(DATA.getBytes(), ID + ".txt").queue();
+						
+						LocalDateTime now = LocalDateTime.now();
+						final String month = String.valueOf(now.getMonthValue());
+						final String day = String.valueOf(now.getDayOfMonth());
+						final String hour = String.valueOf(now.getHour());
+						final String minute = String.valueOf(now.getMinute());
+						final String ID = month + "/" + day + "/" + hour + "/" + minute + "C" + callerID + "R" + receiverID;	
+						
+						String data = "";
+						for(String m : DATA)
+							data += m + "\n";
+						jda.getTextChannelById(Bot.reportchannel).sendMessage("**ID:** " + ID).addFile(data.getBytes(), ID + ".txt").queue();
+				
 					}
 
 					break SWITCH;
@@ -107,26 +97,28 @@ public class TCCallerphoneListener extends ListenerAdapter {
 					final String callerID = c.getCallerTCID();
 					final String receiverID = c.getReceiverTCID();
 
-					boolean report = c.report;
+					boolean report = c.getReport();
 
-					String data = "";
-					for(String m : c.getMessages())
-						data += m + "\n";
+					ArrayList<String> DATA = new ArrayList<String>(c.getMessages());
 
 					c.resetMessage();
 
-					MESSAGE.reply(Callerphone + "You hung up the phone.").queue();
-					LocalDateTime now = LocalDateTime.now();
-					String month = String.valueOf(now.getMonthValue());
-					String day = String.valueOf(now.getDayOfMonth());
-					String hour = String.valueOf(now.getHour());
-					String minute = String.valueOf(now.getMinute());
-					String ID = month + day + hour + minute + callerID + receiverID;			
-
-					final String DATA = data;
+					MESSAGE.reply(Callerphone + "You hung up the phone.").queue();	
 
 					if(report) {
-						jda.getTextChannelById("897290511000404008").sendMessage("**ID:** " + ID).addFile(DATA.getBytes(), ID + ".txt").queue();
+						
+						LocalDateTime now = LocalDateTime.now();
+						final String month = String.valueOf(now.getMonthValue());
+						final String day = String.valueOf(now.getDayOfMonth());
+						final String hour = String.valueOf(now.getHour());
+						final String minute = String.valueOf(now.getMinute());
+						final String ID = month + "/" + day + "/" + hour + "/" + minute + "C" + callerID + "R" + receiverID;	
+						
+						String data = "";
+						for(String m : DATA)
+							data += m + "\n";
+						jda.getTextChannelById(Bot.reportchannel).sendMessage("**ID:** " + ID).addFile(data.getBytes(), ID + ".txt").queue();
+				
 					}
 
 					break SWITCH;
@@ -144,7 +136,7 @@ public class TCCallerphoneListener extends ListenerAdapter {
 			if(!args[0].startsWith(Bot.Prefix))
 				return;
 			if(Bot.blacklist.contains(event.getAuthor().getId())) {
-				MESSAGE.reply("Sorry you are blacklisted, submit an appeal at our support server").queue();
+				MESSAGE.reply("Sorry you are blacklisted, submit an appeal in our support server").queue();
 				break;
 			}
 			if(hasCall(event.getChannel().getId())) {
@@ -193,14 +185,18 @@ public class TCCallerphoneListener extends ListenerAdapter {
 					break SWITCH;
 				}
 				if(c.getCallerTCID().equals(event.getChannel().getId()) || c.getReceiverTCID().equals(event.getChannel().getId())) {
-					c.report = true;
+					c.setReport(true);
 					MESSAGE.reply(Callerphone + "Chat reported!").queue();
 					break SWITCH;
 				}
 			}
 			MESSAGE.reply(Callerphone + "Something went wrong, couldn't report call.").queue();
 			break;
-
+			
+		case "report":
+			MESSAGE.reply("`" + Bot.Prefix + "reportchat` to report a chat\n" +
+						  "`" + Bot.Prefix + "reportcall` to report a call").queue();
+			break;
 
 		default:
 			if(args[0].toLowerCase().equals(Bot.Prefix + "support"))
@@ -210,6 +206,15 @@ public class TCCallerphoneListener extends ListenerAdapter {
 				break;
 
 			if(args[0].toLowerCase().equals(Bot.Prefix + "mod"))
+				break;
+			
+			if(args[0].toLowerCase().equals(Bot.Prefix + "rsupport"))
+				break;
+
+			if(args[0].toLowerCase().equals(Bot.Prefix + "rblacklist"))
+				break;
+
+			if(args[0].toLowerCase().equals(Bot.Prefix + "rmod"))
 				break;
 
 			if(Bot.blacklist.contains(event.getAuthor().getId())) {
@@ -231,13 +236,13 @@ public class TCCallerphoneListener extends ListenerAdapter {
 				}
 
 				c.addMessage("Caller " + MESSAGE.getAuthor().getAsTag() + "(" + MESSAGE.getAuthor().getId() + ")" + ": " + MESSAGERAW);
-				c.lastMessage = System.currentTimeMillis();
+				c.setLastMessage(System.currentTimeMillis());
 
 				if(MESSAGERAW.length() > 3500)
 					MESSAGERAW = ":x: I sent a message too long for Callerphone to handle! :x:";
 
 				if(c.getCallerTCID().equals(event.getChannel().getId())) {
-					if(c.RFF) {
+					if(c.getRFF()) {
 						for(String ftr : Bot.filter) {
 							String rep = "";
 							for(int i = 0; i < ftr.length(); i++) {
@@ -248,7 +253,7 @@ public class TCCallerphoneListener extends ListenerAdapter {
 					}
 
 					try {
-						if(c.CAnon) {
+						if(c.getCAnon()) {
 							Bot.jda.getTextChannelById(c.getReceiverTCID()).sendMessage("**DiscordUser#0000**: " + MESSAGERAW).queue();
 						}else {
 							if(Bot.admin.contains(event.getAuthor().getId())) {
@@ -279,13 +284,13 @@ public class TCCallerphoneListener extends ListenerAdapter {
 						String ID = month + day + hour + minute + callerID + receiverID;			
 
 						final String DATA = data;
-						if(c.report) {
-							Bot.jda.getTextChannelById("897290511000404008").sendMessage("**ID:** " + ID).addFile(DATA.getBytes(), ID + ".txt").queue();
+						if(c.getReport()) {
+							Bot.jda.getTextChannelById(Bot.reportchannel).sendMessage("**ID:** " + ID).addFile(DATA.getBytes(), ID + ".txt").queue();
 						}
 					}
 					break SWITCH;
 				}else if(c.getReceiverTCID().equals(event.getChannel().getId())) {
-					if(c.CFF) {
+					if(c.getCFF()) {
 						for(String ftr : Bot.filter) {
 							String rep = "";
 							for(int i = 0; i < ftr.length(); i++) {
@@ -296,8 +301,7 @@ public class TCCallerphoneListener extends ListenerAdapter {
 					}
 
 					try {
-						System.out.println(c.CAnon);
-						if(c.RAnon) {
+						if(c.getRAnon()) {
 							Bot.jda.getTextChannelById(c.getCallerTCID()).sendMessage("**DiscordUser#0000**: " + MESSAGERAW).queue();
 						}else {
 							if(Bot.admin.contains(event.getAuthor().getId())) {
@@ -328,8 +332,8 @@ public class TCCallerphoneListener extends ListenerAdapter {
 						String ID = month + day + hour + minute + callerID + receiverID;			
 
 						final String DATA = data;
-						if(c.report) {
-							Bot.jda.getTextChannelById("897290511000404008").sendMessage("**ID:** " + ID).addFile(DATA.getBytes(), ID + ".txt").queue();
+						if(c.getReport()) {
+							Bot.jda.getTextChannelById(Bot.reportchannel).sendMessage("**ID:** " + ID).addFile(DATA.getBytes(), ID + ".txt").queue();
 						}
 					}
 					break SWITCH;

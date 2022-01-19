@@ -1,18 +1,3 @@
-/*
- * Copyright 2021 Marsss (itsmarsss).
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package com.marsss.tccallerphone;
 
 import java.util.Queue;
@@ -20,21 +5,21 @@ import java.util.Queue;
 public class ConvoStorage {
 
 	public static class Convo {
-		public Queue<String> messages;
-		public String callerTCID;
+		private Queue<String> messages;
+		private String callerTCID;
 
-		public String receiverTCID;
-		public boolean isConnected;
+		private String receiverTCID;
+		private boolean isConnected;
 		
-		public long lastMessage;
+		private long lastMessage;
 		
-		public boolean CFF;
-		public boolean RFF;
+		private boolean CFF;
+		private boolean RFF;
 		
-		public boolean CAnon;
-		public boolean RAnon;
+		private boolean CAnon;
+		private boolean RAnon;
 		
-		public boolean report;
+		private boolean report;
 
 		public Convo(Queue<String> messages, String callerTCID, String receiverTCID, boolean isConnected, int lastMessage, boolean CFF, boolean RFF, boolean CAnon, boolean RAnon, boolean report) {
 			this.messages = messages;
@@ -66,8 +51,30 @@ public class ConvoStorage {
 		public boolean getConnected() {
 			return isConnected;
 		}
+		
+		public long getLastMessage() {
+			return lastMessage;
+		}
 
-
+		public boolean getCFF() {
+			return CFF;
+		}
+		
+		public boolean getRFF() {
+			return RFF;
+		}
+		
+		public boolean getCAnon() {
+			return CAnon;
+		}
+		
+		public boolean getRAnon() {
+			return RAnon;
+		}
+		
+		public boolean getReport() {
+			return report;
+		}
 
 		// Set
 		
@@ -85,6 +92,30 @@ public class ConvoStorage {
 
 		public void setConnected(boolean bool) {
 			isConnected = bool;
+		}
+		
+		public void setLastMessage(long time) {
+			lastMessage = time;
+		}
+
+		public void setCFF(boolean ccf) {
+			CFF = ccf;
+		}
+		
+		public void setRFF(boolean rff) {
+			RFF = rff;
+		}
+		
+		public void setCAnon(boolean canon) {
+			CAnon = canon;
+		}
+		
+		public void setRAnon(boolean ranon) {
+			RAnon = ranon;
+		}
+		
+		public void setReport(boolean rep) {
+			report = rep;
 		}
 
 		public void resetMessage() {

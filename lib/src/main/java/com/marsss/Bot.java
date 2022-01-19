@@ -1,18 +1,3 @@
-/*
- * Copyright 2021 Marsss (itsmarsss).
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package com.marsss;
 
 import java.awt.Color;
@@ -23,6 +8,7 @@ import java.io.IOException;
 import java.net.URLDecoder;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -50,6 +36,7 @@ import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.TextChannel;
+//import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 //import net.dv8tion.jda.api.interactions.commands.OptionType;
 //import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 //import net.dv8tion.jda.api.interactions.commands.build.OptionData;
@@ -67,14 +54,23 @@ public class Bot {
 	public static LinkedList <String> blacklist = new LinkedList<>();
 	public static HashMap <String, String> prefix = new HashMap<String, String>();
 	public static LinkedList <String> admin = new LinkedList<>();
-	
+
 	public static LinkedList <String> filter = new LinkedList<>();
 
-	public static final String brainURL = "http:api.brainshop.ai/get?bid=160403&key=FFFNOBQEMnANoVn1&uid=[uid]&msg=[msg]";
 	public static final String Prefix = "c?";
-	public static final String Callerphone = "<:CallerphoneEmote:899051549173637120> ";
 	public static final String ThumbsUp = "👍";
 
+	public static String brainURL = "http://api.brainshop.ai/get?bid=160403&key=FFFNOBQEMnANoVn1&uid=[uid]&msg=[msg]";
+	public static String Callerphone = "<:CallerphoneEmote:899051549173637120> ";
+	public static String logstatus = "852338750519640116";
+	public static String reportchannel = "897290511000404008";
+	public static String invite = "https://discord.com/api/oauth2/authorize?client_id=849713468348956692&permissions=49663040&scope=bot%20applications.commands";
+	public static String support = "https://discord.gg/jcYKsfw48p";
+	public static String tunessupport = "https://discord.gg/TyHaxtWAmX";
+	public static String donate = "https://www.patreon.com/itsmarsss";
+	public static String owner = "841028865995964477";
+
+	public static boolean isQuickStart;
 
 	public static JDA jda;
 
@@ -87,14 +83,23 @@ public class Bot {
 			GatewayIntent.GUILD_INVITES,
 			GatewayIntent.DIRECT_MESSAGES);
 
-	private static void BotInit(String token, String startupmsg) throws InterruptedException, LoginException {
+	private static void BotInit(String token, String startupmsg, boolean quickStart) throws InterruptedException, LoginException {
+
 		try {
-			jda = JDABuilder.createDefault(token, intent)
-					.enableCache(CacheFlag.VOICE_STATE)
-					.enableCache(CacheFlag.ROLE_TAGS)
-					.setChunkingFilter(ChunkingFilter.ALL)
-					.setMemberCachePolicy(MemberCachePolicy.ALL)
-					.build();
+			if(quickStart) {
+				jda = JDABuilder.createDefault(token, intent)
+						.enableCache(CacheFlag.VOICE_STATE)
+						.enableCache(CacheFlag.ROLE_TAGS)
+						.setMemberCachePolicy(MemberCachePolicy.ALL)
+						.build();
+			}else {
+				jda = JDABuilder.createDefault(token, intent)
+						.enableCache(CacheFlag.VOICE_STATE)
+						.enableCache(CacheFlag.ROLE_TAGS)
+						.setChunkingFilter(ChunkingFilter.ALL)
+						.setMemberCachePolicy(MemberCachePolicy.ALL)
+						.build();
+			}
 
 			jda.addEventListener(new CommandListener());
 			jda.addEventListener(new OnOtherEvent());
@@ -105,7 +110,6 @@ public class Bot {
 			jda.addEventListener(new OnMuted());
 			jda.addEventListener(new OnDeafened());
 			jda.addEventListener(new OnDisconnection());
-			jda.addEventListener(new MusicListener());
 
 
 
@@ -120,48 +124,65 @@ public class Bot {
 
 			jda.awaitReady();
 
-			jda.getPresence().setActivity(Activity.watching("for c?help | have fun"));
-
-			System.out.println("Server List: ");
-			for(Guild g : jda.getGuilds()) {
-				logger.info("Server: " + g.getName());
-			}
-
+			jda.getPresence().setActivity(Activity.watching("for " + Prefix + "help"));
 			logger.info("Bot online");
 
+			System.out.println("\nGuild List: ");
+			for(Guild g : jda.getGuilds()) {
+				System.out.println("- " + g.getName());
+			}
+
+
+			parent = URLDecoder.decode(new File(Bot.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getParentFile().getPath(), "UTF-8");
+			System.out.println("\nParent - " + parent);
+
+
 			try {
-				EmbedBuilder embedBuilder = new EmbedBuilder().setTitle("Status").setColor(Color.GREEN).setFooter("Hello World!").setDescription(jda.getSelfUser().getAsMention() + " is now online;" + startupmsg);
-				jda.getTextChannelById("852342009288851516").sendMessageEmbeds(embedBuilder.build()).queue();
+				getInfo(new File(parent + "/info.txt"));
+			}catch(Exception e) {
+				System.out.println("------------------------------");
+				logger.error("Error with info.txt");
+				logger.warn("Critical Issues May Appear (BrainURL and other links)");
+			}
+
+			try {
+				EmbedBuilder embedBuilder = new EmbedBuilder().setTitle("Status").setColor(new Color(24, 116, 52)).setFooter("Hello World!").setDescription(jda.getSelfUser().getAsMention() + " is now online;" + startupmsg);
+				jda.getTextChannelById(logstatus).sendMessageEmbeds(embedBuilder.build()).queue();
 			} catch(Exception e) {
+				System.out.println("------------------------------");
 				logger.error("Error Sending Startup Message");
 			}
 
-			parent = URLDecoder.decode(new File(Bot.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getParentFile().getPath(), "UTF-8");
-			logger.info("Parent:" + parent);
 			try {
 				getBlack(new File(parent + "/blacklist.txt"));
 			}catch(Exception e) {
-				logger.error("Create blacklist.txt");
+				System.out.println("------------------------------");
+				logger.error("Error with blacklist.txt");
 			}
 
 			try {
 				getPrefix(new File(parent + "/prefix.txt"));
 			}catch(Exception e) {
-				logger.error("Create prefix.txt");
+				System.out.println("------------------------------");
+				logger.error("Error with prefix.txt");
 			}
 
 			try{
 				getAdmin(new File(parent + "/admin.txt"));
 			}catch(Exception e) {
-				logger.error("Create admin.txt");
+				System.out.println("------------------------------");
+				logger.error("Error with admin.txt");
 			}
-			
+
 			try{
 				getFilter(new File(parent + "/filter.txt"));
 			}catch(Exception e) {
-				logger.error("Create filter.txt");
+				System.out.println("------------------------------");
+				logger.error("Error with filter.txt");
 			}
-			
+
+			System.out.println("------------------------------");
+
 			ScheduledExecutorService ses = Executors.newSingleThreadScheduledExecutor();
 			ses.scheduleAtFixedRate(new Runnable() {
 				@Override
@@ -174,74 +195,85 @@ public class Bot {
 			logger.error(e.toString());
 		}
 
-		//		jda.upsertCommand(new CommandData("help", "Learn more about my commands")
-		//				.addOptions(new OptionData(OptionType.STRING, "command", "Which command/category you want to learn more about?").setRequired(false)))
-		//		.queue();
-		//
-		//		jda.upsertCommand(new CommandData("botinfo", "Get the bot's info")).queue();
-		//
-		//		jda.upsertCommand(new CommandData("search", "Search the web")
-		//				.addOptions(new OptionData(OptionType.STRING, "query", "What do you want to search?").setRequired(true)))
-		//		.queue();
-		//
-		//		jda.upsertCommand(new CommandData("poll", "Creates a poll for members to vote")
-		//				.addOptions(new OptionData(OptionType.STRING, "question", "What are we voting for?").setRequired(true)))
-		//		.queue();
-		//
-		//		
-		//		jda.upsertCommand(new CommandData("about", "About Callerphone")).queue();
-		//		jda.upsertCommand(new CommandData("donate", "Help us out by donating")).queue();
-		//		jda.upsertCommand(new CommandData("ping", "Get the bot's ping")).queue();
-		//		jda.upsertCommand(new CommandData("invite", "Invite Callerphone")).queue();
-		//		jda.upsertCommand(new CommandData("ping", "Get the bot's ping")).queue();
-		//		jda.upsertCommand(new CommandData("uptime", "Get the bot's uptime")).queue();
-		//
-		//
-		//
-		//		jda.upsertCommand(new CommandData("clap", "Claps your message")
-		//				.addOptions(new OptionData(OptionType.STRING, "message", "What do you want to clap?").setRequired(true)))
-		//				.queue();
-		//		
-		//		jda.upsertCommand(new CommandData("color", "Get a random color")).queue();
-		//
-		//		jda.upsertCommand(new CommandData("colorrgb", "COLORS!")
-		//				.addOptions(new OptionData(OptionType.INTEGER, "r", "Red value").setRequired(true))
-		//				.addOptions(new OptionData(OptionType.INTEGER, "g", "Green value").setRequired(true))
-		//				.addOptions(new OptionData(OptionType.INTEGER, "b", "Blue value").setRequired(true)))
-		//				.queue();
-		//
-		//		jda.upsertCommand(new CommandData("colorhex", "COLORS!")
-		//				.addOptions(new OptionData(OptionType.STRING, "hex", "Hexcode").setRequired(true)))
-		//				.queue();
-		//
-		//		jda.upsertCommand(new CommandData("echo", "Echos your message")
-		//				.addOptions(new OptionData(OptionType.STRING, "message", "What do you want to echo?").setRequired(true)))
-		//				.queue();
-		//
-		//		jda.upsertCommand(new CommandData("eightball", "Help you decide things")
-		//				.addOptions(new OptionData(OptionType.STRING, "question", "What do you want to ask?").setRequired(true)))
-		//				.queue();
+		/*			
+		   - This removes all existing slash command	
+		   jda.updateCommands().queue();
 
+		   - Commands list
+		   
+		   jda.upsertCommand(new CommandData("help", "Learn more about my commands")
+						.addOptions(new OptionData(OptionType.STRING, "command", "Which command/category you want to learn more about?").setRequired(false)))
+				.queue();
+
+		   jda.upsertCommand(new CommandData("botinfo", "Get the bot's info")).queue();
+
+
+		   jda.upsertCommand(new CommandData("search", "Search the web")
+						.addOptions(new OptionData(OptionType.STRING, "query", "What do you want to search?").setRequired(true)))
+				.queue();
+
+
+		   jda.upsertCommand(new CommandData("poll", "Creates a poll for members to vote")
+						.addOptions(new OptionData(OptionType.STRING, "question", "What are we voting for?").setRequired(true)))
+				.queue();
+
+
+		   jda.upsertCommand(new CommandData("about", "About Callerphone")).queue();
+		   jda.upsertCommand(new CommandData("donate", "Help us out by donating")).queue();
+		   jda.upsertCommand(new CommandData("ping", "Get the bot's ping")).queue();
+		   jda.upsertCommand(new CommandData("invite", "Invite Callerphone")).queue();
+		   jda.upsertCommand(new CommandData("ping", "Get the bot's ping")).queue();
+		   jda.upsertCommand(new CommandData("uptime", "Get the bot's uptime")).queue();
+
+
+		   jda.upsertCommand(new CommandData("clap", "Claps your message")
+						.addOptions(new OptionData(OptionType.STRING, "message", "What do you want to clap?").setRequired(true)))
+						.queue();
+
+
+		   jda.upsertCommand(new CommandData("color", "Get a random color")).queue();
+
+
+		   jda.upsertCommand(new CommandData("colorrgb", "COLORS!")
+						.addOptions(new OptionData(OptionType.INTEGER, "r", "Red value").setRequired(true))
+						.addOptions(new OptionData(OptionType.INTEGER, "g", "Green value").setRequired(true))
+						.addOptions(new OptionData(OptionType.INTEGER, "b", "Blue value").setRequired(true)))
+						.queue();
+
+
+		   jda.upsertCommand(new CommandData("colorhex", "COLORS!")
+						.addOptions(new OptionData(OptionType.STRING, "hex", "Hexcode").setRequired(true)))
+						.queue();
+
+
+     	   jda.upsertCommand(new CommandData("echo", "Echos your message")
+						.addOptions(new OptionData(OptionType.STRING, "message", "What do you want to echo?").setRequired(true)))
+						.queue();
+
+
+		   jda.upsertCommand(new CommandData("eightball", "Help you decide things")
+						.addOptions(new OptionData(OptionType.STRING, "question", "What do you want to ask?").setRequired(true)))
+						.queue();
+
+		 */
 
 	}
 
 	private static void kill() {
 		for(Convo c : ConvoStorage.convo) {
 
-			if(System.currentTimeMillis()-c.lastMessage >= 300000) {
+			if(System.currentTimeMillis()-c.getLastMessage() >= 250000) {
 				final String callerID = c.getCallerTCID();
-				if(!c.isConnected) {
+				if(!c.getConnected()) {
 					try {
-						Bot.jda.getTextChannelById(callerID).sendMessage(Bot.Callerphone + "Took to long for someone to pick up :(").queue();
+						Bot.jda.getTextChannelById(callerID).sendMessage(Bot.Callerphone + "Took too long for someone to pick up :(").queue();
 					}catch(Exception ex) {}
 					c.resetMessage();
 					continue;
 				}
 				final String receiverID = c.getReceiverTCID();
 
-				String data = "";
-				for(String m : c.getMessages())
-					data += m + "\n";
+				ArrayList<String> DATA = new ArrayList<String>(c.getMessages());
 
 				c.resetMessage();
 				try {
@@ -250,19 +282,72 @@ public class Bot {
 				try {
 					Bot.jda.getTextChannelById(receiverID).sendMessage(Bot.Callerphone + "Call ended due to inactivity.").queue();
 				}catch(Exception ex) {}
-				LocalDateTime now = LocalDateTime.now();
-				String month = String.valueOf(now.getMonthValue());
-				String day = String.valueOf(now.getDayOfMonth());
-				String hour = String.valueOf(now.getHour());
-				String minute = String.valueOf(now.getMinute());
-				String ID = month + day + hour + minute + callerID + receiverID;			
 
-				final String DATA = data;
-				if(c.report) {
-					Bot.jda.getTextChannelById("897290511000404008").sendMessage("**ID:** " + ID).addFile(DATA.getBytes(), ID + ".txt").queue();
+				if(c.getReport()) {
+
+					LocalDateTime now = LocalDateTime.now();
+					final String month = String.valueOf(now.getMonthValue());
+					final String day = String.valueOf(now.getDayOfMonth());
+					final String hour = String.valueOf(now.getHour());
+					final String minute = String.valueOf(now.getMinute());
+					final String ID = month + "/" + day + "/" + hour + "/" + minute + "C" + callerID + "R" + receiverID;	
+
+					String data = "";
+					for(String m : DATA)
+						data += m + "\n";
+					jda.getTextChannelById(Bot.reportchannel).sendMessage("**ID:** " + ID).addFile(data.getBytes(), ID + ".txt").queue();
+
 				}
+
 			}
 		}
+	}
+
+	private static void getInfo(File file) throws IOException, InterruptedException {
+		System.out.println("\nInfo.txt:");
+		BufferedReader br = new BufferedReader(new FileReader(file));
+		String line = br.readLine();
+
+		while (line != null) {
+			if(line.startsWith("brainurl=")) {
+				brainURL = line.substring(9).trim();
+			}else if(line.startsWith("emoji=")) {
+				Callerphone = line.substring(6).trim() + " ";
+			}else if(line.startsWith("log=")) {
+				logstatus = line.substring(4).trim();
+			}else if(line.startsWith("report=")) {
+				reportchannel = line.substring(7).trim();
+			}else if(line.startsWith("invite=")) {
+				invite = line.substring(7).trim();
+			}else if(line.startsWith("support=")) {
+				support = line.substring(8).trim();
+			}else if(line.startsWith("tunessupport=")) {
+				tunessupport = line.substring(13).trim();
+			}else if(line.startsWith("donate=")) {
+				donate = line.substring(7).trim();
+			}else if(line.startsWith("owner=")) {
+				owner = line.substring(6).trim();
+			}else {
+				System.out.println("Unused value:");
+			}
+
+			System.out.println(line);
+
+			line = br.readLine();
+		}
+		br.close();
+
+		jda.awaitReady();
+
+		System.out.println("Log Status Channel: " + jda.getTextChannelById(logstatus).getAsMention());
+		System.out.println("Report Channel: " + jda.getTextChannelById(reportchannel).getAsMention());
+		if(isQuickStart) {
+			System.out.println("Owner: " + owner + " (unable to obtain tag because of quickstart)");
+		}else {
+			System.out.println("Owner: " + jda.getUserById(owner).getAsTag());
+		}
+
+		System.out.println();
 	}
 
 	private static void getAdmin(File file) throws IOException {
@@ -323,12 +408,10 @@ public class Bot {
 
 	private static void commandPrompt() throws LoginException, InterruptedException {
 		Scanner sc = new Scanner(System.in);
-
-		logger.info("\n{}Command Line Loaded...{}\nWelcome to Callerphone Bot Command Line (CBCL)!");
+		System.out.println("{}Command Line Loaded...{}\nWelcome to Callerphone Bot Command Line (CBCL)!");
 
 		while(true) {
 			String cmd = sc.nextLine();
-
 			if(cmd.startsWith("start")) {
 				System.out.println("Token: ");
 				String TOKEN = sc.nextLine();
@@ -336,7 +419,21 @@ public class Bot {
 				if(jda != null) {
 					logger.info("Bot Is Online Right Now");
 				} else {
-					BotInit(TOKEN, cmd.replaceFirst("start", ""));
+					isQuickStart = false;
+					BotInit(TOKEN, cmd.replaceFirst("start", ""), false);
+				}
+				continue;
+			}
+
+			if(cmd.startsWith("quickstart")) {
+				System.out.println("Token: ");
+				String TOKEN = sc.nextLine();
+				logger.info("Starting Bot...");
+				if(jda != null) {
+					logger.info("Bot Is Online Right Now");
+				} else {
+					isQuickStart = true;
+					BotInit(TOKEN, cmd.replaceFirst("quickstart", ""), true);
 				}
 				continue;
 			}
@@ -344,14 +441,15 @@ public class Bot {
 			if(cmd.equals("shutdown")) {
 				logger.info("Shutting Down Bot...");
 				if(jda != null) {
-					EmbedBuilder embedBuilder = new EmbedBuilder().setTitle("Status").setColor(Color.RED).setFooter("Goodbye World...").setDescription(Bot.jda.getSelfUser().getAsMention() + " is going offline;" + cmd.replaceFirst("shutdown", ""));
+					EmbedBuilder embedBuilder = new EmbedBuilder().setTitle("Status").setColor(new Color(213, 0, 0)).setFooter("Goodbye World...").setDescription(Bot.jda.getSelfUser().getAsMention() + " is going offline;" + cmd.replaceFirst("shutdown", ""));
 					try {
-						jda.getTextChannelById("852342009288851516").sendMessageEmbeds(embedBuilder.build()).complete();
+						jda.getTextChannelById(logstatus).sendMessageEmbeds(embedBuilder.build()).complete();
 					} catch(Exception e) {
 						logger.error("Error Sending Shutdown Message");
 					}
 					jda.awaitReady();
 					jda.shutdown();
+					jda = null;
 				}
 				logger.info("Bot Offline");
 				sc.close();
@@ -361,7 +459,7 @@ public class Bot {
 			if(cmd.equals("presence")) {
 				if(jda == null) {
 					logger.info("Bot Is Offline");
-					continue;
+					//continue;
 				}
 
 				Activity act = null;
@@ -372,7 +470,7 @@ public class Bot {
 						System.out.println("Activity: ");
 						String msg = sc.next().toLowerCase();
 
-						if(msg.equals("<removestatus>")) {
+						if(msg.equals("<rs>")) {
 							act = null;
 							break;
 						} else if(msg.equals("competing")) {
@@ -416,7 +514,6 @@ public class Bot {
 							System.out.println("Watching: " + watch);
 							act = Activity.watching(watch);
 							break;
-
 						}
 					}
 
@@ -426,26 +523,25 @@ public class Bot {
 						System.out.println("Online Status: ");
 						String msg = sc.next().toLowerCase();
 
-						if(msg.equals("online")) {
+						if(msg.toLowerCase().startsWith("onl")) {
 							s = OnlineStatus.ONLINE;
 							break;
 
-						} else if(msg.equals("idle")) {
+						} else if(msg.toLowerCase().startsWith("idl")) {
 							s = OnlineStatus.IDLE;
 							break;
 
-						} else if(msg.equals("dnd")) {
+						} else if(msg.toLowerCase().startsWith("dnd")) {
 							s = OnlineStatus.DO_NOT_DISTURB;
 							break;
 
-						} else if(msg.equals("invis")) {
+						} else if(msg.toLowerCase().startsWith("inv")) {
 							s = OnlineStatus.INVISIBLE;
 							break;
 
 						}
 
 					}
-
 					if(jda != null) {
 						jda.getPresence().setPresence(s, act);
 						continue;
@@ -479,18 +575,61 @@ public class Bot {
 				continue;
 			}
 
+			if(cmd.equals("recal")) {
+				logger.info("Recalibrating...");
+				try {
+					getInfo(new File(parent + "/info.txt"));
+				}catch(Exception e) {
+					System.out.println("------------------------------");
+					logger.error("Error with info.txt");
+					logger.warn("Critical Issues May Appear (BrainURL and other links)");
+				}
+
+				try {
+					getBlack(new File(parent + "/blacklist.txt"));
+				}catch(Exception e) {
+					System.out.println("------------------------------");
+					logger.error("Error with blacklist.txt");
+				}
+
+				try {
+					getPrefix(new File(parent + "/prefix.txt"));
+				}catch(Exception e) {
+					System.out.println("------------------------------");
+					logger.error("Error with prefix.txt");
+				}
+
+				try{
+					getAdmin(new File(parent + "/admin.txt"));
+				}catch(Exception e) {
+					System.out.println("------------------------------");
+					logger.error("Error with admin.txt");
+				}
+
+				try{
+					getFilter(new File(parent + "/filter.txt"));
+				}catch(Exception e) {
+					System.out.println("------------------------------");
+					logger.error("Error with filter.txt");
+				}
+
+				System.out.println("------------------------------");
+			}
+
 			if(cmd.equals("help")) {
 				System.out.println( 
 						"Option 1: start <msg> = To start the bot\n" +
 								"Option 2: shutdown = To shutdown the bot\n" +
 								"Option 3: presence = To set presence\n" +
 								"Option 4: info = To get info of the bot\n" +
-						"Option 5: help = UBCL help (this)");
+								"Option 5: recal = To read resources again\n" +
+								"Option 6: help = UBCL help (this)\n\n" +
+						"Other: quickstart <msg> = To start the bot quicker");
 				continue;
 			}
 
 			if(!cmd.equals(""))
-				logger.debug("Unknown Command");
+				logger.warn("Unknown Command");
 
 		}
 	}

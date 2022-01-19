@@ -1,23 +1,6 @@
-/*
- * Copyright 2021 Marsss (itsmarsss).
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package com.marsss.listeners;
 
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.List;
 
 import com.marsss.Bot;
@@ -49,7 +32,7 @@ public class CommandListener extends ListenerAdapter {
 
 		try {
 
-			if(MEMBER.getUser().isBot())
+			if(MEMBER.getUser().isBot() || MEMBER.getUser().isSystem())
 				return;
 
 		}catch(Exception e) {}
@@ -61,6 +44,11 @@ public class CommandListener extends ListenerAdapter {
 
 		if(!args[0].toLowerCase().startsWith(Bot.Prefix))
 			return;
+
+		if(args[0].toLowerCase().startsWith(Bot.Prefix + "play")) {
+			MESSAGE.reply("Callerphone no longer can play music, however I've created a new bot called **Tunes**...\nJoin <" + Bot.tunessupport + "> for more information!").queue();
+			return;
+		}
 
 
 		// Utils
@@ -78,7 +66,6 @@ public class CommandListener extends ListenerAdapter {
 				admin = true;
 			}
 			if(args.length > 1) {
-				
 				MESSAGE.replyEmbeds(Help.help(args[1], admin)).queue();
 				break;
 			}
@@ -103,7 +90,7 @@ public class CommandListener extends ListenerAdapter {
 				MESSAGE.reply("I need `Embed Links` permission for this command to work").queue();
 				break;
 			}
-			if(CONTENT.substring(8, CONTENT.length()).isBlank()) {
+			if(CONTENT.substring(8, CONTENT.length()).equals("")) {
 				MESSAGE.reply("Please enter a search query!").queue();
 				break;
 			}
@@ -353,165 +340,17 @@ public class CommandListener extends ListenerAdapter {
 			break;
 
 
-
+			
 		case "8ball":
 			final String qst = CONTENT.substring(7, CONTENT.length()).trim();
-			if(!qst.isBlank()) {
+			if(!qst.equals("")) {
 				MESSAGE.reply(EightBall.eightball(qst)).queue();
 				break;
 			}
 			MESSAGE.reply("Please specify a question!").queue();
 			break;
 
-
-
 		}
-
-
-		if(Bot.admin.contains(event.getAuthor().getId())) {
-			try {
-				String id = args[1];
-				switch (args[0].toLowerCase().replace(Bot.Prefix, "")) {
-
-				case "blacklist":
-					if(Bot.blacklist.contains(id)) {
-						MESSAGE.reply("ID blacklisted already").queue();
-					}else {
-						Bot.blacklist.add(id);
-						StringBuilder sb = new StringBuilder();
-						try {
-							for(String m : Bot.blacklist) {
-								sb.append(m + "\n");
-							}
-							FileWriter myWriter = new FileWriter(Bot.parent + "/blacklist.txt");
-							myWriter.write(sb.toString());
-							myWriter.close();
-							MESSAGE.reply("ID: `" + id + "` added to blacklist").queue();
-						} catch (IOException e) {
-							MESSAGE.reply("An error occured").queue();
-						}
-					}
-					break;
-
-				case "prefix":
-					if(Bot.prefix.containsKey(id)) {
-						MESSAGE.reply("ID has prefix already").queue();
-					}else {
-						String prefix = args[2];
-						if(prefix.length() > 15) {
-							MESSAGE.reply("Prefix too long (max. length = 15)").queue();
-							break;
-						}
-						Bot.prefix.put(id, prefix);
-						StringBuilder sb = new StringBuilder();
-						try {
-							for(String key : Bot.prefix.keySet()) {
-								sb.append(key + "|" + Bot.prefix.get(key) + "\n");
-							}
-							FileWriter myWriter = new FileWriter(Bot.parent + "/prefix.txt");
-							myWriter.write(sb.toString());
-							myWriter.close();
-							MESSAGE.reply("ID: `" + id + "` now has prefix `" + prefix + "`").queue();
-						} catch (IOException e) {
-							MESSAGE.reply("An error occured").queue();
-						}
-					}
-					break;
-
-				case "mod":
-					if(Bot.admin.contains(id)) {
-						MESSAGE.reply("ID is mod already").queue();
-					}else {
-						Bot.admin.add(id);
-						StringBuilder sb = new StringBuilder();
-						try {
-							for(String m : Bot.admin) {
-								sb.append(m + "\n");
-							}
-							FileWriter myWriter = new FileWriter(Bot.parent + "/admin.txt");
-							myWriter.write(sb.toString());
-							myWriter.close();
-							MESSAGE.reply("ID: `" + id + "` added to mod list").queue();
-						} catch (IOException e) {
-							MESSAGE.reply("An error occured").queue();
-						}
-					}
-					break;
-
-
-
-
-				case "rblacklist":
-					if(!Bot.blacklist.contains(id)) {
-						MESSAGE.reply("ID not on blacklist").queue();
-					}else {
-						Bot.blacklist.remove(id);
-						StringBuilder sb = new StringBuilder();
-						try {
-							for(String m : Bot.blacklist) {
-								sb.append(m + "\n");
-							}
-							PrintWriter myWriter = new PrintWriter(Bot.parent + "/blacklist.txt");
-							myWriter.print(sb.toString());
-							myWriter.close();
-							MESSAGE.reply("ID: `" + id + "` removed from blacklist").queue();
-						} catch (IOException e) {
-							MESSAGE.reply("An error occured").queue();
-						}
-					}
-					break;
-
-				case "rprefix":
-					if(!Bot.prefix.containsKey(id)) {
-						MESSAGE.reply("ID does not have a prefix").queue();
-					}else {
-						Bot.prefix.remove(id);
-						StringBuilder sb = new StringBuilder();
-						try {
-							for(String key : Bot.prefix.keySet()) {
-								sb.append(key + "|" + Bot.prefix.get(key) + "\n");
-							}
-							PrintWriter myWriter = new PrintWriter(Bot.parent + "/prefix.txt");
-							myWriter.print(sb.toString());
-							myWriter.close();
-							MESSAGE.reply("ID: `" + id + "` no longer has a prefix").queue();
-						} catch (IOException e) {
-							MESSAGE.reply("An error occured").queue();
-						}
-					}
-					break;
-
-				case "rmod":
-					if(!Bot.admin.contains(id)) {
-						MESSAGE.reply("ID is not a mod").queue();
-					}else {
-						if(id.equals("841028865995964477")) {
-							MESSAGE.reply("You cannot remove this mod").queue();
-							break;
-						}
-						Bot.admin.remove(id);
-						StringBuilder sb = new StringBuilder();
-						try {
-							for(String m : Bot.admin) {
-								sb.append(m + "\n");
-							}
-							PrintWriter myWriter = new PrintWriter(Bot.parent + "/admin.txt");
-							myWriter.print(sb.toString());
-							myWriter.close();
-							MESSAGE.reply("ID: `" + id + "` removed from mod list").queue();
-						} catch (IOException e) {
-							MESSAGE.reply("An error occured").queue();
-						}
-					}
-					break;
-				}
-			} catch(Exception e) {}
-		}
-	}
-	
-	public static String supportHelp() {
-		return "`" + Bot.Prefix + "prefix <id> <prefix>` - Give user a prefix.\n" +
-				"`" + Bot.Prefix + "rprefix <id>` - Removes user prefix.";
 	}
 	
 	public static String adminHelp() {
@@ -524,4 +363,17 @@ public class CommandListener extends ListenerAdapter {
 				"`" + Bot.Prefix + "rblacklist <id>` - Removes id from blacklist.";
 	}
 	
+	public static String supportHelp() {
+		return "`" + Bot.Prefix + "prefix <id> <prefix>` - Give user a prefix.\n" +
+				"`" + Bot.Prefix + "rprefix <id>` - Removes user prefix.";
+	}
+
+	public static String showItemsHelp() {
+		return "`" + Bot.Prefix + "blackedlist` - Shows all black listed users.\n" +
+				"`" + Bot.Prefix + "prefixlist` - Shows all prefixes for users.\n" +
+				"`" + Bot.Prefix + "infolist` - Shows all info for startup.\n" +
+				"`" + Bot.Prefix + "modlist` - Shows all moderators.\n" +
+				"`" + Bot.Prefix + "filterlist` - Shows all chat filters.";
+	}
+
 }
