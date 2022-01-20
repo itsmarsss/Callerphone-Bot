@@ -1,5 +1,10 @@
-# Callerphone-Bot
-
+<h1>
+<img src="/assets/icon.png" alt="Icon" width="100" height="100" </img>
+<br>
+Callerphone-Bot
+<br>
+</h1>
+  
 ## About
 Callerphone allows you to talk to strangers from other servers, you can do this by text or voice. We have censored and uncensored calls, you can even go undercover and be anonymous if you want. Unfortunately, we could not add censorship to voice calls because of the enormous increase in ping. If anyone decides to break Callerphone's rules and or Discord TOS, you can always report the other party! Add this bot to your server for your members to socialize and have fun!
 
