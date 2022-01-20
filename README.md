@@ -5,16 +5,16 @@ Callerphone-Bot
 <br>
 </h1>
   
-## About
-Callerphone allows you to talk to strangers from other servers, you can do this by text or voice. We have censored and uncensored calls, you can even go undercover and be anonymous if you want. Unfortunately, we could not add censorship to voice calls because of the enormous increase in ping. If anyone decides to break Callerphone's rules and or Discord TOS, you can always report the other party! Add this bot to your server for your members to socialize and have fun!
+**About** -
+ Callerphone allows you to talk to strangers from other servers, you can do this by text or voice. We have censored and uncensored calls, you can even go undercover and be anonymous if you want. Unfortunately, we could not add censorship to voice calls because of the enormous increase in ping. If anyone decides to break Callerphone's rules and or Discord TOS, you can always report the other party! Add this bot to your server for your members to socialize and have fun!
 
-## Commands
-We have a whole list of commands, utility, entertainment, chat, and call commands! Utility commands can help you learn more about a user, a role, a channel, or even the server. Entertainment commands can help you clap your messages, echo your messages, reply to your questions with eight ball, create polls and even a few color commands.
+**Commands** -
+ We have a whole list of commands, utility, entertainment, chat, and call commands! Utility commands can help you learn more about a user, a role, a channel, or even the server. Entertainment commands can help you clap your messages, echo your messages, reply to your questions with eight ball, create polls and even a few color commands.
 
-## Why?
-Why should you choose Callerphone over other bots that do similar things? Callerphone does not randomly disconnect chats or calls and will pair you up with someone as soon as it can! Callerphone works in voice calls. It can help your server members become more active and socialize more! You can help increase our user-base by inviting Callerphone!
+**Why?** -
+ Why should you choose Callerphone over other bots that do similar things? Callerphone does not randomly disconnect chats or calls and will pair you up with someone as soon as it can! Callerphone works in voice calls. It can help your server members become more active and socialize more! You can help increase our user-base by inviting Callerphone!
 
-# List of Commands
+## Features
 
 ### Bot Commands
 `about` - about the bot
@@ -129,18 +129,19 @@ Why should you choose Callerphone over other bots that do similar things? Caller
 `loop` - toggle loop
 
 
-# More Information
+## More Information
+### [Invite Callerphone](https://discord.com/api/oauth2/authorize?client_id=849713468348956692&permissions=49663040&scope=bot)
 
-## Support server!
+### Support server!
 <a href="https://discord.gg/jcYKsfw48p"><img alt="support server" src="https://miro.medium.com/max/800/1*_AsB_hCguMYC-wEG2Bidmw.png" height="35px"></a>
 
-## Support us?
+### Support us?
 <a href="https://www.patreon.com/itsmarsss"><img alt="become a patron" src="https://c5.patreon.com/external/logo/become_a_patron_button.png" height="35px"></a>
 
-## Top.gg!
+### Top.gg!
 <a href="https://top.gg/bot/849713468348956692">
   <img src="https://top.gg/api/widget/849713468348956692.svg">
 </a>
 
-## Discord Bot List!
+### Discord Bot List!
 <a href="https://discordbotlist.com/bots/849713468348956692"><img src="https://discordbotlist.com/api/v1/bots/849713468348956692/widget"></a>
