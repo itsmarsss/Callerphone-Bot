@@ -194,10 +194,11 @@ public class TCCallerphoneListener extends ListenerAdapter {
 			break;
 			
 		case "report":
-			MESSAGE.reply("`" + Bot.Prefix + "reportchat` to report a chat\n" +
-						  "`" + Bot.Prefix + "reportcall` to report a call").queue();
+			if(hasCall(event.getChannel().getId()))
+				MESSAGE.reply("`" + Bot.Prefix + "reportchat` to report a chat\n" +
+						"`" + Bot.Prefix + "reportcall` to report a call").queue();
 			break;
-
+				
 		default:
 			if(args[0].toLowerCase().equals(Bot.Prefix + "support"))
 				break;
