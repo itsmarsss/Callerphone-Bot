@@ -12,7 +12,7 @@ Callerphone-Bot
  We have a whole list of commands, utility, entertainment, chat, and call commands! Utility commands can help you learn more about a user, a role, a channel, or even the server. Entertainment commands can help you clap your messages, echo your messages, reply to your questions with eight ball, create polls and even a few color commands.
 
 **Why?** -
- Why should you choose Callerphone over other bots that do similar things? Callerphone does not randomly disconnect chats or calls and will pair you up with someone as soon as it can! Callerphone works in voice calls. It can help your server members become more active and socialize more! You can help increase our user-base by inviting Callerphone!
+ Why should you choose Callerphone over other bots that do similar things? Callerphone does not randomly disconnect chats or calls and will pair you up with someone as soon as it can! Callerphone works in voice channels. It can help your server members become more active and socialize more! You can help increase our user-base by inviting Callerphone!
 
 ## Features
 
@@ -32,9 +32,9 @@ Callerphone-Bot
 
 `color` - random color
 
-`colorrgb` - creates cool embed with provided rgb value
+`colorrgb` - creates embed with provided rgb value
 
-`colorhex` - creates cool embed with provided hex value
+`colorhex` - creates embed with provided hex value
 
 `echo` - echo your message
 
