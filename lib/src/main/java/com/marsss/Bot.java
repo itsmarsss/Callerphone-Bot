@@ -106,10 +106,6 @@ public class Bot {
 			jda.addEventListener(new OnSlashCommand());
 			jda.addEventListener(new OnPrivateMessage());
 			jda.addEventListener(new TCCallerphoneListener());
-			jda.addEventListener(new VCCallerphoneListener());
-			jda.addEventListener(new OnMuted());
-			jda.addEventListener(new OnDeafened());
-			jda.addEventListener(new OnDisconnection());
 
 
 
