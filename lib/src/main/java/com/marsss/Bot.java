@@ -56,7 +56,7 @@ public class Bot {
 	public static LinkedList <String> filter = new LinkedList<>();
 
 	public static final String Prefix = "c?";
-	public static final String ThumbsUp = "👍";
+	public static final String ThumbsUp = ":thumbs_up:";
 
 	public static String brainURL = "http://api.brainshop.ai/get?bid=160403&key=FFFNOBQEMnANoVn1&uid=[uid]&msg=[msg]";
 	public static String Callerphone = "<:CallerphoneEmote:899051549173637120> ";
