@@ -9,7 +9,6 @@ import com.marsss.Bot;
 import com.marsss.bot.*;
 import com.marsss.entertainments.*;
 import com.marsss.tccallerphone.*;
-import com.marsss.vccallerphone.*;
 
 public class Help {
 	public static MessageEmbed help(String name, boolean admin) {
@@ -64,24 +63,11 @@ public class Help {
 					+ TCCallPairer.reportHelp();
 			break;
 
-
-
-		case "vccall":
-			TITLE = "VCCall Commands";
-			DESC = VCCallPairer.callHelp() + "\n"
-					+ VCCallPairer.hangupHelp() + "\n"
-					+ VCCallPairer.muteHelp() + "\n"
-					+ VCCallPairer.unmuteHelp() + "\n"
-					+ VCCallPairer.deafenHelp() + "\n"
-					+ VCCallPairer.undeafenHelp() + "\n"
-					+ VCCallPairer.reportHelp();
-			break;
 			
 			
 		case "report":
 			TITLE = "Report Commands";
-			DESC = TCCallPairer.reportHelp() + "\n"
-					+ VCCallPairer.reportHelp();
+			DESC = TCCallPairer.reportHelp();
 			break;
 			
 			
@@ -169,46 +155,6 @@ public class Help {
 
 
 
-		// Voicephone
-
-		switch(name) {
-
-
-
-		case "call":
-			TITLE = "Call";
-			DESC = VCCallPairer.callHelp();
-			break;
-		case "hangup":
-			TITLE = "Hangup";
-			DESC = VCCallPairer.hangupHelp();
-			break;
-		case "mute":
-			TITLE = "Mute";
-			DESC = VCCallPairer.muteHelp();
-			break;
-		case "unmute":
-			TITLE = "Unmute";
-			DESC = VCCallPairer.unmuteHelp();
-			break;
-		case "deafen":
-			TITLE = "Deafen";
-			DESC = VCCallPairer.deafenHelp();
-			break;
-		case "undeafen":
-			TITLE = "Undeafen";
-			DESC = VCCallPairer.undeafenHelp();
-			break;
-		case "reportcall":
-			TITLE = "Report";
-			DESC = VCCallPairer.reportHelp();
-			break;
-
-
-		}
-
-
-
 
 		// Textphone
 
@@ -250,10 +196,8 @@ public class Help {
 				.setColor(new Color(114, 137, 218))
 				.setTitle("Categories")
 				.addField("Bot", "all commands related to the bot will be here, do `" + Bot.Prefix + "help bot` for more information", false)
-				.addField("Entertainment", "all entertainment commands will be in this category, do `" + Bot.Prefix + "help entertainment` for more information", false)
 				.addField("Utils", "all utility commands will be in this category, do `" + Bot.Prefix + "help utils` for more information", false)
 				.addField("TC Callerphone", "all text call callerphone commands will be in this category, do `" + Bot.Prefix + "help tccall` for more information", false)
-				.addField("VC Callerphone", "all voice call callerphone commands will be in this category, do `" + Bot.Prefix + "help vccall` for more information", false)
 				.addField("Music", "Callerphone no longer can play music, however I've created a new bot called **Tunes**... Join [this](https:discord.gg/TyHaxtWAmX) server for more information!", false)
 				.setFooter("Type `" + Bot.Prefix + "help <category name>` to see category commands");
 		if(admin) {

@@ -26,8 +26,6 @@ import org.slf4j.LoggerFactory;
 import com.marsss.listeners.*;
 import com.marsss.tccallerphone.ConvoStorage;
 import com.marsss.tccallerphone.ConvoStorage.Convo;
-import com.marsss.vccallerphone.AudioStorage;
-import com.marsss.vccallerphone.AudioStorage.Audio;
 
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
@@ -113,10 +111,6 @@ public class Bot {
 				ConvoStorage.convo[i] = new Convo(new ConcurrentLinkedQueue<>(), "empty", "", false, 0, true, true, false, false, false);
 			}
 
-
-			for(int i = 0; i < AudioStorage.audio.length; i++) {
-				AudioStorage.audio[i] = new Audio(new ConcurrentLinkedQueue<>(), "empty", "", new ConcurrentLinkedQueue<>(), "", "", false, false, false);
-			}
 
 			jda.awaitReady();
 
