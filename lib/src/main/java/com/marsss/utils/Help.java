@@ -38,22 +38,14 @@ public class Help {
 					+ Uptime.getHelp();
 			break;
 
-
-
-		case "entertainment":
-			TITLE = "Entertaiment Commands";
-			DESC = Clap.getHelp() + "\n"
-					+ Colour.getHelp() + "\n"
-					+ Echo.getHelp() + "\n"
-					+ EightBall.getHelp();
-			break;
-
+			
 
 
 		case "utils":
 			TITLE = "Util Commands";
 			DESC = BotInfo.getHelp() + "\n"
 					+ ChannelInfo.getHelp() + "\n"
+					+ Colour.getHelp() + "\n"
 					+ Help.getHelp() + "\n"
 					+ Polls.getHelp() + "\n"
 					+ RoleInfo.getHelp() + "\n"
@@ -129,34 +121,6 @@ public class Help {
 
 		}
 
-
-
-		// Entertainments
-
-		switch(name) {
-
-
-
-		case "clap":
-			TITLE = "Clap";
-			DESC = Clap.getHelp();
-			break;
-		case "color":
-			TITLE = "Color";
-			DESC = Colour.getHelp();
-			break;
-		case "echo":
-			TITLE = "Echo";
-			DESC = Echo.getHelp();
-			break;
-		case "eightball":
-			TITLE = "8Ball";
-			DESC = EightBall.getHelp();
-			break;
-
-
-
-		}
 
 
 

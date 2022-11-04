@@ -135,11 +135,8 @@ public class OnSlashCommand extends ListenerAdapter {
 		case "uptime":
 			event.reply(Uptime.uptime()).queue();
 			break;
-
-
-		case "clap":
-			event.reply(Clap.clap(("holder " + event.getOption("message").getAsString()).split("\\s+"))).queue();
-			break;
+			
+			
 
 		case "color":
 			if(!event.getGuild().getSelfMember().hasPermission(Permission.MESSAGE_EMBED_LINKS)) {
@@ -171,19 +168,7 @@ public class OnSlashCommand extends ListenerAdapter {
 			event.replyEmbeds(Colour.colorrgb(event.getOption("r").getAsString(), event.getOption("g").getAsString(), event.getOption("b").getAsString())).queue();
 			break;
 
-
-
-		case "echo":
-			event.reply(Echo.echo(("holder " + event.getOption("message").getAsString()).split("\\s+"))).queue();
-			break;
-
-
-
-		case "eightball":
-			event.reply(EightBall.eightball(event.getOption("question").getAsString())).queue();
-			break;
-
-
+			
 		}
 	}
 	private static void privateChannel(SlashCommandEvent event) {
@@ -264,9 +249,7 @@ public class OnSlashCommand extends ListenerAdapter {
 			break;
 
 
-		case "clap":
-			event.reply(Clap.clap(("holder " + event.getOption("message").getAsString()).split("\\s+"))).queue();
-			break;
+			
 
 		case "color":
 			event.replyEmbeds(Colour.color()).queue();
@@ -284,17 +267,6 @@ public class OnSlashCommand extends ListenerAdapter {
 			event.replyEmbeds(Colour.colorrgb(event.getOption("r").getAsString(), event.getOption("g").getAsString(), event.getOption("b").getAsString())).queue();
 			break;
 
-
-
-		case "echo":
-			event.reply(Echo.echo(("holder " + event.getOption("message").getAsString()).split("\\s+"))).queue();
-			break;
-
-
-
-		case "eightball":
-			event.reply(EightBall.eightball(event.getOption("question").getAsString())).queue();
-			break;
 
 
 		}

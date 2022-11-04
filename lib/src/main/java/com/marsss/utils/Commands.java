@@ -37,20 +37,9 @@ public class Commands {
 						+ SPLIT
 						+ UserInfo.getHelp()
 						+ SPLIT
-						+ BotInfo.getHelp(), true)
-				.addField("**Entertainments**",
-						Clap.getHelp()
-						+ SPLIT
-						+ Colour.getHelp()
-						+ SPLIT
-						+ Echo.getHelp()
-						+ SPLIT
-						+ EightBall.getHelp()
-						+ SPLIT
-						+ Polls.getHelp(), true
-						);
+						+ BotInfo.getHelp(), true);
 
-		return CmdEmd.build();
+				return CmdEmd.build();
 	}
 
 	public static String getHelp() {

@@ -212,26 +212,6 @@ public class CommandListener extends ListenerAdapter {
 
 
 
-		case "poll":
-			if(!event.getGuild().getSelfMember().hasPermission(Permission.MESSAGE_ADD_REACTION)) {
-				MESSAGE.reply("I need `Add Reaction` permission for this command to work").queue();
-				break;
-			}
-			if(!event.getGuild().getSelfMember().hasPermission(Permission.MESSAGE_EMBED_LINKS)) {
-				MESSAGE.reply("I need `Embed Links` permission for this command to work").queue();
-				break;
-			}
-			CONTENT = CONTENT.substring(7, CONTENT.length());
-			event.getChannel().sendMessage(event.getAuthor().getName() + " launched a poll:").complete();
-			event.getChannel().sendMessageEmbeds(Polls.newpoll(CONTENT)).queue(message -> {
-				message.addReaction("✅").queue();
-				message.addReaction("❎").queue();
-			});
-			break;
-
-
-
-
 		}
 
 
@@ -289,13 +269,7 @@ public class CommandListener extends ListenerAdapter {
 		// Entertainments
 		switch (args[0].toLowerCase().replace(Bot.Prefix, "")) {
 
-
-
-		case "clap":
-			MESSAGE.reply(Clap.clap(args)).queue();
-			break;
-
-
+		
 
 		case "color":
 			if(!event.getGuild().getSelfMember().hasPermission(Permission.MESSAGE_EMBED_LINKS)) {
@@ -333,22 +307,6 @@ public class CommandListener extends ListenerAdapter {
 			break;
 
 
-
-		case "echo":
-			args[0] = "";
-			MESSAGE.reply(Echo.echo(args)).queue();
-			break;
-
-
-			
-		case "8ball":
-			final String qst = CONTENT.substring(7, CONTENT.length()).trim();
-			if(!qst.equals("")) {
-				MESSAGE.reply(EightBall.eightball(qst)).queue();
-				break;
-			}
-			MESSAGE.reply("Please specify a question!").queue();
-			break;
 
 		}
 	}
