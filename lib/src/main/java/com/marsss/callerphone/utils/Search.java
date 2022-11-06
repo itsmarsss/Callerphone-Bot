@@ -90,7 +90,7 @@ public class Search implements Command {
 
     @Override
     public String[] getTriggers() {
-        return new String[0];
+        return "search,ddg,query".split(",");
     }
 
 }
