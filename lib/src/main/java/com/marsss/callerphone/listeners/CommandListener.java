@@ -180,7 +180,6 @@ public class CommandListener extends ListenerAdapter {
 				MESSAGE.reply("I need `Embed Links` permission for this command to work").queue();
 				break;
 			}
-			MESSAGE.replyEmbeds(ServerInfo.serverinfo(event.getGuild())).queue();
 			break;
 
 
