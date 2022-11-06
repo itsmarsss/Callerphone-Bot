@@ -7,21 +7,21 @@ import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
 public class Donate implements Command {
 
-	@Override
-	public void runCommand(GuildMessageReceivedEvent e) {
-		e.getMessage().replyEmbeds(new EmbedBuilder()
-				.setDescription("Donate at <" + Callerphone.donate + ">")
-				.build()
-		).queue();
-	}
+    @Override
+    public void runCommand(GuildMessageReceivedEvent e) {
+        e.getMessage().replyEmbeds(new EmbedBuilder()
+                .setDescription("Donate at <" + Callerphone.donate + ">")
+                .build()
+        ).queue();
+    }
 
-	@Override
-	public String getHelp() {
-		return "`" + Callerphone.Prefix + "donate` - Help us out by donating.";
-	}
+    @Override
+    public String getHelp() {
+        return "`" + Callerphone.Prefix + "donate` - Help us out by donating.";
+    }
 
-	@Override
-	public String[] getTriggers() {
-		return "donate,don".split(",");
-	}
+    @Override
+    public String[] getTriggers() {
+        return "donate,don".split(",");
+    }
 }
