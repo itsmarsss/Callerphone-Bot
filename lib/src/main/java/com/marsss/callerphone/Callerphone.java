@@ -18,8 +18,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-import javax.security.auth.login.LoginException;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,7 +34,6 @@ import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.TextChannel;
 //import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 //import net.dv8tion.jda.api.interactions.commands.OptionType;
 //import net.dv8tion.jda.api.interactions.commands.build.CommandData;
@@ -53,15 +50,14 @@ public class Callerphone {
     public static String parent;
 
     public static LinkedList<String> blacklist = new LinkedList<>();
-    public static HashMap<String, String> prefix = new HashMap<String, String>();
+    public static HashMap<String, String> prefix = new HashMap<>();
     public static LinkedList<String> admin = new LinkedList<>();
 
     public static LinkedList<String> filter = new LinkedList<>();
 
-    public static HashMap<String, Command> cmdMap = new HashMap<String, Command>();
+    public static HashMap<String, Command> cmdMap = new HashMap<>();
 
     public static final String Prefix = "c?";
-    public static final String ThumbsUp = ":thumbs_up:";
 
     public static String brainURL = "http://api.brainshop.ai/get?bid=160403&key=FFFNOBQEMnANoVn1&uid=[uid]&msg=[msg]";
     public static String Callerphone = "<:CallerphoneEmote:899051549173637120> ";
@@ -86,7 +82,7 @@ public class Callerphone {
             GatewayIntent.GUILD_INVITES,
             GatewayIntent.DIRECT_MESSAGES);
 
-    private static void BotInit(String token, String startupmsg, boolean quickStart) throws InterruptedException, LoginException {
+    private static void BotInit(String token, String startupmsg, boolean quickStart) {
 
         try {
             if (quickStart) {
@@ -121,8 +117,8 @@ public class Callerphone {
             cmdLst.add(new ServerInfo());
             cmdLst.add(new UserInfo());
 
-            for(Command cmd : cmdLst) {
-                for(String trigger : cmd.getTriggers()) {
+            for (Command cmd : cmdLst) {
+                for (String trigger : cmd.getTriggers()) {
                     cmdMap.put(trigger, cmd);
                     System.out.println("Put: key=" + trigger + ", value=" + cmd.getClass().getName());
                 }
@@ -291,7 +287,7 @@ public class Callerphone {
                 }
                 final String receiverID = c.getReceiverTCID();
 
-                ArrayList<String> DATA = new ArrayList<String>(c.getMessages());
+                ArrayList<String> DATA = new ArrayList<>(c.getMessages());
 
                 c.resetMessage();
                 try {
@@ -371,66 +367,54 @@ public class Callerphone {
     }
 
     private static void getAdmin(File file) throws IOException {
-        BufferedReader br = new BufferedReader(new FileReader(file));
-        try {
+        try (BufferedReader br = new BufferedReader(new FileReader(file))) {
             String line = br.readLine();
 
             while (line != null) {
                 admin.add(line);
                 line = br.readLine();
             }
-        } finally {
-            br.close();
         }
     }
 
     private static void getPrefix(File file) throws IOException {
-        BufferedReader br = new BufferedReader(new FileReader(file));
-        try {
+        try (BufferedReader br = new BufferedReader(new FileReader(file))) {
             String line = br.readLine();
             while (line != null) {
                 int split = line.indexOf("|");
-                prefix.put(line.substring(0, split), line.substring(split + 1, line.length()));
+                prefix.put(line.substring(0, split), line.substring(split + 1));
                 line = br.readLine();
             }
-        } finally {
-            br.close();
         }
     }
 
     private static void getBlack(File file) throws IOException {
-        BufferedReader br = new BufferedReader(new FileReader(file));
-        try {
+        try (BufferedReader br = new BufferedReader(new FileReader(file))) {
             String line = br.readLine();
 
             while (line != null) {
                 blacklist.add(line);
                 line = br.readLine();
             }
-        } finally {
-            br.close();
         }
     }
 
     private static void getFilter(File file) throws IOException {
-        BufferedReader br = new BufferedReader(new FileReader(file));
-        try {
+        try (BufferedReader br = new BufferedReader(new FileReader(file))) {
             String line = br.readLine();
 
             while (line != null) {
                 filter.add(line);
                 line = br.readLine();
             }
-        } finally {
-            br.close();
         }
     }
 
-    public static void main(String[] args) throws LoginException, InterruptedException {
+    public static void main(String[] args) throws InterruptedException {
         commandPrompt();
     }
 
-    private static void commandPrompt() throws LoginException, InterruptedException {
+    private static void commandPrompt() throws InterruptedException {
         Scanner sc = new Scanner(System.in);
         System.out.println("{}Command Line Loaded...{}\nWelcome to Callerphone Bot Command Line (CBCL)!");
 
@@ -486,62 +470,64 @@ public class Callerphone {
                     //continue;
                 }
 
-                Activity act = null;
+                Activity act;
                 logger.info("Change Presence...");
                 try {
+                    label:
                     while (true) {
 
                         System.out.println("Activity: ");
                         String msg = sc.next().toLowerCase();
 
-                        if (msg.equals("<rs>")) {
-                            act = null;
-                            break;
-                        } else if (msg.equals("competing")) {
-                            System.out.println("Status Message: ");
-                            sc.nextLine();
-                            String comp = sc.nextLine();
-                            System.out.println("Competing: " + comp);
-                            act = Activity.competing(comp);
-                            break;
+                        switch (msg) {
+                            case "<rs>":
+                                act = null;
+                                break label;
+                            case "competing":
+                                System.out.println("Status Message: ");
+                                sc.nextLine();
+                                String comp = sc.nextLine();
+                                System.out.println("Competing: " + comp);
+                                act = Activity.competing(comp);
+                                break label;
 
-                        } else if (msg.equals("listening")) {
-                            System.out.println("Status Message: ");
-                            sc.nextLine();
-                            String song = sc.nextLine();
-                            System.out.println("Listening: " + song);
-                            act = Activity.listening(song);
-                            break;
+                            case "listening":
+                                System.out.println("Status Message: ");
+                                sc.nextLine();
+                                String song = sc.nextLine();
+                                System.out.println("Listening: " + song);
+                                act = Activity.listening(song);
+                                break label;
 
-                        } else if (msg.equals("playing")) {
-                            System.out.println("Status Message: ");
-                            sc.nextLine();
-                            String game = sc.nextLine();
-                            System.out.println("Playing: " + game);
-                            act = Activity.playing(game);
-                            break;
+                            case "playing":
+                                System.out.println("Status Message: ");
+                                sc.nextLine();
+                                String game = sc.nextLine();
+                                System.out.println("Playing: " + game);
+                                act = Activity.playing(game);
+                                break label;
 
-                        } else if (msg.equals("streaming")) {
-                            System.out.println("Title Message: ");
-                            sc.nextLine();
-                            String title = sc.nextLine();
-                            System.out.println("Stream Link: ");
-                            String link = sc.nextLine();
-                            System.out.println("Title: " + title + "\n" + "Link: " + link);
-                            act = Activity.streaming(title, link);
-                            break;
+                            case "streaming":
+                                System.out.println("Title Message: ");
+                                sc.nextLine();
+                                String title = sc.nextLine();
+                                System.out.println("Stream Link: ");
+                                String link = sc.nextLine();
+                                System.out.println("Title: " + title + "\n" + "Link: " + link);
+                                act = Activity.streaming(title, link);
+                                break label;
 
-                        } else if (msg.equals("watching")) {
-                            System.out.println("Status Message: ");
-                            sc.nextLine();
-                            String watch = sc.nextLine();
-                            System.out.println("Watching: " + watch);
-                            act = Activity.watching(watch);
-                            break;
+                            case "watching":
+                                System.out.println("Status Message: ");
+                                sc.nextLine();
+                                String watch = sc.nextLine();
+                                System.out.println("Watching: " + watch);
+                                act = Activity.watching(watch);
+                                break label;
                         }
                     }
 
-                    OnlineStatus s = null;
+                    OnlineStatus s;
 
                     while (true) {
                         System.out.println("Online Status: ");
@@ -658,19 +644,4 @@ public class Callerphone {
         }
     }
 
-    static void sendMessage(TextChannel chnl, String msg, String emj, String[] emjs) {
-        chnl.sendMessage(msg).queue(message -> {
-            for (int i = 0; i < emjs.length; i++) {
-                message.addReaction(emjs[i]).queue();
-            }
-        });
-    }
-
-    static void sendMessageEmbed(TextChannel chnl, EmbedBuilder emd, String emj, String[] emjs) {
-        chnl.sendMessageEmbeds(emd.build()).queue(message -> {
-            for (int i = 0; i < emjs.length; i++) {
-                message.addReaction(emjs[i]).queue();
-            }
-        });
-    }
 }
