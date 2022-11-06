@@ -50,13 +50,13 @@ public class ChannelInfo implements Command {
         switch (type) {
 
             case TEXT:
-                MESSAGE.replyEmbeds(ChannelInfo.textchannelinfo(Callerphone.jda.getTextChannelById(CHANNEL.getId()))).queue();
+                MESSAGE.replyEmbeds(textchannelinfo(Callerphone.jda.getTextChannelById(CHANNEL.getId()))).queue();
                 break;
             case VOICE:
-                MESSAGE.replyEmbeds(ChannelInfo.voicechannelinfo(Callerphone.jda.getVoiceChannelById(CHANNEL.getId()))).queue();
+                MESSAGE.replyEmbeds(voicechannelinfo(Callerphone.jda.getVoiceChannelById(CHANNEL.getId()))).queue();
                 break;
             case CATEGORY:
-                MESSAGE.replyEmbeds(ChannelInfo.categorychannelinfo(Callerphone.jda.getCategoryById(CHANNEL.getId()))).queue();
+                MESSAGE.replyEmbeds(categorychannelinfo(Callerphone.jda.getCategoryById(CHANNEL.getId()))).queue();
                 break;
             default:
                 MESSAGE.reply("Channel not recognized").queue();
