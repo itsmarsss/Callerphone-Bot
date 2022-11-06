@@ -7,7 +7,6 @@ import com.marsss.callerphone.bot.*;
 import com.marsss.entertainments.*;
 import com.marsss.callerphone.utils.BotInfo;
 import com.marsss.callerphone.utils.Help;
-import com.marsss.callerphone.utils.Polls;
 import com.marsss.callerphone.utils.Search;
 
 import net.dv8tion.jda.api.Permission;
