@@ -11,7 +11,6 @@ import com.marsss.callerphone.Callerphone;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
 public class About implements Command {
@@ -42,7 +41,7 @@ public class About implements Command {
         if (Callerphone.isQuickStart) {
             UNIQUEUSERS = "N/A (QuickStart)";
         } else {
-            UNIQUEUSERS = String.valueOf(jda.getUsers().size()) + " unique user(s)";
+            UNIQUEUSERS = jda.getUsers().size() + " unique user(s)";
         }
 
         EmbedBuilder AbtEmd = new EmbedBuilder()
