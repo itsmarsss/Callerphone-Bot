@@ -23,6 +23,9 @@ import javax.security.auth.login.LoginException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.marsss.Command;
+import com.marsss.callerphone.bot.*;
+import com.marsss.callerphone.utils.*;
 import com.marsss.callerphone.listeners.*;
 import com.marsss.callerphone.tccallerphone.ConvoStorage;
 import com.marsss.callerphone.tccallerphone.ConvoStorage.Convo;
@@ -45,145 +48,169 @@ import net.dv8tion.jda.api.utils.cache.CacheFlag;
 
 public class Callerphone {
 
-	public static final Logger logger = LoggerFactory.getLogger(com.marsss.callerphone.Callerphone.class);
+    public static final Logger logger = LoggerFactory.getLogger(com.marsss.callerphone.Callerphone.class);
 
-	public static String parent;
+    public static String parent;
 
-	public static LinkedList <String> blacklist = new LinkedList<>();
-	public static HashMap <String, String> prefix = new HashMap<String, String>();
-	public static LinkedList <String> admin = new LinkedList<>();
+    public static LinkedList<String> blacklist = new LinkedList<>();
+    public static HashMap<String, String> prefix = new HashMap<String, String>();
+    public static LinkedList<String> admin = new LinkedList<>();
 
-	public static LinkedList <String> filter = new LinkedList<>();
+    public static LinkedList<String> filter = new LinkedList<>();
 
-	public static final String Prefix = "c?";
-	public static final String ThumbsUp = ":thumbs_up:";
+    public static HashMap<String, Command> cmdMap = new HashMap<String, Command>();
 
-	public static String brainURL = "http://api.brainshop.ai/get?bid=160403&key=FFFNOBQEMnANoVn1&uid=[uid]&msg=[msg]";
-	public static String Callerphone = "<:CallerphoneEmote:899051549173637120> ";
-	public static String logstatus = "852338750519640116";
-	public static String reportchannel = "897290511000404008";
-	public static String invite = "https://discord.com/api/oauth2/authorize?client_id=849713468348956692&permissions=49663040&scope=bot%20applications.commands";
-	public static String support = "https://discord.gg/jcYKsfw48p";
-	public static String tunessupport = "https://discord.gg/TyHaxtWAmX";
-	public static String donate = "https://www.patreon.com/itsmarsss";
-	public static String owner = "841028865995964477";
+    public static final String Prefix = "c?";
+    public static final String ThumbsUp = ":thumbs_up:";
 
-	public static boolean isQuickStart;
+    public static String brainURL = "http://api.brainshop.ai/get?bid=160403&key=FFFNOBQEMnANoVn1&uid=[uid]&msg=[msg]";
+    public static String Callerphone = "<:CallerphoneEmote:899051549173637120> ";
+    public static String logstatus = "852338750519640116";
+    public static String reportchannel = "897290511000404008";
+    public static String invite = "https://discord.com/api/oauth2/authorize?client_id=849713468348956692&permissions=49663040&scope=bot%20applications.commands";
+    public static String support = "https://discord.gg/jcYKsfw48p";
+    public static String tunessupport = "https://discord.gg/TyHaxtWAmX";
+    public static String donate = "https://www.patreon.com/itsmarsss";
+    public static String owner = "841028865995964477";
 
-	public static JDA jda;
+    public static boolean isQuickStart;
 
-	private static final EnumSet<GatewayIntent> intent = EnumSet.of(
-			GatewayIntent.GUILD_MEMBERS,
-			GatewayIntent.GUILD_MESSAGES,
-			GatewayIntent.GUILD_MESSAGE_REACTIONS,
-			GatewayIntent.GUILD_VOICE_STATES,
-			GatewayIntent.GUILD_EMOJIS,
-			GatewayIntent.GUILD_INVITES,
-			GatewayIntent.DIRECT_MESSAGES);
+    public static JDA jda;
 
-	private static void BotInit(String token, String startupmsg, boolean quickStart) throws InterruptedException, LoginException {
+    private static final EnumSet<GatewayIntent> intent = EnumSet.of(
+            GatewayIntent.GUILD_MEMBERS,
+            GatewayIntent.GUILD_MESSAGES,
+            GatewayIntent.GUILD_MESSAGE_REACTIONS,
+            GatewayIntent.GUILD_VOICE_STATES,
+            GatewayIntent.GUILD_EMOJIS,
+            GatewayIntent.GUILD_INVITES,
+            GatewayIntent.DIRECT_MESSAGES);
 
-		try {
-			if(quickStart) {
-				jda = JDABuilder.createDefault(token, intent)
-						.enableCache(CacheFlag.VOICE_STATE)
-						.enableCache(CacheFlag.ROLE_TAGS)
-						.setMemberCachePolicy(MemberCachePolicy.ALL)
-						.build();
-			}else {
-				jda = JDABuilder.createDefault(token, intent)
-						.enableCache(CacheFlag.VOICE_STATE)
-						.enableCache(CacheFlag.ROLE_TAGS)
-						.setChunkingFilter(ChunkingFilter.ALL)
-						.setMemberCachePolicy(MemberCachePolicy.ALL)
-						.build();
-			}
+    private static void BotInit(String token, String startupmsg, boolean quickStart) throws InterruptedException, LoginException {
 
-			jda.addEventListener(new CommandListener());
-			jda.addEventListener(new OnOtherEvent());
-			jda.addEventListener(new OnSlashCommand());
-			jda.addEventListener(new OnPrivateMessage());
-			jda.addEventListener(new TCCallerphoneListener());
+        try {
+            if (quickStart) {
+                jda = JDABuilder.createDefault(token, intent)
+                        .enableCache(CacheFlag.VOICE_STATE)
+                        .enableCache(CacheFlag.ROLE_TAGS)
+                        .setMemberCachePolicy(MemberCachePolicy.ALL)
+                        .build();
+            } else {
+                jda = JDABuilder.createDefault(token, intent)
+                        .enableCache(CacheFlag.VOICE_STATE)
+                        .enableCache(CacheFlag.ROLE_TAGS)
+                        .setChunkingFilter(ChunkingFilter.ALL)
+                        .setMemberCachePolicy(MemberCachePolicy.ALL)
+                        .build();
+            }
 
-
-
-			for(int i = 0; i < ConvoStorage.convo.length; i++) {
-				ConvoStorage.convo[i] = new Convo(new ConcurrentLinkedQueue<>(), "empty", "", false, 0, true, true, false, false, false);
-			}
+            ArrayList<Command> cmdLst = new ArrayList<>();
+            cmdLst.add(new About());
+            cmdLst.add(new Donate());
+            cmdLst.add(new Invite());
+            cmdLst.add(new Ping());
+            cmdLst.add(new Uptime());
 
 
-			jda.awaitReady();
+            cmdLst.add(new BotInfo());
+            cmdLst.add(new ChannelInfo());
+            cmdLst.add(new Colour());
+            cmdLst.add(new Help());
+            cmdLst.add(new RoleInfo());
+            cmdLst.add(new Search());
+            cmdLst.add(new ServerInfo());
+            cmdLst.add(new UserInfo());
 
-			jda.getPresence().setActivity(Activity.watching("for " + Prefix + "help"));
-			logger.info("Bot online");
+            for(Command cmd : cmdLst) {
+                for(String trigger : cmd.getTriggers()) {
+                    cmdMap.put(trigger, cmd);
+                    System.out.println("Put: key=" + trigger + ", value=" + cmd.getClass().getName());
+                }
+            }
 
-			System.out.println("\nGuild List: ");
-			for(Guild g : jda.getGuilds()) {
-				System.out.println("- " + g.getName());
-			}
+            jda.addEventListener(new CommandListener());
+            jda.addEventListener(new OnOtherEvent());
+            jda.addEventListener(new OnSlashCommand());
+            jda.addEventListener(new OnPrivateMessage());
+            jda.addEventListener(new TCCallerphoneListener());
 
 
-			parent = URLDecoder.decode(new File(com.marsss.callerphone.Callerphone.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getParentFile().getPath(), "UTF-8");
-			System.out.println("\nParent - " + parent);
+            for (int i = 0; i < ConvoStorage.convo.length; i++) {
+                ConvoStorage.convo[i] = new Convo(new ConcurrentLinkedQueue<>(), "empty", "", false, 0, true, true, false, false, false);
+            }
+
+            jda.awaitReady();
+
+            jda.getPresence().setActivity(Activity.watching("for " + Prefix + "help"));
+            logger.info("Bot online");
+
+            System.out.println("\nGuild List: ");
+            for (Guild g : jda.getGuilds()) {
+                System.out.println("- " + g.getName());
+            }
 
 
-			try {
-				getInfo(new File(parent + "/info.txt"));
-			}catch(Exception e) {
-				System.out.println("------------------------------");
-				logger.error("Error with info.txt");
-				logger.warn("Critical Issues May Appear (BrainURL and other links)");
-			}
+            parent = URLDecoder.decode(new File(com.marsss.callerphone.Callerphone.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getParentFile().getPath(), "UTF-8");
+            System.out.println("\nParent - " + parent);
 
-			try {
-				EmbedBuilder embedBuilder = new EmbedBuilder().setTitle("Status").setColor(new Color(24, 116, 52)).setFooter("Hello World!").setDescription(jda.getSelfUser().getAsMention() + " is now online;" + startupmsg);
-				jda.getTextChannelById(logstatus).sendMessageEmbeds(embedBuilder.build()).queue();
-			} catch(Exception e) {
-				System.out.println("------------------------------");
-				logger.error("Error Sending Startup Message");
-			}
 
-			try {
-				getBlack(new File(parent + "/blacklist.txt"));
-			}catch(Exception e) {
-				System.out.println("------------------------------");
-				logger.error("Error with blacklist.txt");
-			}
+            try {
+                getInfo(new File(parent + "/info.txt"));
+            } catch (Exception e) {
+                System.out.println("------------------------------");
+                logger.error("Error with info.txt");
+                logger.warn("Critical Issues May Appear (BrainURL and other links)");
+            }
 
-			try {
-				getPrefix(new File(parent + "/prefix.txt"));
-			}catch(Exception e) {
-				System.out.println("------------------------------");
-				logger.error("Error with prefix.txt");
-			}
+            try {
+                EmbedBuilder embedBuilder = new EmbedBuilder().setTitle("Status").setColor(new Color(24, 116, 52)).setFooter("Hello World!").setDescription(jda.getSelfUser().getAsMention() + " is now online;" + startupmsg);
+                jda.getTextChannelById(logstatus).sendMessageEmbeds(embedBuilder.build()).queue();
+            } catch (Exception e) {
+                System.out.println("------------------------------");
+                logger.error("Error Sending Startup Message");
+            }
 
-			try{
-				getAdmin(new File(parent + "/admin.txt"));
-			}catch(Exception e) {
-				System.out.println("------------------------------");
-				logger.error("Error with admin.txt");
-			}
+            try {
+                getBlack(new File(parent + "/blacklist.txt"));
+            } catch (Exception e) {
+                System.out.println("------------------------------");
+                logger.error("Error with blacklist.txt");
+            }
 
-			try{
-				getFilter(new File(parent + "/filter.txt"));
-			}catch(Exception e) {
-				System.out.println("------------------------------");
-				logger.error("Error with filter.txt");
-			}
+            try {
+                getPrefix(new File(parent + "/prefix.txt"));
+            } catch (Exception e) {
+                System.out.println("------------------------------");
+                logger.error("Error with prefix.txt");
+            }
 
-			System.out.println("------------------------------");
+            try {
+                getAdmin(new File(parent + "/admin.txt"));
+            } catch (Exception e) {
+                System.out.println("------------------------------");
+                logger.error("Error with admin.txt");
+            }
 
-			ScheduledExecutorService ses = Executors.newSingleThreadScheduledExecutor();
-			ses.scheduleAtFixedRate(new Runnable() {
-				@Override
-				public void run() {
-					kill();
-				}
-			}, 0, 2, TimeUnit.MINUTES);
+            try {
+                getFilter(new File(parent + "/filter.txt"));
+            } catch (Exception e) {
+                System.out.println("------------------------------");
+                logger.error("Error with filter.txt");
+            }
 
-		}catch(Exception e) {
-			logger.error(e.toString());
-		}
+            System.out.println("------------------------------");
+
+            ScheduledExecutorService ses = Executors.newSingleThreadScheduledExecutor();
+            ses.scheduleAtFixedRate(new Runnable() {
+                @Override
+                public void run() {
+                    kill();
+                }
+            }, 0, 2, TimeUnit.MINUTES);
+
+        } catch (Exception e) {
+            logger.error(e.toString());
+        }
 
 		/*			
 		   - This removes all existing slash command	
@@ -247,396 +274,403 @@ public class Callerphone {
 
 		 */
 
-	}
+    }
 
-	private static void kill() {
-		for(Convo c : ConvoStorage.convo) {
+    private static void kill() {
+        for (Convo c : ConvoStorage.convo) {
 
-			if(System.currentTimeMillis()-c.getLastMessage() >= 250000) {
-				final String callerID = c.getCallerTCID();
-				if(!c.getConnected()) {
-					try {
-						com.marsss.callerphone.Callerphone.jda.getTextChannelById(callerID).sendMessage(com.marsss.callerphone.Callerphone.Callerphone + "Took too long for someone to pick up :(").queue();
-					}catch(Exception ex) {}
-					c.resetMessage();
-					continue;
-				}
-				final String receiverID = c.getReceiverTCID();
+            if (System.currentTimeMillis() - c.getLastMessage() >= 250000) {
+                final String callerID = c.getCallerTCID();
+                if (!c.getConnected()) {
+                    try {
+                        com.marsss.callerphone.Callerphone.jda.getTextChannelById(callerID).sendMessage(com.marsss.callerphone.Callerphone.Callerphone + "Took too long for someone to pick up :(").queue();
+                    } catch (Exception ex) {
+                    }
+                    c.resetMessage();
+                    continue;
+                }
+                final String receiverID = c.getReceiverTCID();
 
-				ArrayList<String> DATA = new ArrayList<String>(c.getMessages());
+                ArrayList<String> DATA = new ArrayList<String>(c.getMessages());
 
-				c.resetMessage();
-				try {
-					com.marsss.callerphone.Callerphone.jda.getTextChannelById(callerID).sendMessage(com.marsss.callerphone.Callerphone.Callerphone + "Call ended due to inactivity.").queue();
-				}catch(Exception ex) {}
-				try {
-					com.marsss.callerphone.Callerphone.jda.getTextChannelById(receiverID).sendMessage(com.marsss.callerphone.Callerphone.Callerphone + "Call ended due to inactivity.").queue();
-				}catch(Exception ex) {}
+                c.resetMessage();
+                try {
+                    com.marsss.callerphone.Callerphone.jda.getTextChannelById(callerID).sendMessage(com.marsss.callerphone.Callerphone.Callerphone + "Call ended due to inactivity.").queue();
+                } catch (Exception ex) {
+                }
+                try {
+                    com.marsss.callerphone.Callerphone.jda.getTextChannelById(receiverID).sendMessage(com.marsss.callerphone.Callerphone.Callerphone + "Call ended due to inactivity.").queue();
+                } catch (Exception ex) {
+                }
 
-				if(c.getReport()) {
+                if (c.getReport()) {
 
-					LocalDateTime now = LocalDateTime.now();
-					final String month = String.valueOf(now.getMonthValue());
-					final String day = String.valueOf(now.getDayOfMonth());
-					final String hour = String.valueOf(now.getHour());
-					final String minute = String.valueOf(now.getMinute());
-					final String ID = month + "/" + day + "/" + hour + "/" + minute + "C" + callerID + "R" + receiverID;	
+                    LocalDateTime now = LocalDateTime.now();
+                    final String month = String.valueOf(now.getMonthValue());
+                    final String day = String.valueOf(now.getDayOfMonth());
+                    final String hour = String.valueOf(now.getHour());
+                    final String minute = String.valueOf(now.getMinute());
+                    final String ID = month + "/" + day + "/" + hour + "/" + minute + "C" + callerID + "R" + receiverID;
 
-					String data = "";
-					for(String m : DATA)
-						data += m + "\n";
-					jda.getTextChannelById(com.marsss.callerphone.Callerphone.reportchannel).sendMessage("**ID:** " + ID).addFile(data.getBytes(), ID + ".txt").queue();
+                    String data = "";
+                    for (String m : DATA)
+                        data += m + "\n";
+                    jda.getTextChannelById(com.marsss.callerphone.Callerphone.reportchannel).sendMessage("**ID:** " + ID).addFile(data.getBytes(), ID + ".txt").queue();
 
-				}
+                }
 
-			}
-		}
-	}
+            }
+        }
+    }
 
-	private static void getInfo(File file) throws IOException, InterruptedException {
-		System.out.println("\nInfo.txt:");
-		BufferedReader br = new BufferedReader(new FileReader(file));
-		String line = br.readLine();
+    private static void getInfo(File file) throws IOException, InterruptedException {
+        System.out.println("\nInfo.txt:");
+        BufferedReader br = new BufferedReader(new FileReader(file));
+        String line = br.readLine();
 
-		while (line != null) {
-			if(line.startsWith("brainurl=")) {
-				brainURL = line.substring(9).trim();
-			}else if(line.startsWith("emoji=")) {
-				Callerphone = line.substring(6).trim() + " ";
-			}else if(line.startsWith("log=")) {
-				logstatus = line.substring(4).trim();
-			}else if(line.startsWith("report=")) {
-				reportchannel = line.substring(7).trim();
-			}else if(line.startsWith("invite=")) {
-				invite = line.substring(7).trim();
-			}else if(line.startsWith("support=")) {
-				support = line.substring(8).trim();
-			}else if(line.startsWith("tunessupport=")) {
-				tunessupport = line.substring(13).trim();
-			}else if(line.startsWith("donate=")) {
-				donate = line.substring(7).trim();
-			}else if(line.startsWith("owner=")) {
-				owner = line.substring(6).trim();
-			}else {
-				System.out.println("Unused value:");
-			}
+        while (line != null) {
+            if (line.startsWith("brainurl=")) {
+                brainURL = line.substring(9).trim();
+            } else if (line.startsWith("emoji=")) {
+                Callerphone = line.substring(6).trim() + " ";
+            } else if (line.startsWith("log=")) {
+                logstatus = line.substring(4).trim();
+            } else if (line.startsWith("report=")) {
+                reportchannel = line.substring(7).trim();
+            } else if (line.startsWith("invite=")) {
+                invite = line.substring(7).trim();
+            } else if (line.startsWith("support=")) {
+                support = line.substring(8).trim();
+            } else if (line.startsWith("tunessupport=")) {
+                tunessupport = line.substring(13).trim();
+            } else if (line.startsWith("donate=")) {
+                donate = line.substring(7).trim();
+            } else if (line.startsWith("owner=")) {
+                owner = line.substring(6).trim();
+            } else {
+                System.out.println("Unused value:");
+            }
 
-			System.out.println(line);
+            System.out.println(line);
 
-			line = br.readLine();
-		}
-		br.close();
+            line = br.readLine();
+        }
+        br.close();
 
-		jda.awaitReady();
+        jda.awaitReady();
 
-		System.out.println("Log Status Channel: " + jda.getTextChannelById(logstatus).getAsMention());
-		System.out.println("Report Channel: " + jda.getTextChannelById(reportchannel).getAsMention());
-		if(isQuickStart) {
-			System.out.println("Owner: " + owner + " (unable to obtain tag because of quickstart)");
-		}else {
-			System.out.println("Owner: " + jda.getUserById(owner).getAsTag());
-		}
+        System.out.println("Log Status Channel: " + jda.getTextChannelById(logstatus).getAsMention());
+        System.out.println("Report Channel: " + jda.getTextChannelById(reportchannel).getAsMention());
+        if (isQuickStart) {
+            System.out.println("Owner: " + owner + " (unable to obtain tag because of quickstart)");
+        } else {
+            System.out.println("Owner: " + jda.getUserById(owner).getAsTag());
+        }
 
-		System.out.println();
-	}
+        System.out.println();
+    }
 
-	private static void getAdmin(File file) throws IOException {
-		BufferedReader br = new BufferedReader(new FileReader(file));
-		try {
-			String line = br.readLine();
+    private static void getAdmin(File file) throws IOException {
+        BufferedReader br = new BufferedReader(new FileReader(file));
+        try {
+            String line = br.readLine();
 
-			while (line != null) {
-				admin.add(line);
-				line = br.readLine();
-			}
-		} finally {
-			br.close();
-		}
-	}
-	private static void getPrefix(File file) throws IOException {
-		BufferedReader br = new BufferedReader(new FileReader(file));
-		try {
-			String line = br.readLine();
-			while (line != null) {
-				int split = line.indexOf("|");
-				prefix.put(line.substring(0, split), line.substring(split+1, line.length()));
-				line = br.readLine();
-			}
-		} finally {
-			br.close();
-		}
-	}
-	private static void getBlack(File file) throws IOException {
-		BufferedReader br = new BufferedReader(new FileReader(file));
-		try {
-			String line = br.readLine();
+            while (line != null) {
+                admin.add(line);
+                line = br.readLine();
+            }
+        } finally {
+            br.close();
+        }
+    }
 
-			while (line != null) {
-				blacklist.add(line);
-				line = br.readLine();
-			}
-		} finally {
-			br.close();
-		}
-	}
-	private static void getFilter(File file) throws IOException {
-		BufferedReader br = new BufferedReader(new FileReader(file));
-		try {
-			String line = br.readLine();
+    private static void getPrefix(File file) throws IOException {
+        BufferedReader br = new BufferedReader(new FileReader(file));
+        try {
+            String line = br.readLine();
+            while (line != null) {
+                int split = line.indexOf("|");
+                prefix.put(line.substring(0, split), line.substring(split + 1, line.length()));
+                line = br.readLine();
+            }
+        } finally {
+            br.close();
+        }
+    }
 
-			while (line != null) {
-				filter.add(line);
-				line = br.readLine();
-			}
-		} finally {
-			br.close();
-		}
-	}
-	public static void main(String[] args) throws LoginException, InterruptedException {
-		commandPrompt();
-	}
+    private static void getBlack(File file) throws IOException {
+        BufferedReader br = new BufferedReader(new FileReader(file));
+        try {
+            String line = br.readLine();
 
-	private static void commandPrompt() throws LoginException, InterruptedException {
-		Scanner sc = new Scanner(System.in);
-		System.out.println("{}Command Line Loaded...{}\nWelcome to Callerphone Bot Command Line (CBCL)!");
+            while (line != null) {
+                blacklist.add(line);
+                line = br.readLine();
+            }
+        } finally {
+            br.close();
+        }
+    }
 
-		while(true) {
-			String cmd = sc.nextLine();
-			if(cmd.startsWith("start")) {
-				System.out.println("Token: ");
-				String TOKEN = sc.nextLine();
-				logger.info("Starting Bot...");
-				if(jda != null) {
-					logger.info("Bot Is Online Right Now");
-				} else {
-					isQuickStart = false;
-					BotInit(TOKEN, cmd.replaceFirst("start", ""), false);
-				}
-				continue;
-			}
+    private static void getFilter(File file) throws IOException {
+        BufferedReader br = new BufferedReader(new FileReader(file));
+        try {
+            String line = br.readLine();
 
-			if(cmd.startsWith("quickstart")) {
-				System.out.println("Token: ");
-				String TOKEN = sc.nextLine();
-				logger.info("Starting Bot...");
-				if(jda != null) {
-					logger.info("Bot Is Online Right Now");
-				} else {
-					isQuickStart = true;
-					BotInit(TOKEN, cmd.replaceFirst("quickstart", ""), true);
-				}
-				continue;
-			}
+            while (line != null) {
+                filter.add(line);
+                line = br.readLine();
+            }
+        } finally {
+            br.close();
+        }
+    }
 
-			if(cmd.equals("shutdown")) {
-				logger.info("Shutting Down Bot...");
-				if(jda != null) {
-					EmbedBuilder embedBuilder = new EmbedBuilder().setTitle("Status").setColor(new Color(213, 0, 0)).setFooter("Goodbye World...").setDescription(com.marsss.callerphone.Callerphone.jda.getSelfUser().getAsMention() + " is going offline;" + cmd.replaceFirst("shutdown", ""));
-					try {
-						jda.getTextChannelById(logstatus).sendMessageEmbeds(embedBuilder.build()).complete();
-					} catch(Exception e) {
-						logger.error("Error Sending Shutdown Message");
-					}
-					jda.awaitReady();
-					jda.shutdown();
-					jda = null;
-				}
-				logger.info("Bot Offline");
-				sc.close();
-				System.exit(0);
-			}
+    public static void main(String[] args) throws LoginException, InterruptedException {
+        commandPrompt();
+    }
 
-			if(cmd.equals("presence")) {
-				if(jda == null) {
-					logger.info("Bot Is Offline");
-					//continue;
-				}
+    private static void commandPrompt() throws LoginException, InterruptedException {
+        Scanner sc = new Scanner(System.in);
+        System.out.println("{}Command Line Loaded...{}\nWelcome to Callerphone Bot Command Line (CBCL)!");
 
-				Activity act = null;
-				logger.info("Change Presence...");
-				try {
-					while(true) {
+        while (true) {
+            String cmd = sc.nextLine();
+            if (cmd.startsWith("start")) {
+                System.out.println("Token: ");
+                String TOKEN = sc.nextLine();
+                logger.info("Starting Bot...");
+                if (jda != null) {
+                    logger.info("Bot Is Online Right Now");
+                } else {
+                    isQuickStart = false;
+                    BotInit(TOKEN, cmd.replaceFirst("start", ""), false);
+                }
+                continue;
+            }
 
-						System.out.println("Activity: ");
-						String msg = sc.next().toLowerCase();
+            if (cmd.startsWith("quickstart")) {
+                System.out.println("Token: ");
+                String TOKEN = sc.nextLine();
+                logger.info("Starting Bot...");
+                if (jda != null) {
+                    logger.info("Bot Is Online Right Now");
+                } else {
+                    isQuickStart = true;
+                    BotInit(TOKEN, cmd.replaceFirst("quickstart", ""), true);
+                }
+                continue;
+            }
 
-						if(msg.equals("<rs>")) {
-							act = null;
-							break;
-						} else if(msg.equals("competing")) {
-							System.out.println("Status Message: ");
-							sc.nextLine();
-							String comp = sc.nextLine();
-							System.out.println("Competing: " + comp);
-							act = Activity.competing(comp);
-							break;
+            if (cmd.equals("shutdown")) {
+                logger.info("Shutting Down Bot...");
+                if (jda != null) {
+                    EmbedBuilder embedBuilder = new EmbedBuilder().setTitle("Status").setColor(new Color(213, 0, 0)).setFooter("Goodbye World...").setDescription(com.marsss.callerphone.Callerphone.jda.getSelfUser().getAsMention() + " is going offline;" + cmd.replaceFirst("shutdown", ""));
+                    try {
+                        jda.getTextChannelById(logstatus).sendMessageEmbeds(embedBuilder.build()).complete();
+                    } catch (Exception e) {
+                        logger.error("Error Sending Shutdown Message");
+                    }
+                    jda.awaitReady();
+                    jda.shutdown();
+                    jda = null;
+                }
+                logger.info("Bot Offline");
+                sc.close();
+                System.exit(0);
+            }
 
-						} else if(msg.equals("listening")) {
-							System.out.println("Status Message: ");
-							sc.nextLine();
-							String song = sc.nextLine();
-							System.out.println("Listening: " + song);
-							act = Activity.listening(song);
-							break;
+            if (cmd.equals("presence")) {
+                if (jda == null) {
+                    logger.info("Bot Is Offline");
+                    //continue;
+                }
 
-						} else if(msg.equals("playing")) {
-							System.out.println("Status Message: ");
-							sc.nextLine();
-							String game = sc.nextLine();
-							System.out.println("Playing: " + game);
-							act = Activity.playing(game);
-							break;
+                Activity act = null;
+                logger.info("Change Presence...");
+                try {
+                    while (true) {
 
-						} else if(msg.equals("streaming")) {
-							System.out.println("Title Message: ");
-							sc.nextLine();
-							String title = sc.nextLine();
-							System.out.println("Stream Link: ");
-							String link = sc.nextLine();
-							System.out.println("Title: " + title + "\n" + "Link: " + link);
-							act = Activity.streaming(title, link);
-							break;
+                        System.out.println("Activity: ");
+                        String msg = sc.next().toLowerCase();
 
-						} else if(msg.equals("watching")) {
-							System.out.println("Status Message: ");
-							sc.nextLine();
-							String watch = sc.nextLine();
-							System.out.println("Watching: " + watch);
-							act = Activity.watching(watch);
-							break;
-						}
-					}
+                        if (msg.equals("<rs>")) {
+                            act = null;
+                            break;
+                        } else if (msg.equals("competing")) {
+                            System.out.println("Status Message: ");
+                            sc.nextLine();
+                            String comp = sc.nextLine();
+                            System.out.println("Competing: " + comp);
+                            act = Activity.competing(comp);
+                            break;
 
-					OnlineStatus s = null;
+                        } else if (msg.equals("listening")) {
+                            System.out.println("Status Message: ");
+                            sc.nextLine();
+                            String song = sc.nextLine();
+                            System.out.println("Listening: " + song);
+                            act = Activity.listening(song);
+                            break;
 
-					while(true) {
-						System.out.println("Online Status: ");
-						String msg = sc.next().toLowerCase();
+                        } else if (msg.equals("playing")) {
+                            System.out.println("Status Message: ");
+                            sc.nextLine();
+                            String game = sc.nextLine();
+                            System.out.println("Playing: " + game);
+                            act = Activity.playing(game);
+                            break;
 
-						if(msg.toLowerCase().startsWith("onl")) {
-							s = OnlineStatus.ONLINE;
-							break;
+                        } else if (msg.equals("streaming")) {
+                            System.out.println("Title Message: ");
+                            sc.nextLine();
+                            String title = sc.nextLine();
+                            System.out.println("Stream Link: ");
+                            String link = sc.nextLine();
+                            System.out.println("Title: " + title + "\n" + "Link: " + link);
+                            act = Activity.streaming(title, link);
+                            break;
 
-						} else if(msg.toLowerCase().startsWith("idl")) {
-							s = OnlineStatus.IDLE;
-							break;
+                        } else if (msg.equals("watching")) {
+                            System.out.println("Status Message: ");
+                            sc.nextLine();
+                            String watch = sc.nextLine();
+                            System.out.println("Watching: " + watch);
+                            act = Activity.watching(watch);
+                            break;
+                        }
+                    }
 
-						} else if(msg.toLowerCase().startsWith("dnd")) {
-							s = OnlineStatus.DO_NOT_DISTURB;
-							break;
+                    OnlineStatus s = null;
 
-						} else if(msg.toLowerCase().startsWith("inv")) {
-							s = OnlineStatus.INVISIBLE;
-							break;
+                    while (true) {
+                        System.out.println("Online Status: ");
+                        String msg = sc.next().toLowerCase();
 
-						}
+                        if (msg.toLowerCase().startsWith("onl")) {
+                            s = OnlineStatus.ONLINE;
+                            break;
 
-					}
-					if(jda != null) {
-						jda.getPresence().setPresence(s, act);
-						continue;
-					}
+                        } else if (msg.toLowerCase().startsWith("idl")) {
+                            s = OnlineStatus.IDLE;
+                            break;
 
-					logger.info("Bot Is Offline");
-					continue;
+                        } else if (msg.toLowerCase().startsWith("dnd")) {
+                            s = OnlineStatus.DO_NOT_DISTURB;
+                            break;
 
-				} catch(Exception e) {
-					logger.error("Input error, please try again");
-					break;
-				}
+                        } else if (msg.toLowerCase().startsWith("inv")) {
+                            s = OnlineStatus.INVISIBLE;
+                            break;
 
-			}
+                        }
 
-			if(cmd.equals("info")) {
-				if(jda != null) {
-					String tag = jda.getSelfUser().getAsTag();
-					String avatarUrl = jda.getSelfUser().getAvatarUrl();
-					OffsetDateTime timeCreated = jda.getSelfUser().getTimeCreated();
-					String id = jda.getSelfUser().getId();
-					System.out.println("Tag of the bot: " + tag);
-					System.out.println("Avatar url: " + avatarUrl);
-					System.out.println("Time created: " + timeCreated);
-					System.out.println("Id: " + id);
-					System.out.println("Shard info: " + jda.getShardInfo().getShardString());
-					System.out.println("Guilds: " + jda.getGuilds().size());
-					continue;
-				}
-				logger.info("Bot Is Offline");
-				continue;
-			}
+                    }
+                    if (jda != null) {
+                        jda.getPresence().setPresence(s, act);
+                        continue;
+                    }
 
-			if(cmd.equals("recal")) {
-				logger.info("Recalibrating...");
-				try {
-					getInfo(new File(parent + "/info.txt"));
-				}catch(Exception e) {
-					System.out.println("------------------------------");
-					logger.error("Error with info.txt");
-					logger.warn("Critical Issues May Appear (BrainURL and other links)");
-				}
+                    logger.info("Bot Is Offline");
+                    continue;
 
-				try {
-					getBlack(new File(parent + "/blacklist.txt"));
-				}catch(Exception e) {
-					System.out.println("------------------------------");
-					logger.error("Error with blacklist.txt");
-				}
+                } catch (Exception e) {
+                    logger.error("Input error, please try again");
+                    break;
+                }
 
-				try {
-					getPrefix(new File(parent + "/prefix.txt"));
-				}catch(Exception e) {
-					System.out.println("------------------------------");
-					logger.error("Error with prefix.txt");
-				}
+            }
 
-				try{
-					getAdmin(new File(parent + "/admin.txt"));
-				}catch(Exception e) {
-					System.out.println("------------------------------");
-					logger.error("Error with admin.txt");
-				}
+            if (cmd.equals("info")) {
+                if (jda != null) {
+                    String tag = jda.getSelfUser().getAsTag();
+                    String avatarUrl = jda.getSelfUser().getAvatarUrl();
+                    OffsetDateTime timeCreated = jda.getSelfUser().getTimeCreated();
+                    String id = jda.getSelfUser().getId();
+                    System.out.println("Tag of the bot: " + tag);
+                    System.out.println("Avatar url: " + avatarUrl);
+                    System.out.println("Time created: " + timeCreated);
+                    System.out.println("Id: " + id);
+                    System.out.println("Shard info: " + jda.getShardInfo().getShardString());
+                    System.out.println("Guilds: " + jda.getGuilds().size());
+                    continue;
+                }
+                logger.info("Bot Is Offline");
+                continue;
+            }
 
-				try{
-					getFilter(new File(parent + "/filter.txt"));
-				}catch(Exception e) {
-					System.out.println("------------------------------");
-					logger.error("Error with filter.txt");
-				}
+            if (cmd.equals("recal")) {
+                logger.info("Recalibrating...");
+                try {
+                    getInfo(new File(parent + "/info.txt"));
+                } catch (Exception e) {
+                    System.out.println("------------------------------");
+                    logger.error("Error with info.txt");
+                    logger.warn("Critical Issues May Appear (BrainURL and other links)");
+                }
 
-				System.out.println("------------------------------");
-			}
+                try {
+                    getBlack(new File(parent + "/blacklist.txt"));
+                } catch (Exception e) {
+                    System.out.println("------------------------------");
+                    logger.error("Error with blacklist.txt");
+                }
 
-			if(cmd.equals("help")) {
-				System.out.println( 
-						"Option 1: start <msg> = To start the bot\n" +
-								"Option 2: shutdown = To shutdown the bot\n" +
-								"Option 3: presence = To set presence\n" +
-								"Option 4: info = To get info of the bot\n" +
-								"Option 5: recal = To read resources again\n" +
-								"Option 6: help = UBCL help (this)\n\n" +
-						"Other: quickstart <msg> = To start the bot quicker");
-				continue;
-			}
+                try {
+                    getPrefix(new File(parent + "/prefix.txt"));
+                } catch (Exception e) {
+                    System.out.println("------------------------------");
+                    logger.error("Error with prefix.txt");
+                }
 
-			if(!cmd.equals(""))
-				logger.warn("Unknown Command");
+                try {
+                    getAdmin(new File(parent + "/admin.txt"));
+                } catch (Exception e) {
+                    System.out.println("------------------------------");
+                    logger.error("Error with admin.txt");
+                }
 
-		}
-	}
+                try {
+                    getFilter(new File(parent + "/filter.txt"));
+                } catch (Exception e) {
+                    System.out.println("------------------------------");
+                    logger.error("Error with filter.txt");
+                }
 
-	static void sendMessage(TextChannel chnl, String msg, String emj, String []emjs) {
-		chnl.sendMessage(msg).queue(message -> {
-			for(int i = 0; i < emjs.length; i++) {
-				message.addReaction(emjs[i]).queue();
-			}
-		});
-	}
+                System.out.println("------------------------------");
+            }
 
-	static void sendMessageEmbed(TextChannel chnl, EmbedBuilder emd, String emj, String []emjs) {
-		chnl.sendMessageEmbeds(emd.build()).queue(message -> {
-			for(int i = 0; i < emjs.length; i++) {
-				message.addReaction(emjs[i]).queue();
-			}
-		});
-	}
+            if (cmd.equals("help")) {
+                System.out.println(
+                        "Option 1: start <msg> = To start the bot\n" +
+                                "Option 2: shutdown = To shutdown the bot\n" +
+                                "Option 3: presence = To set presence\n" +
+                                "Option 4: info = To get info of the bot\n" +
+                                "Option 5: recal = To read resources again\n" +
+                                "Option 6: help = UBCL help (this)\n\n" +
+                                "Other: quickstart <msg> = To start the bot quicker");
+                continue;
+            }
+
+            if (!cmd.equals(""))
+                logger.warn("Unknown Command");
+
+        }
+    }
+
+    static void sendMessage(TextChannel chnl, String msg, String emj, String[] emjs) {
+        chnl.sendMessage(msg).queue(message -> {
+            for (int i = 0; i < emjs.length; i++) {
+                message.addReaction(emjs[i]).queue();
+            }
+        });
+    }
+
+    static void sendMessageEmbed(TextChannel chnl, EmbedBuilder emd, String emj, String[] emjs) {
+        chnl.sendMessageEmbeds(emd.build()).queue(message -> {
+            for (int i = 0; i < emjs.length; i++) {
+                message.addReaction(emjs[i]).queue();
+            }
+        });
+    }
 }

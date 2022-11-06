@@ -2,17 +2,48 @@ package com.marsss.callerphone.utils;
 
 import java.awt.Color;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
+import com.marsss.Command;
 import com.marsss.callerphone.Callerphone;
 
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
-public class UserInfo {
-	public static MessageEmbed userinfo(Member mmbr) {
+public class UserInfo implements Command {
+
+	@Override
+	public void runCommand(GuildMessageReceivedEvent e) {
+		final Message MESSAGE = e.getMessage();
+		final String CONTENT = MESSAGE.getContentRaw();
+		final String args[] = CONTENT.split("\\s+");
+
+		final List<Member> USERS = MESSAGE.getMentionedMembers();
+		Member USER;
+
+		try {
+			USER = e.getGuild().getMemberById(Long.parseLong(args[1]));
+		} catch (Exception ex) {
+			USER = null;
+		}
+
+		if (USERS.size() > 0) {
+			if (USER == null)
+				USER = USERS.get(0);
+		} else if (USER == null) {
+			MESSAGE.replyEmbeds(userinfo(e.getMember())).queue();
+			return;
+		}
+		MESSAGE.replyEmbeds(userinfo(USER)).queue();
+	}
+	public MessageEmbed userinfo(Member mmbr) {
+
+
 		Color COLOR = null;
 		String NAME = mmbr.getEffectiveName();
 		String TAG = mmbr.getUser().getName() + "#" + mmbr.getUser().getDiscriminator();
@@ -24,7 +55,7 @@ public class UserInfo {
 		String AVATAR = mmbr.getUser().getAvatarUrl();
 		String ISOWNER = String.valueOf(mmbr.isOwner());
 		String ISPENDING = String.valueOf(mmbr.isPending());
-		
+
 		for (Permission p : mmbr.getPermissions()) {
 			PERMISSIONS += p.getName() + ", ";
 		}
@@ -32,8 +63,8 @@ public class UserInfo {
 			PERMISSIONS = PERMISSIONS.substring(0, PERMISSIONS.length()-2);
 		}else
 			PERMISSIONS = "No permissions.";
-		
-		
+
+
 		for (Role r : mmbr.getRoles() ) {
 			ROLES += r.getAsMention() + ", ";
 		}
@@ -67,15 +98,21 @@ public class UserInfo {
 				.addField("Verifying", ISPENDING, true)
 				.setFooter("ID: " + ID);
 
-		if (AVATAR != "No Avatar") {
+		if (!AVATAR.equals("No Avatar")) {
 			UsrInfEmd.setThumbnail(AVATAR);
 		}
 
 		return UsrInfEmd.build();
 	}
 
-	public static String getHelp() {
+	@Override
+	public String getHelp() {
 		return "`" + Callerphone.Prefix + "userinfo <@user/id/empty>` - Get information about this member!";
+	}
+
+	@Override
+	public String[] getTriggers() {
+		return "userinfo,userinf,usrinfo,usrinf".split(",");
 	}
 
 }
