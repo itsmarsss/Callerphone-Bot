@@ -36,7 +36,7 @@ public class ChannelInfo implements Command {
             //					message.editMessage("").queue();
             //					message.editMessageEmbeds(ChannelInfo.textchannelinfo(event.getChannel())).queue();
             //				});
-            MESSAGE.replyEmbeds(ChannelInfo.textchannelinfo(e.getChannel())).queue();
+            MESSAGE.replyEmbeds(textchannelinfo(e.getChannel())).queue();
         }
 
         ChannelType type;
@@ -75,7 +75,7 @@ public class ChannelInfo implements Command {
         return "channelinfo,chaninfo,channelinf,chaninf".split(",");
     }
 
-    public static MessageEmbed textchannelinfo(TextChannel chnl) {
+    public MessageEmbed textchannelinfo(TextChannel chnl) {
         String NAME = chnl.getName();
         String TOPIC = chnl.getTopic();
         String TYPE = chnl.getType().name();
@@ -117,7 +117,7 @@ public class ChannelInfo implements Command {
         return ChnlInfEmd.build();
     }
 
-    public static MessageEmbed voicechannelinfo(VoiceChannel chnl) {
+    public MessageEmbed voicechannelinfo(VoiceChannel chnl) {
         String NAME = chnl.getName();
         String TYPE = String.valueOf(chnl.getType());
         String BITRATE = String.valueOf(chnl.getBitrate());
@@ -158,7 +158,7 @@ public class ChannelInfo implements Command {
         return ChnlInfEmd.build();
     }
 
-    public static MessageEmbed categorychannelinfo(Category chnl) {
+    public MessageEmbed categorychannelinfo(Category chnl) {
         String NAME = chnl.getName();
         String TYPE = String.valueOf(chnl.getType());
         String TEXTCHANNELS = String.valueOf(chnl.getTextChannels().size());
