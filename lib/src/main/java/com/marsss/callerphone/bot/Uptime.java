@@ -1,70 +1,89 @@
 package com.marsss.callerphone.bot;
 
+import java.awt.*;
 import java.lang.management.ManagementFactory;
 
+import com.marsss.Command;
 import com.marsss.callerphone.Callerphone;
+import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
-public class Uptime {
+public class Uptime implements Command {
 
-	public static String uptime() {
+    @Override
+    public void runCommand(GuildMessageReceivedEvent e) {
+        e.getMessage().replyEmbeds(new EmbedBuilder()
+                .setColor(Color.cyan)
+                .setDescription(uptime())
+                .build()
+        ).queue();
+    }
 
-		// https://github.com/DV8FromTheWorld/Yui/blob/master/src/main/java/net/dv8tion/discord/commands/UptimeCommand.java {
+    @Override
+    public String getHelp() {
+        return "`" + Callerphone.Prefix + "uptime` - Gets the bot's uptime.";
+    }
 
-		final long DURATION = ManagementFactory.getRuntimeMXBean().getUptime();
+    @Override
+    public String[] getTriggers() {
+        return "uptime,up,time".split(",");
+    }
 
-		final long YEARS = DURATION / 31104000000L;
-		final long MONTHS = DURATION / 2592000000L % 12;
-		final long DAYS = DURATION / 86400000L % 30;
-		final long HOURS = DURATION / 3600000L % 24;
-		final long MINUTES = DURATION / 60000L % 60;
-		final long SECONDS = DURATION / 1000L % 60;
-		final long MILLISECONDS = DURATION % 1000;
+    public static String uptime() {
 
-		String UPTIME = (YEARS == 0 ? "" : "**" + YEARS + "** years, ") + 
-				(MONTHS == 0 ? "" : "**" + MONTHS + "** months, ") + 
-				(DAYS == 0 ? "" : "**" + DAYS + "** days, ") + 
-				(HOURS == 0 ? "" : "**" + HOURS + "** hours, ") + 
-				(MINUTES == 0 ? "" : "**" + MINUTES + "** minutes, ") + 
-				(SECONDS == 0 ? "" : "**" + SECONDS + "** seconds, ") + 
-				(MILLISECONDS == 0 ? "" : "**" + MILLISECONDS + "** milliseconds, ");
+        // https://github.com/DV8FromTheWorld/Yui/blob/master/src/main/java/net/dv8tion/discord/commands/UptimeCommand.java {
 
-		UPTIME = replaceLast(UPTIME, ", ", "");
-		UPTIME = replaceLast(UPTIME, ",", " and");
+        final long DURATION = ManagementFactory.getRuntimeMXBean().getUptime();
 
-		return "I've been online for " + UPTIME;
-	}
-	
-	public static String uptimeabt() {
+        final long YEARS = DURATION / 31104000000L;
+        final long MONTHS = DURATION / 2592000000L % 12;
+        final long DAYS = DURATION / 86400000L % 30;
+        final long HOURS = DURATION / 3600000L % 24;
+        final long MINUTES = DURATION / 60000L % 60;
+        final long SECONDS = DURATION / 1000L % 60;
+        final long MILLISECONDS = DURATION % 1000;
 
-		final long DURATION = ManagementFactory.getRuntimeMXBean().getUptime();
+        String UPTIME = (YEARS == 0 ? "" : "**" + YEARS + "** years, ") +
+                (MONTHS == 0 ? "" : "**" + MONTHS + "** months, ") +
+                (DAYS == 0 ? "" : "**" + DAYS + "** days, ") +
+                (HOURS == 0 ? "" : "**" + HOURS + "** hours, ") +
+                (MINUTES == 0 ? "" : "**" + MINUTES + "** minutes, ") +
+                (SECONDS == 0 ? "" : "**" + SECONDS + "** seconds, ") +
+                (MILLISECONDS == 0 ? "" : "**" + MILLISECONDS + "** milliseconds, ");
 
-		final long YEARS = DURATION / 31104000000L;
-		final long MONTHS = DURATION / 2592000000L % 12;
-		final long DAYS = DURATION / 86400000L % 30;
-		final long HOURS = DURATION / 3600000L % 24;
-		final long MINUTES = DURATION / 60000L % 60;
-		final long SECONDS = DURATION / 1000L % 60;
+        UPTIME = replaceLast(UPTIME, ", ", "");
+        UPTIME = replaceLast(UPTIME, ",", " and");
 
-		String UPTIME = (YEARS == 0 ? "" : YEARS + "y ") + 
-				(MONTHS == 0 ? "" : MONTHS + "M ") + 
-				(DAYS == 0 ? "" : DAYS + "d ") + 
-				(HOURS == 0 ? "" : HOURS + "h ") + 
-				(MINUTES == 0 ? "" : MINUTES + "m ") + 
-				(SECONDS == 0 ? "" : SECONDS + "s ");
+        return "I've been online for " + UPTIME;
+    }
 
-		UPTIME = replaceLast(UPTIME, ", ", "");
-		UPTIME = replaceLast(UPTIME, ",", " and");
+    public static String uptimeabt() {
 
-		return UPTIME;
-	}
+        final long DURATION = ManagementFactory.getRuntimeMXBean().getUptime();
 
-	private static String replaceLast(final String text, final String regex, final String replacement) {
-		return text.replaceFirst("(?s)(.*)" + regex, "$1" + replacement);
-	}
+        final long YEARS = DURATION / 31104000000L;
+        final long MONTHS = DURATION / 2592000000L % 12;
+        final long DAYS = DURATION / 86400000L % 30;
+        final long HOURS = DURATION / 3600000L % 24;
+        final long MINUTES = DURATION / 60000L % 60;
+        final long SECONDS = DURATION / 1000L % 60;
 
-	// }
+        String UPTIME = (YEARS == 0 ? "" : YEARS + "y ") +
+                (MONTHS == 0 ? "" : MONTHS + "M ") +
+                (DAYS == 0 ? "" : DAYS + "d ") +
+                (HOURS == 0 ? "" : HOURS + "h ") +
+                (MINUTES == 0 ? "" : MINUTES + "m ") +
+                (SECONDS == 0 ? "" : SECONDS + "s ");
 
-	public static String getHelp() {
-		return "`" + Callerphone.Prefix + "uptime` - Gets the bot's uptime.";
-	}
+        UPTIME = replaceLast(UPTIME, ", ", "");
+        UPTIME = replaceLast(UPTIME, ",", " and");
+
+        return UPTIME;
+    }
+
+    private static String replaceLast(final String text, final String regex, final String replacement) {
+        return text.replaceFirst("(?s)(.*)" + regex, "$1" + replacement);
+    }
+
+    // }
 }

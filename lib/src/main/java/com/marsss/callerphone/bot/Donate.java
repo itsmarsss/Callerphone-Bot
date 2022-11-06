@@ -5,11 +5,14 @@ import com.marsss.callerphone.Callerphone;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
+import java.awt.*;
+
 public class Donate implements Command {
 
     @Override
     public void runCommand(GuildMessageReceivedEvent e) {
-        e.getMessage().replyEmbeds(new EmbedBuilder()
+        e.getMessage().replyEmbeds(new EmbedBuilder().
+                setColor(Color.cyan)
                 .setDescription("Donate at <" + Callerphone.donate + ">")
                 .build()
         ).queue();
