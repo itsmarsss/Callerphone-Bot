@@ -105,8 +105,7 @@ public class UserInfo implements Command {
 		return UsrInfEmd.build();
 	}
 
-	@Override
-	public String getHelp() {
+	public static String getHelp() {
 		return "`" + Callerphone.Prefix + "userinfo <@user/id/empty>` - Get information about this member!";
 	}
 

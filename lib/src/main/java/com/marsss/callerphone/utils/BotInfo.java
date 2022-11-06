@@ -8,7 +8,6 @@ import com.marsss.callerphone.Callerphone;
 
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
 public class BotInfo implements Command {
@@ -32,8 +31,7 @@ public class BotInfo implements Command {
         e.getMessage().replyEmbeds(BotInfo.build());
     }
 
-    @Override
-    public String getHelp() {
+    public static String getHelp() {
         return "`" + Callerphone.Prefix + "botinfo` - Get information about the bot.";
     }
 

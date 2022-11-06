@@ -4,7 +4,6 @@ import java.awt.Color;
 
 import com.marsss.Command;
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 
@@ -34,8 +33,7 @@ public class Help implements Command {
         return;
     }
 
-    @Override
-    public String getHelp() {
+    public static String getHelp() {
         return "`" + Callerphone.Prefix + "help` - help help help";
     }
 
@@ -76,7 +74,6 @@ public class Help implements Command {
                         + ChannelInfo.getHelp() + "\n"
                         + Colour.getHelp() + "\n"
                         + Help.getHelp() + "\n"
-                        + Polls.getHelp() + "\n"
                         + RoleInfo.getHelp() + "\n"
                         + Search.getHelp() + "\n"
                         + ServerInfo.getHelp() + "\n"
@@ -150,10 +147,6 @@ public class Help implements Command {
             case "help":
                 TITLE = "Help";
                 DESC = Help.getHelp();
-                break;
-            case "poll":
-                TITLE = "Poll";
-                DESC = Polls.getHelp();
                 break;
             case "search":
                 TITLE = "Search";

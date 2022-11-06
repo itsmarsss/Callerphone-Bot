@@ -18,8 +18,7 @@ public class Donate implements Command {
         ).queue();
     }
 
-    @Override
-    public String getHelp() {
+    public static String getHelp() {
         return "`" + Callerphone.Prefix + "donate` - Help us out by donating.";
     }
 

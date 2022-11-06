@@ -87,8 +87,7 @@ public class About implements Command {
         e.getMessage().replyEmbeds(AbtEmd.build()).queue();
     }
 
-    @Override
-    public String getHelp() {
+    public static String getHelp() {
         return "`" + Callerphone.Prefix + "about` - Introduces you to this bot";
     }
 

@@ -65,8 +65,7 @@ public class ChannelInfo implements Command {
         }
     }
 
-    @Override
-    public String getHelp() {
+    public static String getHelp() {
         return "`" + Callerphone.Prefix + "channelinfo <#channel/id/empty>` - Get information about the channel.";
     }
 

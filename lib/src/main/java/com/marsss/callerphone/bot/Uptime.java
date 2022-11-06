@@ -19,8 +19,7 @@ public class Uptime implements Command {
         ).queue();
     }
 
-    @Override
-    public String getHelp() {
+    public static String getHelp() {
         return "`" + Callerphone.Prefix + "uptime` - Gets the bot's uptime.";
     }
 

@@ -78,8 +78,7 @@ public class Search implements Command {
         return GglEmd.build();
     }
 
-    @Override
-    public String getHelp() {
+    public static String getHelp() {
         return "`" + Callerphone.Prefix + "search <query>` - Search for something quickly on the web with title, snippet, and link!";
     }
 

@@ -91,8 +91,7 @@ public class RoleInfo implements Command {
         e.getMessage().replyEmbeds(RleInfEmd.build()).queue();
     }
 
-    @Override
-    public String getHelp() {
+    public static String getHelp() {
         return "`" + Callerphone.Prefix + "roleinfo <@role/id>` - Get information about this role.";
     }
 

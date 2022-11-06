@@ -117,14 +117,13 @@ public class ServerInfo implements Command {
         e.getMessage().replyEmbeds(SvrInfEmd.build()).queue();
     }
 
-    @Override
-    public String getHelp() {
+    public static String getHelp() {
         return "`" + Callerphone.Prefix + "serverinfo` - Get information about the server.";
     }
 
     @Override
     public String[] getTriggers() {
-        return new String[0];
+        return "serverinfo,servinfo,serverinf,servinf".split(",");
     }
 
 }

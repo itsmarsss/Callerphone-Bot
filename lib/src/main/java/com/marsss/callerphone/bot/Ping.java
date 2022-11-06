@@ -12,8 +12,7 @@ public class Ping implements Command {
                 (ping) -> e.getMessage().replyFormat("**Reset ping:** %sms \n**WS ping:** %sms", ping, Callerphone.jda.getGatewayPing()).queue());
     }
 
-    @Override
-    public String getHelp() {
+    public static String getHelp() {
         return "`" + Callerphone.Prefix + "ping` - Gets the bot's ping.";
     }
 

@@ -4,10 +4,9 @@ import java.awt.Color;
 
 import com.marsss.Command;
 import com.marsss.callerphone.Callerphone;
-import com.marsss.entertainments.Colour;
+import com.marsss.callerphone.utils.Colour;
 
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
 public class Invite implements Command {
@@ -25,8 +24,7 @@ public class Invite implements Command {
         e.getMessage().replyEmbeds(InvEmd.build()).queue();
     }
 
-    @Override
-    public String getHelp() {
+    public static String getHelp() {
         return "`" + Callerphone.Prefix + "invite` - Get invites and links related to this bot.";
     }
 
