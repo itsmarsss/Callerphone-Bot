@@ -14,7 +14,7 @@ import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
 public class TCCallerphoneListener extends ListenerAdapter {
-	private static final String Callerphone = com.marsss.callerphone.Callerphone.Callerphone;
+	private static final String cpEmj = com.marsss.callerphone.Callerphone.Callerphone;
 	public void onGuildMessageReceived(GuildMessageReceivedEvent event) {
 
 		if(!event.getChannel().canTalk())
@@ -28,11 +28,9 @@ public class TCCallerphoneListener extends ListenerAdapter {
 
 
 
-		case "endchat":		
-			if(!args[0].startsWith(com.marsss.callerphone.Callerphone.Prefix))
-				return;
+		case "endchat":
 			if(!hasCall(event.getChannel().getId())) {
-				MESSAGE.reply(Callerphone + "There is no call to end!").queue();
+				MESSAGE.reply(cpEmj + "There is no call to end!").queue();
 				break;
 			}
 
@@ -57,7 +55,7 @@ public class TCCallerphoneListener extends ListenerAdapter {
 
 				if(CALLER.getId().equals(event.getChannel().getId())) {
 					if(RECEIVER != null) {
-						RECEIVER.sendMessage(Callerphone + "The other party hung up the phone.").queue();
+						RECEIVER.sendMessage(cpEmj + "The other party hung up the phone.").queue();
 					}
 
 					final String callerID = c.getCallerTCID();
@@ -69,7 +67,7 @@ public class TCCallerphoneListener extends ListenerAdapter {
 
 					c.resetMessage();
 
-					MESSAGE.reply(Callerphone + "You hung up the phone.").queue();	
+					MESSAGE.reply(cpEmj + "You hung up the phone.").queue();
 
 					if(report) {
 						
@@ -90,7 +88,7 @@ public class TCCallerphoneListener extends ListenerAdapter {
 					break SWITCH;
 				}else if(RECEIVER.getId().equals(event.getChannel().getId())) {
 					if(CALLER != null) {
-						CALLER.sendMessage(Callerphone + "The other party hung up the phone.").queue();
+						CALLER.sendMessage(cpEmj + "The other party hung up the phone.").queue();
 					}
 
 					final String callerID = c.getCallerTCID();
@@ -102,7 +100,7 @@ public class TCCallerphoneListener extends ListenerAdapter {
 
 					c.resetMessage();
 
-					MESSAGE.reply(Callerphone + "You hung up the phone.").queue();	
+					MESSAGE.reply(cpEmj + "You hung up the phone.").queue();
 
 					if(report) {
 						
@@ -126,7 +124,7 @@ public class TCCallerphoneListener extends ListenerAdapter {
 
 
 
-			MESSAGE.reply(Callerphone + "I was not able to find the call...").queue();
+			MESSAGE.reply(cpEmj + "I was not able to find the call...").queue();
 			break;
 
 
@@ -139,7 +137,7 @@ public class TCCallerphoneListener extends ListenerAdapter {
 				break;
 			}
 			if(hasCall(event.getChannel().getId())) {
-				MESSAGE.reply(Callerphone + "There is already a call going on!").queue();
+				MESSAGE.reply(cpEmj + "There is already a call going on!").queue();
 				break;
 			}
 			boolean anon = false;
@@ -159,7 +157,7 @@ public class TCCallerphoneListener extends ListenerAdapter {
 				break;
 			}
 			if(hasCall(event.getChannel().getId())) {
-				MESSAGE.reply(Callerphone + "There is already a call going on!").queue();
+				MESSAGE.reply(cpEmj + "There is already a call going on!").queue();
 				break;
 			}
 			boolean anoncens = false;
@@ -175,7 +173,7 @@ public class TCCallerphoneListener extends ListenerAdapter {
 			if(!args[0].startsWith(com.marsss.callerphone.Callerphone.Prefix))
 				return;
 			if(!hasCall(event.getChannel().getId())) {
-				MESSAGE.reply(Callerphone + "There isn't a chat going on!").queue();
+				MESSAGE.reply(cpEmj + "There isn't a chat going on!").queue();
 				break;
 			}
 			for (Convo c : ConvoStorage.convo) {
@@ -185,11 +183,11 @@ public class TCCallerphoneListener extends ListenerAdapter {
 				}
 				if(c.getCallerTCID().equals(event.getChannel().getId()) || c.getReceiverTCID().equals(event.getChannel().getId())) {
 					c.setReport(true);
-					MESSAGE.reply(Callerphone + "Chat reported!").queue();
+					MESSAGE.reply(cpEmj + "Chat reported!").queue();
 					break SWITCH;
 				}
 			}
-			MESSAGE.reply(Callerphone + "Something went wrong, couldn't report call.").queue();
+			MESSAGE.reply(cpEmj + "Something went wrong, couldn't report call.").queue();
 			break;
 			
 		case "report":
@@ -274,7 +272,7 @@ public class TCCallerphoneListener extends ListenerAdapter {
 
 						c.resetMessage();
 						try {
-							com.marsss.callerphone.Callerphone.jda.getTextChannelById(receiverID).sendMessage(Callerphone + "Connection error, call ended.").queue();
+							com.marsss.callerphone.Callerphone.jda.getTextChannelById(receiverID).sendMessage(cpEmj + "Connection error, call ended.").queue();
 						}catch(Exception ex) {}
 						LocalDateTime now = LocalDateTime.now();
 						String month = String.valueOf(now.getMonthValue());
@@ -322,7 +320,7 @@ public class TCCallerphoneListener extends ListenerAdapter {
 
 						c.resetMessage();
 						try {
-							com.marsss.callerphone.Callerphone.jda.getTextChannelById(callerID).sendMessage(Callerphone + "Connection error, call ended.").queue();
+							com.marsss.callerphone.Callerphone.jda.getTextChannelById(callerID).sendMessage(cpEmj + "Connection error, call ended.").queue();
 						}catch(Exception ex) {}
 						LocalDateTime now = LocalDateTime.now();
 						String month = String.valueOf(now.getMonthValue());

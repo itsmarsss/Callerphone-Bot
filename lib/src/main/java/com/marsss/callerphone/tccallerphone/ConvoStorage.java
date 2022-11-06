@@ -125,7 +125,7 @@ public class ConvoStorage {
 			isConnected = false;
 			lastMessage = 0;
 			CFF = true;
-			CFF = true;
+			RFF = true;
 			CAnon = false;
 			RAnon = false;
 			report = false;

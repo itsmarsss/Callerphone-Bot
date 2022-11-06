@@ -3,6 +3,7 @@ package com.marsss.callerphone.tccallerphone;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.marsss.callerphone.Callerphone;
 import com.marsss.callerphone.tccallerphone.ConvoStorage.Convo;
 
 import net.dv8tion.jda.api.JDA;
@@ -10,7 +11,7 @@ import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.TextChannel;
 
 public class TCCallPairer {
-	private static final String Callerphone = com.marsss.callerphone.Callerphone.Callerphone;
+	private static final String cpEmj = Callerphone.Callerphone;
 	public static void onCallCommand(TextChannel tcchannel, Message message, boolean cens, boolean anon) {
 		final Logger logger = LoggerFactory.getLogger(TCCallPairer.class);
 		final String CHANNELID = tcchannel.getId();
@@ -27,10 +28,10 @@ public class TCCallPairer {
 					convo.setReceiverTCID(CHANNELID);
 					convo.setConnected(true);
 
-					jda.getTextChannelById(convo.getCallerTCID()).sendMessage(Callerphone + "Someone picked up the phone!").queue();
+					jda.getTextChannelById(convo.getCallerTCID()).sendMessage(cpEmj + "Someone picked up the phone!").queue();
 
-					message.reply(Callerphone + "Calling...").queue();
-					tcchannel.sendMessage(Callerphone + "Someone picked up the phone!").queue();
+					message.reply(cpEmj + "Calling...").queue();
+					tcchannel.sendMessage(cpEmj + "Someone picked up the phone!").queue();
 
 					logger.info("From TC: " + convo.getCallerTCID() + " - To TC: " + convo.getReceiverTCID());
 					logger.info("From Guild: " + jda.getTextChannelById(convo.getCallerTCID()).getGuild().getId() + " - To Guild: " + jda.getTextChannelById(convo.getReceiverTCID()).getGuild().getId());
@@ -43,32 +44,32 @@ public class TCCallPairer {
 					convo.setCFF(cens);
 					convo.setCAnon(anon);
 					convo.setCallerTCID(CHANNELID);
-					message.reply(Callerphone + "Calling...").queue();
+					message.reply(cpEmj + "Calling...").queue();
 					return;
 				}
 			}
 		}
-		message.reply(Callerphone + "Hmmm, I was unable to find an open port!").queue();
+		message.reply(cpEmj + "Hmmm, I was unable to find an open port!").queue();
 		logger.warn("Port not found");
 	}
 
 	public static String callHelp() {
-		return "`" + com.marsss.callerphone.Callerphone.Prefix + "chat <anon/empty>` - Chat with someone from another server with text.";
+		return "`" + Callerphone.Prefix + "chat <anon/empty>` - Chat with someone from another server with text.";
 
 	}
 	
 	public static String uncenscallHelp() {
-		return "`" + com.marsss.callerphone.Callerphone.Prefix + "chatuncens <anon/empty>` - Chat with someone from another server with text. (uncensored)";
+		return "`" + Callerphone.Prefix + "chatuncens <anon/empty>` - Chat with someone from another server with text. (uncensored)";
 
 	}
 
 	public static String hangupHelp() {
-		return "`" + com.marsss.callerphone.Callerphone.Prefix + "endchat` - Hangup a pending or existing chat.";
+		return "`" + Callerphone.Prefix + "endchat` - Hangup a pending or existing chat.";
 
 	}
 
 	public static String reportHelp() {
-		return "`" + com.marsss.callerphone.Callerphone.Prefix + "reportchat` - Report a chat, make sure to report during a call.";
+		return "`" + Callerphone.Prefix + "reportchat` - Report a chat, make sure to report during a call.";
 	}
 
 }
