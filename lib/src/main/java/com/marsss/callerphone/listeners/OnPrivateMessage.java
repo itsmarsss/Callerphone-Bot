@@ -8,7 +8,7 @@ import java.io.PrintWriter;
 import java.net.URL;
 import java.util.Scanner;
 
-import com.marsss.callerphone.Bot;
+import com.marsss.callerphone.Callerphone;
 
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
@@ -32,9 +32,9 @@ public class OnPrivateMessage extends ListenerAdapter {
 
 		final String args[] = CONTENT.split("\\s+");
 
-		boolean isAdmin = Bot.admin.contains(event.getAuthor().getId());
+		boolean isAdmin = Callerphone.admin.contains(event.getAuthor().getId());
 
-		if(CONTENT.startsWith(Bot.Prefix + "help mod")) {
+		if(CONTENT.startsWith(Callerphone.Prefix + "help mod")) {
 			String TITLE = "Mod";
 			String DESC = "You do not have permission to access this category.";
 
@@ -48,54 +48,54 @@ public class OnPrivateMessage extends ListenerAdapter {
 			EmbedBuilder HelpEmd = new EmbedBuilder()
 					.setTitle(TITLE)
 					.setDescription(DESC)
-					.setFooter("Hope you found this useful!", Bot.jda.getSelfUser().getAvatarUrl())
+					.setFooter("Hope you found this useful!", Callerphone.jda.getSelfUser().getAvatarUrl())
 					.setColor(new Color(114, 137, 218));
 
 			sendPrivateEmbed(MEMBER, HelpEmd.build());
 			return;
 		}
 
-		if(CONTENT.toLowerCase().startsWith(Bot.Prefix)) {
+		if(CONTENT.toLowerCase().startsWith(Callerphone.Prefix)) {
 			try {
 
-				switch (args[0].toLowerCase().replace(Bot.Prefix, "")) {
+				switch (args[0].toLowerCase().replace(Callerphone.Prefix, "")) {
 				
 				case "blackedlist":
-					sendPrivateFile(MEMBER, new File(Bot.parent + "/blacklist.txt"), "Callerphone Blacklist:");
+					sendPrivateFile(MEMBER, new File(Callerphone.parent + "/blacklist.txt"), "Callerphone Blacklist:");
 					return;
 
 				case "prefixlist":
-					sendPrivateFile(MEMBER, new File(Bot.parent + "/prefix.txt"), "Callerphone Prefix list:");
+					sendPrivateFile(MEMBER, new File(Callerphone.parent + "/prefix.txt"), "Callerphone Prefix list:");
 					return;
 
 				case "infolist":
-					sendPrivateFile(MEMBER, new File(Bot.parent + "/info.txt"), "Callerphone Info list:");
+					sendPrivateFile(MEMBER, new File(Callerphone.parent + "/info.txt"), "Callerphone Info list:");
 					return;
 
 				case "modlist":
-					sendPrivateFile(MEMBER, new File(Bot.parent + "/admin.txt"), "Callerphone Moderator list:");
+					sendPrivateFile(MEMBER, new File(Callerphone.parent + "/admin.txt"), "Callerphone Moderator list:");
 					return;
 
 				case "filterlist":
-					sendPrivateFile(MEMBER, new File(Bot.parent + "/filter.txt"), "Callerphone Filter list:");
+					sendPrivateFile(MEMBER, new File(Callerphone.parent + "/filter.txt"), "Callerphone Filter list:");
 					return;
 					
 				}
 
 				String id = args[1];
-				switch (args[0].toLowerCase().replace(Bot.Prefix, "")) {
+				switch (args[0].toLowerCase().replace(Callerphone.Prefix, "")) {
 
 				case "blacklist":
-					if(Bot.blacklist.contains(id)) {
+					if(Callerphone.blacklist.contains(id)) {
 						MESSAGE.reply("ID blacklisted already").queue();
 					}else {
-						Bot.blacklist.add(id);
+						Callerphone.blacklist.add(id);
 						StringBuilder sb = new StringBuilder();
 						try {
-							for(String m : Bot.blacklist) {
+							for(String m : Callerphone.blacklist) {
 								sb.append(m + "\n");
 							}
-							FileWriter myWriter = new FileWriter(Bot.parent + "/blacklist.txt");
+							FileWriter myWriter = new FileWriter(Callerphone.parent + "/blacklist.txt");
 							myWriter.write(sb.toString());
 							myWriter.close();
 							MESSAGE.reply("ID: `" + id + "` added to blacklist").queue();
@@ -106,21 +106,21 @@ public class OnPrivateMessage extends ListenerAdapter {
 					break;
 
 				case "prefix":
-					if(Bot.prefix.containsKey(id)) {
-						MESSAGE.reply("ID has prefix already (" + Bot.prefix.get(id) + ")").queue();
+					if(Callerphone.prefix.containsKey(id)) {
+						MESSAGE.reply("ID has prefix already (" + Callerphone.prefix.get(id) + ")").queue();
 					}else {
 						String prefix = args[2];
 						if(prefix.length() > 15) {
 							MESSAGE.reply("Prefix too long (max. length is 15 chars)").queue();
 							break;
 						}
-						Bot.prefix.put(id, prefix);
+						Callerphone.prefix.put(id, prefix);
 						StringBuilder sb = new StringBuilder();
 						try {
-							for(String key : Bot.prefix.keySet()) {
-								sb.append(key + "|" + Bot.prefix.get(key) + "\n");
+							for(String key : Callerphone.prefix.keySet()) {
+								sb.append(key + "|" + Callerphone.prefix.get(key) + "\n");
 							}
-							FileWriter myWriter = new FileWriter(Bot.parent + "/prefix.txt");
+							FileWriter myWriter = new FileWriter(Callerphone.parent + "/prefix.txt");
 							myWriter.write(sb.toString());
 							myWriter.close();
 							MESSAGE.reply("ID: `" + id + "` now has prefix `" + prefix + "`").queue();
@@ -131,16 +131,16 @@ public class OnPrivateMessage extends ListenerAdapter {
 					break;
 
 				case "mod":
-					if(Bot.admin.contains(id)) {
+					if(Callerphone.admin.contains(id)) {
 						MESSAGE.reply("ID is mod already").queue();
 					}else {
-						Bot.admin.add(id);
+						Callerphone.admin.add(id);
 						StringBuilder sb = new StringBuilder();
 						try {
-							for(String m : Bot.admin) {
+							for(String m : Callerphone.admin) {
 								sb.append(m + "\n");
 							}
-							FileWriter myWriter = new FileWriter(Bot.parent + "/admin.txt");
+							FileWriter myWriter = new FileWriter(Callerphone.parent + "/admin.txt");
 							myWriter.write(sb.toString());
 							myWriter.close();
 							MESSAGE.reply("ID: `" + id + "` added to mod list").queue();
@@ -154,16 +154,16 @@ public class OnPrivateMessage extends ListenerAdapter {
 
 
 				case "rblacklist":
-					if(!Bot.blacklist.contains(id)) {
+					if(!Callerphone.blacklist.contains(id)) {
 						MESSAGE.reply("ID not blacklisted").queue();
 					}else {
-						Bot.blacklist.remove(id);
+						Callerphone.blacklist.remove(id);
 						StringBuilder sb = new StringBuilder();
 						try {
-							for(String m : Bot.blacklist) {
+							for(String m : Callerphone.blacklist) {
 								sb.append(m + "\n");
 							}
-							PrintWriter myWriter = new PrintWriter(Bot.parent + "/blacklist.txt");
+							PrintWriter myWriter = new PrintWriter(Callerphone.parent + "/blacklist.txt");
 							myWriter.print(sb.toString());
 							myWriter.close();
 							MESSAGE.reply("ID: `" + id + "` removed from blacklist").queue();
@@ -174,16 +174,16 @@ public class OnPrivateMessage extends ListenerAdapter {
 					break;
 
 				case "rprefix":
-					if(!Bot.prefix.containsKey(id)) {
+					if(!Callerphone.prefix.containsKey(id)) {
 						MESSAGE.reply("ID does not have a prefix").queue();
 					}else {
-						Bot.prefix.remove(id);
+						Callerphone.prefix.remove(id);
 						StringBuilder sb = new StringBuilder();
 						try {
-							for(String key : Bot.prefix.keySet()) {
-								sb.append(key + "|" + Bot.prefix.get(key) + "\n");
+							for(String key : Callerphone.prefix.keySet()) {
+								sb.append(key + "|" + Callerphone.prefix.get(key) + "\n");
 							}
-							PrintWriter myWriter = new PrintWriter(Bot.parent + "/prefix.txt");
+							PrintWriter myWriter = new PrintWriter(Callerphone.parent + "/prefix.txt");
 							myWriter.print(sb.toString());
 							myWriter.close();
 							MESSAGE.reply("ID: `" + id + "` no longer has a prefix").queue();
@@ -194,20 +194,20 @@ public class OnPrivateMessage extends ListenerAdapter {
 					break;
 
 				case "rmod":
-					if(!Bot.admin.contains(id)) {
+					if(!Callerphone.admin.contains(id)) {
 						MESSAGE.reply("ID is not a mod").queue();
 					}else {
-						if(id.equals(Bot.owner)) {
+						if(id.equals(Callerphone.owner)) {
 							MESSAGE.reply("You cannot remove this mod").queue();
 							break;
 						}
-						Bot.admin.remove(id);
+						Callerphone.admin.remove(id);
 						StringBuilder sb = new StringBuilder();
 						try {
-							for(String m : Bot.admin) {
+							for(String m : Callerphone.admin) {
 								sb.append(m + "\n");
 							}
-							PrintWriter myWriter = new PrintWriter(Bot.parent + "/admin.txt");
+							PrintWriter myWriter = new PrintWriter(Callerphone.parent + "/admin.txt");
 							myWriter.print(sb.toString());
 							myWriter.close();
 							MESSAGE.reply("ID: `" + id + "` removed from mod list").queue();
@@ -232,7 +232,7 @@ public class OnPrivateMessage extends ListenerAdapter {
 		msg = msg.replaceAll("\\s+", "%20");
 
 		try {
-			final URL url = new URL(Bot.brainURL.replace("[uid]", channel.getId()).replace("[msg]", msg));
+			final URL url = new URL(Callerphone.brainURL.replace("[uid]", channel.getId()).replace("[msg]", msg));
 			final Scanner sc = new Scanner(url.openStream());
 
 			String s = sc.nextLine();

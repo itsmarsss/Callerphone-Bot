@@ -3,7 +3,7 @@ package com.marsss.callerphone.utils;
 import java.awt.Color;
 import java.time.format.DateTimeFormatter;
 
-import com.marsss.callerphone.Bot;
+import com.marsss.callerphone.Callerphone;
 
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Guild;
@@ -112,7 +112,7 @@ public class ServerInfo {
 	}
 
 	public static String getHelp() {
-		return "`" + Bot.Prefix + "serverinfo` - Get information about the server.";
+		return "`" + Callerphone.Prefix + "serverinfo` - Get information about the server.";
 	}
 
 }

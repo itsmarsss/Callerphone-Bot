@@ -3,7 +3,6 @@ package com.marsss.callerphone.listeners;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 
-import com.marsss.callerphone.Bot;
 import com.marsss.callerphone.tccallerphone.ConvoStorage;
 import com.marsss.callerphone.tccallerphone.TCCallPairer;
 import com.marsss.callerphone.tccallerphone.ConvoStorage.Convo;
@@ -15,7 +14,7 @@ import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
 public class TCCallerphoneListener extends ListenerAdapter {
-	private static final String Callerphone = Bot.Callerphone;
+	private static final String Callerphone = com.marsss.callerphone.Callerphone.Callerphone;
 	public void onGuildMessageReceived(GuildMessageReceivedEvent event) {
 
 		if(!event.getChannel().canTalk())
@@ -25,19 +24,19 @@ public class TCCallerphoneListener extends ListenerAdapter {
 		String MESSAGERAW = MESSAGE.getContentDisplay();
 		final String args[] = MESSAGERAW.toLowerCase().split("\\s+");
 
-		SWITCH : switch (args[0].replace(Bot.Prefix, "")) {
+		SWITCH : switch (args[0].replace(com.marsss.callerphone.Callerphone.Prefix, "")) {
 
 
 
 		case "endchat":		
-			if(!args[0].startsWith(Bot.Prefix))
+			if(!args[0].startsWith(com.marsss.callerphone.Callerphone.Prefix))
 				return;
 			if(!hasCall(event.getChannel().getId())) {
 				MESSAGE.reply(Callerphone + "There is no call to end!").queue();
 				break;
 			}
 
-			final JDA jda = Bot.jda;
+			final JDA jda = com.marsss.callerphone.Callerphone.jda;
 
 			for(Convo c : ConvoStorage.convo) {
 				TextChannel CALLER = null;
@@ -84,7 +83,7 @@ public class TCCallerphoneListener extends ListenerAdapter {
 						String data = "";
 						for(String m : DATA)
 							data += m + "\n";
-						jda.getTextChannelById(Bot.reportchannel).sendMessage("**ID:** " + ID).addFile(data.getBytes(), ID + ".txt").queue();
+						jda.getTextChannelById(com.marsss.callerphone.Callerphone.reportchannel).sendMessage("**ID:** " + ID).addFile(data.getBytes(), ID + ".txt").queue();
 				
 					}
 
@@ -117,7 +116,7 @@ public class TCCallerphoneListener extends ListenerAdapter {
 						String data = "";
 						for(String m : DATA)
 							data += m + "\n";
-						jda.getTextChannelById(Bot.reportchannel).sendMessage("**ID:** " + ID).addFile(data.getBytes(), ID + ".txt").queue();
+						jda.getTextChannelById(com.marsss.callerphone.Callerphone.reportchannel).sendMessage("**ID:** " + ID).addFile(data.getBytes(), ID + ".txt").queue();
 				
 					}
 
@@ -133,9 +132,9 @@ public class TCCallerphoneListener extends ListenerAdapter {
 
 
 		case "chat":
-			if(!args[0].startsWith(Bot.Prefix))
+			if(!args[0].startsWith(com.marsss.callerphone.Callerphone.Prefix))
 				return;
-			if(Bot.blacklist.contains(event.getAuthor().getId())) {
+			if(com.marsss.callerphone.Callerphone.blacklist.contains(event.getAuthor().getId())) {
 				MESSAGE.reply("Sorry you are blacklisted, submit an appeal in our support server").queue();
 				break;
 			}
@@ -153,9 +152,9 @@ public class TCCallerphoneListener extends ListenerAdapter {
 			break;
 
 		case "chatuncens":
-			if(!args[0].startsWith(Bot.Prefix))
+			if(!args[0].startsWith(com.marsss.callerphone.Callerphone.Prefix))
 				return;
-			if(Bot.blacklist.contains(event.getAuthor().getId())) {
+			if(com.marsss.callerphone.Callerphone.blacklist.contains(event.getAuthor().getId())) {
 				MESSAGE.reply("Sorry you are blacklisted, submit an appeal at our support server").queue();
 				break;
 			}
@@ -173,7 +172,7 @@ public class TCCallerphoneListener extends ListenerAdapter {
 			break;
 
 		case "reportchat":
-			if(!args[0].startsWith(Bot.Prefix))
+			if(!args[0].startsWith(com.marsss.callerphone.Callerphone.Prefix))
 				return;
 			if(!hasCall(event.getChannel().getId())) {
 				MESSAGE.reply(Callerphone + "There isn't a chat going on!").queue();
@@ -195,30 +194,30 @@ public class TCCallerphoneListener extends ListenerAdapter {
 			
 		case "report":
 			if(hasCall(event.getChannel().getId()))
-				MESSAGE.reply("`" + Bot.Prefix + "reportchat` to report a chat\n" +
-						"`" + Bot.Prefix + "reportcall` to report a call").queue();
+				MESSAGE.reply("`" + com.marsss.callerphone.Callerphone.Prefix + "reportchat` to report a chat\n" +
+						"`" + com.marsss.callerphone.Callerphone.Prefix + "reportcall` to report a call").queue();
 			break;
 				
 		default:
-			if(args[0].toLowerCase().equals(Bot.Prefix + "support"))
+			if(args[0].toLowerCase().equals(com.marsss.callerphone.Callerphone.Prefix + "support"))
 				break;
 
-			if(args[0].toLowerCase().equals(Bot.Prefix + "blacklist"))
+			if(args[0].toLowerCase().equals(com.marsss.callerphone.Callerphone.Prefix + "blacklist"))
 				break;
 
-			if(args[0].toLowerCase().equals(Bot.Prefix + "mod"))
+			if(args[0].toLowerCase().equals(com.marsss.callerphone.Callerphone.Prefix + "mod"))
 				break;
 			
-			if(args[0].toLowerCase().equals(Bot.Prefix + "rsupport"))
+			if(args[0].toLowerCase().equals(com.marsss.callerphone.Callerphone.Prefix + "rsupport"))
 				break;
 
-			if(args[0].toLowerCase().equals(Bot.Prefix + "rblacklist"))
+			if(args[0].toLowerCase().equals(com.marsss.callerphone.Callerphone.Prefix + "rblacklist"))
 				break;
 
-			if(args[0].toLowerCase().equals(Bot.Prefix + "rmod"))
+			if(args[0].toLowerCase().equals(com.marsss.callerphone.Callerphone.Prefix + "rmod"))
 				break;
 
-			if(Bot.blacklist.contains(event.getAuthor().getId())) {
+			if(com.marsss.callerphone.Callerphone.blacklist.contains(event.getAuthor().getId())) {
 				break;
 			}
 
@@ -244,7 +243,7 @@ public class TCCallerphoneListener extends ListenerAdapter {
 
 				if(c.getCallerTCID().equals(event.getChannel().getId())) {
 					if(c.getRFF()) {
-						for(String ftr : Bot.filter) {
+						for(String ftr : com.marsss.callerphone.Callerphone.filter) {
 							String rep = "";
 							for(int i = 0; i < ftr.length(); i++) {
 								rep+="#";
@@ -255,14 +254,14 @@ public class TCCallerphoneListener extends ListenerAdapter {
 
 					try {
 						if(c.getCAnon()) {
-							Bot.jda.getTextChannelById(c.getReceiverTCID()).sendMessage("**DiscordUser#0000**: " + MESSAGERAW).queue();
+							com.marsss.callerphone.Callerphone.jda.getTextChannelById(c.getReceiverTCID()).sendMessage("**DiscordUser#0000**: " + MESSAGERAW).queue();
 						}else {
-							if(Bot.admin.contains(event.getAuthor().getId())) {
-								Bot.jda.getTextChannelById(c.getReceiverTCID()).sendMessage("***[Moderator]* " + MESSAGE.getAuthor().getAsTag() + "**: " + MESSAGERAW).queue();
-							}else if(Bot.prefix.containsKey(event.getAuthor().getId())) {
-								Bot.jda.getTextChannelById(c.getReceiverTCID()).sendMessage("***[" + Bot.prefix.get(event.getAuthor().getId()) + "]* " + MESSAGE.getAuthor().getAsTag() + "**: " + MESSAGERAW).queue();
+							if(com.marsss.callerphone.Callerphone.admin.contains(event.getAuthor().getId())) {
+								com.marsss.callerphone.Callerphone.jda.getTextChannelById(c.getReceiverTCID()).sendMessage("***[Moderator]* " + MESSAGE.getAuthor().getAsTag() + "**: " + MESSAGERAW).queue();
+							}else if(com.marsss.callerphone.Callerphone.prefix.containsKey(event.getAuthor().getId())) {
+								com.marsss.callerphone.Callerphone.jda.getTextChannelById(c.getReceiverTCID()).sendMessage("***[" + com.marsss.callerphone.Callerphone.prefix.get(event.getAuthor().getId()) + "]* " + MESSAGE.getAuthor().getAsTag() + "**: " + MESSAGERAW).queue();
 							}else {
-								Bot.jda.getTextChannelById(c.getReceiverTCID()).sendMessage("**" + MESSAGE.getAuthor().getAsTag() + "**: " + MESSAGERAW).queue();
+								com.marsss.callerphone.Callerphone.jda.getTextChannelById(c.getReceiverTCID()).sendMessage("**" + MESSAGE.getAuthor().getAsTag() + "**: " + MESSAGERAW).queue();
 							}
 						}
 					}catch(Exception e) {
@@ -275,7 +274,7 @@ public class TCCallerphoneListener extends ListenerAdapter {
 
 						c.resetMessage();
 						try {
-							Bot.jda.getTextChannelById(receiverID).sendMessage(Callerphone + "Connection error, call ended.").queue();
+							com.marsss.callerphone.Callerphone.jda.getTextChannelById(receiverID).sendMessage(Callerphone + "Connection error, call ended.").queue();
 						}catch(Exception ex) {}
 						LocalDateTime now = LocalDateTime.now();
 						String month = String.valueOf(now.getMonthValue());
@@ -286,13 +285,13 @@ public class TCCallerphoneListener extends ListenerAdapter {
 
 						final String DATA = data;
 						if(c.getReport()) {
-							Bot.jda.getTextChannelById(Bot.reportchannel).sendMessage("**ID:** " + ID).addFile(DATA.getBytes(), ID + ".txt").queue();
+							com.marsss.callerphone.Callerphone.jda.getTextChannelById(com.marsss.callerphone.Callerphone.reportchannel).sendMessage("**ID:** " + ID).addFile(DATA.getBytes(), ID + ".txt").queue();
 						}
 					}
 					break SWITCH;
 				}else if(c.getReceiverTCID().equals(event.getChannel().getId())) {
 					if(c.getCFF()) {
-						for(String ftr : Bot.filter) {
+						for(String ftr : com.marsss.callerphone.Callerphone.filter) {
 							String rep = "";
 							for(int i = 0; i < ftr.length(); i++) {
 								rep+="#";
@@ -303,14 +302,14 @@ public class TCCallerphoneListener extends ListenerAdapter {
 
 					try {
 						if(c.getRAnon()) {
-							Bot.jda.getTextChannelById(c.getCallerTCID()).sendMessage("**DiscordUser#0000**: " + MESSAGERAW).queue();
+							com.marsss.callerphone.Callerphone.jda.getTextChannelById(c.getCallerTCID()).sendMessage("**DiscordUser#0000**: " + MESSAGERAW).queue();
 						}else {
-							if(Bot.admin.contains(event.getAuthor().getId())) {
-								Bot.jda.getTextChannelById(c.getCallerTCID()).sendMessage("***[Moderator]* " + MESSAGE.getAuthor().getAsTag() + "**: " + MESSAGERAW).queue();
-							}else if(Bot.prefix.containsKey(event.getAuthor().getId())) {
-								Bot.jda.getTextChannelById(c.getCallerTCID()).sendMessage("***[" + Bot.prefix.get(event.getAuthor().getId()) + "]* " + MESSAGE.getAuthor().getAsTag() + "**: " + MESSAGERAW).queue();
+							if(com.marsss.callerphone.Callerphone.admin.contains(event.getAuthor().getId())) {
+								com.marsss.callerphone.Callerphone.jda.getTextChannelById(c.getCallerTCID()).sendMessage("***[Moderator]* " + MESSAGE.getAuthor().getAsTag() + "**: " + MESSAGERAW).queue();
+							}else if(com.marsss.callerphone.Callerphone.prefix.containsKey(event.getAuthor().getId())) {
+								com.marsss.callerphone.Callerphone.jda.getTextChannelById(c.getCallerTCID()).sendMessage("***[" + com.marsss.callerphone.Callerphone.prefix.get(event.getAuthor().getId()) + "]* " + MESSAGE.getAuthor().getAsTag() + "**: " + MESSAGERAW).queue();
 							}else {
-								Bot.jda.getTextChannelById(c.getCallerTCID()).sendMessage("**" + MESSAGE.getAuthor().getAsTag() + "**: " + MESSAGERAW).queue();
+								com.marsss.callerphone.Callerphone.jda.getTextChannelById(c.getCallerTCID()).sendMessage("**" + MESSAGE.getAuthor().getAsTag() + "**: " + MESSAGERAW).queue();
 							}
 						}
 					}catch(Exception e) {
@@ -323,7 +322,7 @@ public class TCCallerphoneListener extends ListenerAdapter {
 
 						c.resetMessage();
 						try {
-							Bot.jda.getTextChannelById(callerID).sendMessage(Callerphone + "Connection error, call ended.").queue();
+							com.marsss.callerphone.Callerphone.jda.getTextChannelById(callerID).sendMessage(Callerphone + "Connection error, call ended.").queue();
 						}catch(Exception ex) {}
 						LocalDateTime now = LocalDateTime.now();
 						String month = String.valueOf(now.getMonthValue());
@@ -334,7 +333,7 @@ public class TCCallerphoneListener extends ListenerAdapter {
 
 						final String DATA = data;
 						if(c.getReport()) {
-							Bot.jda.getTextChannelById(Bot.reportchannel).sendMessage("**ID:** " + ID).addFile(DATA.getBytes(), ID + ".txt").queue();
+							com.marsss.callerphone.Callerphone.jda.getTextChannelById(com.marsss.callerphone.Callerphone.reportchannel).sendMessage("**ID:** " + ID).addFile(DATA.getBytes(), ID + ".txt").queue();
 						}
 					}
 					break SWITCH;

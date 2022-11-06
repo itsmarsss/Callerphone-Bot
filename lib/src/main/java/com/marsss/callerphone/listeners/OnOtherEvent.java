@@ -6,7 +6,7 @@ import java.time.OffsetDateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.marsss.callerphone.Bot;
+import com.marsss.callerphone.Callerphone;
 
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.TextChannel;
@@ -23,7 +23,7 @@ public class OnOtherEvent extends ListenerAdapter{
 	}
 
 	public void onResumed(ResumedEvent event)  {
-		final TextChannel CHANNEL = event.getJDA().getTextChannelById(Bot.logstatus);
+		final TextChannel CHANNEL = event.getJDA().getTextChannelById(Callerphone.logstatus);
 		EmbedBuilder Emd = new EmbedBuilder().setColor(Color.RED).setTitle("Disconnected");
 		
 		disconnectCount++;

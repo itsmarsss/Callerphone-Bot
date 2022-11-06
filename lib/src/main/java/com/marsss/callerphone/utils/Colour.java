@@ -2,7 +2,7 @@ package com.marsss.entertainments;
 
 import java.util.Random;
 
-import com.marsss.callerphone.Bot;
+import com.marsss.callerphone.Callerphone;
 
 import java.awt.Color;
 
@@ -78,8 +78,8 @@ public class Colour {
 	}
 
 	public static String getHelp() {
-		return "`" + Bot.Prefix + "color` - Get a random color in hex and rgb value.\n" +
-				"`" + Bot.Prefix + "colorrgb <r> <g> <b>` - Get the hex value of rgb.\n" +
-				"`" + Bot.Prefix + "colorhex <hex>` - Get the rgb value of hex.";
+		return "`" + Callerphone.Prefix + "color` - Get a random color in hex and rgb value.\n" +
+				"`" + Callerphone.Prefix + "colorrgb <r> <g> <b>` - Get the hex value of rgb.\n" +
+				"`" + Callerphone.Prefix + "colorhex <hex>` - Get the rgb value of hex.";
 	}
 }

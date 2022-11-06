@@ -3,7 +3,6 @@ package com.marsss.callerphone.tccallerphone;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.marsss.callerphone.Bot;
 import com.marsss.callerphone.tccallerphone.ConvoStorage.Convo;
 
 import net.dv8tion.jda.api.JDA;
@@ -11,11 +10,11 @@ import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.TextChannel;
 
 public class TCCallPairer {
-	private static final String Callerphone = Bot.Callerphone;
+	private static final String Callerphone = com.marsss.callerphone.Callerphone.Callerphone;
 	public static void onCallCommand(TextChannel tcchannel, Message message, boolean cens, boolean anon) {
 		final Logger logger = LoggerFactory.getLogger(TCCallPairer.class);
 		final String CHANNELID = tcchannel.getId();
-		final JDA jda = Bot.jda;
+		final JDA jda = com.marsss.callerphone.Callerphone.jda;
 		for(int i = 0; i < ConvoStorage.convo.length; i++) {
 			final Convo convo = ConvoStorage.convo[i];
 			if(!convo.getConnected()) {
@@ -54,22 +53,22 @@ public class TCCallPairer {
 	}
 
 	public static String callHelp() {
-		return "`" + Bot.Prefix + "chat <anon/empty>` - Chat with someone from another server with text.";
+		return "`" + com.marsss.callerphone.Callerphone.Prefix + "chat <anon/empty>` - Chat with someone from another server with text.";
 
 	}
 	
 	public static String uncenscallHelp() {
-		return "`" + Bot.Prefix + "chatuncens <anon/empty>` - Chat with someone from another server with text. (uncensored)";
+		return "`" + com.marsss.callerphone.Callerphone.Prefix + "chatuncens <anon/empty>` - Chat with someone from another server with text. (uncensored)";
 
 	}
 
 	public static String hangupHelp() {
-		return "`" + Bot.Prefix + "endchat` - Hangup a pending or existing chat.";
+		return "`" + com.marsss.callerphone.Callerphone.Prefix + "endchat` - Hangup a pending or existing chat.";
 
 	}
 
 	public static String reportHelp() {
-		return "`" + Bot.Prefix + "reportchat` - Report a chat, make sure to report during a call.";
+		return "`" + com.marsss.callerphone.Callerphone.Prefix + "reportchat` - Report a chat, make sure to report during a call.";
 	}
 
 }

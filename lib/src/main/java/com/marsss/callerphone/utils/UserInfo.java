@@ -3,7 +3,7 @@ package com.marsss.callerphone.utils;
 import java.awt.Color;
 import java.time.format.DateTimeFormatter;
 
-import com.marsss.callerphone.Bot;
+import com.marsss.callerphone.Callerphone;
 
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
@@ -75,7 +75,7 @@ public class UserInfo {
 	}
 
 	public static String getHelp() {
-		return "`" + Bot.Prefix + "userinfo <@user/id/empty>` - Get information about this member!";
+		return "`" + Callerphone.Prefix + "userinfo <@user/id/empty>` - Get information about this member!";
 	}
 
 }

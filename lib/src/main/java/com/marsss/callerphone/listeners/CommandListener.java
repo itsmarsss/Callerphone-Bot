@@ -3,7 +3,7 @@ package com.marsss.callerphone.listeners;
 import java.io.IOException;
 import java.util.List;
 
-import com.marsss.callerphone.Bot;
+import com.marsss.callerphone.Callerphone;
 import com.marsss.callerphone.bot.*;
 import com.marsss.entertainments.*;
 import com.marsss.callerphone.utils.*;
@@ -37,22 +37,22 @@ public class CommandListener extends ListenerAdapter {
 
 		}catch(Exception e) {}
 
-		if(CONTENT.startsWith("<@!" + Bot.jda.getSelfUser().getId() + ">")) {
-			MESSAGE.reply("My prefix is `" + Bot.Prefix + "`, do `" + Bot.Prefix + "help` for a list of commands!").queue();
+		if(CONTENT.startsWith("<@!" + Callerphone.jda.getSelfUser().getId() + ">")) {
+			MESSAGE.reply("My prefix is `" + Callerphone.Prefix + "`, do `" + Callerphone.Prefix + "help` for a list of commands!").queue();
 			return;
 		}
 
-		if(!args[0].toLowerCase().startsWith(Bot.Prefix))
+		if(!args[0].toLowerCase().startsWith(Callerphone.Prefix))
 			return;
 
-		if(args[0].toLowerCase().startsWith(Bot.Prefix + "play")) {
-			MESSAGE.reply("Callerphone no longer can play music, however I've created a new bot called **Tunes**...\nJoin <" + Bot.tunessupport + "> for more information!").queue();
+		if(args[0].toLowerCase().startsWith(Callerphone.Prefix + "play")) {
+			MESSAGE.reply("Callerphone no longer can play music, however I've created a new bot called **Tunes**...\nJoin <" + Callerphone.tunessupport + "> for more information!").queue();
 			return;
 		}
 
 
 		// Utils
-		utils : switch(args[0].toLowerCase().replace(Bot.Prefix, "")) {
+		utils : switch(args[0].toLowerCase().replace(Callerphone.Prefix, "")) {
 
 
 
@@ -62,7 +62,7 @@ public class CommandListener extends ListenerAdapter {
 				break;
 			}
 			boolean admin = false;
-			if(Bot.admin.contains(event.getAuthor().getId())) {
+			if(Callerphone.admin.contains(event.getAuthor().getId())) {
 				admin = true;
 			}
 			if(args.length > 1) {
@@ -114,7 +114,7 @@ public class CommandListener extends ListenerAdapter {
 			GuildChannel CHANNEL;
 
 			try {  
-				CHANNEL = Bot.jda.getGuildChannelById(Long.parseLong(args[1]));
+				CHANNEL = Callerphone.jda.getGuildChannelById(Long.parseLong(args[1]));
 			} catch(Exception e){  
 				CHANNEL = null; 
 			} 
@@ -134,13 +134,13 @@ public class CommandListener extends ListenerAdapter {
 			switch(CHANNEL.getType()) {
 
 			case TEXT:
-				MESSAGE.replyEmbeds(ChannelInfo.textchannelinfo(Bot.jda.getTextChannelById(CHANNEL.getId()))).queue();
+				MESSAGE.replyEmbeds(ChannelInfo.textchannelinfo(Callerphone.jda.getTextChannelById(CHANNEL.getId()))).queue();
 				break utils;
 			case VOICE:
-				MESSAGE.replyEmbeds(ChannelInfo.voicechannelinfo(Bot.jda.getVoiceChannelById(CHANNEL.getId()))).queue();
+				MESSAGE.replyEmbeds(ChannelInfo.voicechannelinfo(Callerphone.jda.getVoiceChannelById(CHANNEL.getId()))).queue();
 				break utils;
 			case CATEGORY:
-				MESSAGE.replyEmbeds(ChannelInfo.categorychannelinfo(Bot.jda.getCategoryById(CHANNEL.getId()))).queue();
+				MESSAGE.replyEmbeds(ChannelInfo.categorychannelinfo(Callerphone.jda.getCategoryById(CHANNEL.getId()))).queue();
 				break utils;
 			default:
 				MESSAGE.reply("Channel not recognized").queue();
@@ -157,7 +157,7 @@ public class CommandListener extends ListenerAdapter {
 			Role ROLE;
 
 			try {
-				ROLE = Bot.jda.getRoleById(Long.parseLong(args[1]));
+				ROLE = Callerphone.jda.getRoleById(Long.parseLong(args[1]));
 			}catch(Exception e) {
 				ROLE = null;
 			}
@@ -216,7 +216,7 @@ public class CommandListener extends ListenerAdapter {
 
 
 		// Bot
-		switch (args[0].toLowerCase().replace(Bot.Prefix, "")) {
+		switch (args[0].toLowerCase().replace(Callerphone.Prefix, "")) {
 
 
 
@@ -251,8 +251,8 @@ public class CommandListener extends ListenerAdapter {
 
 
 		case "ping":
-			Bot.jda.getRestPing().queue(
-					(ping) -> MESSAGE.replyFormat("**Reset ping:** %sms \n**WS ping:** %sms", ping, Bot.jda.getGatewayPing()).queue());
+			Callerphone.jda.getRestPing().queue(
+					(ping) -> MESSAGE.replyFormat("**Reset ping:** %sms \n**WS ping:** %sms", ping, Callerphone.jda.getGatewayPing()).queue());
 			break;
 
 
@@ -267,7 +267,7 @@ public class CommandListener extends ListenerAdapter {
 
 
 		// Entertainments
-		switch (args[0].toLowerCase().replace(Bot.Prefix, "")) {
+		switch (args[0].toLowerCase().replace(Callerphone.Prefix, "")) {
 
 		
 
@@ -312,26 +312,26 @@ public class CommandListener extends ListenerAdapter {
 	}
 	
 	public static String adminHelp() {
-		return "`" + Bot.Prefix + "mod <id>` - Adds id to mod list.\n" +
-				"`" + Bot.Prefix + "rmod <id>` - Removes id from mod list.";
+		return "`" + Callerphone.Prefix + "mod <id>` - Adds id to mod list.\n" +
+				"`" + Callerphone.Prefix + "rmod <id>` - Removes id from mod list.";
 	}
 	
 	public static String blacklistHelp() {
-		return "`" + Bot.Prefix + "blacklist <id>` - Adds id to blacklist.\n" +
-				"`" + Bot.Prefix + "rblacklist <id>` - Removes id from blacklist.";
+		return "`" + Callerphone.Prefix + "blacklist <id>` - Adds id to blacklist.\n" +
+				"`" + Callerphone.Prefix + "rblacklist <id>` - Removes id from blacklist.";
 	}
 	
 	public static String supportHelp() {
-		return "`" + Bot.Prefix + "prefix <id> <prefix>` - Give user a prefix.\n" +
-				"`" + Bot.Prefix + "rprefix <id>` - Removes user prefix.";
+		return "`" + Callerphone.Prefix + "prefix <id> <prefix>` - Give user a prefix.\n" +
+				"`" + Callerphone.Prefix + "rprefix <id>` - Removes user prefix.";
 	}
 
 	public static String showItemsHelp() {
-		return "`" + Bot.Prefix + "blackedlist` - Shows all black listed users.\n" +
-				"`" + Bot.Prefix + "prefixlist` - Shows all prefixes for users.\n" +
-				"`" + Bot.Prefix + "infolist` - Shows all info for startup.\n" +
-				"`" + Bot.Prefix + "modlist` - Shows all moderators.\n" +
-				"`" + Bot.Prefix + "filterlist` - Shows all chat filters.";
+		return "`" + Callerphone.Prefix + "blackedlist` - Shows all black listed users.\n" +
+				"`" + Callerphone.Prefix + "prefixlist` - Shows all prefixes for users.\n" +
+				"`" + Callerphone.Prefix + "infolist` - Shows all info for startup.\n" +
+				"`" + Callerphone.Prefix + "modlist` - Shows all moderators.\n" +
+				"`" + Callerphone.Prefix + "filterlist` - Shows all chat filters.";
 	}
 
 }

@@ -5,7 +5,7 @@ import java.lang.management.ManagementFactory;
 import java.text.CharacterIterator;
 import java.text.StringCharacterIterator;
 
-import com.marsss.callerphone.Bot;
+import com.marsss.callerphone.Callerphone;
 
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
@@ -14,11 +14,11 @@ import net.dv8tion.jda.api.entities.MessageEmbed;
 
 public class About {
 	public static MessageEmbed about() {
-		final JDA jda = Bot.jda;
+		final JDA jda = Callerphone.jda;
 
 		final StringBuilder desc = new StringBuilder()
-				.append("[Invite link](" + Bot.invite + ")")
-				.append("\n[Support server](" + Bot.support + ")")
+				.append("[Invite link](" + Callerphone.invite + ")")
+				.append("\n[Support server](" + Callerphone.support + ")")
 				.append("\n[Bot listing (top.gg)](https://top.gg/bot/849713468348956692)")
 				.append("\n[Upvote bot (top.gg)](https://top.gg/bot/849713468348956692/vote)")
 				.append("\n[Bot listing (dbl)](https://discordbotlist.com/bots/callerphone)")
@@ -35,14 +35,14 @@ public class About {
 		}
 
 		String UNIQUEUSERS;
-		if(Bot.isQuickStart) {
+		if(Callerphone.isQuickStart) {
 			UNIQUEUSERS = "N/A (QuickStart)";
 		}else {
 			UNIQUEUSERS = String.valueOf(jda.getUsers().size()) + " unique user(s)";
 		}
 
 		EmbedBuilder AbtEmd = new EmbedBuilder()
-				.setAuthor("Made by " + jda.getUserById(Bot.owner).getAsTag(), null, jda.getUserById(Bot.owner).getAvatarUrl())
+				.setAuthor("Made by " + jda.getUserById(Callerphone.owner).getAsTag(), null, jda.getUserById(Callerphone.owner).getAvatarUrl())
 				.setColor(Color.cyan)
 				.setTitle("**About:**")
 				.setDescription(desc)
@@ -72,7 +72,7 @@ public class About {
 
 				.setFooter("One of the many bots in the sequel...");
 
-		if(Bot.isQuickStart) {
+		if(Callerphone.isQuickStart) {
 			AbtEmd.addField("Info", 
 					"QuickStarted Bot\n" +
 							"Made in Java <:Java:899050421572739072> with Java Discord Api <:JDA:899083802989695037>", false);
@@ -101,7 +101,7 @@ public class About {
 	// }
 
 	public static String getHelp() {
-		return "`" + Bot.Prefix + "about` - Introduces you to this bot";
+		return "`" + Callerphone.Prefix + "about` - Introduces you to this bot";
 
 	}
 

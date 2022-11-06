@@ -3,7 +3,7 @@ package com.marsss.callerphone.utils;
 import java.awt.Color;
 import java.time.format.DateTimeFormatter;
 
-import com.marsss.callerphone.Bot;
+import com.marsss.callerphone.Callerphone;
 
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
@@ -69,6 +69,6 @@ public class RoleInfo {
 	}
 
 	public static String getHelp() {
-		return "`" + Bot.Prefix + "roleinfo <@role/id>` - Get information about this role.";
+		return "`" + Callerphone.Prefix + "roleinfo <@role/id>` - Get information about this role.";
 	}
 }

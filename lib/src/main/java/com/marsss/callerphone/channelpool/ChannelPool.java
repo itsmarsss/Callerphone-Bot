@@ -1,6 +1,6 @@
 package com.marsss;
 
-import com.marsss.callerphone.Bot;
+import com.marsss.callerphone.Callerphone;
 
 public class ChannelPool {
 
@@ -19,7 +19,7 @@ public class ChannelPool {
     public void clearChildren(String ID) {
         ArrayList<String>pool = childr.get(id);
         for(String id : pool) {
-            Bot.jda.getTextChannelById(id).sendMessage("This pool has been ended by the host channel.").queue();
+            Callerphone.jda.getTextChannelById(id).sendMessage("This pool has been ended by the host channel.").queue();
             parent.remove(id);
         }
         childr.remove(id);

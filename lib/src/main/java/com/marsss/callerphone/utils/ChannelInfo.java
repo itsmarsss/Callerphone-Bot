@@ -3,7 +3,7 @@ package com.marsss.callerphone.utils;
 import java.awt.Color;
 import java.time.format.DateTimeFormatter;
 
-import com.marsss.callerphone.Bot;
+import com.marsss.callerphone.Callerphone;
 
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Category;
@@ -126,6 +126,6 @@ public class ChannelInfo {
 	}
 	
 	public static String getHelp() {
-		return "`" + Bot.Prefix + "channelinfo <#channel/id/empty>` - Get information about the channel.";
+		return "`" + Callerphone.Prefix + "channelinfo <#channel/id/empty>` - Get information about the channel.";
 	}
 }

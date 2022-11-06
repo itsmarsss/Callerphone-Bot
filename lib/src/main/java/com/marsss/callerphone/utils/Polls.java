@@ -2,7 +2,7 @@ package com.marsss.callerphone.utils;
 
 import java.awt.Color;
 
-import com.marsss.callerphone.Bot;
+import com.marsss.callerphone.Callerphone;
 import com.marsss.entertainments.Colour;
 
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -20,6 +20,6 @@ public class Polls {
 	}
 
 	public static String getHelp() {
-		return "`" + Bot.Prefix + "poll <msg>` - Create a poll for server members to vote.";
+		return "`" + Callerphone.Prefix + "poll <msg>` - Create a poll for server members to vote.";
 	}
 }

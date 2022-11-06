@@ -3,7 +3,7 @@ package com.marsss.callerphone.utils;
 import java.awt.Color;
 import java.time.format.DateTimeFormatter;
 
-import com.marsss.callerphone.Bot;
+import com.marsss.callerphone.Callerphone;
 
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
@@ -12,7 +12,7 @@ import net.dv8tion.jda.api.entities.MessageEmbed;
 public class BotInfo {
 
 	public static MessageEmbed botinfo() {
-		final JDA jda = Bot.jda;
+		final JDA jda = Callerphone.jda;
 		final DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
 		final String DESC = "**Tag of the bot:** " + jda.getSelfUser().getAsTag() + 
 				"\n**Avatar url:** [link](" + jda.getSelfUser().getAvatarUrl() + ")"+ 
@@ -31,7 +31,7 @@ public class BotInfo {
 	}
 
 	public static String getHelp() {
-		return "`" + Bot.Prefix + "botinfo` - Get information about the bot.";
+		return "`" + Callerphone.Prefix + "botinfo` - Get information about the bot.";
 	}
 
 }

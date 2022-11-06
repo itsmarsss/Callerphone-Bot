@@ -5,7 +5,7 @@ import java.awt.Color;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 
-import com.marsss.callerphone.Bot;
+import com.marsss.callerphone.Callerphone;
 import com.marsss.callerphone.bot.*;
 import com.marsss.entertainments.*;
 import com.marsss.callerphone.tccallerphone.*;
@@ -73,7 +73,7 @@ public class Help {
 			
 		case "music":
 			TITLE = "Music Commands";
-			DESC = "Callerphone no longer can play music, however I've created a new bot called **Tunes**...\nJoin [this](" + Bot.tunessupport + ") server for more information!";
+			DESC = "Callerphone no longer can play music, however I've created a new bot called **Tunes**...\nJoin [this](" + Callerphone.tunessupport + ") server for more information!";
 			break;
 
 			
@@ -185,7 +185,7 @@ public class Help {
 		EmbedBuilder HelpEmd = new EmbedBuilder()
 				.setTitle(TITLE)
 				.setDescription(DESC)
-				.setFooter("Hope you found this useful!", Bot.jda.getSelfUser().getAvatarUrl())
+				.setFooter("Hope you found this useful!", Callerphone.jda.getSelfUser().getAvatarUrl())
 				.setColor(new Color(114, 137, 218));
 
 		return HelpEmd.build();
@@ -195,18 +195,18 @@ public class Help {
 		EmbedBuilder CateEmd = new EmbedBuilder()
 				.setColor(new Color(114, 137, 218))
 				.setTitle("Categories")
-				.addField("Bot", "all commands related to the bot will be here, do `" + Bot.Prefix + "help bot` for more information", false)
-				.addField("Utils", "all utility commands will be in this category, do `" + Bot.Prefix + "help utils` for more information", false)
-				.addField("TC Callerphone", "all text call callerphone commands will be in this category, do `" + Bot.Prefix + "help tccall` for more information", false)
+				.addField("Bot", "all commands related to the bot will be here, do `" + Callerphone.Prefix + "help bot` for more information", false)
+				.addField("Utils", "all utility commands will be in this category, do `" + Callerphone.Prefix + "help utils` for more information", false)
+				.addField("TC Callerphone", "all text call callerphone commands will be in this category, do `" + Callerphone.Prefix + "help tccall` for more information", false)
 				.addField("Music", "Callerphone no longer can play music, however I've created a new bot called **Tunes**... Join [this](https:discord.gg/TyHaxtWAmX) server for more information!", false)
-				.setFooter("Type `" + Bot.Prefix + "help <category name>` to see category commands");
+				.setFooter("Type `" + Callerphone.Prefix + "help <category name>` to see category commands");
 		if(admin) {
-			CateEmd.addField("Moderator only", "all moderator commands will be in this category, do `" + Bot.Prefix + "help mod` in dm for more information", false);
+			CateEmd.addField("Moderator only", "all moderator commands will be in this category, do `" + Callerphone.Prefix + "help mod` in dm for more information", false);
 		}
 		return CateEmd.build();
 	}
 
 	public static String getHelp() {
-		return "`" + Bot.Prefix + "help` - help help help";
+		return "`" + Callerphone.Prefix + "help` - help help help";
 	}
 }

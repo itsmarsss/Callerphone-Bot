@@ -2,7 +2,7 @@ package com.marsss.callerphone.bot;
 
 import java.lang.management.ManagementFactory;
 
-import com.marsss.callerphone.Bot;
+import com.marsss.callerphone.Callerphone;
 
 public class Uptime {
 
@@ -65,6 +65,6 @@ public class Uptime {
 	// }
 
 	public static String getHelp() {
-		return "`" + Bot.Prefix + "uptime` - Gets the bot's uptime.";
+		return "`" + Callerphone.Prefix + "uptime` - Gets the bot's uptime.";
 	}
 }

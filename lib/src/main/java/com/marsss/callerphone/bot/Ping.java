@@ -1,6 +1,6 @@
 package com.marsss.callerphone.bot;
 
-import com.marsss.callerphone.Bot;
+import com.marsss.callerphone.Callerphone;
 
 public class Ping {
 	public void ping() {
@@ -8,6 +8,6 @@ public class Ping {
 	}
 	
 	public static String getHelp() {
-		return "`" + Bot.Prefix + "ping` - Gets the bot's ping.";
+		return "`" + Callerphone.Prefix + "ping` - Gets the bot's ping.";
 	}
 }

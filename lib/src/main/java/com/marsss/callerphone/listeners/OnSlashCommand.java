@@ -2,7 +2,7 @@ package com.marsss.callerphone.listeners;
 
 import java.io.IOException;
 
-import com.marsss.callerphone.Bot;
+import com.marsss.callerphone.Callerphone;
 import com.marsss.callerphone.bot.*;
 import com.marsss.entertainments.*;
 import com.marsss.callerphone.utils.BotInfo;
@@ -41,7 +41,7 @@ public class OnSlashCommand extends ListenerAdapter {
 				break;
 			}
 			boolean admin = false;
-			if(Bot.admin.contains(MEMBER.getId())) {
+			if(Callerphone.admin.contains(MEMBER.getId())) {
 				admin = true;
 			}
 			try {
@@ -126,8 +126,8 @@ public class OnSlashCommand extends ListenerAdapter {
 
 
 		case "ping":
-			Bot.jda.getRestPing().queue(
-					(ping) -> event.replyFormat("**Reset ping:** %sms \n**WS ping:** %sms", ping, Bot.jda.getGatewayPing()).queue());
+			Callerphone.jda.getRestPing().queue(
+					(ping) -> event.replyFormat("**Reset ping:** %sms \n**WS ping:** %sms", ping, Callerphone.jda.getGatewayPing()).queue());
 			break;
 
 
@@ -188,7 +188,7 @@ public class OnSlashCommand extends ListenerAdapter {
 
 		case "help":
 			boolean admin = false;
-			if(Bot.admin.contains(MEMBER.getId())) {
+			if(Callerphone.admin.contains(MEMBER.getId())) {
 				admin = true;
 			}
 			event.replyEmbeds(Help.help(event.getOption("command").getAsString(), admin)).queue();
@@ -238,8 +238,8 @@ public class OnSlashCommand extends ListenerAdapter {
 
 
 		case "ping":
-			Bot.jda.getRestPing().queue(
-					(ping) -> event.replyFormat("**Reset ping:** %sms \n**WS ping:** %sms", ping, Bot.jda.getGatewayPing()).queue());
+			Callerphone.jda.getRestPing().queue(
+					(ping) -> event.replyFormat("**Reset ping:** %sms \n**WS ping:** %sms", ping, Callerphone.jda.getGatewayPing()).queue());
 			break;
 
 
