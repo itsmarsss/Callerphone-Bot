@@ -7,6 +7,7 @@ import com.marsss.callerphone.Callerphone;
 import com.marsss.callerphone.utils.Colour;
 
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
 public class Invite implements Command {
@@ -22,6 +23,11 @@ public class Invite implements Command {
                 .setFooter("Have a nice day");
 
         e.getMessage().replyEmbeds(InvEmd.build()).queue();
+    }
+
+    @Override
+    public void runSlash(SlashCommandEvent event) {
+
     }
 
     public static String getHelp() {

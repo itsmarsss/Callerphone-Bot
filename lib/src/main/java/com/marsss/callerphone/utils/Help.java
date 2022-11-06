@@ -10,6 +10,7 @@ import net.dv8tion.jda.api.entities.MessageEmbed;
 import com.marsss.callerphone.Callerphone;
 import com.marsss.callerphone.bot.*;
 import com.marsss.callerphone.tccallerphone.*;
+import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
 public class Help implements Command {
@@ -31,6 +32,11 @@ public class Help implements Command {
 
         MESSAGE.replyEmbeds(help("", admin)).queue();
         return;
+    }
+
+    @Override
+    public void runSlash(SlashCommandEvent event) {
+
     }
 
     public static String getHelp() {

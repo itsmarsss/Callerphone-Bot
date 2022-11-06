@@ -6,6 +6,7 @@ import java.lang.management.ManagementFactory;
 import com.marsss.Command;
 import com.marsss.callerphone.Callerphone;
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
 public class Uptime implements Command {
@@ -17,6 +18,11 @@ public class Uptime implements Command {
                 .setDescription(uptime())
                 .build()
         ).queue();
+    }
+
+    @Override
+    public void runSlash(SlashCommandEvent event) {
+
     }
 
     public static String getHelp() {

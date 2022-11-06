@@ -5,6 +5,7 @@ import java.io.IOException;
 
 import com.marsss.Command;
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -33,6 +34,11 @@ public class Search implements Command {
             e1.printStackTrace();
             MESSAGE.reply("Error getting links").queue();
         }
+    }
+
+    @Override
+    public void runSlash(SlashCommandEvent event) {
+
     }
 
     public MessageEmbed search(String query) throws IOException {

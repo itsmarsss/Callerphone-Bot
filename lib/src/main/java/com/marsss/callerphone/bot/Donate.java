@@ -3,6 +3,7 @@ package com.marsss.callerphone.bot;
 import com.marsss.Command;
 import com.marsss.callerphone.Callerphone;
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
 import java.awt.*;
@@ -16,6 +17,11 @@ public class Donate implements Command {
                 .setDescription("Donate at <" + Callerphone.donate + ">")
                 .build()
         ).queue();
+    }
+
+    @Override
+    public void runSlash(SlashCommandEvent event) {
+
     }
 
     public static String getHelp() {

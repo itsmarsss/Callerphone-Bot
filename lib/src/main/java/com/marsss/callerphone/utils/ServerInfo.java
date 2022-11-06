@@ -8,6 +8,7 @@ import com.marsss.callerphone.Callerphone;
 
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
 public class ServerInfo implements Command {
@@ -115,6 +116,11 @@ public class ServerInfo implements Command {
         SvrInfEmd.setThumbnail(ICONURL);
 
         e.getMessage().replyEmbeds(SvrInfEmd.build()).queue();
+    }
+
+    @Override
+    public void runSlash(SlashCommandEvent event) {
+
     }
 
     public static String getHelp() {

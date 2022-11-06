@@ -13,6 +13,7 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
 public class UserInfo implements Command {
@@ -41,6 +42,12 @@ public class UserInfo implements Command {
 		}
 		MESSAGE.replyEmbeds(userinfo(USER)).queue();
 	}
+
+	@Override
+	public void runSlash(SlashCommandEvent event) {
+
+	}
+
 	public MessageEmbed userinfo(Member mmbr) {
 
 
