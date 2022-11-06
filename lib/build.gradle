@@ -4,7 +4,7 @@ plugins {
     id "com.github.johnrengelman.shadow" version "7.0.0"
 }
 
-mainClassName = 'com.marsss.Bot'
+mainClassName = 'com.marsss.Main'
 sourceCompatibility = 1.8
 
 repositories {
@@ -23,7 +23,7 @@ repositories {
 
 jar {
     manifest {
-        attributes "Main-Class": "com.marsss.Bot"
+        attributes "Main-Class": "com.marsss.Main"
     }
 
     from {
