@@ -7,7 +7,8 @@ import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 public class JoinPool implements Command {
     @Override
     public void runCommand(GuildMessageReceivedEvent e) {
-
+        String host = e.getMessage().getContentRaw().split(" ")[1];
+        ChannelPool.joinPool(host, e.getChannel().getId());
     }
 
     @Override

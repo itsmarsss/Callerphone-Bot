@@ -12,6 +12,7 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
 public class RoleInfo implements Command {
@@ -89,6 +90,11 @@ public class RoleInfo implements Command {
                 .setFooter("ID: " + ID);
 
         e.getMessage().replyEmbeds(RleInfEmd.build()).queue();
+    }
+
+    @Override
+    public void runSlash(SlashCommandEvent event) {
+
     }
 
     public static String getHelp() {

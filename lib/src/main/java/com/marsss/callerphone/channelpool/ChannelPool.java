@@ -7,19 +7,27 @@ import java.util.HashMap;
 
 public class ChannelPool {
 
-    public HashMap<String, String> passw = new HashMap<>();
-    public HashMap<String, String> parent = new HashMap<>();
-    public HashMap<String, ArrayList<String>> childr = new HashMap<>();
+    public static HashMap<String, String> passw = new HashMap<>();
+    public static HashMap<String, String> parent = new HashMap<>();
+    public static HashMap<String, ArrayList<String>> childr = new HashMap<>();
 
-    public void setPassword(String ID, String PASS) {
+    public static void hostPool(String ID) {
+        childr.put(ID, new ArrayList<>());
+    }
+
+    public static void joinPool(String IDh, String IDc) {
+        addChildren(IDh, IDc);
+    }
+
+    public static void setPassword(String ID, String PASS) {
         passw.put(ID, PASS);
     }
 
-    public void removePassword(String ID) {
+    public static void removePassword(String ID) {
         passw.remove(ID);
     }
 
-    public void clearChildren(String ID) {
+    public static void clearChildren(String ID) {
         ArrayList<String> pool = childr.get(ID);
         for (String id : pool) {
             Callerphone.jda.getTextChannelById(id).sendMessage("This pool has been ended by the host channel.").queue();
@@ -28,7 +36,7 @@ public class ChannelPool {
         childr.remove(ID);
     }
 
-    public void addChildren(String IDh, String IDc) {
+    public static void addChildren(String IDh, String IDc) {
         if (childr.get(IDh) != null) {
             childr.get(IDh).add(IDc);
             parent.put(IDc, IDh);
@@ -40,8 +48,8 @@ public class ChannelPool {
         }
     }
 
-    public void removeChildren(String IDh, String IDc) {
-        if(parent.get(IDc) != null) {
+    public static void removeChildren(String IDh, String IDc) {
+        if (parent.get(IDc) != null) {
             childr.get(IDh).remove(IDc);
             parent.remove(IDc);
             // TODO:
@@ -49,6 +57,16 @@ public class ChannelPool {
         } else {
             // TODO:
             // Not in pool
+        }
+    }
+
+    public static void messageOut(String ID, String msg) {
+        if (parent.get(ID) == null) {
+            for (String id : childr.get(ID)) {
+                Callerphone.jda.getTextChannelById(id).sendMessage(msg).queue();
+            }
+        } else {
+            messageOut(parent.get(ID), msg);
         }
     }
 }

@@ -63,7 +63,7 @@ public class Callerphone {
     public static String Callerphone = "<:CallerphoneEmote:899051549173637120> ";
     public static String logstatus = "852338750519640116";
     public static String reportchannel = "897290511000404008";
-    public static String invite = "https://discord.com/api/oauth2/authorize?client_id=849713468348956692&permissions=49663040&scope=bot%20applications.commands";
+    public static String invite = "https://discord.com/oauth2/authorize?client_id=849713468348956692&permissions=414464724040&scope=bot%20applications.commands";
     public static String support = "https://discord.gg/jcYKsfw48p";
     public static String tunessupport = "https://discord.gg/TyHaxtWAmX";
     public static String donate = "https://www.patreon.com/itsmarsss";
@@ -410,7 +410,7 @@ public class Callerphone {
         }
     }
 
-    public static void main(String[] args) throws InterruptedException {
+    public static void run() throws InterruptedException {
         commandPrompt();
     }
 
