@@ -162,7 +162,7 @@ public class OnPrivateMessage extends ListenerAdapter {
                                     sb.append(m + "\n");
                                 }
                                 PrintWriter myWriter = new PrintWriter(Callerphone.parent + "/blacklist.txt");
-                                myWriter.print(sb.toString());
+                                myWriter.print(sb);
                                 myWriter.close();
                                 MESSAGE.reply("ID: `" + id + "` removed from blacklist").queue();
                             } catch (IOException e) {
@@ -182,7 +182,7 @@ public class OnPrivateMessage extends ListenerAdapter {
                                     sb.append(key + "|" + Callerphone.prefix.get(key) + "\n");
                                 }
                                 PrintWriter myWriter = new PrintWriter(Callerphone.parent + "/prefix.txt");
-                                myWriter.print(sb.toString());
+                                myWriter.print(sb);
                                 myWriter.close();
                                 MESSAGE.reply("ID: `" + id + "` no longer has a prefix").queue();
                             } catch (IOException e) {
@@ -206,7 +206,7 @@ public class OnPrivateMessage extends ListenerAdapter {
                                     sb.append(m + "\n");
                                 }
                                 PrintWriter myWriter = new PrintWriter(Callerphone.parent + "/admin.txt");
-                                myWriter.print(sb.toString());
+                                myWriter.print(sb);
                                 myWriter.close();
                                 MESSAGE.reply("ID: `" + id + "` removed from mod list").queue();
                             } catch (IOException e) {
@@ -248,16 +248,12 @@ public class OnPrivateMessage extends ListenerAdapter {
 
     public void sendPrivateFile(User user, File file, String title) {
         user.openPrivateChannel().queue((channel) ->
-        {
-            channel.sendFile(file, title + ".txt", AttachmentOption.SPOILER).queue();
-        });
+                channel.sendFile(file, title + ".txt", AttachmentOption.SPOILER).queue());
     }
 
     public void sendPrivateEmbed(User user, MessageEmbed embed) {
         user.openPrivateChannel().queue((channel) ->
-        {
-            channel.sendMessageEmbeds(embed).queue();
-        });
+                channel.sendMessageEmbeds(embed).queue());
     }
 
     private static String replaceLast(final String text, final String regex, final String replacement) {
