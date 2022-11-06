@@ -49,7 +49,9 @@ public class CommandListener extends ListenerAdapter {
 
         String trigger = args[0].toLowerCase().replace(Callerphone.Prefix, "");
 
-        Callerphone.cmdMap.get(trigger).runCommand(event);
+        if (Callerphone.cmdMap.containsKey(trigger)) {
+            Callerphone.cmdMap.get(trigger).runCommand(event);
+        }
 
     }
 
