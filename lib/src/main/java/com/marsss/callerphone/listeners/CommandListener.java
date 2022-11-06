@@ -1,8 +1,5 @@
 package com.marsss.callerphone.listeners;
 
-import java.io.IOException;
-import java.util.List;
-
 import com.marsss.callerphone.Callerphone;
 
 import net.dv8tion.jda.api.Permission;
