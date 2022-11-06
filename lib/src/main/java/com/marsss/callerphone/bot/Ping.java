@@ -1,13 +1,24 @@
 package com.marsss.callerphone.bot;
 
+import com.marsss.Command;
 import com.marsss.callerphone.Callerphone;
+import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
-public class Ping {
-	public void ping() {
-		// Nothing to see here
-	}
-	
-	public static String getHelp() {
-		return "`" + Callerphone.Prefix + "ping` - Gets the bot's ping.";
-	}
+public class Ping implements Command {
+
+    @Override
+    public void runCommand(GuildMessageReceivedEvent e) {
+        Callerphone.jda.getRestPing().queue(
+                (ping) -> e.getMessage().replyFormat("**Reset ping:** %sms \n**WS ping:** %sms", ping, Callerphone.jda.getGatewayPing()).queue());
+    }
+
+    @Override
+    public String getHelp() {
+        return "`" + Callerphone.Prefix + "ping` - Gets the bot's ping.";
+    }
+
+    @Override
+    public String[] getTriggers() {
+        return "ping,pong".split(",");
+    }
 }
