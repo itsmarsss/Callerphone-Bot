@@ -1,5 +1,7 @@
 package com.marsss;
 
+import com.marsss.callerphone.Bot;
+
 public class ChannelPool {
 
     public HashMap<String, String>passw = new HashMap<String, String>();
