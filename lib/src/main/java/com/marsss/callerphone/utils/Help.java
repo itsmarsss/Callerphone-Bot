@@ -2,6 +2,7 @@ package com.marsss.callerphone.utils;
 
 import java.awt.Color;
 
+import com.marsss.Command;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 
@@ -30,7 +31,7 @@ public class Help {
 
 		case "bot":
 			TITLE = "Bot Commands";
-			DESC = About.getHelp() + "\n"
+			DESC = Command.getHelp() + "\n"
 					+ Donate.getHelp() + "\n"
 					+ Invite.getHelp() + "\n"
 					+ Ping.getHelp() + "\n"
