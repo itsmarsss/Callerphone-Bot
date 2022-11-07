@@ -18,7 +18,7 @@ public class HostPool implements Command {
             });
         } else if (stat == 409) {
             MESSAGE.reply(Callerphone.Callerphone + "This channel is already in a pool.").queue();
-        } else if (stat == 200) {
+        } else if (stat == 201) {
             MESSAGE.reply(Callerphone.Callerphone + "Successfully hosted channel pool for " + e.getChannel().getAsMention() + "!").queue(m -> {
                 m.editMessage(m.getContentRaw() + "\n`This channel's pool ID is: " + e.getChannel().getId() + "`" +
                         "\nSet a password with: `" + Callerphone.Prefix + "poolpass <password>`").queue();
