@@ -1,5 +1,6 @@
 package com.marsss.callerphone.channelpool;
 
+import com.marsss.callerphone.Callerphone;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
@@ -23,13 +24,25 @@ public class ChannelPoolListener extends ListenerAdapter {
         } catch (Exception e) {
         }
 
-        if(CONTENT.startsWith("\\\\")){
+        if (CONTENT.startsWith("\\\\")) {
             return;
         }
 
-        String sendCont = "**%s**: %s *[<t:%d:R>]*";
+        String sendCont = "**%s (%s):** %s •[<t:%d:f>]•";
 
-        ChannelPool.messageOut(event.getChannel().getId(), String.format(sendCont, MESSAGE.getAuthor().getAsMention(), CONTENT, MESSAGE.getTimeCreated()));
+        sendCont = String.format(sendCont,
+                MESSAGE.getAuthor().getAsTag(),
+                MESSAGE.getMember().getNickname(),
+                CONTENT,
+                MESSAGE.getTimeCreated().toEpochSecond());
+
+        if (sendCont.length() >= 2000) {
+            MESSAGE.reply(Callerphone.Callerphone + "Message Too Long.").queue();
+        } else {
+            ChannelPool.messageOut(event.getChannel().getId(),
+                    event.getChannel().getId(),
+                    sendCont);
+        }
 
     }
 }

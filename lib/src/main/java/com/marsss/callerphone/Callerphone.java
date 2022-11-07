@@ -18,6 +18,9 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import com.marsss.callerphone.channelpool.ChannelPoolListener;
+import com.marsss.callerphone.channelpool.HostPool;
+import com.marsss.callerphone.channelpool.JoinPool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -117,6 +120,9 @@ public class Callerphone {
             cmdLst.add(new ServerInfo());
             cmdLst.add(new UserInfo());
 
+            cmdLst.add(new HostPool());
+            cmdLst.add(new JoinPool());
+
             for (Command cmd : cmdLst) {
                 for (String trigger : cmd.getTriggers()) {
                     cmdMap.put(trigger, cmd);
@@ -129,6 +135,7 @@ public class Callerphone {
             jda.addEventListener(new OnSlashCommand());
             jda.addEventListener(new OnPrivateMessage());
             jda.addEventListener(new TCCallerphoneListener());
+            jda.addEventListener(new ChannelPoolListener());
 
 
             for (int i = 0; i < ConvoStorage.convo.length; i++) {
