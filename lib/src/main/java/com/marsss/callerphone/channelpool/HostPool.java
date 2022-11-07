@@ -12,12 +12,12 @@ public class HostPool implements Command {
         final Message MESSAGE = e.getMessage();
         int stat = ChannelPool.hostPool(e.getChannel().getId());
         if (stat == 413) {
-            MESSAGE.reply("This channel is already hosting a pool.").queue(m -> {
+            MESSAGE.reply(Callerphone.Callerphone + "This channel is already hosting a pool.").queue(m -> {
                 m.editMessage(m.getContentRaw() + "\n`This channel's pool ID is: " + e.getChannel().getId() + "`" +
                         "\nSet a password with: `" + Callerphone.Prefix + "pwdpool <password>`").queue();
             });
         } else if (stat == 409) {
-            MESSAGE.reply("This channel is already in a pool.").queue();
+            MESSAGE.reply(Callerphone.Callerphone + "This channel is already in a pool.").queue();
         } else if (stat == 200) {
             MESSAGE.reply(Callerphone.Callerphone + "Successfully hosted channel pool for " + e.getChannel().getAsMention() + "!").queue(m -> {
                 m.editMessage(m.getContentRaw() + "\n`This channel's pool ID is: " + e.getChannel().getId() + "`" +

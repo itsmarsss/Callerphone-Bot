@@ -37,6 +37,22 @@ public class ChannelPool {
         }
     }
 
+    public static int leavePool(String ID) {
+        if (parent.containsKey(ID)) {
+            return removeChildren(parent.get(ID), ID);
+        } else {
+            return 404;
+        }
+    }
+
+    public static int endPool(String ID) {
+        if (childr.containsKey(ID)) {
+            return clearChildren(ID);
+        } else {
+            return 404;
+        }
+    }
+
     public static void setPassword(String ID, String PASS) {
         passw.put(ID, PASS);
     }
@@ -45,13 +61,18 @@ public class ChannelPool {
         passw.remove(ID);
     }
 
-    public static void clearChildren(String ID) {
-        ArrayList<String> pool = childr.get(ID);
-        for (String id : pool) {
-            Callerphone.jda.getTextChannelById(id).sendMessage("This pool has been ended by the host channel.").queue();
-            parent.remove(id);
+    public static int clearChildren(String ID) {
+        if (childr.containsKey(ID)) {
+            ArrayList<String> pool = childr.get(ID);
+            for (String id : pool) {
+                Callerphone.jda.getTextChannelById(id).sendMessage("This pool has been ended by the host channel (" + Callerphone.jda.getTextChannelById(ID).getName() + ").").queue();
+                parent.remove(id);
+            }
+            childr.remove(ID);
+            return 200;
+        } else {
+            return 404;
         }
-        childr.remove(ID);
     }
 
     public static int addChildren(String IDh, String IDc) {
