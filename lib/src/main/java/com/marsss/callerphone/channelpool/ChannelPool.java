@@ -124,21 +124,30 @@ public class ChannelPool {
                     continue;
                 MessageAction ma = Callerphone.jda.getTextChannelById(id).sendMessage(msg);
 
-                Collection<ActionRow> actionrow = new ArrayList<>();
-                Collection<Button> collection = new ArrayList<>();
+                if(ma == null) {
+                    systemBroadCast(IDs, msg);
+                } else {
+                    Collection<ActionRow> actionrow = new ArrayList<>();
+                    Collection<Button> collection = new ArrayList<>();
 
-                String link = String.format("https://discord.com/channels/%s/%s", Callerphone.jda.getTextChannelById(IDo).getGuild().getId(), Callerphone.jda.getTextChannelById(IDo).getId());
+                    String link = String.format("https://discord.com/channels/%s/%s", Callerphone.jda.getTextChannelById(IDo).getGuild().getId(), Callerphone.jda.getTextChannelById(IDo).getId());
 
-                collection.add(Button.link(link, "From: #" + Callerphone.jda.getTextChannelById(IDo).getName() + " (" + Callerphone.jda.getTextChannelById(IDo).getGuild().getName() + ")"));
+                    collection.add(Button.link(link, "From: #" + Callerphone.jda.getTextChannelById(IDo).getName() + " (" + Callerphone.jda.getTextChannelById(IDo).getGuild().getName() + ")"));
 
-                ActionRow row = ActionRow.of(collection);
-                actionrow.add(row);
-                ma.setActionRows(actionrow);
-                ma.queue();
+                    ActionRow row = ActionRow.of(collection);
+                    actionrow.add(row);
+                    ma.setActionRows(actionrow);
+                    ma.queue();
+                }
 
             }
         } else if (parent.containsKey(IDs)) {
             broadCast(parent.get(IDs), IDo, msg);
         }
     }
+
+    public static void systemBroadCast(String IDs, String msg) {
+
+    }
+
 }
