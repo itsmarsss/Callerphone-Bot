@@ -2,43 +2,20 @@ package com.marsss.callerphone.channelpool;
 
 import com.marsss.Command;
 import com.marsss.callerphone.Callerphone;
-import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
-import java.awt.*;
 import java.util.ArrayList;
 
 public class ParticipantsPool implements Command {
     @Override
     public void runCommand(GuildMessageReceivedEvent e) {
-        final Message MESSAGE = e.getMessage();
-        ArrayList<String> participants = ChannelPool.getClients(e.getChannel().getId());
-        if (participants.size() == 0) {
-            MESSAGE.reply("This channel is not in a pool.").queue();
-        } else {
-            String list = "";
-            for (int i = 0; i < participants.size(); i++) {
-                list += "\n`#" + Callerphone.jda.getTextChannelById(participants.get(i)).getName() + "` (" + participants.get(i) + ")";
-                if (i == 0) {
-                    list += " [Host]";
-                } else {
-                    list += " [Client]";
-                }
-            }
-            MESSAGE.replyEmbeds(new EmbedBuilder()
-                    .setColor(new Color(114, 137, 218))
-                    .setTitle("Participants of channel pool hosted by: `#" + Callerphone.jda.getTextChannelById(participants.get(0)).getName() + "` (" + participants.get(0) + ")")
-                    .setDescription(list)
-                    .build()
-            ).queue();
-        }
+        e.getMessage().reply(poolParticipants(e.getChannel().getId())).queue();
     }
 
     @Override
-    public void runSlash(SlashCommandEvent event) {
-
+    public void runSlash(SlashCommandEvent e) {
+        e.reply(poolParticipants(e.getChannel().getId())).queue();
     }
 
     public static String getHelp() {
@@ -53,5 +30,23 @@ public class ParticipantsPool implements Command {
     @Override
     public String[] getTriggers() {
         return "poolparticipants,participants,parts,poolparts".split(",");
+    }
+
+    private String poolParticipants(String id) {
+        final ArrayList<String> participants = ChannelPool.getClients(id);
+        if (participants.size() == 0) {
+            return "This channel is not in a pool.";
+        } else {
+            StringBuilder list = new StringBuilder();
+            for (int i = 0; i < participants.size(); i++) {
+                list.append("\n`#").append(Callerphone.jda.getTextChannelById(participants.get(i)).getName()).append("` (").append(participants.get(i)).append(")");
+                if (i == 0) {
+                    list.append(" [Host]");
+                } else {
+                    list.append(" [Client]");
+                }
+            }
+            return list.toString();
+        }
     }
 }
