@@ -119,7 +119,7 @@ public class ChannelPool {
                 ma.queue();
 
             }
-        } else {
+        } else if(parent.containsKey(IDs)){
             broadCast(parent.get(IDs), IDo, msg);
         }
     }
