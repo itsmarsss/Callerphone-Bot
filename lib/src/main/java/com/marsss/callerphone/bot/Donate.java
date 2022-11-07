@@ -3,6 +3,7 @@ package com.marsss.callerphone.bot;
 import com.marsss.Command;
 import com.marsss.callerphone.Callerphone;
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
@@ -12,16 +13,12 @@ public class Donate implements Command {
 
     @Override
     public void runCommand(GuildMessageReceivedEvent e) {
-        e.getMessage().replyEmbeds(new EmbedBuilder().
-                setColor(new Color(114, 137, 218))
-                .setDescription("Donate at <" + Callerphone.donate + ">")
-                .build()
-        ).queue();
+        e.getMessage().replyEmbeds(donate()).queue();
     }
 
     @Override
-    public void runSlash(SlashCommandEvent event) {
-
+    public void runSlash(SlashCommandEvent e) {
+        e.replyEmbeds(donate()).setEphemeral(true).queue();
     }
 
     public static String getHelp() {
@@ -36,5 +33,12 @@ public class Donate implements Command {
     @Override
     public String[] getTriggers() {
         return "donate,don".split(",");
+    }
+
+    private MessageEmbed donate() {
+        return new EmbedBuilder().
+                setColor(new Color(114, 137, 218))
+                .setDescription("Donate at <" + Callerphone.donate + ">")
+                .build();
     }
 }
