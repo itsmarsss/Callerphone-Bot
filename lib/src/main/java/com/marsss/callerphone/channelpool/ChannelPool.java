@@ -129,7 +129,7 @@ public class ChannelPool {
 
                 String link = String.format("https://discord.com/channels/%s/%s", Callerphone.jda.getTextChannelById(IDo).getGuild().getId(), Callerphone.jda.getTextChannelById(IDo).getId());
 
-                collection.add(Button.link(link, "From: #" + Callerphone.jda.getTextChannelById(IDo).getName()));
+                collection.add(Button.link(link, "From: #" + Callerphone.jda.getTextChannelById(IDo).getName() + " (" + Callerphone.jda.getTextChannelById(IDo).getGuild().getName() + ")"));
 
                 ActionRow row = ActionRow.of(collection);
                 actionrow.add(row);
