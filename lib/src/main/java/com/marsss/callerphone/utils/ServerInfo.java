@@ -68,7 +68,7 @@ public class ServerInfo implements Command {
         String DATECREATED = gld.getTimeCreated().format(DateTimeFormatter.RFC_1123_DATE_TIME);
 
         EmbedBuilder SvrInfEmd = new EmbedBuilder()
-                .setColor(Color.cyan)
+                .setColor(new Color(114, 137, 218))
                 .setDescription("💽 **Server information for " + NAME + ":**")
                 .addField("General Information",
                         "Name: " + NAME +

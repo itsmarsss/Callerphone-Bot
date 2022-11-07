@@ -25,7 +25,7 @@ public class BotInfo implements Command {
                 "\n**Servers:** " + jda.getGuilds().size();
 
         EmbedBuilder BotInfo = new EmbedBuilder()
-                .setColor(Color.cyan)
+                .setColor(new Color(114, 137, 218))
                 .setTitle("**Bot Info**")
                 .setDescription(DESC);
 

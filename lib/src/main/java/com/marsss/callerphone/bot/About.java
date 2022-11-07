@@ -47,7 +47,7 @@ public class About implements Command {
 
         EmbedBuilder AbtEmd = new EmbedBuilder()
                 .setAuthor("Made by " + jda.getUserById(Callerphone.owner).getAsTag(), null, jda.getUserById(Callerphone.owner).getAvatarUrl())
-                .setColor(Color.cyan)
+                .setColor(new Color(114, 137, 218))
                 .setTitle("**About:**")
                 .setDescription(desc)
                 .addField("Servers",

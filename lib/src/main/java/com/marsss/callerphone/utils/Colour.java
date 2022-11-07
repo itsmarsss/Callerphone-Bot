@@ -89,7 +89,7 @@ public class Colour implements Command {
         EmbedBuilder ColorEmd = new EmbedBuilder()
                 .setTitle("Error")
                 .setDescription("Please provide a valid hex value")
-                .setColor(Color.cyan);
+                .setColor(new Color(114, 137, 218));
 
         try {
             hex = hex.replaceFirst("#", "");
@@ -113,7 +113,7 @@ public class Colour implements Command {
         EmbedBuilder ColorEmd = new EmbedBuilder()
                 .setTitle("Error")
                 .setDescription("Please provide a valid r g b value")
-                .setColor(Color.cyan);
+                .setColor(new Color(114, 137, 218));
 
         try {
             if (Integer.parseInt(r) > 255 || Integer.parseInt(g) > 255 || Integer.parseInt(b) > 255)

@@ -28,7 +28,7 @@ public class ParticipantsPool implements Command {
                 }
             }
             MESSAGE.replyEmbeds(new EmbedBuilder()
-                    .setColor(Color.cyan)
+                    .setColor(new Color(114, 137, 218))
                     .setTitle("Participants of channel pool hosted by: `#" + Callerphone.jda.getTextChannelById(participants.get(0)).getName() + "`" + participants.get(0))
                     .setDescription(list)
                     .build()

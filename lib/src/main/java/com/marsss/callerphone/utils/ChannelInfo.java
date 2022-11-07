@@ -110,7 +110,7 @@ public class ChannelInfo implements Command {
         }
 
         EmbedBuilder ChnlInfEmd = new EmbedBuilder()
-                .setColor(Color.cyan)
+                .setColor(new Color(114, 137, 218))
                 .setDescription("🗨️ **Channel information for " + chnl.getAsMention() + ":**")
                 .addField("Name", NAME, false)
                 .addField("Topic", TOPIC, true)
@@ -152,7 +152,7 @@ public class ChannelInfo implements Command {
         }
 
         EmbedBuilder ChnlInfEmd = new EmbedBuilder()
-                .setColor(Color.cyan)
+                .setColor(new Color(114, 137, 218))
                 .setDescription("📻 **Channel information for " + chnl.getAsMention() + ":**")
                 .addField("Name", NAME, false)
                 .addField("Type", TYPE, false)
@@ -178,7 +178,7 @@ public class ChannelInfo implements Command {
         String POSITION = String.valueOf(chnl.getPosition());
 
         EmbedBuilder ChnlInfEmd = new EmbedBuilder()
-                .setColor(Color.cyan)
+                .setColor(new Color(114, 137, 218))
                 .setDescription("📁 **Category information for " + chnl.getAsMention() + ":**")
                 .addField("Name", NAME, false)
                 .addField("Type", TYPE, true)

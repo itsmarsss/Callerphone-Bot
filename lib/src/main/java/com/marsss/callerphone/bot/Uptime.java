@@ -14,7 +14,7 @@ public class Uptime implements Command {
     @Override
     public void runCommand(GuildMessageReceivedEvent e) {
         e.getMessage().replyEmbeds(new EmbedBuilder()
-                .setColor(Color.cyan)
+                .setColor(new Color(114, 137, 218))
                 .setDescription(uptime())
                 .build()
         ).queue();
