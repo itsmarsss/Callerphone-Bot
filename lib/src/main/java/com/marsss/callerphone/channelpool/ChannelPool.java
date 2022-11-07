@@ -59,7 +59,7 @@ public class ChannelPool {
     public static int setPassword(String id, String pwd) {
         if (isHost(id)) {
             config.get(id).setPwd(pwd);
-            Callerphone.jda.getTextChannelById(id).sendMessage("This pool is now has password: ||" + config.get(id).getPwd() + "||.").queue();
+            Callerphone.jda.getTextChannelById(id).sendMessage("This pool now has password: ||" + config.get(id).getPwd() + "||.").queue();
             return 202;
         } else {
             return 404;
@@ -79,7 +79,6 @@ public class ChannelPool {
     public static int setCap(String id, int cap) {
         if (isHost(id)) {
             config.get(id).setCap(cap);
-            Callerphone.jda.getTextChannelById(id).sendMessage("This pool now has capacity **" + config.get(id).getCap() + "**.").queue();
             return 202;
         } else {
             return 404;
