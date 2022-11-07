@@ -122,11 +122,11 @@ public class ChannelPool {
             for (String id : childr.get(IDs)) {
                 if (id.equals(IDo))
                     continue;
-                MessageAction ma = Callerphone.jda.getTextChannelById(id).sendMessage(msg);
 
-                if(ma == null) {
-                    systemBroadCast(IDs, msg);
+                if(Callerphone.jda.getTextChannelById(id) == null) {
+                    systemBroadCast(IDs, "Channel ID: " + id + " has left this pool.");
                 } else {
+                    MessageAction ma = Callerphone.jda.getTextChannelById(id).sendMessage(msg);
                     Collection<ActionRow> actionrow = new ArrayList<>();
                     Collection<Button> collection = new ArrayList<>();
 
@@ -136,7 +136,7 @@ public class ChannelPool {
 
                     ActionRow row = ActionRow.of(collection);
                     actionrow.add(row);
-                    ma.setActionRows(actionrow);
+                    ma.setActionRows(actionrow).queue();
                     ma.queue();
                 }
 
@@ -147,7 +147,21 @@ public class ChannelPool {
     }
 
     public static void systemBroadCast(String IDs, String msg) {
+        if (!parent.containsKey(IDs)) {
+            if (!childr.containsKey(IDs))
+                return;
+            for (String id : childr.get(IDs)) {
+                if(Callerphone.jda.getTextChannelById(id) == null) {
+                    systemBroadCast(IDs, "Channel ID: " + id + " has left this pool.");
+                } else {
+                    MessageAction ma = Callerphone.jda.getTextChannelById(id).sendMessage(msg);
+                    ma.queue();
+                }
 
+            }
+        } else if (parent.containsKey(IDs)) {
+            systemBroadCast(parent.get(IDs), msg);
+        }
     }
 
 }
