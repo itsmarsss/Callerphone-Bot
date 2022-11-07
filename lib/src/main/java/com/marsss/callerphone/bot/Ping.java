@@ -14,8 +14,9 @@ public class Ping implements Command {
     }
 
     @Override
-    public void runSlash(SlashCommandEvent event) {
-
+    public void runSlash(SlashCommandEvent e) {
+        Callerphone.jda.getRestPing().queue(
+                (ping) -> e.replyFormat("**Reset ping:** %sms \n**WS ping:** %sms", ping, Callerphone.jda.getGatewayPing()).setEphemeral(true).queue());
     }
 
     public static String getHelp() {
