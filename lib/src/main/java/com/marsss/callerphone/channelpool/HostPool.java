@@ -2,6 +2,7 @@ package com.marsss.callerphone.channelpool;
 
 import com.marsss.Command;
 import com.marsss.callerphone.Callerphone;
+import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
@@ -9,6 +10,11 @@ import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 public class HostPool implements Command {
     @Override
     public void runCommand(GuildMessageReceivedEvent e) {
+        if (!e.getMember().hasPermission(Permission.MANAGE_CHANNEL)) {
+            e.getMessage().reply("You need `Manage Channel` permission to run this command.").queue();
+            return;
+        }
+
         final Message MESSAGE = e.getMessage();
         int stat = ChannelPool.hostPool(e.getChannel().getId());
         if (stat == 413) {
