@@ -8,36 +8,35 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
 public class ChannelPoolListener extends ListenerAdapter {
     public void onGuildMessageReceived(GuildMessageReceivedEvent event) {
+
+        final Message message = event.getMessage();
+        if (message.isWebhookMessage())
+            return;
+
         if (!event.getChannel().canTalk())
             return;
 
-        final Member MEMBER = event.getMember();
-        final Message MESSAGE = event.getMessage();
+        final Member member = event.getMember();
 
-        String CONTENT = MESSAGE.getContentRaw();
-//event.isWebhookMessage()
-        try {
+        final String content = message.getContentRaw();
 
-            if (MEMBER.getUser().isBot() || MEMBER.getUser().isSystem())
-                return;
+        if (member.getUser().isBot() || member.getUser().isSystem())
+            return;
 
-        } catch (Exception e) {
-        }
-
-        if (CONTENT.startsWith("\\\\")) {
+        if (content.startsWith("\\\\")) {
             return;
         }
 
         String sendCont = "**%s *(%s)*:** %s \u2022<t:%d:f>\u2022";
 
         sendCont = String.format(sendCont,
-                MESSAGE.getAuthor().getAsTag(),
-                MESSAGE.getMember().getEffectiveName(),
-                CONTENT,
-                MESSAGE.getTimeCreated().toEpochSecond());
+                message.getAuthor().getAsTag(),
+                member.getEffectiveName(),
+                content,
+                message.getTimeCreated().toEpochSecond());
 
         if (sendCont.length() >= 2000) {
-            MESSAGE.reply(Callerphone.Callerphone + "Message Too Long.").queue();
+            message.reply(Callerphone.Callerphone + "Message Too Long.").queue();
         } else {
             ChannelPool.broadCast(event.getChannel().getId(),
                     event.getChannel().getId(),
