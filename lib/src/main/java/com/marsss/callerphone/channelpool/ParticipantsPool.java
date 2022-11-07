@@ -39,7 +39,7 @@ public class ParticipantsPool implements Command {
         } else {
             StringBuilder list = new StringBuilder();
             for (int i = 0; i < participants.size(); i++) {
-                list.append("\n`#").append(Callerphone.jda.getTextChannelById(participants.get(i)).getName()).append("` (").append(participants.get(i)).append(")");
+                list.append("\n`#").append(Callerphone.jda.getTextChannelById(participants.get(i)).getName()).append("` *(").append(participants.get(i)).append(")*");
                 if (i == 0) {
                     list.append(" [Host]");
                 } else {

@@ -125,7 +125,7 @@ public class ChannelPool {
             } else {
                 childr.get(IDh).add(IDc);
                 parent.put(IDc, IDh);
-                systemBroadCast(IDh, Callerphone.Callerphone + "Channel ID: " + IDc + " has joined this pool.");
+                systemBroadCast(IDh, Callerphone.Callerphone + "Channel ID: " + IDc + " has joined this pool. " + (childr.get(IDh).size()-1) + "/" + config.get(IDh).getCap());
                 return 200;
             }
         } else {
@@ -137,7 +137,7 @@ public class ChannelPool {
         if (parent.containsKey(IDc)) {
             childr.get(IDh).remove(IDc);
             parent.remove(IDc);
-            systemBroadCast(IDh, Callerphone.Callerphone + "Channel ID: " + IDc + " has left this pool.");
+            systemBroadCast(IDh, Callerphone.Callerphone + "Channel ID: " + IDc + " has left this pool. " + (childr.get(IDh).size()-1) + "/" + config.get(IDh).getCap());
             return 200;
         } else {
             return 404;

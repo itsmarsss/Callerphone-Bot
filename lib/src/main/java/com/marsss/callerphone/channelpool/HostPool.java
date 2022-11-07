@@ -46,7 +46,7 @@ public class HostPool implements Command {
         } else if (stat == 409) {
             return Callerphone.Callerphone + "This channel is already in a pool.";
         } else if (stat == 201) {
-            return Callerphone.Callerphone + "Successfully hosted channel pool for " + channel.getName() + "!" +
+            return Callerphone.Callerphone + "Successfully hosted channel pool for `#" + channel.getName() + "`!" +
                     "\nThis channel's pool ID is: `" + channel.getId() + "`" +
                     "\nSet a password with: `" + Callerphone.Prefix + "poolpass <password>`";
         }
