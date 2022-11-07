@@ -111,7 +111,7 @@ public class ChannelInfo implements Command {
 
         EmbedBuilder ChnlInfEmd = new EmbedBuilder()
                 .setColor(new Color(114, 137, 218))
-                .setDescription("\uF5E8 **Channel information for " + chnl.getAsMention() + ":**")
+                .setDescription(":speech_left: **Channel information for " + chnl.getAsMention() + ":**")
                 .addField("Name", NAME, false)
                 .addField("Topic", TOPIC, true)
                 .addField("Type", TYPE, true)
@@ -153,7 +153,7 @@ public class ChannelInfo implements Command {
 
         EmbedBuilder ChnlInfEmd = new EmbedBuilder()
                 .setColor(new Color(114, 137, 218))
-                .setDescription("\uF4FB **Channel information for " + chnl.getAsMention() + ":**")
+                .setDescription(":radio: **Channel information for " + chnl.getAsMention() + ":**")
                 .addField("Name", NAME, false)
                 .addField("Type", TYPE, false)
                 .addField("Bitrate", BITRATE + "kbps", true)
@@ -179,7 +179,7 @@ public class ChannelInfo implements Command {
 
         EmbedBuilder ChnlInfEmd = new EmbedBuilder()
                 .setColor(new Color(114, 137, 218))
-                .setDescription("\\uF4C1 **Category information for " + chnl.getAsMention() + ":**")
+                .setDescription(":file_folder: **Category information for " + chnl.getAsMention() + ":**")
                 .addField("Name", NAME, false)
                 .addField("Type", TYPE, true)
                 .addField("TextChannels", TEXTCHANNELS, true)

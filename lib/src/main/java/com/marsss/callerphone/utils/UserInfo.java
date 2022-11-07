@@ -93,7 +93,7 @@ public class UserInfo implements Command {
 
 		EmbedBuilder UsrInfEmd = new EmbedBuilder()
 				.setColor(COLOR)
-				.setDescription("\uF5C2 **User information for " + mmbr.getAsMention() + ":**")
+				.setDescription(":dividers: **User information for " + mmbr.getAsMention() + ":**")
 				.addField("Name", NAME, true)
 				.addField("Tag", TAG, true)
 				.addField("Permissions", PERMISSIONS, false)
