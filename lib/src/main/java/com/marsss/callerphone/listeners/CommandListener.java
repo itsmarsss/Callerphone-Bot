@@ -2,7 +2,6 @@ package com.marsss.callerphone.listeners;
 
 import com.marsss.callerphone.Callerphone;
 
-import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
@@ -11,26 +10,26 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 public class CommandListener extends ListenerAdapter {
     public void onGuildMessageReceived(GuildMessageReceivedEvent event) {
 
+        final Message message = event.getMessage();
+        if (message.isWebhookMessage())
+            return;
+
         if (!event.getChannel().canTalk())
             return;
 
-        final Member MEMBER = event.getMember();
-        final Message MESSAGE = event.getMessage();
+        final Member member = event.getMember();
 
-        String CONTENT = MESSAGE.getContentRaw();
+        final String content = message.getContentRaw();
 
-        final String args[] = CONTENT.split("\\s+");
+        final String[]args = content.split("\\s+");
 
-        try {
 
-            if (MEMBER.getUser().isBot() || MEMBER.getUser().isSystem())
-                return;
+        if (member.getUser().isBot() || member.getUser().isSystem())
+            return;
 
-        } catch (Exception e) {
-        }
 
-        if (CONTENT.contains("<@!" + Callerphone.jda.getSelfUser().getId() + ">")) {
-            MESSAGE.reply("My prefix is `" + Callerphone.Prefix + "`, do `" + Callerphone.Prefix + "help` for a list of commands!").queue();
+        if (content.contains(Callerphone.jda.getSelfUser().getId())) {
+            message.reply("My prefix is `" + Callerphone.Prefix + "`, do `" + Callerphone.Prefix + "help` for a list of commands!").queue();
             return;
         }
 
@@ -38,14 +37,14 @@ public class CommandListener extends ListenerAdapter {
             return;
 
         if (args[0].toLowerCase().startsWith(Callerphone.Prefix + "play")) {
-            MESSAGE.reply("Callerphone no longer can play music, however I've created a new bot called **Tunes**...\nJoin <" + Callerphone.tunessupport + "> for more information!").queue();
+            message.reply("Callerphone no longer can play music, however I've created a new bot called **Tunes**...\nJoin <" + Callerphone.tunessupport + "> for more information!").queue();
             return;
         }
 
-        if (!event.getGuild().getSelfMember().hasPermission(Permission.MESSAGE_EMBED_LINKS)) {
-            MESSAGE.reply("I need `Embed Links` permission to react to commands").queue();
-            return;
-        }
+//        if (!event.getGuild().getSelfMember().hasPermission(Permission.MESSAGE_EMBED_LINKS)) {
+//            MESSAGE.reply("I need `Embed Links` permission to react.").queue();
+//            return;
+//        }
 
         String trigger = args[0].toLowerCase().replace(Callerphone.Prefix, "");
 

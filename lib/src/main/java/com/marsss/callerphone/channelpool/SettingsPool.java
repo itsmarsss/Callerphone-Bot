@@ -15,7 +15,7 @@ public class SettingsPool implements Command {
     }
 
     @Override
-    public void runSlash(SlashCommandEvent event) {
+    public void runSlash(SlashCommandEvent e) {
 
     }
 
