@@ -24,7 +24,7 @@ public class JoinPool implements Command {
                         "\nEnd pool with: `" + Callerphone.Prefix + "endpool`").queue();
             });
         } else if (stat == 414) {
-            MESSAGE.reply(Callerphone.Callerphone + "This pool already has **5** clients.").queue();
+            MESSAGE.reply(Callerphone.Callerphone + "This pool is already full 10/10.").queue();
             Callerphone.jda.getTextChannelById(host).sendMessage("Channel ID: " + MESSAGE.getChannel().getId() + " attempted to join a full pool *(this one)*.").queue();
         } else if (stat == 409) {
             MESSAGE.reply(Callerphone.Callerphone + "This channel is already in a pool.").queue(m -> {
