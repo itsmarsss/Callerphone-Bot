@@ -13,14 +13,14 @@ public class HostPool implements Command {
         int stat = ChannelPool.hostPool(e.getChannel().getId());
         if (stat == 413) {
             MESSAGE.reply(Callerphone.Callerphone + "This channel is already hosting a pool.").queue(m -> {
-                m.editMessage(m.getContentRaw() + "\n`This channel's pool ID is: " + e.getChannel().getId() + "`" +
+                m.editMessage(m.getContentRaw() + "\nThis channel's pool ID is: `" + e.getChannel().getId() + "`" +
                         "\nSet a password with: `" + Callerphone.Prefix + "pwdpool <password>`").queue();
             });
         } else if (stat == 409) {
             MESSAGE.reply(Callerphone.Callerphone + "This channel is already in a pool.").queue();
         } else if (stat == 201) {
             MESSAGE.reply(Callerphone.Callerphone + "Successfully hosted channel pool for " + e.getChannel().getAsMention() + "!").queue(m -> {
-                m.editMessage(m.getContentRaw() + "\n`This channel's pool ID is: " + e.getChannel().getId() + "`" +
+                m.editMessage(m.getContentRaw() + "\nThis channel's pool ID is: `" + e.getChannel().getId() + "`" +
                         "\nSet a password with: `" + Callerphone.Prefix + "poolpass <password>`").queue();
             });
         }

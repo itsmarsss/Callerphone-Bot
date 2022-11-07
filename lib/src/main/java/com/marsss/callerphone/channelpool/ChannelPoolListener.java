@@ -28,11 +28,11 @@ public class ChannelPoolListener extends ListenerAdapter {
             return;
         }
 
-        String sendCont = "**%s *(%s)*:** %s •[<t:%d:f>]•";
+        String sendCont = "**%s *(%s)*:** %s •<t:%d:f>•";
 
         sendCont = String.format(sendCont,
                 MESSAGE.getAuthor().getAsTag(),
-                MESSAGE.getMember().getNickname(),
+                MESSAGE.getMember().getEffectiveName(),
                 CONTENT,
                 MESSAGE.getTimeCreated().toEpochSecond());
 

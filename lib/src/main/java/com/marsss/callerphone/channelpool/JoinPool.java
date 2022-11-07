@@ -27,7 +27,7 @@ public class JoinPool implements Command {
         } else if (stat == 404) {
             MESSAGE.reply(Callerphone.Callerphone + "Requested pool ID *(" + host + ")* does not exist.").queue();
         } else if (stat == 200) {
-            e.getMessage().reply(Callerphone.Callerphone + "Successfully joined channel pool hosted by " + Callerphone.jda.getTextChannelById(host).getName() + "*(ID: " + host + ")*!").queue();
+            e.getMessage().reply(Callerphone.Callerphone + "Successfully joined channel pool hosted by `#" + Callerphone.jda.getTextChannelById(host).getName() + "`*(ID: " + host + ")*!").queue();
         }
     }
 

@@ -13,6 +13,8 @@ public class LeavePool implements Command {
         int stat = ChannelPool.leavePool(e.getChannel().getId());
         if (stat == 404) {
             MESSAGE.reply(Callerphone.Callerphone + "This channel is not in a pool.").queue();
+        } else if (stat == 409) {
+            MESSAGE.reply(Callerphone.Callerphone + "This channel is hosting a pool.").queue();
         } else if (stat == 200) {
             e.getMessage().reply(Callerphone.Callerphone + "Successfully left channel pool!").queue();
         }

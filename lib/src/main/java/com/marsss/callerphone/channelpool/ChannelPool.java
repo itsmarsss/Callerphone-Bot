@@ -40,6 +40,8 @@ public class ChannelPool {
     public static int leavePool(String ID) {
         if (parent.containsKey(ID)) {
             return removeChildren(parent.get(ID), ID);
+        } else if (childr.containsKey(ID)) {
+            return 409;
         } else {
             return 404;
         }
@@ -65,6 +67,8 @@ public class ChannelPool {
         if (childr.containsKey(ID)) {
             ArrayList<String> pool = childr.get(ID);
             for (String id : pool) {
+                if(id == ID)
+                    continue;
                 Callerphone.jda.getTextChannelById(id).sendMessage("This pool has been ended by the host channel (" + Callerphone.jda.getTextChannelById(ID).getName() + ").").queue();
                 parent.remove(id);
             }
@@ -101,6 +105,8 @@ public class ChannelPool {
 
     public static void broadCast(String IDs, String IDo, String msg) {
         if (!parent.containsKey(IDs)) {
+            if (!childr.containsKey(IDs))
+                return;
             for (String id : childr.get(IDs)) {
                 if (id.equals(IDo))
                     continue;
@@ -119,7 +125,7 @@ public class ChannelPool {
                 ma.queue();
 
             }
-        } else if(parent.containsKey(IDs)){
+        } else if (parent.containsKey(IDs)) {
             broadCast(parent.get(IDs), IDo, msg);
         }
     }
