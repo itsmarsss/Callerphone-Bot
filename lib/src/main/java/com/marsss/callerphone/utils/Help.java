@@ -155,7 +155,7 @@ public class Help implements Command {
                 .setTitle("Categories")
                 .addField("Bot", "all commands related to the bot will be here, do `" + Callerphone.Prefix + "help bot` for more information", false)
                 .addField("Utils", "all utility commands will be in this category, do `" + Callerphone.Prefix + "help utils` for more information", false)
-                .addField("Pooling", "all channel pooling commands will be in this category, do `" + Callerphone.Prefix + "help poolings` for more information", false)
+                .addField("Pooling", "all channel pooling commands will be in this category, do `" + Callerphone.Prefix + "help pooling` for more information", false)
                 .addField("TC Callerphone", "all text call callerphone commands will be in this category, do `" + Callerphone.Prefix + "help tccall` for more information", false)
                 .addField("Music", "Callerphone no longer can play music, however I've created a new bot called **Tunes**... Join [this](https:discord.gg/TyHaxtWAmX) server for more information!", false)
                 .setFooter("Type `" + Callerphone.Prefix + "help <category name>` to see category commands");
