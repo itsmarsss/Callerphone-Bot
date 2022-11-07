@@ -1,6 +1,7 @@
 package com.marsss.callerphone.channelpool.commands;
 
 import com.marsss.Command;
+import com.marsss.callerphone.Callerphone;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
@@ -8,10 +9,7 @@ public class PoolKick implements Command {
     @Override
     public void runCommand(GuildMessageReceivedEvent e) {
         // TODO:
-        // Password
         // Kick channels
-        // Pool capacity (max 10)
-        // Private/Public
     }
 
     @Override
@@ -20,16 +18,16 @@ public class PoolKick implements Command {
     }
 
     public static String getHelp() {
-        return "Help Here";
+        return "`" + Callerphone.Prefix + "kickchan <channel ID>` - Kick channel from pool.";
     }
 
     @Override
     public String getHelpF() {
-        return null;
+        return "`" + Callerphone.Prefix + "kickchan <channel ID>` - Kick channel from pool.";
     }
 
     @Override
     public String[] getTriggers() {
-        return "settingspool,settingpool,setpool".split(",");
+        return "kick,kickchannel,kickchan".split(",");
     }
 }
