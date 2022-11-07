@@ -61,6 +61,12 @@ Callerphone-Bot
 
 `poolparts` - view channel pool participants
 
+`poolcap` - set maximum channels in pool
+
+`poolpub` - set pool publicity
+
+`poolpwd` - set pool password
+
 ### Text Chats Commands
 `chat` - chat with people from other servers
 
