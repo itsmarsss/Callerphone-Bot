@@ -57,7 +57,7 @@ public class ChannelPool {
 
     public static ArrayList<String> getClients(String ID) {
         if (!parent.containsKey(ID) && !childr.containsKey(ID)) {
-            return null;
+            return new ArrayList<>();
         } else {
             if (parent.containsKey(ID)) {
                 return childr.get(parent.get(ID));
