@@ -11,7 +11,7 @@ import java.util.HashMap;
 
 public class ChannelPool {
 
-    public static HashMap<String, String> passw = new HashMap<>();
+    public static HashMap<String, PoolConfig> config = new HashMap<>();
     public static HashMap<String, String> parent = new HashMap<>();
     public static HashMap<String, ArrayList<String>> childr = new HashMap<>();
 
@@ -21,6 +21,7 @@ public class ChannelPool {
         } else if (parent.containsKey(ID)) {
             return 409;
         } else {
+            config.put(ID, new PoolConfig("", 10, true));
             childr.put(ID, new ArrayList<>());
             childr.get(ID).add(ID);
             return 201;
@@ -55,6 +56,50 @@ public class ChannelPool {
         }
     }
 
+    public static int setPassword(String id, String pwd) {
+        if (isHost(id)) {
+            config.get(id).setPwd(pwd);
+            Callerphone.jda.getTextChannelById(id).sendMessage("This pool is now has password: ||" + config.get(id).getPwd() + "||.").queue();
+            return 202;
+        } else {
+            return 404;
+        }
+    }
+
+    public static int removePassword(String id) {
+        if (isHost(id)) {
+            config.get(id).setPwd("");
+            Callerphone.jda.getTextChannelById(id).sendMessage("This pool now has no password.").queue();
+            return 202;
+        } else {
+            return 404;
+        }
+    }
+
+    public static int setCap(String id, int cap) {
+        if (isHost(id)) {
+            config.get(id).setCap(cap);
+            Callerphone.jda.getTextChannelById(id).sendMessage("This pool now has capacity **" + config.get(id).getCap() + "**.").queue();
+            return 202;
+        } else {
+            return 404;
+        }
+    }
+
+    public static int setPublicity(String id, boolean pub) {
+        if (isHost(id)) {
+            config.get(id).setPub(pub);
+            if (config.get(id).isPub()) {
+                Callerphone.jda.getTextChannelById(id).sendMessage("This pool is now public.").queue();
+            } else {
+                Callerphone.jda.getTextChannelById(id).sendMessage("This pool is now private.").queue();
+            }
+            return 202;
+        } else {
+            return 404;
+        }
+    }
+
     public static ArrayList<String> getClients(String ID) {
         if (!parent.containsKey(ID) && !childr.containsKey(ID)) {
             return new ArrayList<>();
@@ -67,14 +112,6 @@ public class ChannelPool {
         }
     }
 
-    public static void setPassword(String ID, String PASS) {
-        passw.put(ID, PASS);
-    }
-
-    public static void removePassword(String ID) {
-        passw.remove(ID);
-    }
-
     public static int clearChildren(String ID) {
         if (childr.containsKey(ID)) {
             ArrayList<String> pool = childr.get(ID);
@@ -85,6 +122,7 @@ public class ChannelPool {
                 parent.remove(id);
             }
             childr.remove(ID);
+            config.remove(ID);
             return 200;
         } else {
             return 404;
@@ -116,10 +154,7 @@ public class ChannelPool {
     }
 
     public static boolean isHost(String ID) {
-        if (!parent.containsKey(ID) && childr.containsKey(ID)) {
-            return true;
-        }
-        return false;
+        return !parent.containsKey(ID) && childr.containsKey(ID);
     }
 
     public static void broadCast(String sender, String original, String msg) {
@@ -147,8 +182,8 @@ public class ChannelPool {
 
                     ActionRow row = ActionRow.of(collection);
                     actionrow.add(row);
-                    ma.setActionRows(actionrow);
-                    ma.queue();
+                    ma.setActionRows(actionrow)
+                            .queue();
                 }
 
             }
