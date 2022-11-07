@@ -15,13 +15,26 @@ public class ChannelPool {
     public static HashMap<String, String> parent = new HashMap<>();
     public static HashMap<String, ArrayList<String>> childr = new HashMap<>();
 
-    public static void hostPool(String ID) {
-        childr.put(ID, new ArrayList<>());
-        childr.get(ID).add(ID);
+    public static int hostPool(String ID) {
+        if (childr.containsKey(ID)) {
+            return 413;
+        } else if (parent.containsKey(ID)) {
+            return 409;
+        } else {
+            childr.put(ID, new ArrayList<>());
+            childr.get(ID).add(ID);
+            return 201;
+        }
     }
 
-    public static void joinPool(String IDh, String IDc) {
-        addChildren(IDh, IDc);
+    public static int joinPool(String IDh, String IDc) {
+        if (childr.containsKey(IDc)) {
+            return 413;
+        } else if (parent.containsKey(IDc)) {
+            return 409;
+        } else {
+            return addChildren(IDh, IDc);
+        }
     }
 
     public static void setPassword(String ID, String PASS) {
@@ -41,31 +54,31 @@ public class ChannelPool {
         childr.remove(ID);
     }
 
-    public static void addChildren(String IDh, String IDc) {
+    public static int addChildren(String IDh, String IDc) {
         if (childr.containsKey(IDh)) {
-            childr.get(IDh).add(IDc);
-            parent.put(IDc, IDh);
-            // TODO:
-            // Joined/Success messages
+            if (childr.get(IDh).size() >= 11) {
+                return 414;
+            } else {
+                childr.get(IDh).add(IDc);
+                parent.put(IDc, IDh);
+                return 200;
+            }
         } else {
-            // TODO:
-            // ID not hosted
+            return 404;
         }
     }
 
-    public static void removeChildren(String IDh, String IDc) {
+    public static int removeChildren(String IDh, String IDc) {
         if (parent.containsKey(IDc)) {
             childr.get(IDh).remove(IDc);
             parent.remove(IDc);
-            // TODO:
-            // Leave/Success messages
+            return 200;
         } else {
-            // TODO:
-            // Not in pool
+            return 404;
         }
     }
 
-    public static void messageOut(String IDs, String IDo, String msg) {
+    public static void broadCast(String IDs, String IDo, String msg) {
         if (!parent.containsKey(IDs)) {
             for (String id : childr.get(IDs)) {
                 if (id.equals(IDo))
@@ -86,7 +99,7 @@ public class ChannelPool {
 
             }
         } else {
-            messageOut(parent.get(IDs), IDo, msg);
+            broadCast(parent.get(IDs), IDo, msg);
         }
     }
 }

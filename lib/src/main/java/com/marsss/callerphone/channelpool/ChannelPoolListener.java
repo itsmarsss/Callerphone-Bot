@@ -39,7 +39,7 @@ public class ChannelPoolListener extends ListenerAdapter {
         if (sendCont.length() >= 2000) {
             MESSAGE.reply(Callerphone.Callerphone + "Message Too Long.").queue();
         } else {
-            ChannelPool.messageOut(event.getChannel().getId(),
+            ChannelPool.broadCast(event.getChannel().getId(),
                     event.getChannel().getId(),
                     sendCont);
         }
