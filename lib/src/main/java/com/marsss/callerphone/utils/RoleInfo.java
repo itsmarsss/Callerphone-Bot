@@ -75,7 +75,7 @@ public class RoleInfo implements Command {
 
         EmbedBuilder RleInfEmd = new EmbedBuilder()
                 .setColor(COLOR)
-                .setDescription("📝 **Role information for " + role.getAsMention() + ":**")
+                .setDescription("\uF4DD **Role information for " + role.getAsMention() + ":**")
                 .addField("Name", NAME, false)
                 .addField("Permissions", PERMISSIONS, false)
                 .addField("Members With Role", MEMBERS_WITH_ROLE, false)

@@ -69,7 +69,7 @@ public class ServerInfo implements Command {
 
         EmbedBuilder SvrInfEmd = new EmbedBuilder()
                 .setColor(new Color(114, 137, 218))
-                .setDescription("💽 **Server information for " + NAME + ":**")
+                .setDescription("\uF4BD **Server information for " + NAME + ":**")
                 .addField("General Information",
                         "Name: " + NAME +
                                 "\nDescription: " + DESCRIPTION +
