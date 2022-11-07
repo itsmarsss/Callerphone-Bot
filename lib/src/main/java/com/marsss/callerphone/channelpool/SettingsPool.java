@@ -20,6 +20,11 @@ public class SettingsPool implements Command {
     }
 
     @Override
+    public String getHelpF() {
+        return null;
+    }
+
+    @Override
     public String[] getTriggers() {
         return "settingspool,settingpool,setpool".split(",");
     }

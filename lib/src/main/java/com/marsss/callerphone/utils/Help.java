@@ -3,12 +3,14 @@ package com.marsss.callerphone.utils;
 import java.awt.Color;
 
 import com.marsss.Command;
+import com.marsss.callerphone.channelpool.EndPool;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 
 import com.marsss.callerphone.Callerphone;
 import com.marsss.callerphone.bot.*;
+import com.marsss.callerphone.channelpool.*;
 import com.marsss.callerphone.tccallerphone.*;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
@@ -92,6 +94,16 @@ public class Help implements Command {
                 break;
 
 
+            case "pooling":
+                TITLE = "Channel Pooling Commands";
+                DESC = HostPool.getHelp() + "\n"
+                        + JoinPool.getHelp() + "\n"
+                        + EndPool.getHelp() + "\n"
+                        + LeavePool.getHelp()+ "\n"
+                        + ParticipantsPool.getHelp();
+                break;
+
+
             case "tccall":
                 TITLE = "TCCall Commands";
                 DESC = TCCallPairer.callHelp() + "\n"
@@ -148,6 +160,7 @@ public class Help implements Command {
                 .setTitle("Categories")
                 .addField("Bot", "all commands related to the bot will be here, do `" + Callerphone.Prefix + "help bot` for more information", false)
                 .addField("Utils", "all utility commands will be in this category, do `" + Callerphone.Prefix + "help utils` for more information", false)
+                .addField("Pooling", "all channel pooling commands will be in this category, do `" + Callerphone.Prefix + "help poolings` for more information", false)
                 .addField("TC Callerphone", "all text call callerphone commands will be in this category, do `" + Callerphone.Prefix + "help tccall` for more information", false)
                 .addField("Music", "Callerphone no longer can play music, however I've created a new bot called **Tunes**... Join [this](https:discord.gg/TyHaxtWAmX) server for more information!", false)
                 .setFooter("Type `" + Callerphone.Prefix + "help <category name>` to see category commands");
