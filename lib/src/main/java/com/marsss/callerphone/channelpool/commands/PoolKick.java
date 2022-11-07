@@ -1,10 +1,10 @@
-package com.marsss.callerphone.channelpool;
+package com.marsss.callerphone.channelpool.commands;
 
 import com.marsss.Command;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
-public class SettingsPool implements Command {
+public class PoolKick implements Command {
     @Override
     public void runCommand(GuildMessageReceivedEvent e) {
         // TODO:
