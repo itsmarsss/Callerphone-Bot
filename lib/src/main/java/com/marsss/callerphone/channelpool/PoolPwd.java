@@ -32,12 +32,17 @@ public class PoolPwd implements Command {
     }
 
     private String poolPwd(String id, String pwd) {
-        if(pwd.equals("none"))
+        if (pwd.equals("none"))
             pwd = "";
 
         int stat = ChannelPool.setPassword(id, pwd);
         if (stat == 202) {
-            return Callerphone.Callerphone + "This pool now has password ||" + pwd + "||.";
+            if (pwd.equals("")) {
+                return Callerphone.Callerphone + "This pool now has no password.";
+            } else {
+                return Callerphone.Callerphone + "This pool now has password ||" +  pwd  + "||.";
+            }
+
         } else if (stat == 404) {
             return Callerphone.Callerphone + "This pool is not hosting a pool.";
         }

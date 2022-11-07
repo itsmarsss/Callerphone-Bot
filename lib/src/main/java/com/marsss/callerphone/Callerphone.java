@@ -638,6 +638,10 @@ public class Callerphone {
                 System.out.println("------------------------------");
             }
 
+            if(cmd.equals("poolnum")){
+                System.out.println("Currently there are " + ChannelPool.config.size() + " channel pools running.");
+            }
+
             if (cmd.equals("help")) {
                 System.out.println(
                         "Option 1: start <msg> = To start the bot\n" +
@@ -645,7 +649,8 @@ public class Callerphone {
                                 "Option 3: presence = To set presence\n" +
                                 "Option 4: info = To get info of the bot\n" +
                                 "Option 5: recal = To read resources again\n" +
-                                "Option 6: help = UBCL help (this)\n\n" +
+                                "Option 6: poolnum = To see number of running pools\n" +
+                                "Option 7: help = UBCL help (this)\n\n" +
                                 "Other: quickstart <msg> = To start the bot quicker");
                 continue;
             }
