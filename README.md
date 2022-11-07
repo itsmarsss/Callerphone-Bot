@@ -1,5 +1,5 @@
 <h1 align="center">
-<img src="/assets/icon.png" alt="Icon" width="100" height="100" </img>
+<img src="/assets/icon.png" alt="Icon" width="100" height="100">
 <br>
 Callerphone-Bot
 <br>
@@ -27,19 +27,6 @@ Callerphone-Bot
 
 `uptime` - Callerphone's age?
 
-### Entertainment Commands
-`clap` - clap your message
-
-`color` - random color
-
-`colorrgb` - creates embed with provided rgb value
-
-`colorhex` - creates embed with provided hex value
-
-`echo` - echo your message
-
-`8ball` - answer your hard question
-
 ### Util Commands
 `botinfo` - Callerphone's information (See [About](README.md#about))
 
@@ -57,6 +44,23 @@ Callerphone-Bot
 
 `userinfo` - user information
 
+`color` - random color
+
+`colorrgb` - creates embed with provided rgb value
+
+`colorhex` - creates embed with provided hex value
+
+### Channel Pooling Commands
+`hostpool` - host a channel pool
+
+`joinpool` - join a channel pool
+
+`endpool` - end a channel pool
+
+`leavepool` - leave a channel pool
+
+`poolparts` - view channel pool participants
+
 ### Text Chats Commands
 `chat` - chat with people from other servers
 
@@ -66,20 +70,6 @@ Callerphone-Bot
 
 `reportchat` - report the other party
 
-### Voice Calls Commands
-`call` - call with people from other servers
-
-`hangup` - hangup pending or existing call
-
-`mute` - mute the bot
-
-`unmute` - unmute the bot
-
-`deafen` - deafen the bot
-
-`undeafen` - undeafen the bot
-
-`reportcall` - report the other party
 
 ### Music Commands 
 (*Will be moved to `Tunes` a music bot I am working on*)

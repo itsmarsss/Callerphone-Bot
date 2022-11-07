@@ -2,12 +2,11 @@ package com.marsss.callerphone.utils;
 
 import java.awt.Color;
 
-import com.marsss.Command;
-import com.marsss.callerphone.channelpool.EndPool;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 
+import com.marsss.Command;
 import com.marsss.callerphone.Callerphone;
 import com.marsss.callerphone.bot.*;
 import com.marsss.callerphone.channelpool.*;
@@ -23,17 +22,13 @@ public class Help implements Command {
         final String CONTENT = MESSAGE.getContentRaw();
         final String args[] = CONTENT.split("\\s+");
 
-        boolean admin = false;
-        if (Callerphone.admin.contains(e.getAuthor().getId())) {
-            admin = true;
-        }
+        boolean admin = Callerphone.admin.contains(e.getAuthor().getId());
         if (args.length > 1) {
             MESSAGE.replyEmbeds(help(args[1], admin)).queue();
             return;
         }
 
         MESSAGE.replyEmbeds(help("", admin)).queue();
-        return;
     }
 
     @Override

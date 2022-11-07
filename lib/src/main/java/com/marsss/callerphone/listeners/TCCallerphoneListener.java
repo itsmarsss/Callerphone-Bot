@@ -48,7 +48,7 @@ public class TCCallerphoneListener extends ListenerAdapter {
 					RECEIVER = jda.getTextChannelById(c.getReceiverTCID());
 				}catch(Exception e) {}
 
-				if((CALLER == null && RECEIVER == null) || (CALLER == null)) {
+				if(CALLER == null) {
 					c.resetMessage();
 					continue;
 				}
@@ -63,7 +63,7 @@ public class TCCallerphoneListener extends ListenerAdapter {
 
 					boolean report = c.getReport();
 
-					ArrayList<String> DATA = new ArrayList<String>(c.getMessages());
+					ArrayList<String> DATA = new ArrayList<>(c.getMessages());
 
 					c.resetMessage();
 
@@ -96,7 +96,7 @@ public class TCCallerphoneListener extends ListenerAdapter {
 
 					boolean report = c.getReport();
 
-					ArrayList<String> DATA = new ArrayList<String>(c.getMessages());
+					ArrayList<String> DATA = new ArrayList<>(c.getMessages());
 
 					c.resetMessage();
 
@@ -197,22 +197,22 @@ public class TCCallerphoneListener extends ListenerAdapter {
 			break;
 				
 		default:
-			if(args[0].toLowerCase().equals(com.marsss.callerphone.Callerphone.Prefix + "support"))
+			if(args[0].equalsIgnoreCase(com.marsss.callerphone.Callerphone.Prefix + "support"))
 				break;
 
-			if(args[0].toLowerCase().equals(com.marsss.callerphone.Callerphone.Prefix + "blacklist"))
+			if(args[0].equalsIgnoreCase(com.marsss.callerphone.Callerphone.Prefix + "blacklist"))
 				break;
 
-			if(args[0].toLowerCase().equals(com.marsss.callerphone.Callerphone.Prefix + "mod"))
+			if(args[0].equalsIgnoreCase(com.marsss.callerphone.Callerphone.Prefix + "mod"))
 				break;
 			
-			if(args[0].toLowerCase().equals(com.marsss.callerphone.Callerphone.Prefix + "rsupport"))
+			if(args[0].equalsIgnoreCase(com.marsss.callerphone.Callerphone.Prefix + "rsupport"))
 				break;
 
-			if(args[0].toLowerCase().equals(com.marsss.callerphone.Callerphone.Prefix + "rblacklist"))
+			if(args[0].equalsIgnoreCase(com.marsss.callerphone.Callerphone.Prefix + "rblacklist"))
 				break;
 
-			if(args[0].toLowerCase().equals(com.marsss.callerphone.Callerphone.Prefix + "rmod"))
+			if(args[0].equalsIgnoreCase(com.marsss.callerphone.Callerphone.Prefix + "rmod"))
 				break;
 
 			if(com.marsss.callerphone.Callerphone.blacklist.contains(event.getAuthor().getId())) {

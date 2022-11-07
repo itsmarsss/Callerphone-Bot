@@ -15,7 +15,7 @@ import net.dv8tion.jda.api.events.ResumedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
 public class OnOtherEvent extends ListenerAdapter {
-    public static Logger logger = LoggerFactory.getLogger(OnOtherEvent.class);
+    public static final Logger logger = LoggerFactory.getLogger(OnOtherEvent.class);
     private static OffsetDateTime timeDisconnected = OffsetDateTime.now();
     private static int disconnectCount = 0;
 

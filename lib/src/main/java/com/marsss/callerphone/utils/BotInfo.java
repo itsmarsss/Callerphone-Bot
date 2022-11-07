@@ -29,7 +29,7 @@ public class BotInfo implements Command {
                 .setTitle("**Bot Info**")
                 .setDescription(DESC);
 
-        e.getMessage().replyEmbeds(BotInfo.build());
+        e.getMessage().replyEmbeds(BotInfo.build()).queue();
     }
 
     @Override
