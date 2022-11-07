@@ -3,6 +3,7 @@ package com.marsss.callerphone.listeners;
 import java.awt.Color;
 import java.time.OffsetDateTime;
 
+import net.dv8tion.jda.api.Permission;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,15 +38,16 @@ public class OnOtherEvent extends ListenerAdapter {
                 (timeDisconnected.getNano() / 1000000) + " | " + disconnectCount + " time(s)!");
 
         Emd.setDescription("The bot disconnected for " +
-                (OffsetDateTime.now().getHour() - timeDisconnected.getHour()) + " hour(s) " +
-                (OffsetDateTime.now().getMinute() - timeDisconnected.getMinute()) + " minute(s) " +
-                (OffsetDateTime.now().getSecond() - timeDisconnected.getSecond()) + " second(s) and " +
-                (timeDisconnected.getNano() / 1000000) + " milliseconds due to connectivity issues.\n" +
-                "Response number: " + event.getResponseNumber())
+                        (OffsetDateTime.now().getHour() - timeDisconnected.getHour()) + " hour(s) " +
+                        (OffsetDateTime.now().getMinute() - timeDisconnected.getMinute()) + " minute(s) " +
+                        (OffsetDateTime.now().getSecond() - timeDisconnected.getSecond()) + " second(s) and " +
+                        (timeDisconnected.getNano() / 1000000) + " milliseconds due to connectivity issues.\n" +
+                        "Response number: " + event.getResponseNumber())
                 .setTimestamp(OffsetDateTime.now())
                 .setFooter("The bot disconnected " + disconnectCount + " times already since the last startup.");
-
-        channel.sendMessageEmbeds(Emd.build()).queue();
+        if (channel.getGuild().getSelfMember().hasPermission(channel, Permission.MESSAGE_WRITE)) {
+            channel.sendMessageEmbeds(Emd.build()).queue();
+        }
     }
 
 }
