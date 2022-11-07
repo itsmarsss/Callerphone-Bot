@@ -20,12 +20,12 @@ public class Ping implements Command {
     }
 
     public static String getHelp() {
-        return "`" + Callerphone.Prefix + "ping` - Gets the bot's ping.";
+        return "`" + Callerphone.Prefix + "ping` - Gets bot ping.";
     }
 
     @Override
     public String getHelpF() {
-        return "`" + Callerphone.Prefix + "ping` - Gets the bot's ping.";
+        return "`" + Callerphone.Prefix + "ping` - Gets bot ping.";
     }
 
     @Override

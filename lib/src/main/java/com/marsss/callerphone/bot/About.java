@@ -97,7 +97,7 @@ public class About implements Command {
                                     convert(Runtime.getRuntime().maxMemory()) + " max\n", true)
 
                     .addField("Uptime",
-                            Uptime.uptimeabt(), true)
+                            Uptime.upTimeAbt(), true)
 
                     .setFooter("One of the many bots in the sequel...");
 

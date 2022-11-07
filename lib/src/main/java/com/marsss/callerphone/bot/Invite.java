@@ -1,7 +1,5 @@
 package com.marsss.callerphone.bot;
 
-import java.awt.Color;
-
 import com.marsss.Command;
 import com.marsss.callerphone.Callerphone;
 import com.marsss.callerphone.utils.Colour;

@@ -6,6 +6,7 @@ import java.lang.management.ManagementFactory;
 import com.marsss.Command;
 import com.marsss.callerphone.Callerphone;
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
@@ -13,25 +14,21 @@ public class Uptime implements Command {
 
     @Override
     public void runCommand(GuildMessageReceivedEvent e) {
-        e.getMessage().replyEmbeds(new EmbedBuilder()
-                .setColor(new Color(114, 137, 218))
-                .setDescription(uptime())
-                .build()
-        ).queue();
+        e.getMessage().replyEmbeds(uptime()).queue();
     }
 
     @Override
-    public void runSlash(SlashCommandEvent event) {
-
+    public void runSlash(SlashCommandEvent e) {
+        e.replyEmbeds(uptime()).setEphemeral(true).queue();
     }
 
     public static String getHelp() {
-        return "`" + Callerphone.Prefix + "uptime` - Gets the bot's uptime.";
+        return "`" + Callerphone.Prefix + "uptime` - Gets bot uptime.";
     }
 
     @Override
     public String getHelpF() {
-        return "`" + Callerphone.Prefix + "uptime` - Gets the bot's uptime.";
+        return "`" + Callerphone.Prefix + "uptime` - Gets bot uptime.";
     }
 
     @Override
@@ -39,9 +36,17 @@ public class Uptime implements Command {
         return "uptime,up,time".split(",");
     }
 
-    public static String uptime() {
+    private MessageEmbed uptime() {
+        return new EmbedBuilder()
+                .setColor(new Color(114, 137, 218))
+                .setDescription(getUpTime())
+                .build();
+    }
 
-        // https://github.com/DV8FromTheWorld/Yui/blob/master/src/main/java/net/dv8tion/discord/commands/UptimeCommand.java {
+    // https://github.com/DV8FromTheWorld/Yui/blob/master/src/main/java/net/dv8tion/discord/commands/UptimeCommand.java {
+
+    public static String getUpTime() {
+
 
         final long DURATION = ManagementFactory.getRuntimeMXBean().getUptime();
 
@@ -67,7 +72,7 @@ public class Uptime implements Command {
         return "I've been online for " + UPTIME;
     }
 
-    public static String uptimeabt() {
+    public static String upTimeAbt() {
 
         final long DURATION = ManagementFactory.getRuntimeMXBean().getUptime();
 
