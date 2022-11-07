@@ -59,17 +59,6 @@ public class ChannelPool {
     public static int setPassword(String id, String pwd) {
         if (isHost(id)) {
             config.get(id).setPwd(pwd);
-            Callerphone.jda.getTextChannelById(id).sendMessage("This pool now has password: ||" + config.get(id).getPwd() + "||.").queue();
-            return 202;
-        } else {
-            return 404;
-        }
-    }
-
-    public static int removePassword(String id) {
-        if (isHost(id)) {
-            config.get(id).setPwd("");
-            Callerphone.jda.getTextChannelById(id).sendMessage("This pool now has no password.").queue();
             return 202;
         } else {
             return 404;
@@ -88,11 +77,6 @@ public class ChannelPool {
     public static int setPublicity(String id, boolean pub) {
         if (isHost(id)) {
             config.get(id).setPub(pub);
-            if (config.get(id).isPub()) {
-                Callerphone.jda.getTextChannelById(id).sendMessage("This pool is now public.").queue();
-            } else {
-                Callerphone.jda.getTextChannelById(id).sendMessage("This pool is now private.").queue();
-            }
             return 202;
         } else {
             return 404;

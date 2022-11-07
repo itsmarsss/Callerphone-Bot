@@ -19,12 +19,12 @@ public class PoolCap implements Command {
 
 
     public static String getHelp() {
-        return "`" + Callerphone.Prefix + "poolcap <number [1-10]>` - Set channel pool capacity";
+        return "`" + Callerphone.Prefix + "poolcap <number [1-10]>` - Set channel pool capacity.";
     }
 
     @Override
     public String getHelpF() {
-        return "`" + Callerphone.Prefix + "poolcap <number [1-10]>` - Set channel pool capacity";
+        return "`" + Callerphone.Prefix + "poolcap <number [1-10]>` - Set channel pool capacity.";
     }
 
     @Override
@@ -34,8 +34,10 @@ public class PoolCap implements Command {
 
     private String poolCap(String id, int cap) {
         int stat = ChannelPool.setCap(id, cap);
-        if(stat == 202){
+        if (stat == 202) {
             return "This pool now has capacity **" + cap + "**.";
+        } else if (stat == 404) {
+            return "This channel is not hosing a pool.";
         }
         return "An error occurred.";
     }
