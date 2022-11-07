@@ -123,6 +123,9 @@ public class Callerphone {
             cmdLst.add(new EndPool());
             cmdLst.add(new LeavePool());
             cmdLst.add(new ParticipantsPool());
+            cmdLst.add(new PoolCap());
+            cmdLst.add(new PoolPub());
+            cmdLst.add(new PoolPwd());
             cmdLst.add(new SettingsPool());
 
             for (Command cmd : cmdLst) {

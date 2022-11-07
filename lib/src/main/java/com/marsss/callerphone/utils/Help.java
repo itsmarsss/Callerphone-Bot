@@ -94,8 +94,11 @@ public class Help implements Command {
                 DESC = HostPool.getHelp() + "\n"
                         + JoinPool.getHelp() + "\n"
                         + EndPool.getHelp() + "\n"
-                        + LeavePool.getHelp()+ "\n"
-                        + ParticipantsPool.getHelp();
+                        + LeavePool.getHelp() + "\n"
+                        + ParticipantsPool.getHelp() + "\n"
+                        + PoolCap.getHelp() + "\n"
+                        + PoolPub.getHelp() + "\n"
+                        + PoolPwd.getHelp();
                 break;
 
 
@@ -124,16 +127,16 @@ public class Help implements Command {
 
 
         if (Callerphone.cmdMap.containsKey(name)) {
-            String[]triggers = Callerphone.cmdMap.get(name).getTriggers();
+            String[] triggers = Callerphone.cmdMap.get(name).getTriggers();
             String trigger = "";
-            for(String trig : triggers) {
+            for (String trig : triggers) {
                 trigger += trig + ", ";
             }
 
-            TITLE = trigger.substring(0, trigger.length()-2);
+            TITLE = trigger.substring(0, trigger.length() - 2);
             DESC = Callerphone.cmdMap.get(name).getHelpF();
 
-            if(trigger.contains("search")) {
+            if (trigger.contains("search")) {
                 DESC += "\nWe use Duckduckgo, so click [here](https://help.duckduckgo.com/duckduckgo-help-pages/results/syntax/) for searching syntax!";
 
             }
