@@ -15,7 +15,7 @@ public class ChannelPoolListener extends ListenerAdapter {
         final Message MESSAGE = event.getMessage();
 
         String CONTENT = MESSAGE.getContentRaw();
-
+//event.isWebhookMessage()
         try {
 
             if (MEMBER.getUser().isBot() || MEMBER.getUser().isSystem())

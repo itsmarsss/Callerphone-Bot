@@ -11,6 +11,7 @@ import com.marsss.callerphone.Callerphone;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
@@ -18,79 +19,12 @@ public class About implements Command {
 
     @Override
     public void runCommand(GuildMessageReceivedEvent e) {
-        final JDA jda = Callerphone.jda;
-
-        final StringBuilder desc = new StringBuilder()
-                .append("[Invite link](" + Callerphone.invite + ")")
-                .append("\n[Support server](" + Callerphone.support + ")")
-                .append("\n[Bot listing (top.gg)](https://top.gg/bot/849713468348956692)")
-                .append("\n[Upvote bot (top.gg)](https://top.gg/bot/849713468348956692/vote)")
-                .append("\n[Bot listing (dbl)](https://discordbotlist.com/bots/callerphone)")
-                .append("\n[Upvote bot (dbl)](https://discordbotlist.com/bots/callerphone/upvote)")
-                .append("\n[Upvote support server (top.gg)](https://top.gg/servers/798428155907801089/vote)")
-                .append("\n[Upvote support server (dbl)](https://discordbotlist.com/servers/legendary-bot-official-server/upvote)")
-
-                .append("\n");
-
-        jda.getShardInfo();
-        long users = 0;
-        for (Guild g : jda.getGuilds()) {
-            users += g.getMemberCount();
-        }
-
-        String UNIQUEUSERS;
-        if (Callerphone.isQuickStart) {
-            UNIQUEUSERS = "N/A (QuickStart)";
-        } else {
-            UNIQUEUSERS = jda.getUsers().size() + " unique user(s)";
-        }
-
-        EmbedBuilder AbtEmd = new EmbedBuilder()
-                .setAuthor("Made by " + jda.getUserById(Callerphone.owner).getAsTag(), null, jda.getUserById(Callerphone.owner).getAvatarUrl())
-                .setColor(new Color(114, 137, 218))
-                .setTitle("**About:**")
-                .setDescription(desc)
-                .addField("Servers",
-                        jda.getGuilds().size() + " server(s)\n" +
-                                jda.getShardInfo().getShardTotal() + " shard(s)\n", true)
-
-                .addField("Channels",
-                        jda.getTextChannels().size() + jda.getVoiceChannels().size() + " total\n" +
-                                jda.getTextChannels().size() + " text channel(s)\n" +
-                                jda.getVoiceChannels().size() + " voice channel(s)", true)
-
-                .addField("Users",
-                        users + " user(s)\n" +
-                                UNIQUEUSERS, true)
-
-                .addField("CPU Usage",
-                        (String.valueOf(ManagementFactory.getOperatingSystemMXBean().getSystemLoadAverage()).startsWith("-")) ? ("Unavailable") : (ManagementFactory.getOperatingSystemMXBean().getSystemLoadAverage() + "%") + "\n" +
-                                ManagementFactory.getOperatingSystemMXBean().getAvailableProcessors() + " processor(s)", true)
-
-                .addField("Memory Usage",
-                        convert(Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) + "\n" +
-                                convert(Runtime.getRuntime().maxMemory()) + " max\n", true)
-
-                .addField("Uptime",
-                        Uptime.uptimeabt(), true)
-
-                .setFooter("One of the many bots in the sequel...");
-
-        if (Callerphone.isQuickStart) {
-            AbtEmd.addField("Info",
-                    "QuickStarted Bot\n" +
-                            "Made in Java <:Java:899050421572739072> with Java Discord Api <:JDA:899083802989695037>", false);
-        } else {
-            AbtEmd.addField("Info",
-                    "Made in Java <:Java:899050421572739072> with Java Discord Api <:JDA:899083802989695037>", false);
-        }
-
-        e.getMessage().replyEmbeds(AbtEmd.build()).queue();
+        e.getMessage().replyEmbeds(about()).queue();
     }
 
     @Override
-    public void runSlash(SlashCommandEvent event) {
-
+    public void runSlash(SlashCommandEvent e) {
+        e.replyEmbeds(about()).setEphemeral(true).queue();
     }
 
     public static String getHelp() {
@@ -105,6 +39,78 @@ public class About implements Command {
     @Override
     public String[] getTriggers() {
         return "about,abt".split(",");
+    }
+
+    private MessageEmbed about() {
+        final JDA jda = Callerphone.jda;
+
+        EmbedBuilder AbtEmd = new EmbedBuilder();
+        jda.retrieveUserById(Callerphone.owner).queue(u -> {
+
+            final StringBuilder description = new StringBuilder()
+                    .append("[Invite link](").append(Callerphone.invite).append(")")
+                    .append("\n[Support server](").append(Callerphone.support).append(")")
+                    .append("\n[Bot listing (top.gg)](https://top.gg/bot/849713468348956692)")
+                    .append("\n[Upvote bot (top.gg)](https://top.gg/bot/849713468348956692/vote)")
+                    .append("\n[Bot listing (dbl)](https://discordbotlist.com/bots/callerphone)")
+                    .append("\n[Upvote bot (dbl)](https://discordbotlist.com/bots/callerphone/upvote)")
+                    .append("\n[Upvote support server (top.gg)](https://top.gg/servers/798428155907801089/vote)")
+                    .append("\n[Upvote support server (dbl)](https://discordbotlist.com/servers/legendary-bot-official-server/upvote)")
+                    .append("\n");
+
+            jda.getShardInfo();
+            long users = 0;
+            for (Guild g : jda.getGuilds()) {
+                users += g.getMemberCount();
+            }
+
+            String uniqueUsers;
+            if (Callerphone.isQuickStart) {
+                uniqueUsers = "N/A (QuickStart)";
+            } else {
+                uniqueUsers = jda.getUsers().size() + " unique user(s)";
+            }
+
+            AbtEmd.setAuthor("Made by " + u.getAsTag(), null, u.getAvatarUrl())
+                    .setColor(new Color(114, 137, 218))
+                    .setTitle("**About:**")
+                    .setDescription(description)
+                    .addField("Servers",
+                            jda.getGuilds().size() + " server(s)\n" +
+                                    jda.getShardInfo().getShardTotal() + " shard(s)\n", true)
+
+                    .addField("Channels",
+                            jda.getTextChannels().size() + jda.getVoiceChannels().size() + " total\n" +
+                                    jda.getTextChannels().size() + " text channel(s)\n" +
+                                    jda.getVoiceChannels().size() + " voice channel(s)", true)
+
+                    .addField("Users",
+                            users + " user(s)\n" +
+                                    uniqueUsers, true)
+
+                    .addField("CPU Usage",
+                            (String.valueOf(ManagementFactory.getOperatingSystemMXBean().getSystemLoadAverage()).startsWith("-")) ? ("Unavailable") : (ManagementFactory.getOperatingSystemMXBean().getSystemLoadAverage() + "%") + "\n" +
+                                    ManagementFactory.getOperatingSystemMXBean().getAvailableProcessors() + " processor(s)", true)
+
+                    .addField("Memory Usage",
+                            convert(Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) + "\n" +
+                                    convert(Runtime.getRuntime().maxMemory()) + " max\n", true)
+
+                    .addField("Uptime",
+                            Uptime.uptimeabt(), true)
+
+                    .setFooter("One of the many bots in the sequel...");
+
+            if (Callerphone.isQuickStart) {
+                AbtEmd.addField("Info",
+                        "QuickStarted Bot\n" +
+                                "Made in Java <:Java:899050421572739072> with Java Discord Api <:JDA:899083802989695037>", false);
+            } else {
+                AbtEmd.addField("Info",
+                        "Made in Java <:Java:899050421572739072> with Java Discord Api <:JDA:899083802989695037>", false);
+            }
+        });
+        return AbtEmd.build();
     }
 
     // https://programming.guide/java/formatting-byte-size-to-human-readable-format.html {
