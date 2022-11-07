@@ -35,7 +35,7 @@ public class ParticipantsPool implements Command {
     private String poolParticipants(String id) {
         final ArrayList<String> participants = ChannelPool.getClients(id);
         if (participants.size() == 0) {
-            return "This channel is not in a pool.";
+            return Callerphone.Callerphone + "This channel is not in a pool.";
         } else {
             StringBuilder list = new StringBuilder();
             for (int i = 0; i < participants.size(); i++) {

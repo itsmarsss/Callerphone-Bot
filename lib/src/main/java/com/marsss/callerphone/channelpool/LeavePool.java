@@ -34,7 +34,7 @@ public class LeavePool implements Command {
 
     private String leavePool(Member member, String id) {
         if (!member.hasPermission(Permission.MANAGE_CHANNEL)) {
-            return "You need `Manage Channel` permission to run this command.";
+            return Callerphone.Callerphone + "You need `Manage Channel` permission to run this command.";
         }
 
         int stat = ChannelPool.leavePool(id);

@@ -107,7 +107,7 @@ public class ChannelPool {
             for (String id : pool) {
                 if (id.equals(ID))
                     continue;
-                Callerphone.jda.getTextChannelById(id).sendMessage("This pool has been ended by the host channel (`#" + id + "`).").queue();
+                Callerphone.jda.getTextChannelById(id).sendMessage(Callerphone.Callerphone + "This pool has been ended by the host channel (`#" + id + "`).").queue();
                 parent.remove(id);
             }
             childr.remove(ID);
@@ -125,6 +125,7 @@ public class ChannelPool {
             } else {
                 childr.get(IDh).add(IDc);
                 parent.put(IDc, IDh);
+                systemBroadCast(IDh, Callerphone.Callerphone + "Channel ID: " + IDc + " has joined this pool.");
                 return 200;
             }
         } else {
@@ -136,6 +137,7 @@ public class ChannelPool {
         if (parent.containsKey(IDc)) {
             childr.get(IDh).remove(IDc);
             parent.remove(IDc);
+            systemBroadCast(IDh, Callerphone.Callerphone + "Channel ID: " + IDc + " has left this pool.");
             return 200;
         } else {
             return 404;
@@ -158,7 +160,7 @@ public class ChannelPool {
                         clearChildren(sender);
                     } else {
                         childr.get(sender).remove(id);
-                        systemBroadCast(sender, "Channel ID: " + id + " has left this pool.");
+                        systemBroadCast(sender, Callerphone.Callerphone + "Channel ID: " + id + " has left this pool.");
                     }
                 } else {
                     MessageAction ma = Callerphone.jda.getTextChannelById(id).sendMessage(msg);
@@ -185,7 +187,7 @@ public class ChannelPool {
         ArrayList<String> pool = childr.get(IDhost);
         for (String id : pool) {
             if (Callerphone.jda.getTextChannelById(id) == null) {
-                systemBroadCast(IDhost, "Channel ID: " + id + " has left this pool.");
+                systemBroadCast(IDhost, Callerphone.Callerphone + "Channel ID: " + id + " has left this pool.");
             } else {
                 MessageAction ma = Callerphone.jda.getTextChannelById(id).sendMessage(msg);
                 ma.queue();

@@ -35,7 +35,7 @@ public class HostPool implements Command {
 
     private String hostPool(Member member, MessageChannel channel) {
         if (!member.hasPermission(Permission.MANAGE_CHANNEL)) {
-            return "You need `Manage Channel` permission to run this command.";
+            return Callerphone.Callerphone + "You need `Manage Channel` permission to run this command.";
         }
 
         int stat = ChannelPool.hostPool(channel.getId());

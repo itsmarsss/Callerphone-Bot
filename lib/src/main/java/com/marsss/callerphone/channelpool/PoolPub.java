@@ -34,10 +34,10 @@ public class PoolPub implements Command {
     private String poolPub(String id, boolean pub) {
         int stat = ChannelPool.setPublicity(id, pub);
         if (stat == 202) {
-            return "This pool is now " + (pub ? "public" : "private") + ".";
+            return Callerphone.Callerphone + "This pool is now " + (pub ? "public" : "private") + ".";
         } else if (stat == 404) {
-            return "This pool is not hosting a pool.";
+            return Callerphone.Callerphone + "This pool is not hosting a pool.";
         }
-        return "An error occurred.";
+        return Callerphone.Callerphone + "An error occurred.";
     }
 }

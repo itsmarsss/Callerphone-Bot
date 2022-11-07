@@ -41,7 +41,7 @@ public class JoinPool implements Command {
 
     private String joinPool(Member member, MessageChannel channel, String host, String pwd) {
         if (!member.hasPermission(Permission.MANAGE_CHANNEL)) {
-            return "You need `Manage Channel` permission to run this command.";
+            return Callerphone.Callerphone + "You need `Manage Channel` permission to run this command.";
         }
 
         int stat = ChannelPool.joinPool(host, channel.getId(), pwd);

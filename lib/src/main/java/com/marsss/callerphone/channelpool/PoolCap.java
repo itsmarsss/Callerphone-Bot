@@ -35,10 +35,10 @@ public class PoolCap implements Command {
     private String poolCap(String id, int cap) {
         int stat = ChannelPool.setCap(id, cap);
         if (stat == 202) {
-            return "This pool now has capacity **" + cap + "**.";
+            return Callerphone.Callerphone + "This pool now has capacity **" + cap + "**.";
         } else if (stat == 404) {
-            return "This channel is not hosing a pool.";
+            return Callerphone.Callerphone + "This channel is not hosing a pool.";
         }
-        return "An error occurred.";
+        return Callerphone.Callerphone + "An error occurred.";
     }
 }

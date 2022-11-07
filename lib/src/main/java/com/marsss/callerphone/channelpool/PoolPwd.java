@@ -37,10 +37,10 @@ public class PoolPwd implements Command {
 
         int stat = ChannelPool.setPassword(id, pwd);
         if (stat == 202) {
-            return "This pool now has password ||" + pwd + "||.";
+            return Callerphone.Callerphone + "This pool now has password ||" + pwd + "||.";
         } else if (stat == 404) {
-            return "This pool is not hosting a pool.";
+            return Callerphone.Callerphone + "This pool is not hosting a pool.";
         }
-        return "An error occurred.";
+        return Callerphone.Callerphone + "An error occurred.";
     }
 }

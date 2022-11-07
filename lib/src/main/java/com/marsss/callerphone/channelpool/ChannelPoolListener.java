@@ -23,7 +23,7 @@ public class ChannelPoolListener extends ListenerAdapter {
         if (member.getUser().isBot() || member.getUser().isSystem())
             return;
 
-        if (content.startsWith("\\\\")) {
+        if (content.startsWith("\\\\") || content.startsWith(Callerphone.Prefix)) {
             return;
         }
 
