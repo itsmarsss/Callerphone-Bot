@@ -7,7 +7,11 @@ import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 public class SettingsPool implements Command {
     @Override
     public void runCommand(GuildMessageReceivedEvent e) {
-
+        // TODO:
+        // Password
+        // Kick channels
+        // Pool capacity (max 10)
+        // Private/Public
     }
 
     @Override
