@@ -12,21 +12,26 @@ public class JoinPool implements Command {
     @Override
     public void runCommand(GuildMessageReceivedEvent e) {
         final String host = e.getMessage().getContentRaw().split("\\s+")[1];
-        e.getMessage().reply(joinPool(e.getMember(), e.getChannel(), host)).queue();
+        String pwd = "";
+        try {
+            pwd = e.getMessage().getContentRaw().split("\\s+")[2];
+        } catch (Exception ex) {
+        }
+        e.getMessage().reply(joinPool(e.getMember(), e.getChannel(), host, pwd)).queue();
     }
 
     @Override
     public void runSlash(SlashCommandEvent e) {
-        e.reply(joinPool(e.getMember(), e.getChannel(), e.getOption("hostID").getAsString())).queue();
+        e.reply(joinPool(e.getMember(), e.getChannel(), e.getOption("hostID").getAsString(), e.getOption("password").getAsString())).queue();
     }
 
     public static String getHelp() {
-        return "`" + Callerphone.Prefix + "joinpool` - Join a channel pool.";
+        return "`" + Callerphone.Prefix + "joinpool <ID> <password>` - Join a channel pool.";
     }
 
     @Override
     public String getHelpF() {
-        return "`" + Callerphone.Prefix + "joinpool` - Join a channel pool.";
+        return "`" + Callerphone.Prefix + "joinpool <ID> <password>` - Join a channel pool.";
     }
 
     @Override
@@ -34,12 +39,12 @@ public class JoinPool implements Command {
         return "join,joinpool,addpool".split(",");
     }
 
-    private String joinPool(Member member, MessageChannel channel, String host) {
+    private String joinPool(Member member, MessageChannel channel, String host, String pwd) {
         if (!member.hasPermission(Permission.MANAGE_CHANNEL)) {
             return "You need `Manage Channel` permission to run this command.";
         }
 
-        int stat = ChannelPool.joinPool(host, channel.getId());
+        int stat = ChannelPool.joinPool(host, channel.getId(), pwd);
         if (stat == 413) {
             return Callerphone.Callerphone + "This channel is hosting a pool." +
                     "\n`This channel's pool ID is: " + channel.getId() + "`" +
@@ -50,7 +55,10 @@ public class JoinPool implements Command {
         } else if (stat == 409) {
             return Callerphone.Callerphone + "This channel is already in a pool." +
                     "\nLeave pool with: `" + Callerphone.Prefix + "leavepool`";
-        } else if (stat == 404) {
+        }else if(stat == 401){
+            return Callerphone.Callerphone + "Incorrect password.";
+        }
+        else if (stat == 404) {
             return Callerphone.Callerphone + "Requested pool ID *(" + host + ")* does not exist.";
         } else if (stat == 200) {
             return Callerphone.Callerphone + "Successfully joined channel pool hosted by `#" + Callerphone.jda.getTextChannelById(host).getName() + "`*(ID: " + host + ")*!";

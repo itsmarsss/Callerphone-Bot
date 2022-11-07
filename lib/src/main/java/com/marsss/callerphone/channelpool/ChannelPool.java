@@ -16,7 +16,7 @@ public class ChannelPool {
     public static HashMap<String, ArrayList<String>> childr = new HashMap<>();
 
     public static int hostPool(String ID) {
-        if (childr.containsKey(ID)) {
+        if (isHost(ID)) {
             return 413;
         } else if (parent.containsKey(ID)) {
             return 409;
@@ -28,13 +28,19 @@ public class ChannelPool {
         }
     }
 
-    public static int joinPool(String IDh, String IDc) {
-        if (childr.containsKey(IDc)) {
+    public static int joinPool(String IDh, String IDc, String pwd) {
+        if (isHost(IDc)) {
             return 413;
         } else if (parent.containsKey(IDc)) {
             return 409;
         } else {
-            return addChildren(IDh, IDc);
+            if (!config.get(IDh).isPub()) {
+                return 404;
+            } else if (!config.get(IDh).getPwd().equals(pwd)) {
+                return 401;
+            } else {
+                return addChildren(IDh, IDc);
+            }
         }
     }
 
@@ -49,7 +55,7 @@ public class ChannelPool {
     }
 
     public static int endPool(String ID) {
-        if (childr.containsKey(ID)) {
+        if (isHost(ID)) {
             return clearChildren(ID);
         } else {
             return 404;
@@ -96,7 +102,7 @@ public class ChannelPool {
     }
 
     public static int clearChildren(String ID) {
-        if (childr.containsKey(ID)) {
+        if (isHost(ID)) {
             ArrayList<String> pool = childr.get(ID);
             for (String id : pool) {
                 if (id.equals(ID))
@@ -113,8 +119,8 @@ public class ChannelPool {
     }
 
     public static int addChildren(String IDh, String IDc) {
-        if (childr.containsKey(IDh)) {
-            if (childr.get(IDh).size() >= 11) {
+        if (isHost(IDh)) {
+            if (childr.get(IDh).size() >= config.get(IDh).getCap()) {
                 return 414;
             } else {
                 childr.get(IDh).add(IDc);
