@@ -79,9 +79,9 @@ public class ChannelPool {
         if (childr.containsKey(ID)) {
             ArrayList<String> pool = childr.get(ID);
             for (String id : pool) {
-                if (id == ID)
+                if (id.equals(ID))
                     continue;
-                Callerphone.jda.getTextChannelById(id).sendMessage("This pool has been ended by the host channel (" + Callerphone.jda.getTextChannelById(ID).getName() + ").").queue();
+                Callerphone.jda.getTextChannelById(id).sendMessage("This pool has been ended by the host channel (`#" + Callerphone.jda.getTextChannelById(ID).getName() + "`).").queue();
                 parent.remove(id);
             }
             childr.remove(ID);
