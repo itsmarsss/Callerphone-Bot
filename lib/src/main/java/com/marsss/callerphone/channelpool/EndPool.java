@@ -14,7 +14,7 @@ public class EndPool implements Command {
         if (stat == 404) {
             MESSAGE.reply(Callerphone.Callerphone + "This channel is not hosting a pool.").queue();
         } else if (stat == 200) {
-            e.getMessage().reply(Callerphone.Callerphone + "Successfully left ended channel pool!").queue();
+            e.getMessage().reply(Callerphone.Callerphone + "Successfully ended channel pool!").queue();
         }
     }
 

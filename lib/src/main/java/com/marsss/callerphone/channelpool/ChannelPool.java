@@ -55,6 +55,18 @@ public class ChannelPool {
         }
     }
 
+    public static ArrayList<String> getClients(String ID) {
+        if (!parent.containsKey(ID) && !childr.containsKey(ID)) {
+            return null;
+        } else {
+            if (parent.containsKey(ID)) {
+                return childr.get(parent.get(ID));
+            } else {
+                return childr.get(ID);
+            }
+        }
+    }
+
     public static void setPassword(String ID, String PASS) {
         passw.put(ID, PASS);
     }
@@ -67,7 +79,7 @@ public class ChannelPool {
         if (childr.containsKey(ID)) {
             ArrayList<String> pool = childr.get(ID);
             for (String id : pool) {
-                if(id == ID)
+                if (id == ID)
                     continue;
                 Callerphone.jda.getTextChannelById(id).sendMessage("This pool has been ended by the host channel (" + Callerphone.jda.getTextChannelById(ID).getName() + ").").queue();
                 parent.remove(id);

@@ -122,6 +122,8 @@ public class Callerphone {
             cmdLst.add(new JoinPool());
             cmdLst.add(new EndPool());
             cmdLst.add(new LeavePool());
+            cmdLst.add(new ParticipantsPool());
+            cmdLst.add(new SettingsPool());
 
             for (Command cmd : cmdLst) {
                 for (String trigger : cmd.getTriggers()) {
