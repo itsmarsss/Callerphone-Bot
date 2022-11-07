@@ -81,7 +81,7 @@ public class ChannelPool {
             for (String id : pool) {
                 if (id.equals(ID))
                     continue;
-                Callerphone.jda.getTextChannelById(id).sendMessage("This pool has been ended by the host channel (`#" + Callerphone.jda.getTextChannelById(ID).getName() + "`).").queue();
+                Callerphone.jda.getTextChannelById(id).sendMessage("This pool has been ended by the host channel (`#" + id + "`).").queue();
                 parent.remove(id);
             }
             childr.remove(ID);
@@ -115,52 +115,58 @@ public class ChannelPool {
         }
     }
 
-    public static void broadCast(String IDs, String IDo, String msg) {
-        if (!parent.containsKey(IDs)) {
-            if (!childr.containsKey(IDs))
-                return;
-            for (String id : childr.get(IDs)) {
-                if (id.equals(IDo))
+    public static boolean isHost(String ID) {
+        if (!parent.containsKey(ID) && childr.containsKey(ID)) {
+            return true;
+        }
+        return false;
+    }
+
+    public static void broadCast(String sender, String original, String msg) {
+        if (isHost(sender)) {
+            ArrayList<String> pool = childr.get(sender);
+            for (String id : pool) {
+                if (id.equals(original))
                     continue;
 
-                if(Callerphone.jda.getTextChannelById(id) == null) {
-                    systemBroadCast(IDs, "Channel ID: " + id + " has left this pool.");
+                if (Callerphone.jda.getTextChannelById(id) == null) {
+                    if (sender.equals(id)) {
+                        clearChildren(sender);
+                    } else {
+                        childr.get(sender).remove(id);
+                        systemBroadCast(sender, "Channel ID: " + id + " has left this pool.");
+                    }
                 } else {
                     MessageAction ma = Callerphone.jda.getTextChannelById(id).sendMessage(msg);
                     Collection<ActionRow> actionrow = new ArrayList<>();
                     Collection<Button> collection = new ArrayList<>();
 
-                    String link = String.format("https://discord.com/channels/%s/%s", Callerphone.jda.getTextChannelById(IDo).getGuild().getId(), Callerphone.jda.getTextChannelById(IDo).getId());
+                    String link = String.format("https://discord.com/channels/%s/%s", Callerphone.jda.getTextChannelById(original).getGuild().getId(), Callerphone.jda.getTextChannelById(original).getId());
 
-                    collection.add(Button.link(link, "From: #" + Callerphone.jda.getTextChannelById(IDo).getName() + " (" + Callerphone.jda.getTextChannelById(IDo).getGuild().getName() + ")"));
+                    collection.add(Button.link(link, "From: #" + Callerphone.jda.getTextChannelById(original).getName() + " (" + Callerphone.jda.getTextChannelById(original).getGuild().getName() + ")"));
 
                     ActionRow row = ActionRow.of(collection);
                     actionrow.add(row);
-                    ma.setActionRows(actionrow).queue();
+                    ma.setActionRows(actionrow);
                     ma.queue();
                 }
 
             }
-        } else if (parent.containsKey(IDs)) {
-            broadCast(parent.get(IDs), IDo, msg);
+        } else if (parent.containsKey(sender)) {
+            broadCast(parent.get(sender), original, msg);
         }
     }
 
-    public static void systemBroadCast(String IDs, String msg) {
-        if (!parent.containsKey(IDs)) {
-            if (!childr.containsKey(IDs))
-                return;
-            for (String id : childr.get(IDs)) {
-                if(Callerphone.jda.getTextChannelById(id) == null) {
-                    systemBroadCast(IDs, "Channel ID: " + id + " has left this pool.");
-                } else {
-                    MessageAction ma = Callerphone.jda.getTextChannelById(id).sendMessage(msg);
-                    ma.queue();
-                }
-
+    public static void systemBroadCast(String IDhost, String msg) {
+        ArrayList<String> pool = childr.get(IDhost);
+        for (String id : pool) {
+            if (Callerphone.jda.getTextChannelById(id) == null) {
+                systemBroadCast(IDhost, "Channel ID: " + id + " has left this pool.");
+            } else {
+                MessageAction ma = Callerphone.jda.getTextChannelById(id).sendMessage(msg);
+                ma.queue();
             }
-        } else if (parent.containsKey(IDs)) {
-            systemBroadCast(parent.get(IDs), msg);
+
         }
     }
 
