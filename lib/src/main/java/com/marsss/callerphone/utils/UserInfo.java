@@ -117,6 +117,11 @@ public class UserInfo implements Command {
 	}
 
 	@Override
+	public String getHelpF() {
+		return "`" + Callerphone.Prefix + "userinfo <@user/id/empty>` - Get information about this member!";
+	}
+
+	@Override
 	public String[] getTriggers() {
 		return "userinfo,userinf,usrinfo,usrinf".split(",");
 	}

@@ -61,6 +61,13 @@ public class Colour implements Command {
     }
 
     @Override
+    public String getHelpF() {
+        return "`" + Callerphone.Prefix + "color` - Get a random color in hex and rgb value.\n" +
+                "`" + Callerphone.Prefix + "colorrgb <r> <g> <b>` - Get the hex value of rgb.\n" +
+                "`" + Callerphone.Prefix + "colorhex <hex>` - Get the rgb value of hex.";
+    }
+
+    @Override
     public String[] getTriggers() {
         return "color,colorrgb,colorhex".split(",");
     }

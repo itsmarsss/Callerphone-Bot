@@ -10,6 +10,7 @@ public interface Command {
     static String getHelp() {
         return "Command Help Message Here";
     }
+    String getHelpF();
 
     String[] getTriggers();
 }

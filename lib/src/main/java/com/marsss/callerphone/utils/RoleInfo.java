@@ -102,6 +102,11 @@ public class RoleInfo implements Command {
     }
 
     @Override
+    public String getHelpF() {
+        return "`" + Callerphone.Prefix + "roleinfo <@role/id>` - Get information about this role.";
+    }
+
+    @Override
     public String[] getTriggers() {
         return "roleinfo,rolinfo,roleinf,rolinf".split(",");
     }

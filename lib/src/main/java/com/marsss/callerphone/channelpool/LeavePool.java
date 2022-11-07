@@ -30,6 +30,11 @@ public class LeavePool implements Command {
     }
 
     @Override
+    public String getHelpF() {
+        return "`" + Callerphone.Prefix + "leavepool` - Leave a channel pool.";
+    }
+
+    @Override
     public String[] getTriggers() {
         return "leave,leavepool,exitpool".split(",");
     }

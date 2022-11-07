@@ -44,6 +44,11 @@ public class Help implements Command {
     }
 
     @Override
+    public String getHelpF() {
+        return "`" + Callerphone.Prefix + "help` - help help help";
+    }
+
+    @Override
     public String[] getTriggers() {
         return "help,gethelp,helpmeahhh".split(",");
     }
@@ -111,92 +116,20 @@ public class Help implements Command {
         }
 
 
-        // Bot
+        if (Callerphone.cmdMap.containsKey(name)) {
+            String[]triggers = Callerphone.cmdMap.get(name).getTriggers();
+            String trigger = "";
+            for(String trig : triggers) {
+                trigger += trig + ", ";
+            }
 
-        switch (name) {
+            TITLE = trigger.substring(0, trigger.length()-2);
+            DESC = Callerphone.cmdMap.get(name).getHelpF();
 
+            if(trigger.contains("search")) {
+                DESC += "\nWe use Duckduckgo, so click [here](https://help.duckduckgo.com/duckduckgo-help-pages/results/syntax/) for searching syntax!";
 
-            case "donate":
-                TITLE = "Donate";
-                DESC = Donate.getHelp();
-                break;
-            case "invite":
-                TITLE = "Invite";
-                DESC = Invite.getHelp();
-                break;
-            case "ping":
-                TITLE = "Ping";
-                DESC = Ping.getHelp();
-                break;
-            case "Uptime":
-                TITLE = "Uptime";
-                DESC = Uptime.getHelp();
-                break;
-
-
-        }
-
-
-        // Utils
-
-        switch (name) {
-
-
-            case "botinfo":
-                TITLE = "Botinfo";
-                DESC = BotInfo.getHelp();
-                break;
-            case "channelinfo":
-                TITLE = "Channelinfo";
-                DESC = ChannelInfo.getHelp();
-                break;
-            case "help":
-                TITLE = "Help";
-                DESC = Help.getHelp();
-                break;
-            case "search":
-                TITLE = "Search";
-                DESC = Search.getHelp() + "\nWe use Duckduckgo, so click [here](https://help.duckduckgo.com/duckduckgo-help-pages/results/syntax/) for searching syntax!";
-                break;
-            case "roleinfo":
-                TITLE = "Roleinfo";
-                DESC = RoleInfo.getHelp();
-                break;
-            case "serverinfo":
-                TITLE = "Serverinfo";
-                DESC = ServerInfo.getHelp();
-                break;
-            case "userinfo":
-                TITLE = "Userinfo";
-                DESC = UserInfo.getHelp();
-                break;
-
-
-        }
-
-
-        // Textphone
-
-        switch (name) {
-
-
-            case "chat":
-                TITLE = "Chat";
-                DESC = TCCallPairer.callHelp();
-                break;
-            case "chatuncens":
-                TITLE = "UncensoredChatCall";
-                DESC = TCCallPairer.uncenscallHelp();
-                break;
-            case "endchat":
-                TITLE = "Endchat";
-                DESC = TCCallPairer.hangupHelp();
-                break;
-            case "reportchat":
-                TITLE = "Reportchat";
-                DESC = TCCallPairer.reportHelp();
-                break;
-
+            }
         }
 
 

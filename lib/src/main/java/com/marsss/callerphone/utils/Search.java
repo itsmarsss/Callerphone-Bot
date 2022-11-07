@@ -89,6 +89,11 @@ public class Search implements Command {
     }
 
     @Override
+    public String getHelpF() {
+        return "`" + Callerphone.Prefix + "search <query>` - Search for something quickly on the web with title, snippet, and link!";
+    }
+
+    @Override
     public String[] getTriggers() {
         return "search,ddg,query".split(",");
     }

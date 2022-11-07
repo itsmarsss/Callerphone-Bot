@@ -98,6 +98,11 @@ public class About implements Command {
     }
 
     @Override
+    public String getHelpF() {
+        return "`" + Callerphone.Prefix + "about` - Introduces you to this bot";
+    }
+
+    @Override
     public String[] getTriggers() {
         return "about,abt".split(",");
     }

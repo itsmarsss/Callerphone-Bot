@@ -46,6 +46,11 @@ public class ParticipantsPool implements Command {
     }
 
     @Override
+    public String getHelpF() {
+        return "`" + Callerphone.Prefix + "poolparts` - Show channel pool participants.";
+    }
+
+    @Override
     public String[] getTriggers() {
         return "poolparticipants,participants,parts,poolparts".split(",");
     }

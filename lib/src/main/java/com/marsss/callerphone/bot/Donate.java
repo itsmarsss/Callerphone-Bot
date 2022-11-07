@@ -29,6 +29,11 @@ public class Donate implements Command {
     }
 
     @Override
+    public String getHelpF() {
+        return "`" + Callerphone.Prefix + "donate` - Help us out by donating.";
+    }
+
+    @Override
     public String[] getTriggers() {
         return "donate,don".split(",");
     }

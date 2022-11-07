@@ -28,6 +28,11 @@ public class EndPool implements Command {
     }
 
     @Override
+    public String getHelpF() {
+        return "`" + Callerphone.Prefix + "endpool` - End a channel pool.";
+    }
+
+    @Override
     public String[] getTriggers() {
         return "end,endpool,stoppool".split(",");
     }

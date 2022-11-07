@@ -41,6 +41,11 @@ public class JoinPool implements Command {
     }
 
     @Override
+    public String getHelpF() {
+        return "`" + Callerphone.Prefix + "joinpool` - Join a channel pool.";
+    }
+
+    @Override
     public String[] getTriggers() {
         return "join,joinpool,addpool".split(",");
     }

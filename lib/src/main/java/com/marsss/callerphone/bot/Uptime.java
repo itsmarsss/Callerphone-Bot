@@ -30,6 +30,11 @@ public class Uptime implements Command {
     }
 
     @Override
+    public String getHelpF() {
+        return "`" + Callerphone.Prefix + "uptime` - Gets the bot's uptime.";
+    }
+
+    @Override
     public String[] getTriggers() {
         return "uptime,up,time".split(",");
     }

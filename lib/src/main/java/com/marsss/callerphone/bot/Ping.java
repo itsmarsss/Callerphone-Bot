@@ -23,6 +23,11 @@ public class Ping implements Command {
     }
 
     @Override
+    public String getHelpF() {
+        return "`" + Callerphone.Prefix + "ping` - Gets the bot's ping.";
+    }
+
+    @Override
     public String[] getTriggers() {
         return "ping,pong".split(",");
     }

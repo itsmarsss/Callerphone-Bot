@@ -35,6 +35,11 @@ public class Invite implements Command {
     }
 
     @Override
+    public String getHelpF() {
+        return "`" + Callerphone.Prefix + "invite` - Get invites and links related to this bot.";
+    }
+
+    @Override
     public String[] getTriggers() {
         return "invite,inv".split(",");
     }

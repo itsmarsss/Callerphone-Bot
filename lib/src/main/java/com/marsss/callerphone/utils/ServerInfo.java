@@ -128,6 +128,11 @@ public class ServerInfo implements Command {
     }
 
     @Override
+    public String getHelpF() {
+        return "`" + Callerphone.Prefix + "serverinfo` - Get information about the server.";
+    }
+
+    @Override
     public String[] getTriggers() {
         return "serverinfo,servinfo,serverinf,servinf".split(",");
     }

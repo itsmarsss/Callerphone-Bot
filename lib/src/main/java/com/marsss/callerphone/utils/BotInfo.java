@@ -42,6 +42,11 @@ public class BotInfo implements Command {
     }
 
     @Override
+    public String getHelpF() {
+        return "`" + Callerphone.Prefix + "botinfo` - Get information about the bot.";
+    }
+
+    @Override
     public String[] getTriggers() {
         return "botinfo,info".split(",");
     }

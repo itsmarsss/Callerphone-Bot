@@ -36,6 +36,11 @@ public class HostPool implements Command {
     }
 
     @Override
+    public String getHelpF() {
+        return "`" + Callerphone.Prefix + "hostpool` - Host a channel pool.";
+    }
+
+    @Override
     public String[] getTriggers() {
         return "host,hostpool,startpool".split(",");
     }
