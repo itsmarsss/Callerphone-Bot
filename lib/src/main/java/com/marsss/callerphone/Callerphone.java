@@ -1,18 +1,11 @@
 package com.marsss.callerphone;
 
 import java.awt.Color;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.net.URLDecoder;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
-import java.util.ArrayList;
-import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Scanner;
+import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -640,19 +633,59 @@ public class Callerphone {
                 System.out.println("------------------------------");
             }
 
-            if(cmd.equals("poolnum")){
+            if (cmd.equals("poolnum")) {
                 System.out.println("Currently there are " + ChannelPool.config.size() + " channel pools running.");
+                continue;
+            }
+
+            if (cmd.equals("exportpools")) {
+                try {
+                    exportPools();
+                    logger.info("Successful export");
+                } catch (Exception e) {
+                    System.out.println("------------------------------");
+                    logger.error("Error with pools.txt");
+                    logger.warn("Some or no pools may be exported");
+                }
+                continue;
+            }
+
+            if (cmd.equals("importpools")) {
+                try {
+                    importPools(new File(parent + "/pools.txt"));
+                    logger.info("Successful import");
+                } catch (Exception e) {
+                    System.out.println("------------------------------");
+                    logger.error("Error with pools.txt");
+                    logger.warn("Some or no pools may be imported");
+                }
+                continue;
+            }
+
+            if (cmd.equals("importconfig")) {
+                try {
+                    importPoolsConfig(new File(parent + "/poolconfig.txt"));
+                    logger.info("Successful import");
+                } catch (Exception e) {
+                    System.out.println("------------------------------");
+                    logger.error("Error with pools.txt");
+                    logger.warn("Some or no pool config may be imported");
+                }
+                continue;
             }
 
             if (cmd.equals("help")) {
                 System.out.println(
-                        "Option 1: start <msg> = To start the bot\n" +
-                                "Option 2: shutdown = To shutdown the bot\n" +
-                                "Option 3: presence = To set presence\n" +
-                                "Option 4: info = To get info of the bot\n" +
-                                "Option 5: recal = To read resources again\n" +
-                                "Option 6: poolnum = To see number of running pools\n" +
-                                "Option 7: help = UBCL help (this)\n\n" +
+                        "Option  1: start <msg> = To start the bot\n" +
+                                "Option  2: shutdown = To shutdown the bot\n" +
+                                "Option  3: presence = To set presence\n" +
+                                "Option  4: info = To get info of the bot\n" +
+                                "Option  5: recal = To read resources again\n" +
+                                "Option  6: poolnum = To see number of running pools\n" +
+                                "Option  7: exportpools = Export pools to pools.txt and poolconfig.txt\n" +
+                                "Option  8: importpools = Import pools from pools.txt\n" +
+                                "Option  9: importconfig = Import pools config from poolconfig.txt\n" +
+                                "Option 10: help = UBCL help (this)\n\n" +
                                 "Other: quickstart <msg> = To start the bot quicker");
                 continue;
             }
@@ -663,4 +696,61 @@ public class Callerphone {
         }
     }
 
+    private static void exportPools() throws FileNotFoundException {
+        StringBuilder sb = new StringBuilder();
+        try (PrintWriter myWriter = new PrintWriter(parent + "/pools.txt")) {
+            for (Map.Entry<String, ArrayList<String>> pool : ChannelPool.childr.entrySet()) {
+                sb.append(pool.getKey() + ":");
+                for(String id : pool.getValue()) {
+                    sb.append(id + ",");
+                }
+                sb.deleteCharAt(sb.length() - 1);
+                sb.append("\n");
+            }
+
+            myWriter.print(sb);
+            myWriter.close();
+        }
+        StringBuilder sb2 = new StringBuilder();
+        try (PrintWriter myWriter = new PrintWriter(parent + "/poolconfig.txt")) {
+            for (Map.Entry<String, PoolConfig> pool : ChannelPool.config.entrySet()) {
+                sb2.append(pool.getKey() + ":");
+                PoolConfig config = pool.getValue();
+                sb2.append(config.getPwd() + "," + config.getCap() + "," + config.isPub());
+                sb2.append("\n");
+            }
+
+            myWriter.print(sb2);
+            myWriter.close();
+        }
+    }
+
+    private static void importPoolsConfig(File file) throws IOException {
+        try (BufferedReader br = new BufferedReader(new FileReader(file))) {
+            String line = br.readLine();
+            while (line != null) {
+                String[] split = line.split(":");
+                String host = split[0];
+                String[] config = split[1].split(",");
+                ChannelPool.config.put(host, new PoolConfig(config[0], Integer.parseInt(config[1]), Boolean.parseBoolean(config[2])));
+
+                line = br.readLine();
+            }
+        }
+    }
+    private static void importPools(File file) throws IOException {
+        try (BufferedReader br = new BufferedReader(new FileReader(file))) {
+            String line = br.readLine();
+            while (line != null) {
+                String[] split = line.split(":");
+                String host = split[0];
+                String[] children = split[1].split(",");
+                ChannelPool.hostPool(host);
+                for (String id : children) {
+                    ChannelPool.joinPool(host, id, "");
+                }
+                line = br.readLine();
+            }
+        }
+    }
 }

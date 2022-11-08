@@ -27,13 +27,14 @@ public class ChannelPoolListener extends ListenerAdapter {
             return;
         }
 
-        String sendCont = "**%s *(%s)*:**\n%s \u2022<t:%d:f>\u2022";
+        String sendCont = "**%s *(%s)*** | <t:%d:f>:\n%s";
 
         sendCont = String.format(sendCont,
                 message.getAuthor().getAsTag(),
                 member.getEffectiveName(),
-                content,
-                message.getTimeCreated().toEpochSecond());
+                message.getTimeCreated().toEpochSecond(),
+                content
+        );
 
         if (sendCont.length() >= 2000) {
             message.reply(Callerphone.Callerphone + "Message Too Long.").queue();
