@@ -1,8 +1,8 @@
 <h1 align="center">
-<img src="/assets/icon.png" alt="Icon" width="100" height="100">
-<br>
-Callerphone-Bot
-<br>
+  <img src="/assets/icon.png" alt="Icon" width="100" height="100">
+  <br>
+  Callerphone-Bot
+  <br>
 </h1>
   
 #### **About**:
@@ -126,13 +126,12 @@ Callerphone-Bot
 
 
 ## More Information
-### [Invite Callerphone](https://discord.com/api/oauth2/authorize?client_id=849713468348956692&permissions=49663040&scope=bot)
+### [Invite Callerphone!](https://discord.com/oauth2/authorize?client_id=849713468348956692&permissions=414464724040&scope=bot%20applications.commands)
 
 ### Support server!
-<a href="https://discord.gg/jcYKsfw48p"><img alt="support server" src="https://miro.medium.com/max/800/1*_AsB_hCguMYC-wEG2Bidmw.png" height="35px"></a>
-
-### Support us?
-<a href="https://www.patreon.com/itsmarsss"><img alt="become a patron" src="https://c5.patreon.com/external/logo/become_a_patron_button.png" height="35px"></a>
+<a href="https://discord.gg/jcYKsfw48p">
+  <img alt="support server" src="https://miro.medium.com/max/800/1*_AsB_hCguMYC-wEG2Bidmw.png" height="35px">
+</a>
 
 ### Top.gg!
 <a href="https://top.gg/bot/849713468348956692">
@@ -140,4 +139,6 @@ Callerphone-Bot
 </a>
 
 ### Discord Bot List!
-<a href="https://discordbotlist.com/bots/849713468348956692"><img src="https://discordbotlist.com/api/v1/bots/849713468348956692/widget"></a>
+<a href="https://discordbotlist.com/bots/849713468348956692">
+  <img src="https://discordbotlist.com/api/v1/bots/849713468348956692/widget">
+</a>
