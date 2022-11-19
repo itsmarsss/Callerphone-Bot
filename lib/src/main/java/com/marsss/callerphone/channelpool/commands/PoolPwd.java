@@ -1,12 +1,12 @@
 package com.marsss.callerphone.channelpool.commands;
 
-import com.marsss.Command;
+import com.marsss.ICommand;
 import com.marsss.callerphone.Callerphone;
 import com.marsss.callerphone.channelpool.ChannelPool;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
-public class PoolPwd implements Command {
+public class PoolPwd implements ICommand {
     @Override
     public void runCommand(GuildMessageReceivedEvent e) {
         final String pwd = e.getMessage().getContentRaw().split("\\s+")[1];

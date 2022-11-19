@@ -1,11 +1,11 @@
 package com.marsss.callerphone.channelpool.commands;
 
-import com.marsss.Command;
+import com.marsss.ICommand;
 import com.marsss.callerphone.Callerphone;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
-public class PoolTransOwner implements Command {
+public class PoolTransOwner implements ICommand {
     @Override
     public void runCommand(GuildMessageReceivedEvent e) {
         // TODO:

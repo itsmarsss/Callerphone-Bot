@@ -4,7 +4,7 @@ import java.awt.Color;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
-import com.marsss.Command;
+import com.marsss.ICommand;
 import com.marsss.callerphone.Callerphone;
 
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -16,7 +16,7 @@ import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
-public class UserInfo implements Command {
+public class UserInfo implements ICommand {
 
 	@Override
 	public void runCommand(GuildMessageReceivedEvent e) {

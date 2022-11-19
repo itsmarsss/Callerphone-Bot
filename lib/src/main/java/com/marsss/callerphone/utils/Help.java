@@ -7,14 +7,14 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 
-import com.marsss.Command;
+import com.marsss.ICommand;
 import com.marsss.callerphone.Callerphone;
 import com.marsss.callerphone.bot.*;
 import com.marsss.callerphone.tccallerphone.*;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
-public class Help implements Command {
+public class Help implements ICommand {
 
     @Override
     public void runCommand(GuildMessageReceivedEvent e) {
@@ -68,7 +68,7 @@ public class Help implements Command {
 
             case "bot":
                 TITLE = "Bot Commands";
-                DESC = Command.getHelp() + "\n"
+                DESC = ICommand.getHelp() + "\n"
                         + Donate.getHelp() + "\n"
                         + Invite.getHelp() + "\n"
                         + Ping.getHelp() + "\n"

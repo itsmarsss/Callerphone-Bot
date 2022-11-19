@@ -1,6 +1,6 @@
 package com.marsss.callerphone.bot;
 
-import com.marsss.Command;
+import com.marsss.ICommand;
 import com.marsss.callerphone.Callerphone;
 import com.marsss.callerphone.utils.Colour;
 
@@ -9,7 +9,7 @@ import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
-public class Invite implements Command {
+public class Invite implements ICommand {
 
     @Override
     public void runCommand(GuildMessageReceivedEvent e) {

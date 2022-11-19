@@ -1,6 +1,6 @@
 package com.marsss.callerphone.channelpool.commands;
 
-import com.marsss.Command;
+import com.marsss.ICommand;
 import com.marsss.callerphone.Callerphone;
 import com.marsss.callerphone.channelpool.ChannelPool;
 import net.dv8tion.jda.api.Permission;
@@ -8,7 +8,7 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
-public class EndPool implements Command {
+public class EndPool implements ICommand {
     @Override
     public void runCommand(GuildMessageReceivedEvent e) {
         e.getMessage().reply(endPool(e.getMember(), e.getChannel().getId())).queue();

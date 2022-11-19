@@ -2,7 +2,7 @@ package com.marsss.callerphone.utils;
 
 import java.util.Random;
 
-import com.marsss.Command;
+import com.marsss.ICommand;
 import com.marsss.callerphone.Callerphone;
 
 import java.awt.Color;
@@ -13,7 +13,7 @@ import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
-public class Colour implements Command {
+public class Colour implements ICommand {
 
 
     @Override

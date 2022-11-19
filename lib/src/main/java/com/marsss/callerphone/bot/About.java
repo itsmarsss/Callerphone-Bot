@@ -5,7 +5,7 @@ import java.lang.management.ManagementFactory;
 import java.text.CharacterIterator;
 import java.text.StringCharacterIterator;
 
-import com.marsss.Command;
+import com.marsss.ICommand;
 import com.marsss.callerphone.Callerphone;
 
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -15,7 +15,7 @@ import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
-public class About implements Command {
+public class About implements ICommand {
 
     @Override
     public void runCommand(GuildMessageReceivedEvent e) {

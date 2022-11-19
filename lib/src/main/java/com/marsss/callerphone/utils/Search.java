@@ -3,7 +3,7 @@ package com.marsss.callerphone.utils;
 import java.awt.Color;
 import java.io.IOException;
 
-import com.marsss.Command;
+import com.marsss.ICommand;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
@@ -17,7 +17,7 @@ import com.marsss.callerphone.Callerphone;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 
-public class Search implements Command {
+public class Search implements ICommand {
 
     @Override
     public void runCommand(GuildMessageReceivedEvent e) {

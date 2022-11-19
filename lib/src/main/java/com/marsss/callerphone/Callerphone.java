@@ -16,7 +16,7 @@ import com.marsss.callerphone.tccallerphone.TCCallerphoneListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.marsss.Command;
+import com.marsss.ICommand;
 import com.marsss.callerphone.bot.*;
 import com.marsss.callerphone.utils.*;
 import com.marsss.callerphone.listeners.*;
@@ -51,7 +51,7 @@ public class Callerphone {
 
     public static LinkedList<String> filter = new LinkedList<>();
 
-    public static HashMap<String, Command> cmdMap = new HashMap<>();
+    public static HashMap<String, ICommand> cmdMap = new HashMap<>();
 
     public static final String Prefix = "c?";
 
@@ -96,7 +96,7 @@ public class Callerphone {
                         .build();
             }
 
-            ArrayList<Command> cmdLst = new ArrayList<>();
+            ArrayList<ICommand> cmdLst = new ArrayList<>();
             cmdLst.add(new About());
             cmdLst.add(new Donate());
             cmdLst.add(new Invite());
@@ -123,7 +123,7 @@ public class Callerphone {
             cmdLst.add(new PoolPwd());
             cmdLst.add(new PoolKick());
 
-            for (Command cmd : cmdLst) {
+            for (ICommand cmd : cmdLst) {
                 for (String trigger : cmd.getTriggers()) {
                     cmdMap.put(trigger, cmd);
                     System.out.println("Put: key=" + trigger + ", value=" + cmd.getClass().getName());

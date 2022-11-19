@@ -1,11 +1,11 @@
 package com.marsss.callerphone.bot;
 
-import com.marsss.Command;
+import com.marsss.ICommand;
 import com.marsss.callerphone.Callerphone;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
-public class Ping implements Command {
+public class Ping implements ICommand {
 
     @Override
     public void runCommand(GuildMessageReceivedEvent e) {
