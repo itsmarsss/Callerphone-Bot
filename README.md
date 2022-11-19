@@ -77,7 +77,7 @@ Callerphone-Bot
 `reportchat` - report the other party
 
 
-### Music Commands 
+<!-- ### Music Commands 
 (*Will be moved to `Tunes` a music bot I am working on*)
 
 `join` - join the voice channel
@@ -122,7 +122,7 @@ Callerphone-Bot
 
 `announce` - toggle announce
 
-`loop` - toggle loop
+`loop` - toggle loop -->
 
 
 ## More Information
