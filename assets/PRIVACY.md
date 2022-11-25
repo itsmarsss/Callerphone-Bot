@@ -10,6 +10,19 @@ Data collected by Callerphone will be used to improve the experience of using Ca
 
 Data collected in the Discord app will remain in the Discord app. Data is stored in Discord, outside the reach of any Discord user that is not an active participant in the development of Callerphone. Callerphone and Callerphone's developers will not be liable in an event of a breach Data as Data is stored with Discord.
 
+## Data Collection
+
+Here is a compiled list of all Data that may be stored (All Data are collected within Discord):  
+* User username
+* User nickname
+* User ID
+* User Roles
+* User messages
+* Channel name
+* Channel ID
+
+**NOTICE:** Callerphone's Data Access (Data Collection) can also be viewed in the "Data Access" tab of Callerphone's Discord profile.
+
 ## User Rights
 
 Without reason, you have the right to view and request the deletion of Data relating to you. Data related requests can be performed by joining [Callerphone's Support Server](https://discord.gg/jcYKsfw48p) and contacting support.
