@@ -4,8 +4,7 @@ The use of this application ("Callerphone") in a Discord server requires various
 
 ## Data Access
 
-Data collected by Callerphone will be used to improve the experience of using Callerphone. Only active Callerphone developers are allowed permission to view this data. Third parties will not be allowed possession of Data unless required by law or [Discord Terms of Service]
-(https://discord.com/terms). Data relating to you can be requested by joining [Callerphone's Support Server](https://discord.gg/jcYKsfw48p) and contacting support.
+Data collected by Callerphone will be used to improve the experience of using Callerphone. Only active Callerphone developers are allowed permission to view this data. Third parties will not be allowed possession of Data unless required by law or [Discord Terms of Service](https://discord.com/terms). Data relating to you can be requested by joining [Callerphone's Support Server](https://discord.gg/jcYKsfw48p) and contacting support.
 
 ## Data Storage
 
