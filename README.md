@@ -6,13 +6,10 @@
 </h1>
   
 #### **About**:
- Callerphone allows you to talk to strangers from other servers, you can do this by text or voice. We have censored and uncensored calls, you can even go undercover and be anonymous if you want. Unfortunately, we could not add censorship to voice calls because of the enormous increase in ping. If anyone decides to break Callerphone's rules and or Discord TOS, you can always report the other party! Add this bot to your server for your members to socialize and have fun!
-
-**Commands** -
- We have a whole list of commands, utility, entertainment, chat, and call commands! Utility commands can help you learn more about a user, a role, a channel, or even the server. Entertainment commands can help you clap your messages, echo your messages, reply to your questions with eight ball, create polls and even a few color commands.
+ Callerphone allows you to talk to strangers from other servers through chat. We have censored and uncensored calls, you can even go undercover and be anonymous if you want. If you run into anyone that decides to break [Callerphone's TOS](https://github.com/itsmarsss/Callerphone-Bot/blob/main/assets/TERMSOFSERVICE.md) and or [Discord TOS](https://discord.com/terms), you can always report the other party! Add this bot to your server for your members to socialize and have fun!
 
 **Why?** -
- Why should you choose Callerphone over other bots that do similar things? Callerphone does not randomly disconnect chats or calls and will pair you up with someone as soon as it can! Callerphone works in voice channels. It can help your server members become more active and socialize more! You can help increase our user-base by inviting Callerphone!
+ Why should you choose Callerphone over other bots that do similar things? Callerphone does not randomly disconnect chats or calls and will pair you up with someone as soon as it can! Callerphone even supports permanent channel bridging, connect up to 10 channels together! It can help your server members become more active and socialize more! You can help increase our user-base by inviting Callerphone!
 
 ## Features
 
