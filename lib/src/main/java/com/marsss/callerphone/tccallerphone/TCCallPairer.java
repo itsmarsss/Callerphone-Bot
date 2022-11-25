@@ -16,7 +16,7 @@ public class TCCallPairer {
     public static void onCallCommand(TextChannel tcchannel, Message message, boolean cens, boolean anon) {
         final Logger logger = LoggerFactory.getLogger(TCCallPairer.class);
         final String CHANNELID = tcchannel.getId();
-        final JDA jda = com.marsss.callerphone.Callerphone.jda;
+        final JDA jda = Callerphone.jda;
         for (int i = 0; i < ConvoStorage.convo.length; i++) {
             final Convo convo = ConvoStorage.convo[i];
             if (!convo.getConnected()) {

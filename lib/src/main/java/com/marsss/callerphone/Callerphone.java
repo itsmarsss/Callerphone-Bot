@@ -41,7 +41,7 @@ import net.dv8tion.jda.api.utils.cache.CacheFlag;
 
 public class Callerphone {
 
-    public static final Logger logger = LoggerFactory.getLogger(com.marsss.callerphone.Callerphone.class);
+    public static final Logger logger = LoggerFactory.getLogger(Callerphone.class);
 
     public static String parent;
 
@@ -153,7 +153,7 @@ public class Callerphone {
             }
 
 
-            parent = URLDecoder.decode(new File(com.marsss.callerphone.Callerphone.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getParentFile().getPath(), "UTF-8");
+            parent = URLDecoder.decode(new File(Callerphone.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getParentFile().getPath(), "UTF-8");
             System.out.println("\nParent - " + parent);
 
 
@@ -286,7 +286,7 @@ public class Callerphone {
                 final String callerID = c.getCallerTCID();
                 if (!c.getConnected()) {
                     try {
-                        com.marsss.callerphone.Callerphone.jda.getTextChannelById(callerID).sendMessage(com.marsss.callerphone.Callerphone.Callerphone + "Took too long for someone to pick up :(").queue();
+                        jda.getTextChannelById(callerID).sendMessage(Callerphone + "Took too long for someone to pick up :(").queue();
                     } catch (Exception ex) {
                     }
                     c.resetMessage();
@@ -298,11 +298,11 @@ public class Callerphone {
 
                 c.resetMessage();
                 try {
-                    com.marsss.callerphone.Callerphone.jda.getTextChannelById(callerID).sendMessage(com.marsss.callerphone.Callerphone.Callerphone + "Call ended due to inactivity.").queue();
+                    jda.getTextChannelById(callerID).sendMessage(Callerphone + "Call ended due to inactivity.").queue();
                 } catch (Exception ex) {
                 }
                 try {
-                    com.marsss.callerphone.Callerphone.jda.getTextChannelById(receiverID).sendMessage(com.marsss.callerphone.Callerphone.Callerphone + "Call ended due to inactivity.").queue();
+                    jda.getTextChannelById(receiverID).sendMessage(Callerphone + "Call ended due to inactivity.").queue();
                 } catch (Exception ex) {
                 }
 
@@ -318,7 +318,7 @@ public class Callerphone {
                     String data = "";
                     for (String m : DATA)
                         data += m + "\n";
-                    jda.getTextChannelById(com.marsss.callerphone.Callerphone.reportchannel).sendMessage("**ID:** " + ID).addFile(data.getBytes(), ID + ".txt").queue();
+                    jda.getTextChannelById(reportchannel).sendMessage("**ID:** " + ID).addFile(data.getBytes(), ID + ".txt").queue();
 
                 }
 
@@ -456,7 +456,7 @@ public class Callerphone {
             if (cmd.equals("shutdown")) {
                 logger.info("Shutting Down Bot...");
                 if (jda != null) {
-                    EmbedBuilder embedBuilder = new EmbedBuilder().setTitle("Status").setColor(new Color(213, 0, 0)).setFooter("Goodbye World...").setDescription(com.marsss.callerphone.Callerphone.jda.getSelfUser().getAsMention() + " is going offline;" + cmd.replaceFirst("shutdown", ""));
+                    EmbedBuilder embedBuilder = new EmbedBuilder().setTitle("Status").setColor(new Color(213, 0, 0)).setFooter("Goodbye World...").setDescription(jda.getSelfUser().getAsMention() + " is going offline;" + cmd.replaceFirst("shutdown", ""));
                     try {
                         jda.getTextChannelById(logstatus).sendMessageEmbeds(embedBuilder.build()).complete();
                     } catch (Exception e) {
