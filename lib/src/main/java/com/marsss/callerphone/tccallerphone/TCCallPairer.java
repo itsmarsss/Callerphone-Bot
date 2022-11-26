@@ -22,7 +22,7 @@ public class TCCallPairer {
             if (!convo.getConnected()) {
                 if (!convo.getCallerTCID().equals("empty")) {
                     if (!cens) {
-                        tcchannel.sendMessage("This chat will be uncensored, if you do not wish to proceed please run `" + Callerphone.prefix + "endchat`").queue();
+                        tcchannel.sendMessage("This chat will be uncensored, if you do not wish to proceed please run `" + Callerphone.Prefix + "endchat`").queue();
                     }
                     convo.setRFF(cens);
                     convo.setRAnon(anon);
@@ -40,7 +40,7 @@ public class TCCallPairer {
                     return;
                 } else if (convo.getCallerTCID().equals("empty")) {
                     if (!cens) {
-                        tcchannel.sendMessage("This chat will be uncensored, if you do not wish to proceed please run `" + Callerphone.prefix + "endchat`").queue();
+                        tcchannel.sendMessage("This chat will be uncensored, if you do not wish to proceed please run `" + Callerphone.Prefix + "endchat`").queue();
                     }
                     convo.setCFF(cens);
                     convo.setCAnon(anon);
