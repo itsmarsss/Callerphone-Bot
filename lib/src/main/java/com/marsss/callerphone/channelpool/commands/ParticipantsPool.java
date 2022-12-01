@@ -47,7 +47,7 @@ public class ParticipantsPool implements ICommand {
             for (int i = 0; i < participants.size(); i++) {
                 list.append("\n`ID: ")
                         .append(participants.get(i))
-                        .append("` (")
+                        .append("` (#")
                         .append(Callerphone.jda.getTextChannelById(participants.get(i)).getName())
                         .append(")");
                 if (i == 0) {
