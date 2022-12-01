@@ -4,6 +4,8 @@ import com.marsss.ICommand;
 import com.marsss.callerphone.Callerphone;
 import com.marsss.callerphone.channelpool.ChannelPool;
 import com.marsss.callerphone.listeners.CommandListener;
+import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
@@ -20,7 +22,7 @@ public class PoolCap implements ICommand {
         final int cap = Integer.parseInt(args[1]);
 
         try {
-            e.getMessage().reply(poolCap(e.getChannel().getId(), cap)).queue();
+            e.getMessage().reply(poolCap(e.getChannel().getId(), cap, e.getMember())).queue();
         } catch (Exception ex) {
             CommandListener.sendError(e.getMessage(), ex);
         }
@@ -28,7 +30,7 @@ public class PoolCap implements ICommand {
 
     @Override
     public void runSlash(SlashCommandEvent e) {
-        e.reply(poolCap(e.getChannel().getId(), (int) e.getOption("capacity").getAsLong())).queue();
+        e.reply(poolCap(e.getChannel().getId(), (int) e.getOption("capacity").getAsLong(), e.getMember())).queue();
     }
 
 
@@ -46,7 +48,11 @@ public class PoolCap implements ICommand {
         return "cap,capcity,poolcap,poolcapacity".split(",");
     }
 
-    private String poolCap(String id, int cap) {
+    private String poolCap(String id, int cap, Member member) {
+        if (!member.hasPermission(Permission.MANAGE_CHANNEL)) {
+            return Callerphone.Callerphone + "You need `Manage Channel` permission to run this command.";
+        }
+
         int stat = ChannelPool.setCap(id, cap);
         if (stat == ChannelPool.SUCCESS) {
             return Callerphone.Callerphone + "This pool now has capacity **" + ChannelPool.config.get(id).getCap() + "**.";

@@ -4,6 +4,8 @@ import com.marsss.ICommand;
 import com.marsss.callerphone.Callerphone;
 import com.marsss.callerphone.channelpool.ChannelPool;
 import com.marsss.callerphone.listeners.CommandListener;
+import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
@@ -20,7 +22,7 @@ public class PoolPwd implements ICommand {
         final String pwd = args[1];
 
         try {
-            e.getMessage().reply(poolPwd(e.getChannel().getId(), pwd)).queue();
+            e.getMessage().reply(poolPwd(e.getChannel().getId(), pwd, e.getMember())).queue();
         } catch (Exception ex) {
             CommandListener.sendError(e.getMessage(), ex);
         }
@@ -28,7 +30,7 @@ public class PoolPwd implements ICommand {
 
     @Override
     public void runSlash(SlashCommandEvent e) {
-        e.reply(poolPwd(e.getChannel().getId(), e.getOption("password").getAsString())).queue();
+        e.reply(poolPwd(e.getChannel().getId(), e.getOption("password").getAsString(), e.getMember())).queue();
     }
 
     public static String getHelp() {
@@ -45,7 +47,12 @@ public class PoolPwd implements ICommand {
         return "password,pass,pwd,poolpass,poolpwd,poolpassword".split(",");
     }
 
-    private String poolPwd(String id, String pwd) {
+    private String poolPwd(String id, String pwd, Member member) {
+
+        if (!member.hasPermission(Permission.MANAGE_CHANNEL)) {
+            return Callerphone.Callerphone + "You need `Manage Channel` permission to run this command.";
+        }
+
         if (pwd.equals("none"))
             pwd = "";
 

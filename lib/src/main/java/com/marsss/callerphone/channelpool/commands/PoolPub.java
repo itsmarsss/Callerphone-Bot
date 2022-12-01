@@ -4,6 +4,8 @@ import com.marsss.ICommand;
 import com.marsss.callerphone.Callerphone;
 import com.marsss.callerphone.channelpool.ChannelPool;
 import com.marsss.callerphone.listeners.CommandListener;
+import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
@@ -21,7 +23,7 @@ public class PoolPub implements ICommand {
         final boolean pub = Boolean.parseBoolean(args[1]);
 
         try {
-            e.getMessage().reply(poolPub(e.getChannel().getId(), pub)).queue();
+            e.getMessage().reply(poolPub(e.getChannel().getId(), pub, e.getMember())).queue();
         } catch (Exception ex) {
             CommandListener.sendError(e.getMessage(), ex);
         }
@@ -29,7 +31,7 @@ public class PoolPub implements ICommand {
 
     @Override
     public void runSlash(SlashCommandEvent e) {
-        e.reply(poolPub(e.getChannel().getId(), e.getOption("publicity").getAsBoolean())).queue();
+        e.reply(poolPub(e.getChannel().getId(), e.getOption("publicity").getAsBoolean(), e.getMember())).queue();
     }
 
     public static String getHelp() {
@@ -46,7 +48,12 @@ public class PoolPub implements ICommand {
         return "public,publicity,poolpub,poolpublic,poolpublicity".split(",");
     }
 
-    private String poolPub(String id, boolean pub) {
+    private String poolPub(String id, boolean pub, Member member) {
+
+        if (!member.hasPermission(Permission.MANAGE_CHANNEL)) {
+            return Callerphone.Callerphone + "You need `Manage Channel` permission to run this command.";
+        }
+
         int stat = ChannelPool.setPublicity(id, pub);
         if (stat == ChannelPool.SUCCESS) {
             return Callerphone.Callerphone + "This pool is now " + (pub ? "public" : "private") + ".";
