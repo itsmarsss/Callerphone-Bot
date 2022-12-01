@@ -58,7 +58,8 @@ public class PoolKick implements ICommand {
 
         int stat = ChannelPool.removeChildren(IDh, IDc);
         if (stat == ChannelPool.SUCCESS) {
-            return Callerphone.Callerphone + "Successfully kicked `ID: " + IDc + "` (#" + Callerphone.jda.getTextChannelById(IDc) + ") from this pool.";
+            Callerphone.jda.getTextChannelById(IDc).sendMessage(Callerphone.Callerphone + "You have been kicked from the pool.").queue();
+            return Callerphone.Callerphone + "Successfully kicked `ID: " + IDc + "` (#" + Callerphone.jda.getTextChannelById(IDc).getName() + ") from this pool.";
         } else if (stat == ChannelPool.ERROR) {
             return Callerphone.Callerphone + "Requested pool not found.";
         }
