@@ -45,11 +45,15 @@ public class ParticipantsPool implements ICommand {
         } else {
             StringBuilder list = new StringBuilder();
             for (int i = 0; i < participants.size(); i++) {
-                list.append("\n`#").append(Callerphone.jda.getTextChannelById(participants.get(i)).getName()).append("` *(").append(participants.get(i)).append(")*");
+                list.append("\n`ID: ")
+                        .append(participants.get(i))
+                        .append("` (")
+                        .append(Callerphone.jda.getTextChannelById(participants.get(i)).getName())
+                        .append(")");
                 if (i == 0) {
-                    list.append(" [Host]");
+                    list.append(" [Host] :crown:");
                 } else {
-                    list.append(" [Client]");
+                    list.append(" [Client] :link:");
                 }
             }
             return list.toString();
