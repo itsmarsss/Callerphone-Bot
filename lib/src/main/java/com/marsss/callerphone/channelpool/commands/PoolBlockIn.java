@@ -1,11 +1,10 @@
 package com.marsss.callerphone.channelpool.commands;
 
 import com.marsss.ICommand;
-import com.marsss.callerphone.Callerphone;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
-public class PoolInv implements ICommand {
+public class PoolBlockIn implements ICommand {
     @Override
     public void runCommand(GuildMessageReceivedEvent e) {
 
@@ -16,10 +15,6 @@ public class PoolInv implements ICommand {
 
     }
 
-    public static String getHelp() {
-        return "`" + Callerphone.Prefix + "invchan <channel ID>` - Invite channel to pool.";
-    }
-
     @Override
     public String getHelpF() {
         return null;
@@ -27,6 +22,6 @@ public class PoolInv implements ICommand {
 
     @Override
     public String[] getTriggers() {
-        return "invitechannel,invchannel,invitechan,invchan".split(",");
+        return new String[0];
     }
 }

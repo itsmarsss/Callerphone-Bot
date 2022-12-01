@@ -1,15 +1,13 @@
 package com.marsss.callerphone.channelpool.commands;
 
 import com.marsss.ICommand;
-import com.marsss.callerphone.Callerphone;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
-public class PoolTransOwner implements ICommand {
+public class PoolBlockOut implements ICommand {
     @Override
     public void runCommand(GuildMessageReceivedEvent e) {
-        // TODO:
-        // Transfer ownership
+
     }
 
     @Override
@@ -17,17 +15,13 @@ public class PoolTransOwner implements ICommand {
 
     }
 
-    public static String getHelp() {
-        return "`" + Callerphone.Prefix + "transferhost <channel ID>` - Transfer host permission to another pool.";
-    }
-
     @Override
     public String getHelpF() {
-        return "`" + Callerphone.Prefix + "transferhost <channel ID>` - Transfer host permission to another pool.";
+        return null;
     }
 
     @Override
     public String[] getTriggers() {
-        return "trans,transhost,transferhost".split(",");
+        return new String[0];
     }
 }
