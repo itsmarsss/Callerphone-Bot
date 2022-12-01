@@ -5,7 +5,6 @@ import com.marsss.callerphone.Callerphone;
 import com.marsss.callerphone.channelpool.ChannelPool;
 import com.marsss.callerphone.listeners.CommandListener;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
@@ -13,8 +12,14 @@ import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 public class HostPool implements ICommand {
     @Override
     public void runCommand(GuildMessageReceivedEvent e) {
+
+        if (!e.getMember().hasPermission(Permission.MANAGE_CHANNEL)) {
+            e.getMessage().reply(Callerphone.Callerphone + "You need `Manage Channel` permission to run this command.").queue();
+            return;
+        }
+
         try {
-            e.getMessage().reply(hostPool(e.getMember(), e.getChannel())).queue();
+            e.getMessage().reply(hostPool(e.getChannel())).queue();
         } catch (Exception ex) {
             CommandListener.sendError(e.getMessage(), ex);
         }
@@ -22,7 +27,7 @@ public class HostPool implements ICommand {
 
     @Override
     public void runSlash(SlashCommandEvent e) {
-        e.reply(hostPool(e.getMember(), e.getChannel())).queue();
+        e.reply(hostPool(e.getChannel())).queue();
     }
 
     public static String getHelp() {
@@ -39,11 +44,7 @@ public class HostPool implements ICommand {
         return "host,hostpool,startpool".split(",");
     }
 
-    private String hostPool(Member member, MessageChannel channel) {
-        if (!member.hasPermission(Permission.MANAGE_CHANNEL)) {
-            return Callerphone.Callerphone + "You need `Manage Channel` permission to run this command.";
-        }
-
+    private String hostPool(MessageChannel channel) {
         int stat = ChannelPool.hostPool(channel.getId());
         if (stat == ChannelPool.IS_HOST) {
             if (ChannelPool.hasPassword(channel.getId())) {

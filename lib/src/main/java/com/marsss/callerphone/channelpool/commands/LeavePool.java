@@ -5,15 +5,20 @@ import com.marsss.callerphone.Callerphone;
 import com.marsss.callerphone.channelpool.ChannelPool;
 import com.marsss.callerphone.listeners.CommandListener;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
 public class LeavePool implements ICommand {
     @Override
     public void runCommand(GuildMessageReceivedEvent e) {
+
+        if (!e.getMember().hasPermission(Permission.MANAGE_CHANNEL)) {
+            e.getMessage().reply(Callerphone.Callerphone + "You need `Manage Channel` permission to run this command.").queue();
+            return;
+        }
+
         try {
-            e.getMessage().reply(leavePool(e.getMember(), e.getChannel().getId())).queue();
+            e.getMessage().reply(leavePool(e.getChannel().getId())).queue();
         } catch (Exception ex) {
             CommandListener.sendError(e.getMessage(), ex);
         }
@@ -21,7 +26,7 @@ public class LeavePool implements ICommand {
 
     @Override
     public void runSlash(SlashCommandEvent e) {
-        e.reply(leavePool(e.getMember(), e.getChannel().getId())).queue();
+        e.reply(leavePool(e.getChannel().getId())).queue();
     }
 
     public static String getHelp() {
@@ -38,11 +43,7 @@ public class LeavePool implements ICommand {
         return "leave,leavepool,exitpool".split(",");
     }
 
-    private String leavePool(Member member, String id) {
-        if (!member.hasPermission(Permission.MANAGE_CHANNEL)) {
-            return Callerphone.Callerphone + "You need `Manage Channel` permission to run this command.";
-        }
-
+    private String leavePool(String id) {
         int stat = ChannelPool.leavePool(id);
         if (stat == ChannelPool.ERROR) {
             return Callerphone.Callerphone + "This channel is not in a pool.";

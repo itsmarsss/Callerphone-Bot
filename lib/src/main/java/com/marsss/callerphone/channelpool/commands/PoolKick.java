@@ -5,13 +5,17 @@ import com.marsss.callerphone.Callerphone;
 import com.marsss.callerphone.channelpool.ChannelPool;
 import com.marsss.callerphone.listeners.CommandListener;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
 public class PoolKick implements ICommand {
     @Override
     public void runCommand(GuildMessageReceivedEvent e) {
+
+        if (!e.getMember().hasPermission(Permission.MANAGE_CHANNEL)) {
+            e.getMessage().reply(Callerphone.Callerphone + "You need `Manage Channel` permission to run this command.").queue();
+            return;
+        }
 
         String[] args = e.getMessage().getContentRaw().split("\\s+");
 
@@ -23,7 +27,7 @@ public class PoolKick implements ICommand {
         final String id = args[1];
 
         try {
-            e.getMessage().reply(poolKick(e.getChannel().getId(), id, e.getMember())).queue();
+            e.getMessage().reply(poolKick(e.getChannel().getId(), id)).queue();
         } catch (Exception ex) {
             CommandListener.sendError(e.getMessage(), ex);
         }
@@ -49,13 +53,7 @@ public class PoolKick implements ICommand {
         return "kick,kickchannel,kickchan".split(",");
     }
 
-    private String poolKick(String IDh, String IDc, Member member) {
-
-
-        if (!member.hasPermission(Permission.MANAGE_CHANNEL)) {
-            return Callerphone.Callerphone + "You need `Manage Channel` permission to run this command.";
-        }
-
+    private String poolKick(String IDh, String IDc) {
         int stat = ChannelPool.removeChildren(IDh, IDc);
         if (stat == ChannelPool.SUCCESS) {
             Callerphone.jda.getTextChannelById(IDc).sendMessage(Callerphone.Callerphone + "You have been kicked from the pool.").queue();

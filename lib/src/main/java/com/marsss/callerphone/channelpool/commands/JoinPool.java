@@ -5,7 +5,6 @@ import com.marsss.callerphone.Callerphone;
 import com.marsss.callerphone.channelpool.ChannelPool;
 import com.marsss.callerphone.listeners.CommandListener;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
@@ -13,6 +12,12 @@ import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 public class JoinPool implements ICommand {
     @Override
     public void runCommand(GuildMessageReceivedEvent e) {
+
+        if (!e.getMember().hasPermission(Permission.MANAGE_CHANNEL)) {
+            e.getMessage().reply(Callerphone.Callerphone + "You need `Manage Channel` permission to run this command.").queue();
+            return;
+        }
+
         String[] args = e.getMessage().getContentRaw().split("\\s+");
 
         if (args.length == 1) {
@@ -28,7 +33,7 @@ public class JoinPool implements ICommand {
             pwd = args[2];
 
         try {
-            e.getMessage().reply(joinPool(e.getMember(), e.getChannel(), host, pwd)).queue();
+            e.getMessage().reply(joinPool(e.getChannel(), host, pwd)).queue();
         } catch (Exception ex) {
             CommandListener.sendError(e.getMessage(), ex);
         }
@@ -36,7 +41,7 @@ public class JoinPool implements ICommand {
 
     @Override
     public void runSlash(SlashCommandEvent e) {
-        e.reply(joinPool(e.getMember(), e.getChannel(), e.getOption("hostID").getAsString(), e.getOption("password").getAsString())).queue();
+        e.reply(joinPool(e.getChannel(), e.getOption("hostID").getAsString(), e.getOption("password").getAsString())).queue();
     }
 
     public static String getHelp() {
@@ -53,11 +58,7 @@ public class JoinPool implements ICommand {
         return "join,joinpool,addpool".split(",");
     }
 
-    private String joinPool(Member member, MessageChannel channel, String host, String pwd) {
-        if (!member.hasPermission(Permission.MANAGE_CHANNEL)) {
-            return Callerphone.Callerphone + "You need `Manage Channel` permission to run this command.";
-        }
-
+    private String joinPool(MessageChannel channel, String host, String pwd) {
         int stat = ChannelPool.joinPool(host, channel.getId(), pwd);
         if (stat == ChannelPool.IS_HOST) {
             if (ChannelPool.hasPassword(channel.getId())) {
