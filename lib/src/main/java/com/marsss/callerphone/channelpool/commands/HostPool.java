@@ -3,6 +3,7 @@ package com.marsss.callerphone.channelpool.commands;
 import com.marsss.ICommand;
 import com.marsss.callerphone.Callerphone;
 import com.marsss.callerphone.channelpool.ChannelPool;
+import com.marsss.callerphone.listeners.CommandListener;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.MessageChannel;
@@ -12,7 +13,11 @@ import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 public class HostPool implements ICommand {
     @Override
     public void runCommand(GuildMessageReceivedEvent e) {
-        e.getMessage().reply(hostPool(e.getMember(), e.getChannel())).queue();
+        try {
+            e.getMessage().reply(hostPool(e.getMember(), e.getChannel())).queue();
+        } catch (Exception ex) {
+            CommandListener.sendError(e.getMessage(), ex);
+        }
     }
 
     @Override
@@ -40,16 +45,26 @@ public class HostPool implements ICommand {
         }
 
         int stat = ChannelPool.hostPool(channel.getId());
-        if (stat == 413) {
-            return Callerphone.Callerphone + "This channel is already hosting a pool." +
-                    "\nThis channel's pool ID is: `" + channel.getId() + "`" +
-                    "\nSet a password with: `" + Callerphone.Prefix + "pwdpool <password>`";
-        } else if (stat == 409) {
-            return Callerphone.Callerphone + "This channel is already in a pool.";
-        } else if (stat == 201) {
+        if (stat == ChannelPool.IS_HOST) {
+            if (ChannelPool.hasPassword(channel.getId())) {
+                return Callerphone.Callerphone + "This channel is already hosting a pool." +
+                        "\nThis channel's pool ID is: `" + channel.getId() + "`" +
+                        "\nThis channel's password is: ||`" + ChannelPool.getPassword(channel.getId()) + "`||" +
+                        "\nEnd pool with: `" + Callerphone.Prefix + "endpool`";
+            } else {
+                return Callerphone.Callerphone + "This channel is already hosting a pool." +
+                        "\nThis channel's pool ID is: `" + channel.getId() + "`" +
+                        "\nSet a password with: `" + Callerphone.Prefix + "pwdpool <password>`" +
+                        "\nEnd pool with: `" + Callerphone.Prefix + "endpool`";
+            }
+        } else if (stat == ChannelPool.IS_CHILD) {
+            return Callerphone.Callerphone + "This channel is already in a pool." +
+                    "\nLeave pool with: `" + Callerphone.Prefix + "leavepool`";
+        } else if (stat == ChannelPool.SUCCESS) {
             return Callerphone.Callerphone + "Successfully hosted channel pool for `#" + channel.getName() + "`!" +
                     "\nThis channel's pool ID is: `" + channel.getId() + "`" +
-                    "\nSet a password with: `" + Callerphone.Prefix + "poolpass <password>`";
+                    "\nSet a password with: `" + Callerphone.Prefix + "poolpass <password>`" +
+                    "\nEnd pool with: `" + Callerphone.Prefix + "endpool`";
         }
         return Callerphone.Callerphone + "An error occurred.";
     }
