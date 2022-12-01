@@ -36,7 +36,7 @@ public class PoolKick implements ICommand {
 
     @Override
     public void runSlash(SlashCommandEvent e) {
-
+        e.reply(poolKick(e.getChannel().getId(), e.getOption("target").getAsString())).queue();
     }
 
     public static String getHelp() {
