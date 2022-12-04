@@ -22,7 +22,7 @@ public class TCCallerphoneListener extends ListenerAdapter {
 
 		final Message MESSAGE = event.getMessage();
 		String MESSAGERAW = MESSAGE.getContentDisplay();
-		final String args[] = MESSAGERAW.toLowerCase().split("\\s+");
+		final String[] args = MESSAGERAW.toLowerCase().split("\\s+");
 
 		SWITCH : switch (args[0].replace(com.marsss.callerphone.Callerphone.Prefix, "")) {
 

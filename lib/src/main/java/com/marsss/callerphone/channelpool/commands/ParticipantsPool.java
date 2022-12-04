@@ -25,7 +25,7 @@ public class ParticipantsPool implements ICommand {
     }
 
     @Override
-    public String getHelpF() {
+    public String getHelp() {
         return "`" + Callerphone.Prefix + "poolparts` - Show channel pool participants.";
     }
 

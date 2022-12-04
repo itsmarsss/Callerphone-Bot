@@ -39,7 +39,7 @@ public class PoolPwd implements ICommand {
     }
 
     @Override
-    public String getHelpF() {
+    public String getHelp() {
         return "`" + Callerphone.Prefix + "poolpwd <password | \"none\" for no password>` - Set channel pool password.";
     }
 
@@ -54,12 +54,9 @@ public class PoolPwd implements ICommand {
 
         int stat = ChannelPool.setPassword(id, pwd);
         if (stat == ChannelPool.SUCCESS) {
-            if (pwd.equals("")) {
-                return Callerphone.Callerphone + "This pool now has no password.";
-            } else {
-                return Callerphone.Callerphone + "This pool now has password ||" + pwd + "||.";
-            }
-
+                return Callerphone.Callerphone + "This pool now has" +
+                        ((pwd.equals("")) ?  "no password" : "password ||" + pwd + "||") +
+                        ".";
         } else if (stat == ChannelPool.ERROR) {
             return Callerphone.Callerphone + "This pool is not hosting a pool.";
         }

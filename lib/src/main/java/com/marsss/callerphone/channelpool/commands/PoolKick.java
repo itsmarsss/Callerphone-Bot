@@ -40,7 +40,7 @@ public class PoolKick implements ICommand {
     }
 
     @Override
-    public String getHelpF() {
+    public String getHelp() {
         return "`" + Callerphone.Prefix + "kickchan <channel ID>` - Kick channel from pool.";
     }
 

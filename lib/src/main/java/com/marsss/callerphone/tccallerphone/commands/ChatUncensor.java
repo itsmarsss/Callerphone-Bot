@@ -16,7 +16,7 @@ public class ChatUncensor implements ICommand {
     }
 
     @Override
-    public String getHelpF() {
+    public String getHelp() {
         return null;
     }
 

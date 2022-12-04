@@ -20,7 +20,7 @@ public class Help implements ICommand {
     public void runCommand(GuildMessageReceivedEvent e) {
         final Message MESSAGE = e.getMessage();
         final String CONTENT = MESSAGE.getContentRaw();
-        final String args[] = CONTENT.split("\\s+");
+        final String[] args = CONTENT.split("\\s+");
 
         boolean admin = Callerphone.admin.contains(e.getAuthor().getId());
         if (args.length > 1) {
@@ -36,12 +36,8 @@ public class Help implements ICommand {
 
     }
 
-    public static String getHelp() {
-        return "`" + Callerphone.Prefix + "help` - help help help";
-    }
-
     @Override
-    public String getHelpF() {
+    public String getHelp() {
         return "`" + Callerphone.Prefix + "help` - help help help";
     }
 
@@ -68,53 +64,52 @@ public class Help implements ICommand {
 
             case "bot":
                 TITLE = "Bot Commands";
-                DESC = ICommand.getHelp() + "\n"
-                        + new Donate().getHelpF() + "\n"
-                        + new Invite().getHelpF() + "\n"
-                        + new Ping().getHelpF() + "\n"
-                        + new Uptime().getHelpF();
+                DESC = new Donate().getHelp() + "\n"
+                        + new Invite().getHelp() + "\n"
+                        + new Ping().getHelp() + "\n"
+                        + new Uptime().getHelp();
                 break;
 
 
             case "utils":
                 TITLE = "Util Commands";
-                DESC = new BotInfo().getHelpF() + "\n"
-                        + new ChannelInfo().getHelpF() + "\n"
-                        + new Colour().getHelpF() + "\n"
+                DESC = new BotInfo().getHelp() + "\n"
+                        + new ChannelInfo().getHelp() + "\n"
+                        + new Colour().getHelp() + "\n"
                         + new Help().getHelp() + "\n"
-                        + new RoleInfo().getHelpF() + "\n"
-                        + new Search().getHelpF() + "\n"
-                        + new ServerInfo().getHelpF() + "\n"
-                        + new UserInfo().getHelpF();
+                        + new RoleInfo().getHelp() + "\n"
+                        + new Search().getHelp() + "\n"
+                        + new ServerInfo().getHelp() + "\n"
+                        + new UserInfo().getHelp();
                 break;
 
 
             case "pooling":
                 TITLE = "Channel Pooling Commands";
-                DESC = new HostPool().getHelpF() + "\n"
-                        + new JoinPool().getHelpF() + "\n"
-                        + new EndPool().getHelpF() + "\n"
-                        + new LeavePool().getHelpF() + "\n"
-                        + new ParticipantsPool().getHelpF() + "\n"
-                        + new PoolCap().getHelpF() + "\n"
-                        + new PoolPub().getHelpF() + "\n"
-                        + new PoolPwd().getHelpF() + "\n"
-                        + new PoolKick().getHelpF();
+                DESC = new HostPool().getHelp() + "\n"
+                        + new JoinPool().getHelp() + "\n"
+                        + new EndPool().getHelp() + "\n"
+                        + new LeavePool().getHelp() + "\n"
+                        + new ParticipantsPool().getHelp() + "\n"
+                        + new PoolCap().getHelp() + "\n"
+                        + new PoolPub().getHelp() + "\n"
+                        + new PoolPwd().getHelp() + "\n"
+                        + new PoolKick().getHelp();
                 break;
 
 
             case "tccall":
                 TITLE = "TCCall Commands";
-                DESC = new TCCallPairer.callHelp() + "\n"
-                        + new TCCallPairer.uncenscallHelp() + "\n"
-                        + new TCCallPairer.hangupHelp() + "\n"
-                        + new TCCallPairer.reportHelp();
+                DESC = TCCallPairer.callHelp() + "\n"
+                        + TCCallPairer.uncenscallHelp() + "\n"
+                        + TCCallPairer.hangupHelp() + "\n"
+                        + TCCallPairer.reportHelp();
                 break;
 
 
             case "report":
                 TITLE = "Report Commands";
-                DESC = new TCCallPairer.reportHelp();
+                DESC = TCCallPairer.reportHelp();
                 break;
 
 
@@ -135,7 +130,7 @@ public class Help implements ICommand {
             }
 
             TITLE = trigger.substring(0, trigger.length() - 2);
-            DESC = Callerphone.cmdMap.get(name).getHelpF();
+            DESC = Callerphone.cmdMap.get(name).getHelp();
 
             if (trigger.contains("search")) {
                 DESC += "\nWe use Duckduckgo, so click [here](https://help.duckduckgo.com/duckduckgo-help-pages/results/syntax/) for searching syntax!";

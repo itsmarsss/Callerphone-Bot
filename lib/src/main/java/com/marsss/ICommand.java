@@ -6,11 +6,7 @@ import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 public interface ICommand {
     void runCommand(GuildMessageReceivedEvent e);
     void runSlash(SlashCommandEvent e);
-
-    static String getHelp() {
-        return "Command Help Message Here";
-    }
-    String getHelpF();
+    String getHelp();
 
     String[] getTriggers();
 }

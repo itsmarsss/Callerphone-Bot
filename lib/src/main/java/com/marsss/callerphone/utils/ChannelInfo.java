@@ -18,7 +18,7 @@ public class ChannelInfo implements ICommand {
     public void runCommand(GuildMessageReceivedEvent e) {
         final Message MESSAGE = e.getMessage();
         final String CONTENT = MESSAGE.getContentRaw();
-        final String args[] = CONTENT.split("\\s+");
+        final String[] args = CONTENT.split("\\s+");
 
         List<TextChannel> CHANNELS = MESSAGE.getMentionedChannels();
         GuildChannel CHANNEL;
@@ -72,7 +72,7 @@ public class ChannelInfo implements ICommand {
     }
 
     @Override
-    public String getHelpF() {
+    public String getHelp() {
         return "`" + Callerphone.Prefix + "channelinfo <#channel/id/empty>` - Get information about the channel.";
     }
 

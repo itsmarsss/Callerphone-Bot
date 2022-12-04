@@ -28,7 +28,7 @@ public class About implements ICommand {
     }
 
     @Override
-    public String getHelpF() {
+    public String getHelp() {
         return "`" + Callerphone.Prefix + "about` - Introduces you to this bot";
     }
 

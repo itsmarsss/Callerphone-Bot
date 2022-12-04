@@ -20,7 +20,7 @@ public class Colour implements ICommand {
     public void runCommand(GuildMessageReceivedEvent e) {
         final Message MESSAGE = e.getMessage();
         final String CONTENT = MESSAGE.getContentRaw();
-        final String args[] = CONTENT.split("\\s+");
+        final String[] args = CONTENT.split("\\s+");
 
         switch (args[0].toLowerCase().replace(Callerphone.Prefix, "")) {
 
@@ -55,7 +55,7 @@ public class Colour implements ICommand {
     }
 
     @Override
-    public String getHelpF() {
+    public String getHelp() {
         return "`" + Callerphone.Prefix + "color` - Get a random color in hex and rgb value.\n" +
                 "`" + Callerphone.Prefix + "colorrgb <r> <g> <b>` - Get the hex value of rgb.\n" +
                 "`" + Callerphone.Prefix + "colorhex <hex>` - Get the rgb value of hex.";

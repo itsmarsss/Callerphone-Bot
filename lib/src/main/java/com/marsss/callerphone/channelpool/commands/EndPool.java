@@ -30,7 +30,7 @@ public class EndPool implements ICommand {
     }
 
     @Override
-    public String getHelpF() {
+    public String getHelp() {
         return "`" + Callerphone.Prefix + "endpool` - End a channel pool.";
     }
 

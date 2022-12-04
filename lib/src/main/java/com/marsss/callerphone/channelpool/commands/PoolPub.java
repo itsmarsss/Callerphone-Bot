@@ -39,7 +39,7 @@ public class PoolPub implements ICommand {
     }
 
     @Override
-    public String getHelpF() {
+    public String getHelp() {
         return "`" + Callerphone.Prefix + "poolpub <true|false>` - Set channel pool publicity.";
     }
 
@@ -51,7 +51,7 @@ public class PoolPub implements ICommand {
     private String poolPub(String id, boolean pub) {
         int stat = ChannelPool.setPublicity(id, pub);
         if (stat == ChannelPool.SUCCESS) {
-            return Callerphone.Callerphone + "This pool is now " + (pub ? "public" : "private") + ".";
+            return Callerphone.Callerphone + "This pool is now **" + (pub ? "public" : "private") + "**.";
         } else if (stat == ChannelPool.ERROR) {
             return Callerphone.Callerphone + "This pool is not hosting a pool.";
         }

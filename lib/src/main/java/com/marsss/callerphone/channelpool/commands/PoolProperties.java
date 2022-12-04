@@ -16,7 +16,7 @@ public class PoolProperties implements ICommand {
     }
 
     @Override
-    public String getHelpF() {
+    public String getHelp() {
         return null;
     }
 

@@ -30,7 +30,7 @@ public class OnPrivateMessage extends ListenerAdapter {
 
         String CONTENT = MESSAGE.getContentRaw();
 
-        final String args[] = CONTENT.split("\\s+");
+        final String[] args = CONTENT.split("\\s+");
 
         boolean isAdmin = Callerphone.admin.contains(event.getAuthor().getId());
 

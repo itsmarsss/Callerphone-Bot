@@ -39,7 +39,7 @@ public class PoolCap implements ICommand {
     }
 
     @Override
-    public String getHelpF() {
+    public String getHelp() {
         return "`" + Callerphone.Prefix + "poolcap <number [1-10]>` - Set channel pool capacity.";
     }
 

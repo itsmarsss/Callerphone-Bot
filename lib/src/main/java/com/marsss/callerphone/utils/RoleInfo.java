@@ -21,7 +21,7 @@ public class RoleInfo implements ICommand {
     public void runCommand(GuildMessageReceivedEvent e) {
         final Message MESSAGE = e.getMessage();
         final String CONTENT = MESSAGE.getContentRaw();
-        final String args[] = CONTENT.split("\\s+");
+        final String[] args = CONTENT.split("\\s+");
         final List<Role> ROLES = MESSAGE.getMentionedRoles();
         Role role;
 
@@ -98,7 +98,7 @@ public class RoleInfo implements ICommand {
     }
 
     @Override
-    public String getHelpF() {
+    public String getHelp() {
         return "`" + Callerphone.Prefix + "roleinfo <@role/id>` - Get information about this role.";
     }
 

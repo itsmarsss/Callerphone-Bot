@@ -22,7 +22,7 @@ public class Donate implements ICommand {
     }
 
     @Override
-    public String getHelpF() {
+    public String getHelp() {
         return "`" + Callerphone.Prefix + "donate` - Help us out by donating.";
     }
 

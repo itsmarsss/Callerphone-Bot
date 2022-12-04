@@ -49,5 +49,4 @@ public class OnOtherEvent extends ListenerAdapter {
             channel.sendMessageEmbeds(Emd.build()).queue();
         }
     }
-
 }

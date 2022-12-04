@@ -30,7 +30,7 @@ public class LeavePool implements ICommand {
     }
 
     @Override
-    public String getHelpF() {
+    public String getHelp() {
         return "`" + Callerphone.Prefix + "leavepool` - Leave a channel pool.";
     }
 

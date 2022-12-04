@@ -16,7 +16,7 @@ public class Chat implements ICommand {
     }
 
     @Override
-    public String getHelpF() {
+    public String getHelp() {
         return null;
     }
 

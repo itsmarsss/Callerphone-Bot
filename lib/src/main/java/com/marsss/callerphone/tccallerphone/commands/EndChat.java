@@ -16,7 +16,7 @@ public class EndChat implements ICommand {
     }
 
     @Override
-    public String getHelpF() {
+    public String getHelp() {
         return null;
     }
 

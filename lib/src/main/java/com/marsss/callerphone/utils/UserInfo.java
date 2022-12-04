@@ -22,7 +22,7 @@ public class UserInfo implements ICommand {
 	public void runCommand(GuildMessageReceivedEvent e) {
 		final Message MESSAGE = e.getMessage();
 		final String CONTENT = MESSAGE.getContentRaw();
-		final String args[] = CONTENT.split("\\s+");
+		final String[] args = CONTENT.split("\\s+");
 
 		final List<Member> USERS = MESSAGE.getMentionedMembers();
 		Member USER;
@@ -113,7 +113,7 @@ public class UserInfo implements ICommand {
 	}
 
 	@Override
-	public String getHelpF() {
+	public String getHelp() {
 		return "`" + Callerphone.Prefix + "userinfo <@user/id/empty>` - Get information about this member!";
 	}
 

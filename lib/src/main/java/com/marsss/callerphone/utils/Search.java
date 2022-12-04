@@ -85,7 +85,7 @@ public class Search implements ICommand {
     }
 
     @Override
-    public String getHelpF() {
+    public String getHelp() {
         return "`" + Callerphone.Prefix + "search <query>` - Search for something quickly on the web with title, snippet, and link!";
     }
 

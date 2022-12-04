@@ -37,11 +37,6 @@ public class CommandListener extends ListenerAdapter {
         if (!args[0].toLowerCase().startsWith(Callerphone.Prefix))
             return;
 
-        if (args[0].toLowerCase().startsWith(Callerphone.Prefix + "play")) {
-            message.reply("Callerphone no longer can play music, however I've created a new bot called **Tunes**...\nJoin <" + Callerphone.tunessupport + "> for more information!").queue();
-            return;
-        }
-
 //        if (!event.getGuild().getSelfMember().hasPermission(Permission.MESSAGE_EMBED_LINKS)) {
 //            MESSAGE.reply("I need `Embed Links` permission to react.").queue();
 //            return;
@@ -56,7 +51,7 @@ public class CommandListener extends ListenerAdapter {
     }
 
     public static void sendError(Message message, Exception error){
-        message.reply("An error occurred with error: `" + error.toString() + "`." +
+        message.reply(Callerphone.Callerphone + error.toString() + "`." +
                 "\nIf this is a recurring problem, please join our support server and report this issue." + Callerphone.invite).queue();
     }
 

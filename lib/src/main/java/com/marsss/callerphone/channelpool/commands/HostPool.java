@@ -31,7 +31,7 @@ public class HostPool implements ICommand {
     }
 
     @Override
-    public String getHelpF() {
+    public String getHelp() {
         return "`" + Callerphone.Prefix + "hostpool` - Host a channel pool.";
     }
 

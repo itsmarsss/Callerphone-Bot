@@ -16,7 +16,7 @@ public class PoolBlockIn implements ICommand {
     }
 
     @Override
-    public String getHelpF() {
+    public String getHelp() {
         return null;
     }
 

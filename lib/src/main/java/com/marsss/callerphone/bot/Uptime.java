@@ -23,7 +23,7 @@ public class Uptime implements ICommand {
     }
 
     @Override
-    public String getHelpF() {
+    public String getHelp() {
         return "`" + Callerphone.Prefix + "uptime` - Gets bot uptime.";
     }
 

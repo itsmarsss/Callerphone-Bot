@@ -16,7 +16,7 @@ public class ReportChat implements ICommand {
     }
 
     @Override
-    public String getHelpF() {
+    public String getHelp() {
         return null;
     }
 

@@ -22,7 +22,7 @@ public class Invite implements ICommand {
     }
 
     @Override
-    public String getHelpF() {
+    public String getHelp() {
         return "`" + Callerphone.Prefix + "invite` - Get invites and links related to this bot.";
     }
 
