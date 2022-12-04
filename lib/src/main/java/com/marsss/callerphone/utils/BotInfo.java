@@ -8,6 +8,7 @@ import com.marsss.callerphone.Callerphone;
 
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
@@ -15,6 +16,15 @@ public class BotInfo implements ICommand {
 
     @Override
     public void runCommand(GuildMessageReceivedEvent e) {
+        e.getMessage().replyEmbeds(botInfo()).queue();
+    }
+
+    @Override
+    public void runSlash(SlashCommandEvent e) {
+        e.replyEmbeds(botInfo()).queue();
+    }
+
+    private MessageEmbed botInfo() {
         final JDA jda = Callerphone.jda;
         final DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
         final String DESC = "**Tag of the bot:** " + jda.getSelfUser().getAsTag() +
@@ -29,12 +39,7 @@ public class BotInfo implements ICommand {
                 .setTitle("**Bot Info**")
                 .setDescription(DESC);
 
-        e.getMessage().replyEmbeds(BotInfo.build()).queue();
-    }
-
-    @Override
-    public void runSlash(SlashCommandEvent event) {
-
+        return BotInfo.build();
     }
 
     @Override

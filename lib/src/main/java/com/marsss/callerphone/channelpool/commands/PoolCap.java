@@ -11,7 +11,6 @@ import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 public class PoolCap implements ICommand {
     @Override
     public void runCommand(GuildMessageReceivedEvent e) {
-
         if (!e.getMember().hasPermission(Permission.MANAGE_CHANNEL)) {
             e.getMessage().reply(Callerphone.Callerphone + "You need `Manage Channel` permission to run this command.").queue();
             return;
@@ -35,17 +34,16 @@ public class PoolCap implements ICommand {
 
     @Override
     public void runSlash(SlashCommandEvent e) {
-        e.reply(poolCap(e.getChannel().getId(), (int) e.getOption("capacity").getAsLong())).queue();
-    }
+        if (!e.getMember().hasPermission(Permission.MANAGE_CHANNEL)) {
+            e.reply(Callerphone.Callerphone + "You need `Manage Channel` permission to run this command.").setEphemeral(true).queue();
+            return;
+        }
 
-    @Override
-    public String getHelp() {
-        return "`" + Callerphone.Prefix + "poolcap <number [1-10]>` - Set channel pool capacity.";
-    }
-
-    @Override
-    public String[] getTriggers() {
-        return "cap,capcity,poolcap,poolcapacity".split(",");
+        try {
+            e.reply(poolCap(e.getChannel().getId(), (int) e.getOption("capacity").getAsLong())).queue();
+        } catch (Exception ex) {
+            CommandListener.sendError(e, ex);
+        }
     }
 
     private String poolCap(String id, int cap) {
@@ -56,5 +54,15 @@ public class PoolCap implements ICommand {
             return Callerphone.Callerphone + "This channel is not hosing a pool.";
         }
         return Callerphone.Callerphone + "An error occurred.";
+    }
+
+    @Override
+    public String getHelp() {
+        return "`" + Callerphone.Prefix + "poolcap <number [1-10]>` - Set channel pool capacity.";
+    }
+
+    @Override
+    public String[] getTriggers() {
+        return "cap,capcity,poolcap,poolcapacity".split(",");
     }
 }

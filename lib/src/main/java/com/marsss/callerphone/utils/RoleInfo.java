@@ -11,6 +11,7 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
@@ -39,6 +40,15 @@ public class RoleInfo implements ICommand {
             return;
         }
 
+        e.getMessage().replyEmbeds(roleInfo(role)).queue();
+    }
+
+    @Override
+    public void runSlash(SlashCommandEvent e) {
+        e.replyEmbeds(roleInfo(e.getOption("role").getAsRole())).queue();
+    }
+
+    private MessageEmbed roleInfo(Role role) {
         Color COLOR = role.getColor();
         String NAME = role.getName();
         String ID = role.getId();
@@ -89,12 +99,7 @@ public class RoleInfo implements ICommand {
                 .addField(" ", " ", true)
                 .setFooter("ID: " + ID);
 
-        e.getMessage().replyEmbeds(RleInfEmd.build()).queue();
-    }
-
-    @Override
-    public void runSlash(SlashCommandEvent event) {
-
+        return RleInfEmd.build();
     }
 
     @Override

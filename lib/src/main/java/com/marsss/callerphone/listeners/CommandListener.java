@@ -5,6 +5,7 @@ import com.marsss.callerphone.Callerphone;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
@@ -50,14 +51,18 @@ public class CommandListener extends ListenerAdapter {
 
     }
 
+    public static final String ERROR_MSG = "An error occurred with error: `%s`." +
+            "\nIf this is a recurring problem, please join our support server and report this issue." + Callerphone.support;
     public static void sendError(Message message, Exception error){
-        message.reply(Callerphone.Callerphone + error.toString() + "`." +
-                "\nIf this is a recurring problem, please join our support server and report this issue." + Callerphone.invite).queue();
+        message.reply(String.format(ERROR_MSG, error.toString())).queue();
     }
 
     public static void sendError(TextChannel channel, Exception error){
-        channel.sendMessage("An error occurred with error: `" + error.toString() + "`." +
-                "\nIf this is a recurring problem, please join our support server and report this issue." + Callerphone.invite).queue();
+        channel.sendMessage(String.format(ERROR_MSG, error.toString())).queue();
+    }
+
+    public static void sendError(SlashCommandEvent event, Exception error){
+        event.reply(String.format(ERROR_MSG, error.toString())).queue();
     }
 
     public static String adminHelp() {

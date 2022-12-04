@@ -12,7 +12,6 @@ import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 public class JoinPool implements ICommand {
     @Override
     public void runCommand(GuildMessageReceivedEvent e) {
-
         if (!e.getMember().hasPermission(Permission.MANAGE_CHANNEL)) {
             e.getMessage().reply(Callerphone.Callerphone + "You need `Manage Channel` permission to run this command.").queue();
             return;
@@ -41,17 +40,16 @@ public class JoinPool implements ICommand {
 
     @Override
     public void runSlash(SlashCommandEvent e) {
-        e.reply(joinPool(e.getChannel(), e.getOption("hostID").getAsString(), e.getOption("password").getAsString())).queue();
-    }
+        if (!e.getMember().hasPermission(Permission.MANAGE_CHANNEL)) {
+            e.reply(Callerphone.Callerphone + "You need `Manage Channel` permission to run this command.").setEphemeral(true).queue();
+            return;
+        }
 
-    @Override
-    public String getHelp() {
-        return "`" + Callerphone.Prefix + "joinpool <ID> <password>` - Join a channel pool.";
-    }
-
-    @Override
-    public String[] getTriggers() {
-        return "join,joinpool,addpool".split(",");
+        try {
+            e.reply(joinPool(e.getChannel(), e.getOption("hostID").getAsString(), e.getOption("password").getAsString())).queue();
+        } catch (Exception ex) {
+            CommandListener.sendError(e, ex);
+        }
     }
 
     private String joinPool(MessageChannel channel, String host, String pwd) {
@@ -78,5 +76,15 @@ public class JoinPool implements ICommand {
             return Callerphone.Callerphone + "Successfully joined channel pool hosted by `#" + Callerphone.jda.getTextChannelById(host).getName() + "`*(ID: " + host + ")*!";
         }
         return Callerphone.Callerphone + "An error occurred.";
+    }
+
+    @Override
+    public String getHelp() {
+        return "`" + Callerphone.Prefix + "joinpool <ID> <password>` - Join a channel pool.";
+    }
+
+    @Override
+    public String[] getTriggers() {
+        return "join,joinpool,addpool".split(",");
     }
 }

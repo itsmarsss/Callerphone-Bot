@@ -32,8 +32,10 @@ public class Help implements ICommand {
     }
 
     @Override
-    public void runSlash(SlashCommandEvent event) {
+    public void runSlash(SlashCommandEvent e) {
+        boolean admin = Callerphone.admin.contains(e.getUser().getId());
 
+        e.replyEmbeds(help(e.getOption("term").getAsString(), admin)).queue();
     }
 
     @Override

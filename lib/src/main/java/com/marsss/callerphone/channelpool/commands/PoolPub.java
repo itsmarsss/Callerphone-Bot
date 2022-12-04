@@ -11,7 +11,6 @@ import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 public class PoolPub implements ICommand {
     @Override
     public void runCommand(GuildMessageReceivedEvent e) {
-
         if (!e.getMember().hasPermission(Permission.MANAGE_CHANNEL)) {
             e.getMessage().reply(Callerphone.Callerphone + "You need `Manage Channel` permission to run this command.").queue();
             return;
@@ -35,7 +34,26 @@ public class PoolPub implements ICommand {
 
     @Override
     public void runSlash(SlashCommandEvent e) {
-        e.reply(poolPub(e.getChannel().getId(), e.getOption("publicity").getAsBoolean())).queue();
+        if (!e.getMember().hasPermission(Permission.MANAGE_CHANNEL)) {
+            e.reply(Callerphone.Callerphone + "You need `Manage Channel` permission to run this command.").setEphemeral(true).queue();
+            return;
+        }
+
+        try {
+            e.reply(poolPub(e.getChannel().getId(), e.getOption("publicity").getAsBoolean())).queue();
+        } catch (Exception ex) {
+            CommandListener.sendError(e, ex);
+        }
+     }
+
+    private String poolPub(String id, boolean pub) {
+        int stat = ChannelPool.setPublicity(id, pub);
+        if (stat == ChannelPool.SUCCESS) {
+            return Callerphone.Callerphone + "This pool is now **" + (pub ? "public" : "private") + "**.";
+        } else if (stat == ChannelPool.ERROR) {
+            return Callerphone.Callerphone + "This pool is not hosting a pool.";
+        }
+        return Callerphone.Callerphone + "An error occurred.";
     }
 
     @Override
@@ -46,15 +64,5 @@ public class PoolPub implements ICommand {
     @Override
     public String[] getTriggers() {
         return "public,publicity,poolpub,poolpublic,poolpublicity".split(",");
-    }
-
-    private String poolPub(String id, boolean pub) {
-        int stat = ChannelPool.setPublicity(id, pub);
-        if (stat == ChannelPool.SUCCESS) {
-            return Callerphone.Callerphone + "This pool is now **" + (pub ? "public" : "private") + "**.";
-        } else if (stat == ChannelPool.ERROR) {
-            return Callerphone.Callerphone + "This pool is not hosting a pool.";
-        }
-        return Callerphone.Callerphone + "An error occurred.";
     }
 }

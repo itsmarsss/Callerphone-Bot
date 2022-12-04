@@ -16,7 +16,13 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 public class OnSlashCommand extends ListenerAdapter {
     // TODO: Do Slash Commands
 
-// 	public void onSlashCommand(SlashCommandEvent event) {
+ 	public void onSlashCommand(SlashCommandEvent event) {
+        if (Callerphone.cmdMap.containsKey(event.getName())) {
+            Callerphone.cmdMap.get(event.getName()).runSlash(event);
+            return;
+        }
+        event.reply(Callerphone.Callerphone + "Hmmm, the slash command `" + event.getName() + "` shouldn't exist! Please report this in our support server." + Callerphone.support).queue();
+    }
 //		if(!event.isFromGuild()) {
 //			privateChannel(event);
 //			return;
@@ -254,5 +260,4 @@ public class OnSlashCommand extends ListenerAdapter {
 //
 //
 //		}
-//	}
 }

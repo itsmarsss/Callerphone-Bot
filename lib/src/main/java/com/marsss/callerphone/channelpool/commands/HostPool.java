@@ -12,7 +12,6 @@ import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 public class HostPool implements ICommand {
     @Override
     public void runCommand(GuildMessageReceivedEvent e) {
-
         if (!e.getMember().hasPermission(Permission.MANAGE_CHANNEL)) {
             e.getMessage().reply(Callerphone.Callerphone + "You need `Manage Channel` permission to run this command.").queue();
             return;
@@ -27,17 +26,16 @@ public class HostPool implements ICommand {
 
     @Override
     public void runSlash(SlashCommandEvent e) {
-        e.reply(hostPool(e.getChannel())).queue();
-    }
 
-    @Override
-    public String getHelp() {
-        return "`" + Callerphone.Prefix + "hostpool` - Host a channel pool.";
-    }
-
-    @Override
-    public String[] getTriggers() {
-        return "host,hostpool,startpool".split(",");
+        if (!e.getMember().hasPermission(Permission.MANAGE_CHANNEL)) {
+            e.reply(Callerphone.Callerphone + "You need `Manage Channel` permission to run this command.").setEphemeral(true).queue();
+            return;
+        }
+        try {
+            e.reply(hostPool(e.getChannel())).queue();
+        } catch (Exception ex) {
+            CommandListener.sendError(e, ex);
+        }
     }
 
     private String hostPool(MessageChannel channel) {
@@ -59,5 +57,15 @@ public class HostPool implements ICommand {
                     "\nEnd pool with: `" + Callerphone.Prefix + "endpool`";
         }
         return Callerphone.Callerphone + "An error occurred.";
+    }
+
+    @Override
+    public String getHelp() {
+        return "`" + Callerphone.Prefix + "hostpool` - Host a channel pool.";
+    }
+
+    @Override
+    public String[] getTriggers() {
+        return "host,hostpool,startpool".split(",");
     }
 }

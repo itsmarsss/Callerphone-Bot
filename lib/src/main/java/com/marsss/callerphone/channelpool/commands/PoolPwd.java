@@ -11,7 +11,6 @@ import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 public class PoolPwd implements ICommand {
     @Override
     public void runCommand(GuildMessageReceivedEvent e) {
-
         if (!e.getMember().hasPermission(Permission.MANAGE_CHANNEL)) {
             e.getMessage().reply(Callerphone.Callerphone + "You need `Manage Channel` permission to run this command.").queue();
             return;
@@ -35,7 +34,31 @@ public class PoolPwd implements ICommand {
 
     @Override
     public void runSlash(SlashCommandEvent e) {
-        e.reply(poolPwd(e.getChannel().getId(), e.getOption("password").getAsString())).queue();
+        if (!e.getMember().hasPermission(Permission.MANAGE_CHANNEL)) {
+            e.reply(Callerphone.Callerphone + "You need `Manage Channel` permission to run this command.").setEphemeral(true).queue();
+            return;
+        }
+
+        try {
+            e.reply(poolPwd(e.getChannel().getId(), e.getOption("password").getAsString())).setEphemeral(true).queue();
+        } catch (Exception ex) {
+            CommandListener.sendError(e, ex);
+        }
+    }
+
+    private String poolPwd(String id, String pwd) {
+        if (pwd.equals("none"))
+            pwd = "";
+
+        int stat = ChannelPool.setPassword(id, pwd);
+        if (stat == ChannelPool.SUCCESS) {
+            return Callerphone.Callerphone + "This pool now has" +
+                    ((pwd.equals("")) ?  "no password" : "password ||" + pwd + "||") +
+                    ".";
+        } else if (stat == ChannelPool.ERROR) {
+            return Callerphone.Callerphone + "This pool is not hosting a pool.";
+        }
+        return Callerphone.Callerphone + "An error occurred.";
     }
 
     @Override
@@ -46,20 +69,5 @@ public class PoolPwd implements ICommand {
     @Override
     public String[] getTriggers() {
         return "password,pass,pwd,poolpass,poolpwd,poolpassword".split(",");
-    }
-
-    private String poolPwd(String id, String pwd) {
-        if (pwd.equals("none"))
-            pwd = "";
-
-        int stat = ChannelPool.setPassword(id, pwd);
-        if (stat == ChannelPool.SUCCESS) {
-                return Callerphone.Callerphone + "This pool now has" +
-                        ((pwd.equals("")) ?  "no password" : "password ||" + pwd + "||") +
-                        ".";
-        } else if (stat == ChannelPool.ERROR) {
-            return Callerphone.Callerphone + "This pool is not hosting a pool.";
-        }
-        return Callerphone.Callerphone + "An error occurred.";
     }
 }

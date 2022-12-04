@@ -21,17 +21,11 @@ public class ParticipantsPool implements ICommand {
 
     @Override
     public void runSlash(SlashCommandEvent e) {
-        e.reply(poolParticipants(e.getChannel().getId())).queue();
-    }
-
-    @Override
-    public String getHelp() {
-        return "`" + Callerphone.Prefix + "poolparts` - Show channel pool participants.";
-    }
-
-    @Override
-    public String[] getTriggers() {
-        return "poolparticipants,participants,parts,poolparts".split(",");
+        try {
+            e.reply(poolParticipants(e.getChannel().getId())).queue();
+        } catch (Exception ex) {
+            CommandListener.sendError(e, ex);
+        }
     }
 
     private String poolParticipants(String id) {
@@ -53,5 +47,15 @@ public class ParticipantsPool implements ICommand {
             }
         }
         return list.toString();
+    }
+
+    @Override
+    public String getHelp() {
+        return "`" + Callerphone.Prefix + "poolparts` - Show channel pool participants.";
+    }
+
+    @Override
+    public String[] getTriggers() {
+        return "poolparticipants,participants,parts,poolparts".split(",");
     }
 }

@@ -44,13 +44,11 @@ public class UserInfo implements ICommand {
 	}
 
 	@Override
-	public void runSlash(SlashCommandEvent event) {
-
+	public void runSlash(SlashCommandEvent e) {
+		e.replyEmbeds(userinfo(e.getOption("member").getAsMember())).queue();
 	}
 
 	public MessageEmbed userinfo(Member mmbr) {
-
-
 		Color COLOR = null;
 		String NAME = mmbr.getEffectiveName();
 		String TAG = mmbr.getUser().getName() + "#" + mmbr.getUser().getDiscriminator();

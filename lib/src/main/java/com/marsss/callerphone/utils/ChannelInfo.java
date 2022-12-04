@@ -62,23 +62,29 @@ public class ChannelInfo implements ICommand {
             default:
                 MESSAGE.reply("Channel not recognized").queue();
                 break;
-
         }
     }
 
     @Override
-    public void runSlash(SlashCommandEvent event) {
+    public void runSlash(SlashCommandEvent e) {
+        GuildChannel channel = e.getOption("channel").getAsGuildChannel();
+        ChannelType type = channel.getType();
 
-    }
+        switch (type) {
 
-    @Override
-    public String getHelp() {
-        return "`" + Callerphone.Prefix + "channelinfo <#channel/id/empty>` - Get information about the channel.";
-    }
-
-    @Override
-    public String[] getTriggers() {
-        return "channelinfo,chaninfo,channelinf,chaninf".split(",");
+            case TEXT:
+                e.replyEmbeds(textchannelinfo((TextChannel) channel)).queue();
+                break;
+            case VOICE:
+                e.replyEmbeds(voicechannelinfo((VoiceChannel) channel)).queue();
+                break;
+            case CATEGORY:
+                e.replyEmbeds(categorychannelinfo((Category) channel)).queue();
+                break;
+            default:
+                e.reply("Channel not recognized").queue();
+                break;
+        }
     }
 
     public MessageEmbed textchannelinfo(TextChannel chnl) {
@@ -187,4 +193,13 @@ public class ChannelInfo implements ICommand {
         return ChnlInfEmd.build();
     }
 
+    @Override
+    public String getHelp() {
+        return "`" + Callerphone.Prefix + "channelinfo <#channel/id/empty>` - Get information about the channel.";
+    }
+
+    @Override
+    public String[] getTriggers() {
+        return "channelinfo,chaninfo,channelinf,chaninf".split(",");
+    }
 }

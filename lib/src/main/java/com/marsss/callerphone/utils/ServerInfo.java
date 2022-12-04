@@ -8,6 +8,7 @@ import com.marsss.callerphone.Callerphone;
 
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
@@ -15,8 +16,15 @@ public class ServerInfo implements ICommand {
 
     @Override
     public void runCommand(GuildMessageReceivedEvent e) {
-        Guild gld = e.getGuild();
+        e.getMessage().replyEmbeds(serverInfo(e.getGuild())).queue();
+    }
 
+    @Override
+    public void runSlash(SlashCommandEvent e) {
+        e.replyEmbeds(serverInfo(e.getGuild())).queue();
+    }
+
+    private MessageEmbed serverInfo(Guild gld) {
         String NAME = gld.getName();
         String DESCRIPTION = gld.getDescription();
 
@@ -115,12 +123,7 @@ public class ServerInfo implements ICommand {
 
         SvrInfEmd.setThumbnail(ICONURL);
 
-        e.getMessage().replyEmbeds(SvrInfEmd.build()).queue();
-    }
-
-    @Override
-    public void runSlash(SlashCommandEvent event) {
-
+        return SvrInfEmd.build();
     }
 
     @Override

@@ -11,7 +11,6 @@ import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 public class PoolKick implements ICommand {
     @Override
     public void runCommand(GuildMessageReceivedEvent e) {
-
         if (!e.getMember().hasPermission(Permission.MANAGE_CHANNEL)) {
             e.getMessage().reply(Callerphone.Callerphone + "You need `Manage Channel` permission to run this command.").queue();
             return;
@@ -36,18 +35,17 @@ public class PoolKick implements ICommand {
 
     @Override
     public void runSlash(SlashCommandEvent e) {
-        e.reply(poolKick(e.getChannel().getId(), e.getOption("target").getAsString())).queue();
-    }
+        if (!e.getMember().hasPermission(Permission.MANAGE_CHANNEL)) {
+            e.reply(Callerphone.Callerphone + "You need `Manage Channel` permission to run this command.").setEphemeral(true).queue();
+            return;
+        }
 
-    @Override
-    public String getHelp() {
-        return "`" + Callerphone.Prefix + "kickchan <channel ID>` - Kick channel from pool.";
-    }
-
-    @Override
-    public String[] getTriggers() {
-        return "kick,kickchannel,kickchan".split(",");
-    }
+        try {
+            e.reply(poolKick(e.getChannel().getId(), e.getOption("target").getAsString())).queue();
+        } catch (Exception ex) {
+            CommandListener.sendError(e, ex);
+        }
+     }
 
     private String poolKick(String IDh, String IDc) {
         int stat = ChannelPool.removeChildren(IDh, IDc);
@@ -60,4 +58,13 @@ public class PoolKick implements ICommand {
         return Callerphone.Callerphone + "An error occurred.";
     }
 
+    @Override
+    public String getHelp() {
+        return "`" + Callerphone.Prefix + "kickchan <channel ID>` - Kick channel from pool.";
+    }
+
+    @Override
+    public String[] getTriggers() {
+        return "kick,kickchannel,kickchan".split(",");
+    }
 }

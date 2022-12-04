@@ -37,8 +37,13 @@ public class Search implements ICommand {
     }
 
     @Override
-    public void runSlash(SlashCommandEvent event) {
-
+    public void runSlash(SlashCommandEvent e) {
+        try {
+            e.replyEmbeds(search(e.getOption("query").getAsString())).queue();
+        } catch (IOException e1) {
+            e1.printStackTrace();
+            e.reply("Error getting links").queue();
+        }
     }
 
     public MessageEmbed search(String query) throws IOException {

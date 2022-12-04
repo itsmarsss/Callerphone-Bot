@@ -11,7 +11,6 @@ import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 public class LeavePool implements ICommand {
     @Override
     public void runCommand(GuildMessageReceivedEvent e) {
-
         if (!e.getMember().hasPermission(Permission.MANAGE_CHANNEL)) {
             e.getMessage().reply(Callerphone.Callerphone + "You need `Manage Channel` permission to run this command.").queue();
             return;
@@ -26,17 +25,16 @@ public class LeavePool implements ICommand {
 
     @Override
     public void runSlash(SlashCommandEvent e) {
-        e.reply(leavePool(e.getChannel().getId())).queue();
-    }
+        if (!e.getMember().hasPermission(Permission.MANAGE_CHANNEL)) {
+            e.reply(Callerphone.Callerphone + "You need `Manage Channel` permission to run this command.").queue();
+            return;
+        }
 
-    @Override
-    public String getHelp() {
-        return "`" + Callerphone.Prefix + "leavepool` - Leave a channel pool.";
-    }
-
-    @Override
-    public String[] getTriggers() {
-        return "leave,leavepool,exitpool".split(",");
+        try {
+            e.reply(leavePool(e.getChannel().getId())).queue();
+        } catch (Exception ex) {
+            CommandListener.sendError(e, ex);
+        }
     }
 
     private String leavePool(String id) {
@@ -54,5 +52,15 @@ public class LeavePool implements ICommand {
             return Callerphone.Callerphone + "Successfully left channel pool!";
         }
         return Callerphone.Callerphone + "An error occurred.";
+    }
+
+    @Override
+    public String getHelp() {
+        return "`" + Callerphone.Prefix + "leavepool` - Leave a channel pool.";
+    }
+
+    @Override
+    public String[] getTriggers() {
+        return "leave,leavepool,exitpool".split(",");
     }
 }

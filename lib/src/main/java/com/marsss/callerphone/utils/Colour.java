@@ -54,6 +54,39 @@ public class Colour implements ICommand {
 
     }
 
+    public static MessageEmbed colorrgb(String r, String g, String b) {
+
+        EmbedBuilder ColorEmd = new EmbedBuilder()
+                .setTitle("Error")
+                .setDescription("Please provide a valid r g b value")
+                .setColor(new Color(114, 137, 218));
+
+        try {
+            if (Integer.parseInt(r) > 255 || Integer.parseInt(g) > 255 || Integer.parseInt(b) > 255)
+                return ColorEmd.build();
+
+            final String HEX = String.format("%02X%02X%02X",
+                    Integer.parseInt(r),
+                    Integer.parseInt(g),
+                    Integer.parseInt(b));
+            EmbedBuilder ColorEmd2 = new EmbedBuilder()
+                    .setTitle("Color")
+                    .setDescription("**Hex:** #" + HEX + "\n**RGB:** " + r + ", " + g + ", " + b)
+                    .setColor(Integer.parseInt(HEX, 16));
+            return ColorEmd2.build();
+        } catch (Exception e) {
+        }
+
+        return ColorEmd.build();
+
+    }
+
+    public static Color randColor() {
+        final Random rand = new Random();
+        final int r = rand.nextInt(256), g = rand.nextInt(256), b = rand.nextInt(256);
+        return new Color(r, g, b);
+    }
+
     @Override
     public String getHelp() {
         return "`" + Callerphone.Prefix + "color` - Get a random color in hex and rgb value.\n" +
@@ -101,38 +134,4 @@ public class Colour implements ICommand {
         return ColorEmd.build();
 
     }
-
-    public static MessageEmbed colorrgb(String r, String g, String b) {
-
-        EmbedBuilder ColorEmd = new EmbedBuilder()
-                .setTitle("Error")
-                .setDescription("Please provide a valid r g b value")
-                .setColor(new Color(114, 137, 218));
-
-        try {
-            if (Integer.parseInt(r) > 255 || Integer.parseInt(g) > 255 || Integer.parseInt(b) > 255)
-                return ColorEmd.build();
-
-            final String HEX = String.format("%02X%02X%02X",
-                    Integer.parseInt(r),
-                    Integer.parseInt(g),
-                    Integer.parseInt(b));
-            EmbedBuilder ColorEmd2 = new EmbedBuilder()
-                    .setTitle("Color")
-                    .setDescription("**Hex:** #" + HEX + "\n**RGB:** " + r + ", " + g + ", " + b)
-                    .setColor(Integer.parseInt(HEX, 16));
-            return ColorEmd2.build();
-        } catch (Exception e) {
-        }
-
-        return ColorEmd.build();
-
-    }
-
-    public static Color randColor() {
-        final Random rand = new Random();
-        final int r = rand.nextInt(256), g = rand.nextInt(256), b = rand.nextInt(256);
-        return new Color(r, g, b);
-    }
-
 }
