@@ -29,10 +29,6 @@ public class LeavePool implements ICommand {
         e.reply(leavePool(e.getChannel().getId())).queue();
     }
 
-    public static String getHelp() {
-        return "`" + Callerphone.Prefix + "leavepool` - Leave a channel pool.";
-    }
-
     @Override
     public String getHelpF() {
         return "`" + Callerphone.Prefix + "leavepool` - Leave a channel pool.";

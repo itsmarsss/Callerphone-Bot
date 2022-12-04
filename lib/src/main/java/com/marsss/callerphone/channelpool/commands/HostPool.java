@@ -30,10 +30,6 @@ public class HostPool implements ICommand {
         e.reply(hostPool(e.getChannel())).queue();
     }
 
-    public static String getHelp() {
-        return "`" + Callerphone.Prefix + "hostpool` - Host a channel pool.";
-    }
-
     @Override
     public String getHelpF() {
         return "`" + Callerphone.Prefix + "hostpool` - Host a channel pool.";

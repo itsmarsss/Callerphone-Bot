@@ -27,10 +27,6 @@ public class About implements ICommand {
         e.replyEmbeds(about()).setEphemeral(true).queue();
     }
 
-    public static String getHelp() {
-        return "`" + Callerphone.Prefix + "about` - Introduces you to this bot";
-    }
-
     @Override
     public String getHelpF() {
         return "`" + Callerphone.Prefix + "about` - Introduces you to this bot";

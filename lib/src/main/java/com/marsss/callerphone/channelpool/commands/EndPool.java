@@ -29,10 +29,6 @@ public class EndPool implements ICommand {
         e.reply(endPool(e.getChannel().getId())).queue();
     }
 
-    public static String getHelp() {
-        return "`" + Callerphone.Prefix + "endpool` - End a channel pool.";
-    }
-
     @Override
     public String getHelpF() {
         return "`" + Callerphone.Prefix + "endpool` - End a channel pool.";

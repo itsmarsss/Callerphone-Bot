@@ -19,10 +19,6 @@ public class Ping implements ICommand {
                 (ping) -> e.replyFormat("**Reset ping:** %sms \n**WS ping:** %sms", ping, Callerphone.jda.getGatewayPing()).setEphemeral(true).queue());
     }
 
-    public static String getHelp() {
-        return "`" + Callerphone.Prefix + "ping` - Gets bot ping.";
-    }
-
     @Override
     public String getHelpF() {
         return "`" + Callerphone.Prefix + "ping` - Gets bot ping.";

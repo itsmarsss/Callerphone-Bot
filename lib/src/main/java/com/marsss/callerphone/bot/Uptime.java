@@ -22,10 +22,6 @@ public class Uptime implements ICommand {
         e.replyEmbeds(uptime()).setEphemeral(true).queue();
     }
 
-    public static String getHelp() {
-        return "`" + Callerphone.Prefix + "uptime` - Gets bot uptime.";
-    }
-
     @Override
     public String getHelpF() {
         return "`" + Callerphone.Prefix + "uptime` - Gets bot uptime.";

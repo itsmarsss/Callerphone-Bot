@@ -38,11 +38,6 @@ public class PoolCap implements ICommand {
         e.reply(poolCap(e.getChannel().getId(), (int) e.getOption("capacity").getAsLong())).queue();
     }
 
-
-    public static String getHelp() {
-        return "`" + Callerphone.Prefix + "poolcap <number [1-10]>` - Set channel pool capacity.";
-    }
-
     @Override
     public String getHelpF() {
         return "`" + Callerphone.Prefix + "poolcap <number [1-10]>` - Set channel pool capacity.";

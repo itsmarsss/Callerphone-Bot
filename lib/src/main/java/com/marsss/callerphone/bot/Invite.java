@@ -21,10 +21,6 @@ public class Invite implements ICommand {
         e.replyEmbeds(invite()).setEphemeral(true).queue();
     }
 
-    public static String getHelp() {
-        return "`" + Callerphone.Prefix + "invite` - Get invites and links related to this bot.";
-    }
-
     @Override
     public String getHelpF() {
         return "`" + Callerphone.Prefix + "invite` - Get invites and links related to this bot.";

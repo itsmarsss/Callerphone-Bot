@@ -123,10 +123,6 @@ public class ServerInfo implements ICommand {
 
     }
 
-    public static String getHelp() {
-        return "`" + Callerphone.Prefix + "serverinfo` - Get information about the server.";
-    }
-
     @Override
     public String getHelpF() {
         return "`" + Callerphone.Prefix + "serverinfo` - Get information about the server.";

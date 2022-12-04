@@ -38,10 +38,6 @@ public class PoolPub implements ICommand {
         e.reply(poolPub(e.getChannel().getId(), e.getOption("publicity").getAsBoolean())).queue();
     }
 
-    public static String getHelp() {
-        return "`" + Callerphone.Prefix + "poolpub <true|false>` - Set channel pool publicity.";
-    }
-
     @Override
     public String getHelpF() {
         return "`" + Callerphone.Prefix + "poolpub <true|false>` - Set channel pool publicity.";

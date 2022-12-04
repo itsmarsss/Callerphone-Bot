@@ -37,10 +37,6 @@ public class BotInfo implements ICommand {
 
     }
 
-    public static String getHelp() {
-        return "`" + Callerphone.Prefix + "botinfo` - Get information about the bot.";
-    }
-
     @Override
     public String getHelpF() {
         return "`" + Callerphone.Prefix + "botinfo` - Get information about the bot.";

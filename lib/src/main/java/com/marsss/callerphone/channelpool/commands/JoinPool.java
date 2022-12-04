@@ -44,10 +44,6 @@ public class JoinPool implements ICommand {
         e.reply(joinPool(e.getChannel(), e.getOption("hostID").getAsString(), e.getOption("password").getAsString())).queue();
     }
 
-    public static String getHelp() {
-        return "`" + Callerphone.Prefix + "joinpool <ID> <password>` - Join a channel pool.";
-    }
-
     @Override
     public String getHelpF() {
         return "`" + Callerphone.Prefix + "joinpool <ID> <password>` - Join a channel pool.";

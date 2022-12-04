@@ -69,52 +69,52 @@ public class Help implements ICommand {
             case "bot":
                 TITLE = "Bot Commands";
                 DESC = ICommand.getHelp() + "\n"
-                        + Donate.getHelp() + "\n"
-                        + Invite.getHelp() + "\n"
-                        + Ping.getHelp() + "\n"
-                        + Uptime.getHelp();
+                        + new Donate().getHelpF() + "\n"
+                        + new Invite().getHelpF() + "\n"
+                        + new Ping().getHelpF() + "\n"
+                        + new Uptime().getHelpF();
                 break;
 
 
             case "utils":
                 TITLE = "Util Commands";
-                DESC = BotInfo.getHelp() + "\n"
-                        + ChannelInfo.getHelp() + "\n"
-                        + Colour.getHelp() + "\n"
-                        + Help.getHelp() + "\n"
-                        + RoleInfo.getHelp() + "\n"
-                        + Search.getHelp() + "\n"
-                        + ServerInfo.getHelp() + "\n"
-                        + UserInfo.getHelp();
+                DESC = new BotInfo().getHelpF() + "\n"
+                        + new ChannelInfo().getHelpF() + "\n"
+                        + new Colour().getHelpF() + "\n"
+                        + new Help().getHelp() + "\n"
+                        + new RoleInfo().getHelpF() + "\n"
+                        + new Search().getHelpF() + "\n"
+                        + new ServerInfo().getHelpF() + "\n"
+                        + new UserInfo().getHelpF();
                 break;
 
 
             case "pooling":
                 TITLE = "Channel Pooling Commands";
-                DESC = HostPool.getHelp() + "\n"
-                        + JoinPool.getHelp() + "\n"
-                        + EndPool.getHelp() + "\n"
-                        + LeavePool.getHelp() + "\n"
-                        + ParticipantsPool.getHelp() + "\n"
-                        + PoolCap.getHelp() + "\n"
-                        + PoolPub.getHelp() + "\n"
-                        + PoolPwd.getHelp() + "\n"
-                        + PoolKick.getHelp();
+                DESC = new HostPool().getHelpF() + "\n"
+                        + new JoinPool().getHelpF() + "\n"
+                        + new EndPool().getHelpF() + "\n"
+                        + new LeavePool().getHelpF() + "\n"
+                        + new ParticipantsPool().getHelpF() + "\n"
+                        + new PoolCap().getHelpF() + "\n"
+                        + new PoolPub().getHelpF() + "\n"
+                        + new PoolPwd().getHelpF() + "\n"
+                        + new PoolKick().getHelpF();
                 break;
 
 
             case "tccall":
                 TITLE = "TCCall Commands";
-                DESC = TCCallPairer.callHelp() + "\n"
-                        + TCCallPairer.uncenscallHelp() + "\n"
-                        + TCCallPairer.hangupHelp() + "\n"
-                        + TCCallPairer.reportHelp();
+                DESC = new TCCallPairer.callHelp() + "\n"
+                        + new TCCallPairer.uncenscallHelp() + "\n"
+                        + new TCCallPairer.hangupHelp() + "\n"
+                        + new TCCallPairer.reportHelp();
                 break;
 
 
             case "report":
                 TITLE = "Report Commands";
-                DESC = TCCallPairer.reportHelp();
+                DESC = new TCCallPairer.reportHelp();
                 break;
 
 

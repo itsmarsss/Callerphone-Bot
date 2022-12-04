@@ -39,10 +39,6 @@ public class PoolKick implements ICommand {
         e.reply(poolKick(e.getChannel().getId(), e.getOption("target").getAsString())).queue();
     }
 
-    public static String getHelp() {
-        return "`" + Callerphone.Prefix + "kickchan <channel ID>` - Kick channel from pool.";
-    }
-
     @Override
     public String getHelpF() {
         return "`" + Callerphone.Prefix + "kickchan <channel ID>` - Kick channel from pool.";

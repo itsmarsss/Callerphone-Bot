@@ -21,10 +21,6 @@ public class Donate implements ICommand {
         e.replyEmbeds(donate()).setEphemeral(true).queue();
     }
 
-    public static String getHelp() {
-        return "`" + Callerphone.Prefix + "donate` - Help us out by donating.";
-    }
-
     @Override
     public String getHelpF() {
         return "`" + Callerphone.Prefix + "donate` - Help us out by donating.";

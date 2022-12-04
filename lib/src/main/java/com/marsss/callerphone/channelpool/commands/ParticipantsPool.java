@@ -24,10 +24,6 @@ public class ParticipantsPool implements ICommand {
         e.reply(poolParticipants(e.getChannel().getId())).queue();
     }
 
-    public static String getHelp() {
-        return "`" + Callerphone.Prefix + "poolparts` - Show channel pool participants.";
-    }
-
     @Override
     public String getHelpF() {
         return "`" + Callerphone.Prefix + "poolparts` - Show channel pool participants.";

@@ -84,10 +84,6 @@ public class Search implements ICommand {
         return GglEmd.build();
     }
 
-    public static String getHelp() {
-        return "`" + Callerphone.Prefix + "search <query>` - Search for something quickly on the web with title, snippet, and link!";
-    }
-
     @Override
     public String getHelpF() {
         return "`" + Callerphone.Prefix + "search <query>` - Search for something quickly on the web with title, snippet, and link!";

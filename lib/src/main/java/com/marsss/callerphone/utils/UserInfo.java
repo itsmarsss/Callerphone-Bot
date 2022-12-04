@@ -112,10 +112,6 @@ public class UserInfo implements ICommand {
 		return UsrInfEmd.build();
 	}
 
-	public static String getHelp() {
-		return "`" + Callerphone.Prefix + "userinfo <@user/id/empty>` - Get information about this member!";
-	}
-
 	@Override
 	public String getHelpF() {
 		return "`" + Callerphone.Prefix + "userinfo <@user/id/empty>` - Get information about this member!";

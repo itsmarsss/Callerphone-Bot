@@ -38,10 +38,6 @@ public class PoolPwd implements ICommand {
         e.reply(poolPwd(e.getChannel().getId(), e.getOption("password").getAsString())).queue();
     }
 
-    public static String getHelp() {
-        return "`" + Callerphone.Prefix + "poolpwd <password | \"none\" for no password>` - Set channel pool password.";
-    }
-
     @Override
     public String getHelpF() {
         return "`" + Callerphone.Prefix + "poolpwd <password | \"none\" for no password>` - Set channel pool password.";
