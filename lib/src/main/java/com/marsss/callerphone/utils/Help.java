@@ -98,7 +98,7 @@ public class Help implements ICommand {
                         + new JoinPool().getHelp() + "\n"
                         + new EndPool().getHelp() + "\n"
                         + new LeavePool().getHelp() + "\n"
-                        + new ParticipantsPool().getHelp() + "\n"
+                        + new PoolParticipants().getHelp() + "\n"
                         + new PoolCap().getHelp() + "\n"
                         + new PoolPub().getHelp() + "\n"
                         + new PoolPwd().getHelp() + "\n"

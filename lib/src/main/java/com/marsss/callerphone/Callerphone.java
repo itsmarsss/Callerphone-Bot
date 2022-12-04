@@ -30,9 +30,6 @@ import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.interactions.commands.build.CommandData;
-import net.dv8tion.jda.api.interactions.commands.OptionType;
-import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.ChunkingFilter;
 import net.dv8tion.jda.api.utils.MemberCachePolicy;
@@ -119,7 +116,7 @@ public class Callerphone {
             cmdLst.add(new JoinPool());
             cmdLst.add(new EndPool());
             cmdLst.add(new LeavePool());
-            cmdLst.add(new ParticipantsPool());
+            cmdLst.add(new PoolParticipants());
             cmdLst.add(new PoolCap());
             cmdLst.add(new PoolPub());
             cmdLst.add(new PoolPwd());

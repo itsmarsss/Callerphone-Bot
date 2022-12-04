@@ -3,13 +3,12 @@ package com.marsss.callerphone.channelpool.commands;
 import com.marsss.ICommand;
 import com.marsss.callerphone.Callerphone;
 import com.marsss.callerphone.channelpool.ChannelPool;
-import com.marsss.callerphone.listeners.CommandListener;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
 import java.util.ArrayList;
 
-public class ParticipantsPool implements ICommand {
+public class PoolParticipants implements ICommand {
     @Override
     public void runCommand(GuildMessageReceivedEvent e) {
         e.getMessage().reply(poolParticipants(e.getChannel().getId())).queue();
