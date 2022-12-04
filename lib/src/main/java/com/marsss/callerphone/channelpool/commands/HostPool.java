@@ -17,11 +17,7 @@ public class HostPool implements ICommand {
             return;
         }
 
-        try {
-            e.getMessage().reply(hostPool(e.getChannel())).queue();
-        } catch (Exception ex) {
-            CommandListener.sendError(e.getMessage(), ex);
-        }
+        e.getMessage().reply(hostPool(e.getChannel())).queue();
     }
 
     @Override
@@ -30,11 +26,8 @@ public class HostPool implements ICommand {
             e.reply(Callerphone.Callerphone + "You need `Manage Channel` permission to run this command.").setEphemeral(true).queue();
             return;
         }
-        try {
-            e.reply(hostPool(e.getChannel())).queue();
-        } catch (Exception ex) {
-            CommandListener.sendError(e, ex);
-        }
+
+        e.reply(hostPool(e.getChannel())).queue();
     }
 
     private String hostPool(MessageChannel channel) {

@@ -24,7 +24,7 @@ public class About implements ICommand {
 
     @Override
     public void runSlash(SlashCommandEvent e) {
-        e.replyEmbeds(about()).setEphemeral(true).queue();
+        e.replyEmbeds(about()).queue();
     }
 
     @Override

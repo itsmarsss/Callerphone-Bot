@@ -25,12 +25,7 @@ public class PoolKick implements ICommand {
 
         final String id = args[1];
 
-        try {
-            e.getMessage().reply(poolKick(e.getChannel().getId(), id)).queue();
-        } catch (Exception ex) {
-            CommandListener.sendError(e.getMessage(), ex);
-        }
-
+        e.getMessage().reply(poolKick(e.getChannel().getId(), id)).queue();
     }
 
     @Override
@@ -40,12 +35,8 @@ public class PoolKick implements ICommand {
             return;
         }
 
-        try {
-            e.reply(poolKick(e.getChannel().getId(), e.getOption("target").getAsString())).queue();
-        } catch (Exception ex) {
-            CommandListener.sendError(e, ex);
-        }
-     }
+        e.reply(poolKick(e.getChannel().getId(), e.getOption("target").getAsString())).queue();
+    }
 
     private String poolKick(String IDh, String IDc) {
         int stat = ChannelPool.removeChildren(IDh, IDc);

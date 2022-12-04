@@ -12,20 +12,12 @@ import java.util.ArrayList;
 public class ParticipantsPool implements ICommand {
     @Override
     public void runCommand(GuildMessageReceivedEvent e) {
-        try {
-            e.getMessage().reply(poolParticipants(e.getChannel().getId())).queue();
-        } catch (Exception ex) {
-            CommandListener.sendError(e.getMessage(), ex);
-        }
+        e.getMessage().reply(poolParticipants(e.getChannel().getId())).queue();
     }
 
     @Override
     public void runSlash(SlashCommandEvent e) {
-        try {
-            e.reply(poolParticipants(e.getChannel().getId())).queue();
-        } catch (Exception ex) {
-            CommandListener.sendError(e, ex);
-        }
+        e.reply(poolParticipants(e.getChannel().getId())).queue();
     }
 
     private String poolParticipants(String id) {

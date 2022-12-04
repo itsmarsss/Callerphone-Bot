@@ -23,7 +23,7 @@ public class CommandListener extends ListenerAdapter {
 
         final String content = message.getContentRaw();
 
-        final String[]args = content.split("\\s+");
+        final String[] args = content.split("\\s+");
 
 
         if (member.getUser().isBot() || member.getUser().isSystem())
@@ -45,24 +45,18 @@ public class CommandListener extends ListenerAdapter {
 
         String trigger = args[0].toLowerCase().replace(Callerphone.Prefix, "");
 
-        if (Callerphone.cmdMap.containsKey(trigger)) {
-            Callerphone.cmdMap.get(trigger).runCommand(event);
+        try {
+            if (Callerphone.cmdMap.containsKey(trigger)) {
+                Callerphone.cmdMap.get(trigger).runCommand(event);
+            }
+        } catch (Exception ex) {
+            sendError(event.getMessage(), ex);
         }
 
     }
 
-    public static final String ERROR_MSG = "An error occurred with error: `%s`." +
-            "\nIf this is a recurring problem, please join our support server and report this issue. " + Callerphone.support;
-    public static void sendError(Message message, Exception error){
-        message.reply(String.format(ERROR_MSG, error.toString())).queue();
-    }
-
-    public static void sendError(TextChannel channel, Exception error){
-        channel.sendMessage(String.format(ERROR_MSG, error.toString())).queue();
-    }
-
-    public static void sendError(SlashCommandEvent event, Exception error){
-        event.reply(String.format(ERROR_MSG, error.toString())).queue();
+    public static void sendError(Message message, Exception error) {
+        message.reply(String.format(Callerphone.ERROR_MSG, error.toString())).queue();
     }
 
     public static String adminHelp() {

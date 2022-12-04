@@ -16,11 +16,7 @@ public class EndPool implements ICommand {
             return;
         }
 
-        try {
-            e.getMessage().reply(endPool(e.getChannel().getId())).queue();
-        } catch (Exception ex) {
-            CommandListener.sendError(e.getMessage(), ex);
-        }
+        e.getMessage().reply(endPool(e.getChannel().getId())).queue();
     }
 
     @Override
@@ -30,11 +26,7 @@ public class EndPool implements ICommand {
             return;
         }
 
-        try {
-            e.reply(endPool(e.getChannel().getId())).queue();
-        } catch (Exception ex) {
-            CommandListener.sendError(e, ex);
-        }
+        e.reply(endPool(e.getChannel().getId())).queue();
     }
 
     private String endPool(String id) {

@@ -16,11 +16,7 @@ public class LeavePool implements ICommand {
             return;
         }
 
-        try {
-            e.getMessage().reply(leavePool(e.getChannel().getId())).queue();
-        } catch (Exception ex) {
-            CommandListener.sendError(e.getMessage(), ex);
-        }
+        e.getMessage().reply(leavePool(e.getChannel().getId())).queue();
     }
 
     @Override
@@ -30,11 +26,7 @@ public class LeavePool implements ICommand {
             return;
         }
 
-        try {
-            e.reply(leavePool(e.getChannel().getId())).queue();
-        } catch (Exception ex) {
-            CommandListener.sendError(e, ex);
-        }
+        e.reply(leavePool(e.getChannel().getId())).queue();
     }
 
     private String leavePool(String id) {

@@ -8,13 +8,22 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 public class OnSlashCommand extends ListenerAdapter {
     // TODO: Do Slash Commands
 
- 	public void onSlashCommand(SlashCommandEvent event) {
-        if (Callerphone.cmdMap.containsKey(event.getName())) {
-            Callerphone.cmdMap.get(event.getName()).runSlash(event);
-            return;
+    public void onSlashCommand(SlashCommandEvent event) {
+        try {
+            if (Callerphone.cmdMap.containsKey(event.getName())) {
+                Callerphone.cmdMap.get(event.getName()).runSlash(event);
+                return;
+            }
+            event.reply(Callerphone.Callerphone + "Hmmm, the slash command `" + event.getName() + "` shouldn't exist! Please join our support server and report this issue. " + Callerphone.support).queue();
+        } catch (Exception e) {
+            sendError(event, e);
         }
-        event.reply(Callerphone.Callerphone + "Hmmm, the slash command `" + event.getName() + "` shouldn't exist! Please join our support server and report this issue. " + Callerphone.support).queue();
     }
+
+    public static void sendError(SlashCommandEvent event, Exception error){
+        event.reply(String.format(Callerphone.ERROR_MSG, error.toString())).queue();
+    }
+
 //		if(!event.isFromGuild()) {
 //			privateChannel(event);
 //			return;

@@ -25,11 +25,7 @@ public class PoolCap implements ICommand {
 
         final int cap = Integer.parseInt(args[1]);
 
-        try {
-            e.getMessage().reply(poolCap(e.getChannel().getId(), cap)).queue();
-        } catch (Exception ex) {
-            CommandListener.sendError(e.getMessage(), ex);
-        }
+        e.getMessage().reply(poolCap(e.getChannel().getId(), cap)).queue();
     }
 
     @Override
@@ -39,11 +35,7 @@ public class PoolCap implements ICommand {
             return;
         }
 
-        try {
-            e.reply(poolCap(e.getChannel().getId(), (int) e.getOption("capacity").getAsLong())).queue();
-        } catch (Exception ex) {
-            CommandListener.sendError(e, ex);
-        }
+        e.reply(poolCap(e.getChannel().getId(), (int) e.getOption("capacity").getAsLong())).queue();
     }
 
     private String poolCap(String id, int cap) {

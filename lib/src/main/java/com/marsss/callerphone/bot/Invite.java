@@ -18,7 +18,7 @@ public class Invite implements ICommand {
 
     @Override
     public void runSlash(SlashCommandEvent e) {
-        e.replyEmbeds(invite()).setEphemeral(true).queue();
+        e.replyEmbeds(invite()).queue();
     }
 
     @Override

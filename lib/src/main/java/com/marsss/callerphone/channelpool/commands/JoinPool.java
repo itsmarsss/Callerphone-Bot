@@ -31,11 +31,7 @@ public class JoinPool implements ICommand {
         if (args.length >= 3)
             pwd = args[2];
 
-        try {
-            e.getMessage().reply(joinPool(e.getChannel(), host, pwd)).queue();
-        } catch (Exception ex) {
-            CommandListener.sendError(e.getMessage(), ex);
-        }
+        e.getMessage().reply(joinPool(e.getChannel(), host, pwd)).queue();
     }
 
     @Override
@@ -45,11 +41,7 @@ public class JoinPool implements ICommand {
             return;
         }
 
-        try {
-            e.reply(joinPool(e.getChannel(), e.getOption("hostid").getAsString(), e.getOption("password").getAsString())).queue();
-        } catch (Exception ex) {
-            CommandListener.sendError(e, ex);
-        }
+        e.reply(joinPool(e.getChannel(), e.getOption("hostid").getAsString(), e.getOption("password").getAsString())).queue();
     }
 
     private String joinPool(MessageChannel channel, String host, String pwd) {

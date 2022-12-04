@@ -25,11 +25,7 @@ public class PoolPub implements ICommand {
 
         final boolean pub = Boolean.parseBoolean(args[1]);
 
-        try {
-            e.getMessage().reply(poolPub(e.getChannel().getId(), pub)).queue();
-        } catch (Exception ex) {
-            CommandListener.sendError(e.getMessage(), ex);
-        }
+        e.getMessage().reply(poolPub(e.getChannel().getId(), pub)).queue();
     }
 
     @Override
@@ -39,12 +35,8 @@ public class PoolPub implements ICommand {
             return;
         }
 
-        try {
-            e.reply(poolPub(e.getChannel().getId(), e.getOption("public").getAsBoolean())).queue();
-        } catch (Exception ex) {
-            CommandListener.sendError(e, ex);
-        }
-     }
+        e.reply(poolPub(e.getChannel().getId(), e.getOption("public").getAsBoolean())).queue();
+    }
 
     private String poolPub(String id, boolean pub) {
         int stat = ChannelPool.setPublicity(id, pub);

@@ -68,6 +68,9 @@ public class Callerphone {
 
     public static JDA jda;
 
+    public static final String ERROR_MSG = "An error occurred with error: `%s`." +
+            "\nIf this is a recurring problem, please join our support server and report this issue. " + support;
+
     private static final EnumSet<GatewayIntent> intent = EnumSet.of(
             GatewayIntent.GUILD_MEMBERS,
             GatewayIntent.GUILD_MESSAGES,

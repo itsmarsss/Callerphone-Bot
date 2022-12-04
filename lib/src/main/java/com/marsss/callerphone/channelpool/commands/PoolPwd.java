@@ -25,11 +25,7 @@ public class PoolPwd implements ICommand {
 
         final String pwd = args[1];
 
-        try {
-            e.getMessage().reply(poolPwd(e.getChannel().getId(), pwd)).queue();
-        } catch (Exception ex) {
-            CommandListener.sendError(e.getMessage(), ex);
-        }
+        e.getMessage().reply(poolPwd(e.getChannel().getId(), pwd)).queue();
     }
 
     @Override
@@ -39,11 +35,7 @@ public class PoolPwd implements ICommand {
             return;
         }
 
-        try {
-            e.reply(poolPwd(e.getChannel().getId(), e.getOption("password").getAsString())).setEphemeral(true).queue();
-        } catch (Exception ex) {
-            CommandListener.sendError(e, ex);
-        }
+        e.reply(poolPwd(e.getChannel().getId(), e.getOption("password").getAsString())).setEphemeral(true).queue();
     }
 
     private String poolPwd(String id, String pwd) {
@@ -53,7 +45,7 @@ public class PoolPwd implements ICommand {
         int stat = ChannelPool.setPassword(id, pwd);
         if (stat == ChannelPool.SUCCESS) {
             return Callerphone.Callerphone + "This pool now has " +
-                    ((pwd.equals("")) ?  "no password" : "password ||" + pwd + "||") +
+                    ((pwd.equals("")) ? "no password" : "password ||" + pwd + "||") +
                     ".";
         } else if (stat == ChannelPool.ERROR) {
             return Callerphone.Callerphone + "This pool is not hosting a pool.";
