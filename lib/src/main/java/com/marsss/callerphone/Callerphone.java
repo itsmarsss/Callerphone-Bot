@@ -30,10 +30,10 @@ import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.Guild;
-//import net.dv8tion.jda.api.interactions.commands.build.CommandData;
-//import net.dv8tion.jda.api.interactions.commands.OptionType;
-//import net.dv8tion.jda.api.interactions.commands.build.CommandData;
-//import net.dv8tion.jda.api.interactions.commands.build.OptionData;
+import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
+import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.ChunkingFilter;
 import net.dv8tion.jda.api.utils.MemberCachePolicy;
@@ -215,67 +215,101 @@ public class Callerphone {
             logger.error(e.toString());
         }
 
-		/*			
-		   - This removes all existing slash command	
-		   jda.updateCommands().queue();
+        //jda.updateCommands().queue();
 
-		   - Commands list
-		   
-		   jda.upsertCommand(new CommandData("help", "Learn more about my commands")
-						.addOptions(new OptionData(OptionType.STRING, "command", "Which command/category you want to learn more about?").setRequired(false)))
-				.queue();
+        //-This removes all existing slash command
+        //jda.updateCommands().queue();
 
-		   jda.upsertCommand(new CommandData("botinfo", "Get the bot's info")).queue();
+        //-Commands list
 
+        jda.upsertCommand(new CommandData("help", "Learn more about my commands")
+                        .addOptions(new OptionData(OptionType.STRING, "command", "Which command/category you want to learn more about?").setRequired(false)))
+                .queue();
 
-		   jda.upsertCommand(new CommandData("search", "Search the web")
-						.addOptions(new OptionData(OptionType.STRING, "query", "What do you want to search?").setRequired(true)))
-				.queue();
+        jda.upsertCommand(new CommandData("botinfo", "Get the bot's info")).queue();
 
 
-		   jda.upsertCommand(new CommandData("poll", "Creates a poll for members to vote")
-						.addOptions(new OptionData(OptionType.STRING, "question", "What are we voting for?").setRequired(true)))
-				.queue();
+        jda.upsertCommand(new CommandData("search", "Search the web")
+                        .addOptions(new OptionData(OptionType.STRING, "query", "What do you want to search?").setRequired(true)))
+                .queue();
 
 
-		   jda.upsertCommand(new CommandData("about", "About Callerphone")).queue();
-		   jda.upsertCommand(new CommandData("donate", "Help us out by donating")).queue();
-		   jda.upsertCommand(new CommandData("ping", "Get the bot's ping")).queue();
-		   jda.upsertCommand(new CommandData("invite", "Invite Callerphone")).queue();
-		   jda.upsertCommand(new CommandData("ping", "Get the bot's ping")).queue();
-		   jda.upsertCommand(new CommandData("uptime", "Get the bot's uptime")).queue();
+        jda.upsertCommand(new CommandData("poll", "Creates a poll for members to vote")
+                        .addOptions(new OptionData(OptionType.STRING, "question", "What are we voting for?").setRequired(true)))
+                .queue();
 
 
-		   jda.upsertCommand(new CommandData("clap", "Claps your message")
-						.addOptions(new OptionData(OptionType.STRING, "message", "What do you want to clap?").setRequired(true)))
-						.queue();
+        jda.upsertCommand(new CommandData("about", "About Callerphone")).queue();
+        jda.upsertCommand(new CommandData("donate", "Help us out by donating")).queue();
+        jda.upsertCommand(new CommandData("invite", "Invite Callerphone")).queue();
+        jda.upsertCommand(new CommandData("ping", "Get the bot's ping")).queue();
+        jda.upsertCommand(new CommandData("uptime", "Get the bot's uptime")).queue();
+
+        jda.upsertCommand(new CommandData("endpool", "End a channel pool")).queue();
+        jda.upsertCommand(new CommandData("hostpool", "Host a channel pool")).queue();
+        jda.upsertCommand(new CommandData("joinpool", "Join a channel pool")
+                .addOptions(
+                        new OptionData(OptionType.STRING, "hostID", "Host channel's ID").setRequired(true),
+                        new OptionData(OptionType.STRING, "password", "Channel pool password (if given)")
+                )
+        ).queue();
+        jda.upsertCommand(new CommandData("leavepool", "Leave a channel pool")).queue();
+        jda.upsertCommand(new CommandData("poolparticipants", "View channels in a channel pool")).queue();
+        jda.upsertCommand(new CommandData("poolcap", "Set pool capacity")
+                .addOptions(
+                        new OptionData(OptionType.INTEGER, "capacity", "Pool capacity")
+                                .setMinValue(2)
+                                .setMaxValue(10)
+                                .setRequired(true)
+                )
+        ).queue();
+        jda.upsertCommand(new CommandData("poolkick", "Kick channel from pool")
+                .addOptions(
+                        new OptionData(OptionType.STRING, "target", "Target channel").setRequired(true)
+                )
+        ).queue();
+        jda.upsertCommand(new CommandData("poolpublicity", "Change visibility of pool")
+                .addOptions(
+                        new OptionData(OptionType.BOOLEAN, "public", "Publicity of pool").setRequired(true)
+                )
+        ).queue();
+        jda.upsertCommand(new CommandData("poolpassword", "Change password of pool")
+                .addOptions(
+                        new OptionData(OptionType.STRING, "password", "Password of pool").setRequired(true)
+                )
+        ).queue();
 
 
-		   jda.upsertCommand(new CommandData("color", "Get a random color")).queue();
 
+//        jda.upsertCommand(new CommandData("clap", "Claps your message")
+//                        .addOptions(new OptionData(OptionType.STRING, "message", "What do you want to clap?").setRequired(true)))
+//                .queue();
+//
+//
+//        jda.upsertCommand(new CommandData("color", "Get a random color")).queue();
+//
+//
+//        jda.upsertCommand(new CommandData("colorrgb", "COLORS!")
+//                        .addOptions(new OptionData(OptionType.INTEGER, "r", "Red value").setRequired(true))
+//                        .addOptions(new OptionData(OptionType.INTEGER, "g", "Green value").setRequired(true))
+//                        .addOptions(new OptionData(OptionType.INTEGER, "b", "Blue value").setRequired(true)))
+//                .queue();
+//
+//
+//        jda.upsertCommand(new CommandData("colorhex", "COLORS!")
+//                        .addOptions(new OptionData(OptionType.STRING, "hex", "Hexcode").setRequired(true)))
+//                .queue();
+//
+//
+//        jda.upsertCommand(new CommandData("echo", "Echos your message")
+//                        .addOptions(new OptionData(OptionType.STRING, "message", "What do you want to echo?").setRequired(true)))
+//                .queue();
+//
+//
+//        jda.upsertCommand(new CommandData("eightball", "Help you decide things")
+//                        .addOptions(new OptionData(OptionType.STRING, "question", "What do you want to ask?").setRequired(true)))
+//                .queue();
 
-		   jda.upsertCommand(new CommandData("colorrgb", "COLORS!")
-						.addOptions(new OptionData(OptionType.INTEGER, "r", "Red value").setRequired(true))
-						.addOptions(new OptionData(OptionType.INTEGER, "g", "Green value").setRequired(true))
-						.addOptions(new OptionData(OptionType.INTEGER, "b", "Blue value").setRequired(true)))
-						.queue();
-
-
-		   jda.upsertCommand(new CommandData("colorhex", "COLORS!")
-						.addOptions(new OptionData(OptionType.STRING, "hex", "Hexcode").setRequired(true)))
-						.queue();
-
-
-     	   jda.upsertCommand(new CommandData("echo", "Echos your message")
-						.addOptions(new OptionData(OptionType.STRING, "message", "What do you want to echo?").setRequired(true)))
-						.queue();
-
-
-		   jda.upsertCommand(new CommandData("eightball", "Help you decide things")
-						.addOptions(new OptionData(OptionType.STRING, "question", "What do you want to ask?").setRequired(true)))
-						.queue();
-
-		 */
 
     }
 
@@ -701,7 +735,7 @@ public class Callerphone {
         try (PrintWriter myWriter = new PrintWriter(parent + "/pools.txt")) {
             for (Map.Entry<String, ArrayList<String>> pool : ChannelPool.childr.entrySet()) {
                 sb.append(pool.getKey() + ":");
-                for(String id : pool.getValue()) {
+                for (String id : pool.getValue()) {
                     sb.append(id + ",");
                 }
                 sb.deleteCharAt(sb.length() - 1);
@@ -738,6 +772,7 @@ public class Callerphone {
             }
         }
     }
+
     private static void importPools(File file) throws IOException {
         try (BufferedReader br = new BufferedReader(new FileReader(file))) {
             String line = br.readLine();

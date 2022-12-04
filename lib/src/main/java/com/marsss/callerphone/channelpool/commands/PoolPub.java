@@ -40,7 +40,7 @@ public class PoolPub implements ICommand {
         }
 
         try {
-            e.reply(poolPub(e.getChannel().getId(), e.getOption("publicity").getAsBoolean())).queue();
+            e.reply(poolPub(e.getChannel().getId(), e.getOption("public").getAsBoolean())).queue();
         } catch (Exception ex) {
             CommandListener.sendError(e, ex);
         }
