@@ -249,7 +249,7 @@ public class Callerphone {
         jda.upsertCommand(new CommandData("hostpool", "Host a channel pool")).queue();
         jda.upsertCommand(new CommandData("joinpool", "Join a channel pool")
                 .addOptions(
-                        new OptionData(OptionType.STRING, "hostID", "Host channel's ID").setRequired(true),
+                        new OptionData(OptionType.STRING, "hostid", "Host channel's ID").setRequired(true),
                         new OptionData(OptionType.STRING, "password", "Channel pool password (if given)")
                 )
         ).queue();

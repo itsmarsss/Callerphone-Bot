@@ -46,7 +46,7 @@ public class JoinPool implements ICommand {
         }
 
         try {
-            e.reply(joinPool(e.getChannel(), e.getOption("hostID").getAsString(), e.getOption("password").getAsString())).queue();
+            e.reply(joinPool(e.getChannel(), e.getOption("hostid").getAsString(), e.getOption("password").getAsString())).queue();
         } catch (Exception ex) {
             CommandListener.sendError(e, ex);
         }
