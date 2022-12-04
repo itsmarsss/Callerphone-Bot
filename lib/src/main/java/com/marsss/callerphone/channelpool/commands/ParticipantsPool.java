@@ -38,21 +38,20 @@ public class ParticipantsPool implements ICommand {
         final ArrayList<String> participants = ChannelPool.getClients(id);
         if (participants.size() == 0) {
             return Callerphone.Callerphone + "This channel is not in a pool.";
-        } else {
-            StringBuilder list = new StringBuilder();
-            for (int i = 0; i < participants.size(); i++) {
-                list.append("\n`ID: ")
-                        .append(participants.get(i))
-                        .append("` (#")
-                        .append(Callerphone.jda.getTextChannelById(participants.get(i)).getName())
-                        .append(")");
-                if (i == 0) {
-                    list.append(" [Host] :crown:");
-                } else {
-                    list.append(" [Client] :link:");
-                }
-            }
-            return list.toString();
         }
+        StringBuilder list = new StringBuilder();
+        for (int i = 0; i < participants.size(); i++) {
+            list.append("\n`ID: ")
+                    .append(participants.get(i))
+                    .append("` (#")
+                    .append(Callerphone.jda.getTextChannelById(participants.get(i)).getName())
+                    .append(")");
+            if (i == 0) {
+                list.append(" [Host] :crown:");
+            } else {
+                list.append(" [Client] :link:");
+            }
+        }
+        return list.toString();
     }
 }
