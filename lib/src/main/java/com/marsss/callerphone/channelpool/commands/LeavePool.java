@@ -26,7 +26,7 @@ public class LeavePool implements ICommand {
     @Override
     public void runSlash(SlashCommandEvent e) {
         if (!e.getMember().hasPermission(Permission.MANAGE_CHANNEL)) {
-            e.reply(Callerphone.Callerphone + "You need `Manage Channel` permission to run this command.").queue();
+            e.reply(Callerphone.Callerphone + "You need `Manage Channel` permission to run this command.").setEphemeral(true).queue();
             return;
         }
 

@@ -52,7 +52,7 @@ public class PoolPwd implements ICommand {
 
         int stat = ChannelPool.setPassword(id, pwd);
         if (stat == ChannelPool.SUCCESS) {
-            return Callerphone.Callerphone + "This pool now has" +
+            return Callerphone.Callerphone + "This pool now has " +
                     ((pwd.equals("")) ?  "no password" : "password ||" + pwd + "||") +
                     ".";
         } else if (stat == ChannelPool.ERROR) {

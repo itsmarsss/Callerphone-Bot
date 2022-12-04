@@ -1,6 +1,7 @@
 package com.marsss.callerphone.utils;
 
 import java.awt.Color;
+import java.util.List;
 
 import com.marsss.callerphone.channelpool.commands.*;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -13,6 +14,7 @@ import com.marsss.callerphone.bot.*;
 import com.marsss.callerphone.tccallerphone.*;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 
 public class Help implements ICommand {
 
@@ -34,8 +36,12 @@ public class Help implements ICommand {
     @Override
     public void runSlash(SlashCommandEvent e) {
         boolean admin = Callerphone.admin.contains(e.getUser().getId());
-
-        e.replyEmbeds(help(e.getOption("term").getAsString(), admin)).queue();
+        List<OptionMapping> param = e.getOptions();
+        if(param.size() == 0) {
+            e.replyEmbeds(help("", admin)).queue();
+            return;
+        }
+        e.replyEmbeds(help(param.get(0).getAsString(), admin)).queue();
     }
 
     @Override

@@ -1,15 +1,7 @@
 package com.marsss.callerphone.listeners;
 
-import java.io.IOException;
-
 import com.marsss.callerphone.Callerphone;
-import com.marsss.callerphone.bot.*;
-import com.marsss.callerphone.utils.BotInfo;
-import com.marsss.callerphone.utils.Help;
-import com.marsss.callerphone.utils.Search;
 
-import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
@@ -21,7 +13,7 @@ public class OnSlashCommand extends ListenerAdapter {
             Callerphone.cmdMap.get(event.getName()).runSlash(event);
             return;
         }
-        event.reply(Callerphone.Callerphone + "Hmmm, the slash command `" + event.getName() + "` shouldn't exist! Please report this in our support server." + Callerphone.support).queue();
+        event.reply(Callerphone.Callerphone + "Hmmm, the slash command `" + event.getName() + "` shouldn't exist! Please join our support server and report this issue. " + Callerphone.support).queue();
     }
 //		if(!event.isFromGuild()) {
 //			privateChannel(event);

@@ -52,7 +52,7 @@ public class CommandListener extends ListenerAdapter {
     }
 
     public static final String ERROR_MSG = "An error occurred with error: `%s`." +
-            "\nIf this is a recurring problem, please join our support server and report this issue." + Callerphone.support;
+            "\nIf this is a recurring problem, please join our support server and report this issue. " + Callerphone.support;
     public static void sendError(Message message, Exception error){
         message.reply(String.format(ERROR_MSG, error.toString())).queue();
     }

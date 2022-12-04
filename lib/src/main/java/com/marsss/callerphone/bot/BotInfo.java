@@ -1,4 +1,4 @@
-package com.marsss.callerphone.utils;
+package com.marsss.callerphone.bot;
 
 import java.awt.Color;
 import java.time.format.DateTimeFormatter;
@@ -21,7 +21,7 @@ public class BotInfo implements ICommand {
 
     @Override
     public void runSlash(SlashCommandEvent e) {
-        e.replyEmbeds(botInfo()).queue();
+        e.replyEmbeds(botInfo()).setEphemeral(true).queue();
     }
 
     private MessageEmbed botInfo() {

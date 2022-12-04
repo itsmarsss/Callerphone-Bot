@@ -32,7 +32,6 @@ import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
-import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.ChunkingFilter;
@@ -214,7 +213,7 @@ public class Callerphone {
         } catch (Exception e) {
             logger.error(e.toString());
         }
-
+        /*
         //jda.updateCommands().queue();
 
         //-This removes all existing slash command
@@ -279,38 +278,42 @@ public class Callerphone {
                 )
         ).queue();
 
+        jda.upsertCommand(new CommandData("channelinfo", "Get a channel's information")
+                .addOptions(
+                        new OptionData(OptionType.CHANNEL, "channel", "Target channel")
+                                .setRequired(true)
+                )
+        ).queue();
 
+        jda.upsertCommand(new CommandData("help", "Get some help")
+                .addOptions(
+                        new OptionData(OptionType.STRING, "term", "Search term")
+                )
+        ).queue();
 
-//        jda.upsertCommand(new CommandData("clap", "Claps your message")
-//                        .addOptions(new OptionData(OptionType.STRING, "message", "What do you want to clap?").setRequired(true)))
-//                .queue();
-//
-//
-//        jda.upsertCommand(new CommandData("color", "Get a random color")).queue();
-//
-//
-//        jda.upsertCommand(new CommandData("colorrgb", "COLORS!")
-//                        .addOptions(new OptionData(OptionType.INTEGER, "r", "Red value").setRequired(true))
-//                        .addOptions(new OptionData(OptionType.INTEGER, "g", "Green value").setRequired(true))
-//                        .addOptions(new OptionData(OptionType.INTEGER, "b", "Blue value").setRequired(true)))
-//                .queue();
-//
-//
-//        jda.upsertCommand(new CommandData("colorhex", "COLORS!")
-//                        .addOptions(new OptionData(OptionType.STRING, "hex", "Hexcode").setRequired(true)))
-//                .queue();
-//
-//
-//        jda.upsertCommand(new CommandData("echo", "Echos your message")
-//                        .addOptions(new OptionData(OptionType.STRING, "message", "What do you want to echo?").setRequired(true)))
-//                .queue();
-//
-//
-//        jda.upsertCommand(new CommandData("eightball", "Help you decide things")
-//                        .addOptions(new OptionData(OptionType.STRING, "question", "What do you want to ask?").setRequired(true)))
-//                .queue();
+        jda.upsertCommand(new CommandData("roleinfo", "Get a role's information")
+                .addOptions(
+                        new OptionData(OptionType.ROLE, "role", "Target role")
+                                .setRequired(true)
+                )
+        ).queue();
 
+        jda.upsertCommand(new CommandData("search", "Browse the internet from Discord")
+                .addOptions(
+                        new OptionData(OptionType.STRING, "query", "Search query")
+                                .setRequired(true)
+                )
+        ).queue();
 
+        jda.upsertCommand(new CommandData("serverinfo", "Get this server's information")).queue();
+
+        jda.upsertCommand(new CommandData("userinfo", "Get a user's information")
+                .addOptions(
+                        new OptionData(OptionType.USER, "member", "Target member")
+                                .setRequired(true)
+                )
+        ).queue();
+        */
     }
 
     private static void kill() {
