@@ -44,17 +44,12 @@ public class LeavePool implements ICommand {
         if (stat == ChannelPool.ERROR) {
             return Callerphone.Callerphone + "This channel is not in a pool.";
         } else if (stat == ChannelPool.IS_HOST) {
-            if (ChannelPool.hasPassword(id)) {
-                return Callerphone.Callerphone + "This channel is already hosting a pool." +
-                        "\nThis channel's pool ID is: `" + id + "`" +
-                        "\nThis channel's password is: ||`" + ChannelPool.getPassword(id) + "`||" +
-                        "\nEnd pool with: `" + Callerphone.Prefix + "endpool`";
-            } else {
-                return Callerphone.Callerphone + "This channel is already hosting a pool." +
-                        "\nThis channel's pool ID is: `" + id + "`" +
-                        "\nSet a password with: `" + Callerphone.Prefix + "pwdpool <password>`" +
-                        "\nEnd pool with: `" + Callerphone.Prefix + "endpool`";
-            }
+            return Callerphone.Callerphone + "This channel is already hosting a pool." +
+                    "\nThis channel's pool ID is: `" + id + "`" +
+                    (ChannelPool.hasPassword(id)
+                            ? "\nThis channel's password is: ||`" + ChannelPool.getPassword(id) + "`||"
+                            : "\nSet a password with: `" + Callerphone.Prefix + "pwdpool <password>`") +
+                    "\nEnd pool with: `" + Callerphone.Prefix + "endpool`";
         } else if (stat == ChannelPool.SUCCESS) {
             return Callerphone.Callerphone + "Successfully left channel pool!";
         }
