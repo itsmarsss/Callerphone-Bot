@@ -4,11 +4,12 @@ import com.marsss.callerphone.Callerphone;
 
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import org.jetbrains.annotations.NotNull;
 
 public class OnSlashCommand extends ListenerAdapter {
     // TODO: Do Slash Commands
 
-    public void onSlashCommand(SlashCommandEvent event) {
+    public void onSlashCommand(@NotNull SlashCommandEvent event) {
         try {
             if (Callerphone.cmdMap.containsKey(event.getName())) {
                 Callerphone.cmdMap.get(event.getName()).runSlash(event);

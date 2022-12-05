@@ -92,7 +92,7 @@ public class OnPrivateMessage extends ListenerAdapter {
                             StringBuilder sb = new StringBuilder();
                             try {
                                 for (String m : Callerphone.blacklist) {
-                                    sb.append(m + "\n");
+                                    sb.append(m).append("\n");
                                 }
                                 FileWriter myWriter = new FileWriter(Callerphone.parent + "/blacklist.txt");
                                 myWriter.write(sb.toString());
@@ -117,7 +117,7 @@ public class OnPrivateMessage extends ListenerAdapter {
                             StringBuilder sb = new StringBuilder();
                             try {
                                 for (String key : Callerphone.prefix.keySet()) {
-                                    sb.append(key + "|" + Callerphone.prefix.get(key) + "\n");
+                                    sb.append(key).append("|").append(Callerphone.prefix.get(key)).append("\n");
                                 }
                                 FileWriter myWriter = new FileWriter(Callerphone.parent + "/prefix.txt");
                                 myWriter.write(sb.toString());
@@ -137,7 +137,7 @@ public class OnPrivateMessage extends ListenerAdapter {
                             StringBuilder sb = new StringBuilder();
                             try {
                                 for (String m : Callerphone.admin) {
-                                    sb.append(m + "\n");
+                                    sb.append(m).append("\n");
                                 }
                                 FileWriter myWriter = new FileWriter(Callerphone.parent + "/admin.txt");
                                 myWriter.write(sb.toString());
@@ -158,7 +158,7 @@ public class OnPrivateMessage extends ListenerAdapter {
                             StringBuilder sb = new StringBuilder();
                             try {
                                 for (String m : Callerphone.blacklist) {
-                                    sb.append(m + "\n");
+                                    sb.append(m).append("\n");
                                 }
                                 PrintWriter myWriter = new PrintWriter(Callerphone.parent + "/blacklist.txt");
                                 myWriter.print(sb);
@@ -178,7 +178,7 @@ public class OnPrivateMessage extends ListenerAdapter {
                             StringBuilder sb = new StringBuilder();
                             try {
                                 for (String key : Callerphone.prefix.keySet()) {
-                                    sb.append(key + "|" + Callerphone.prefix.get(key) + "\n");
+                                    sb.append(key).append("|").append(Callerphone.prefix.get(key)).append("\n");
                                 }
                                 PrintWriter myWriter = new PrintWriter(Callerphone.parent + "/prefix.txt");
                                 myWriter.print(sb);
@@ -202,7 +202,7 @@ public class OnPrivateMessage extends ListenerAdapter {
                             StringBuilder sb = new StringBuilder();
                             try {
                                 for (String m : Callerphone.admin) {
-                                    sb.append(m + "\n");
+                                    sb.append(m).append("\n");
                                 }
                                 PrintWriter myWriter = new PrintWriter(Callerphone.parent + "/admin.txt");
                                 myWriter.print(sb);

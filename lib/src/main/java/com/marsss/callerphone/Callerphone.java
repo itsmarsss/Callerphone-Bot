@@ -203,12 +203,7 @@ public class Callerphone {
             System.out.println("------------------------------");
 
             ScheduledExecutorService ses = Executors.newSingleThreadScheduledExecutor();
-            ses.scheduleAtFixedRate(new Runnable() {
-                @Override
-                public void run() {
-                    kill();
-                }
-            }, 0, 2, TimeUnit.MINUTES);
+            ses.scheduleAtFixedRate(com.marsss.callerphone.Callerphone::kill, 0, 2, TimeUnit.MINUTES);
 
         } catch (Exception e) {
             logger.error(e.toString());
@@ -352,10 +347,10 @@ public class Callerphone {
                     final String minute = String.valueOf(now.getMinute());
                     final String ID = month + "/" + day + "/" + hour + "/" + minute + "C" + callerID + "R" + receiverID;
 
-                    String data = "";
+                    StringBuilder data = new StringBuilder();
                     for (String m : DATA)
-                        data += m + "\n";
-                    jda.getTextChannelById(reportchannel).sendMessage("**ID:** " + ID).addFile(data.getBytes(), ID + ".txt").queue();
+                        data.append(m).append("\n");
+                    jda.getTextChannelById(reportchannel).sendMessage("**ID:** " + ID).addFile(data.toString().getBytes(), ID + ".txt").queue();
 
                 }
 
@@ -737,9 +732,9 @@ public class Callerphone {
         StringBuilder sb = new StringBuilder();
         try (PrintWriter myWriter = new PrintWriter(parent + "/pools.txt")) {
             for (Map.Entry<String, ArrayList<String>> pool : ChannelPool.childr.entrySet()) {
-                sb.append(pool.getKey() + ":");
+                sb.append(pool.getKey()).append(":");
                 for (String id : pool.getValue()) {
-                    sb.append(id + ",");
+                    sb.append(id).append(",");
                 }
                 sb.deleteCharAt(sb.length() - 1);
                 sb.append("\n");
@@ -751,9 +746,9 @@ public class Callerphone {
         StringBuilder sb2 = new StringBuilder();
         try (PrintWriter myWriter = new PrintWriter(parent + "/poolconfig.txt")) {
             for (Map.Entry<String, PoolConfig> pool : ChannelPool.config.entrySet()) {
-                sb2.append(pool.getKey() + ":");
+                sb2.append(pool.getKey()).append(":");
                 PoolConfig config = pool.getValue();
-                sb2.append(config.getPwd() + "," + config.getCap() + "," + config.isPub());
+                sb2.append(config.getPwd()).append(",").append(config.getCap()).append(",").append(config.isPub());
                 sb2.append("\n");
             }
 

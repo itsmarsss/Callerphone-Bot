@@ -55,34 +55,34 @@ public class UserInfo implements ICommand {
 		String GUILD_JOIN_DATE = mmbr.getTimeJoined().format(DateTimeFormatter.RFC_1123_DATE_TIME);
 		String DISCORD_JOINED_DATE = mmbr.getUser().getTimeCreated().format(DateTimeFormatter.RFC_1123_DATE_TIME);
 		String ID = mmbr.getUser().getId();
-		String PERMISSIONS = "";
-		String ROLES = "";
+		StringBuilder PERMISSIONS = new StringBuilder();
+		StringBuilder ROLES = new StringBuilder();
 		String AVATAR = mmbr.getUser().getAvatarUrl();
 		String ISOWNER = String.valueOf(mmbr.isOwner());
 		String ISPENDING = String.valueOf(mmbr.isPending());
 
 		for (Permission p : mmbr.getPermissions()) {
-			PERMISSIONS += p.getName() + ", ";
+			PERMISSIONS.append(p.getName()).append(", ");
 		}
 		if (PERMISSIONS.length() > 0) {
-			PERMISSIONS = PERMISSIONS.substring(0, PERMISSIONS.length()-2);
+			PERMISSIONS = new StringBuilder(PERMISSIONS.substring(0, PERMISSIONS.length() - 2));
 		}else
-			PERMISSIONS = "No permissions.";
+			PERMISSIONS = new StringBuilder("No permissions.");
 
 
 		for (Role r : mmbr.getRoles() ) {
-			ROLES += r.getAsMention() + ", ";
+			ROLES.append(r.getAsMention()).append(", ");
 		}
 		if (ROLES.length() > 0) {
-			ROLES = ROLES.substring(0, ROLES.length()-2);
+			ROLES = new StringBuilder(ROLES.substring(0, ROLES.length() - 2));
 			COLOR = mmbr.getRoles().get(0).getColor();
 			if(ROLES.length() > 1024) {
-				ROLES = ROLES.substring(0, 1000);
-				ROLES = ROLES.substring(0, ROLES.lastIndexOf(","));
-				ROLES = ROLES + "` + " + (mmbr.getRoles().size() - (ROLES.length() - ROLES.replaceAll("@", "").length())) + " more`";
+				ROLES = new StringBuilder(ROLES.substring(0, 1000));
+				ROLES = new StringBuilder(ROLES.substring(0, ROLES.lastIndexOf(",")));
+				ROLES.append("` + ").append(mmbr.getRoles().size() - (ROLES.length() - ROLES.toString().replaceAll("@", "").length())).append(" more`");
 			}
 		}else
-			ROLES = "No roles on this server.";
+			ROLES = new StringBuilder("No roles on this server.");
 
 		if (AVATAR == null) {
 			AVATAR = "No Avatar";
@@ -94,8 +94,8 @@ public class UserInfo implements ICommand {
 				.setDescription(":dividers: **User information for " + mmbr.getAsMention() + ":**")
 				.addField("Name", NAME, true)
 				.addField("Tag", TAG, true)
-				.addField("Permissions", PERMISSIONS, false)
-				.addField("Roles", ROLES, false)
+				.addField("Permissions", PERMISSIONS.toString(), false)
+				.addField("Roles", ROLES.toString(), false)
 				.addField("Joined Guild", GUILD_JOIN_DATE, true)
 				.addField("Joined Discord", DISCORD_JOINED_DATE, true)
 				.addField("Avatar URL", "[link](" + AVATAR + ")", true)

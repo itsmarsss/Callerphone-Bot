@@ -53,8 +53,8 @@ public class RoleInfo implements ICommand {
         String NAME = role.getName();
         String ID = role.getId();
         String DATE_CREATED = role.getTimeCreated().format(DateTimeFormatter.RFC_1123_DATE_TIME);
-        String PERMISSIONS = "";
-        String MEMBERS_WITH_ROLE = "";
+        StringBuilder PERMISSIONS = new StringBuilder();
+        StringBuilder MEMBERS_WITH_ROLE = new StringBuilder();
         String POSITION = String.valueOf(role.getGuild().getRoles().size() - role.getPosition());
         String ISHOISTED = String.valueOf(role.isHoisted());
         String ISMANAGED = String.valueOf(role.isManaged());
@@ -62,33 +62,33 @@ public class RoleInfo implements ICommand {
         String ISPUBLICROLE = String.valueOf(role.isPublicRole());
 
         for (Permission p : role.getPermissions()) {
-            PERMISSIONS += p.getName() + ", ";
+            PERMISSIONS.append(p.getName()).append(", ");
         }
         if (PERMISSIONS.length() > 0) {
-            PERMISSIONS = PERMISSIONS.substring(0, PERMISSIONS.length() - 2);
+            PERMISSIONS = new StringBuilder(PERMISSIONS.substring(0, PERMISSIONS.length() - 2));
         } else
-            PERMISSIONS = "No permissions.";
+            PERMISSIONS = new StringBuilder("No permissions.");
 
 
         for (Member m : role.getGuild().getMembersWithRoles(role)) {
-            MEMBERS_WITH_ROLE += m.getAsMention() + ", ";
+            MEMBERS_WITH_ROLE.append(m.getAsMention()).append(", ");
         }
         if (MEMBERS_WITH_ROLE.length() > 0) {
-            MEMBERS_WITH_ROLE = MEMBERS_WITH_ROLE.substring(0, MEMBERS_WITH_ROLE.length() - 2);
+            MEMBERS_WITH_ROLE = new StringBuilder(MEMBERS_WITH_ROLE.substring(0, MEMBERS_WITH_ROLE.length() - 2));
             if (MEMBERS_WITH_ROLE.length() > 1024) {
-                MEMBERS_WITH_ROLE = MEMBERS_WITH_ROLE.substring(0, 1000);
-                MEMBERS_WITH_ROLE = MEMBERS_WITH_ROLE.substring(0, MEMBERS_WITH_ROLE.lastIndexOf(","));
-                MEMBERS_WITH_ROLE = MEMBERS_WITH_ROLE + "` + " + (role.getGuild().getMembers().size() - (MEMBERS_WITH_ROLE.length() - MEMBERS_WITH_ROLE.replaceAll("@", "").length())) + " more`";
+                MEMBERS_WITH_ROLE = new StringBuilder(MEMBERS_WITH_ROLE.substring(0, 1000));
+                MEMBERS_WITH_ROLE = new StringBuilder(MEMBERS_WITH_ROLE.substring(0, MEMBERS_WITH_ROLE.lastIndexOf(",")));
+                MEMBERS_WITH_ROLE.append("` + ").append(role.getGuild().getMembers().size() - (MEMBERS_WITH_ROLE.length() - MEMBERS_WITH_ROLE.toString().replaceAll("@", "").length())).append(" more`");
             }
         } else
-            MEMBERS_WITH_ROLE = "No member has this Role.";
+            MEMBERS_WITH_ROLE = new StringBuilder("No member has this Role.");
 
         EmbedBuilder RleInfEmd = new EmbedBuilder()
                 .setColor(COLOR)
                 .setDescription(":pencil: **Role information for " + role.getAsMention() + ":**")
                 .addField("Name", NAME, false)
-                .addField("Permissions", PERMISSIONS, false)
-                .addField("Members With Role", MEMBERS_WITH_ROLE, false)
+                .addField("Permissions", PERMISSIONS.toString(), false)
+                .addField("Members With Role", MEMBERS_WITH_ROLE.toString(), false)
                 .addField("Creation Date", DATE_CREATED, false)
                 .addField("Position", POSITION, false)
                 .addField("Apart from online", ISHOISTED, true)

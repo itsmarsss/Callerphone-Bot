@@ -78,10 +78,10 @@ public class TCCallerphoneListener extends ListenerAdapter {
 						final String minute = String.valueOf(now.getMinute());
 						final String ID = month + "/" + day + "/" + hour + "/" + minute + "C" + callerID + "R" + receiverID;	
 						
-						String data = "";
+						StringBuilder data = new StringBuilder();
 						for(String m : DATA)
-							data += m + "\n";
-						jda.getTextChannelById(com.marsss.callerphone.Callerphone.reportchannel).sendMessage("**ID:** " + ID).addFile(data.getBytes(), ID + ".txt").queue();
+							data.append(m).append("\n");
+						jda.getTextChannelById(com.marsss.callerphone.Callerphone.reportchannel).sendMessage("**ID:** " + ID).addFile(data.toString().getBytes(), ID + ".txt").queue();
 				
 					}
 
@@ -111,10 +111,10 @@ public class TCCallerphoneListener extends ListenerAdapter {
 						final String minute = String.valueOf(now.getMinute());
 						final String ID = month + "/" + day + "/" + hour + "/" + minute + "C" + callerID + "R" + receiverID;	
 						
-						String data = "";
+						StringBuilder data = new StringBuilder();
 						for(String m : DATA)
-							data += m + "\n";
-						jda.getTextChannelById(com.marsss.callerphone.Callerphone.reportchannel).sendMessage("**ID:** " + ID).addFile(data.getBytes(), ID + ".txt").queue();
+							data.append(m).append("\n");
+						jda.getTextChannelById(com.marsss.callerphone.Callerphone.reportchannel).sendMessage("**ID:** " + ID).addFile(data.toString().getBytes(), ID + ".txt").queue();
 				
 					}
 
@@ -242,11 +242,11 @@ public class TCCallerphoneListener extends ListenerAdapter {
 				if(c.getCallerTCID().equals(event.getChannel().getId())) {
 					if(c.getRFF()) {
 						for(String ftr : com.marsss.callerphone.Callerphone.filter) {
-							String rep = "";
+							StringBuilder rep = new StringBuilder();
 							for(int i = 0; i < ftr.length(); i++) {
-								rep+="#";
+								rep.append("#");
 							}
-							MESSAGERAW = MESSAGERAW.replaceAll("(?i)" + ftr, rep);
+							MESSAGERAW = MESSAGERAW.replaceAll("(?i)" + ftr, rep.toString());
 						}
 					}
 
@@ -266,9 +266,9 @@ public class TCCallerphoneListener extends ListenerAdapter {
 						final String callerID = c.getCallerTCID();
 						final String receiverID = c.getReceiverTCID();
 
-						String data = "";
+						StringBuilder data = new StringBuilder();
 						for(String m : c.getMessages())
-							data += m + "\n";
+							data.append(m).append("\n");
 
 						c.resetMessage();
 						try {
@@ -281,7 +281,7 @@ public class TCCallerphoneListener extends ListenerAdapter {
 						String minute = String.valueOf(now.getMinute());
 						String ID = month + day + hour + minute + callerID + receiverID;			
 
-						final String DATA = data;
+						final String DATA = data.toString();
 						if(c.getReport()) {
 							com.marsss.callerphone.Callerphone.jda.getTextChannelById(com.marsss.callerphone.Callerphone.reportchannel).sendMessage("**ID:** " + ID).addFile(DATA.getBytes(), ID + ".txt").queue();
 						}
@@ -290,11 +290,11 @@ public class TCCallerphoneListener extends ListenerAdapter {
 				}else if(c.getReceiverTCID().equals(event.getChannel().getId())) {
 					if(c.getCFF()) {
 						for(String ftr : com.marsss.callerphone.Callerphone.filter) {
-							String rep = "";
+							StringBuilder rep = new StringBuilder();
 							for(int i = 0; i < ftr.length(); i++) {
-								rep+="#";
+								rep.append("#");
 							}
-							MESSAGERAW = MESSAGERAW.replaceAll("(?i)" + ftr, rep);
+							MESSAGERAW = MESSAGERAW.replaceAll("(?i)" + ftr, rep.toString());
 						}
 					}
 
@@ -314,9 +314,9 @@ public class TCCallerphoneListener extends ListenerAdapter {
 						final String callerID = c.getCallerTCID();
 						final String receiverID = c.getReceiverTCID();
 
-						String data = "";
+						StringBuilder data = new StringBuilder();
 						for(String m : c.getMessages())
-							data += m + "\n";
+							data.append(m).append("\n");
 
 						c.resetMessage();
 						try {
@@ -329,7 +329,7 @@ public class TCCallerphoneListener extends ListenerAdapter {
 						String minute = String.valueOf(now.getMinute());
 						String ID = month + day + hour + minute + callerID + receiverID;			
 
-						final String DATA = data;
+						final String DATA = data.toString();
 						if(c.getReport()) {
 							com.marsss.callerphone.Callerphone.jda.getTextChannelById(com.marsss.callerphone.Callerphone.reportchannel).sendMessage("**ID:** " + ID).addFile(DATA.getBytes(), ID + ".txt").queue();
 						}

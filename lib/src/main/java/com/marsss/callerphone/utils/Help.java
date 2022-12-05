@@ -55,7 +55,7 @@ public class Help implements ICommand {
     }
 
     public MessageEmbed help(String name, boolean admin) {
-        if (name == "") {
+        if (name.equals("")) {
             return helpCategories(admin);
         }
 
@@ -132,15 +132,15 @@ public class Help implements ICommand {
 
         if (Callerphone.cmdMap.containsKey(name)) {
             String[] triggers = Callerphone.cmdMap.get(name).getTriggers();
-            String trigger = "";
+            StringBuilder trigger = new StringBuilder();
             for (String trig : triggers) {
-                trigger += trig + ", ";
+                trigger.append(trig).append(", ");
             }
 
             TITLE = trigger.substring(0, trigger.length() - 2);
             DESC = Callerphone.cmdMap.get(name).getHelp();
 
-            if (trigger.contains("search")) {
+            if (trigger.toString().contains("search")) {
                 DESC += "\nWe use Duckduckgo, so click [here](https://help.duckduckgo.com/duckduckgo-help-pages/results/syntax/) for searching syntax!";
 
             }

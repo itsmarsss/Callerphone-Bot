@@ -33,10 +33,6 @@ public class ChannelInfo implements ICommand {
             if (CHANNEL == null)
                 CHANNEL = CHANNELS.get(0);
         } else if (CHANNEL == null) {
-            //				MESSAGE.reply("Getting info").queue(message -> {
-            //					message.editMessage("").queue();
-            //					message.editMessageEmbeds(ChannelInfo.textchannelinfo(event.getChannel())).queue();
-            //				});
             MESSAGE.replyEmbeds(textchannelinfo(e.getChannel())).queue();
         }
 

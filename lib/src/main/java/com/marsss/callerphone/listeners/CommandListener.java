@@ -4,8 +4,6 @@ import com.marsss.callerphone.Callerphone;
 
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.TextChannel;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
@@ -37,11 +35,6 @@ public class CommandListener extends ListenerAdapter {
 
         if (!args[0].toLowerCase().startsWith(Callerphone.Prefix))
             return;
-
-//        if (!event.getGuild().getSelfMember().hasPermission(Permission.MESSAGE_EMBED_LINKS)) {
-//            MESSAGE.reply("I need `Embed Links` permission to react.").queue();
-//            return;
-//        }
 
         String trigger = args[0].toLowerCase().replace(Callerphone.Prefix, "");
 
