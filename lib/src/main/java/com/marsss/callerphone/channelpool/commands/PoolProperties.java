@@ -16,7 +16,7 @@ public class PoolProperties implements ICommand {
     }
 
     private String poolProperties() {
-        w
+
     }
 
     @Override
