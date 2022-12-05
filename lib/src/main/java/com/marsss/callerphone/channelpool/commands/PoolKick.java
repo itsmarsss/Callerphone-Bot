@@ -56,6 +56,6 @@ public class PoolKick implements ICommand {
 
     @Override
     public String[] getTriggers() {
-        return "kick,kickchannel,kickchan".split(",");
+        return "poolkick,kick,kickchannel,kickchan".split(",");
     }
 }

@@ -206,7 +206,7 @@ public class ChannelPool {
             return;
         }
         childr.get(sender).remove(id);
-        systemBroadCast(sender, Callerphone.Callerphone + "Channel ID: `" + id + "` has left this pool.");
+        systemBroadCast(sender, Callerphone.Callerphone + "Channel `ID: " + id + "` has left this pool.");
     }
 
 
@@ -214,7 +214,7 @@ public class ChannelPool {
         ArrayList<String> pool = childr.get(IDhost);
         for (String id : pool) {
             if (Callerphone.jda.getTextChannelById(id) == null) {
-                systemBroadCast(IDhost, Callerphone.Callerphone + "Channel ID: `" + id + "` has left this pool.");
+                systemBroadCast(IDhost, Callerphone.Callerphone + "Channel `ID: " + id + "` has left this pool.");
                 continue;
             }
             MessageAction ma = Callerphone.jda.getTextChannelById(id).sendMessage(msg);

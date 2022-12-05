@@ -8,6 +8,9 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.api.interactions.commands.OptionMapping;
+
+import java.util.List;
 
 public class JoinPool implements ICommand {
     @Override
@@ -40,7 +43,11 @@ public class JoinPool implements ICommand {
             e.reply(Callerphone.Callerphone + "You need `Manage Channel` permission to run this command.").setEphemeral(true).queue();
             return;
         }
-
+        List<OptionMapping> param = e.getOptions();
+        if(param.size() == 1) {
+            e.reply(joinPool(e.getChannel(), e.getOption("hostid").getAsString(), "")).queue();
+            return;
+        }
         e.reply(joinPool(e.getChannel(), e.getOption("hostid").getAsString(), e.getOption("password").getAsString())).queue();
     }
 
@@ -59,10 +66,10 @@ public class JoinPool implements ICommand {
         } else if (stat == ChannelPool.NOT_FOUND) {
             return Callerphone.Callerphone + "Requested pool `ID: " + host + "` does not exist.";
         } else if (stat == ChannelPool.INCORRECT_PASS) {
-            Callerphone.jda.getTextChannelById(host).sendMessage(Callerphone.Callerphone + "Channel ID: `" + channel.getId() + "` attempted to join with incorrect password.").queue();
+            Callerphone.jda.getTextChannelById(host).sendMessage(Callerphone.Callerphone + "Channel `ID: " + channel.getId() + "` attempted to join with incorrect password.").queue();
             return Callerphone.Callerphone + "Requested pool `ID: " + host + "` does not exist.";
         } else if (stat == ChannelPool.FULL) {
-            Callerphone.jda.getTextChannelById(host).sendMessage(Callerphone.Callerphone + "Channel ID: `" + channel.getId() + "` attempted to join this full pool.").queue();
+            Callerphone.jda.getTextChannelById(host).sendMessage(Callerphone.Callerphone + "Channel `ID: " + channel.getId() + "` attempted to join this full pool.").queue();
             return Callerphone.Callerphone + "This pool is already full " + ChannelPool.config.get(host).getCap() + "/" + ChannelPool.config.get(host).getCap() + ".";
         } else if (stat == ChannelPool.SUCCESS) {
             return Callerphone.Callerphone + "Successfully joined channel pool hosted by `#" + Callerphone.jda.getTextChannelById(host).getName() + "`*(ID: " + host + ")*!";
