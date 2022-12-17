@@ -10,7 +10,7 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 public class CommandListener extends ListenerAdapter {
     public void onGuildMessageReceived(GuildMessageReceivedEvent event) {
 
-//        if(com.marsss.callerphone.Callerphone.blacklist.contains(event.getAuthor().getId())) {
+//        if(Callerphone.blacklist.contains(event.getAuthor().getId())) {
 //            MESSAGE.reply("Sorry you are blacklisted, submit an appeal in our support server").queue();
 //            break;
 //        }
@@ -48,6 +48,7 @@ public class CommandListener extends ListenerAdapter {
                 Callerphone.cmdMap.get(trigger).runCommand(event);
             }
         } catch (Exception ex) {
+            ex.printStackTrace();
             sendError(event.getMessage(), ex);
         }
 
