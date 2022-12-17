@@ -3,6 +3,7 @@ package com.marsss.callerphone.channelpool.commands;
 import com.marsss.ICommand;
 import com.marsss.callerphone.Callerphone;
 import com.marsss.callerphone.channelpool.ChannelPool;
+import com.marsss.callerphone.channelpool.PoolStatus;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
@@ -30,18 +31,18 @@ public class HostPool implements ICommand {
     }
 
     private String hostPool(MessageChannel channel) {
-        int stat = ChannelPool.hostPool(channel.getId());
-        if (stat == ChannelPool.IS_HOST) {
+        PoolStatus stat = ChannelPool.hostPool(channel.getId());
+        if (stat == PoolStatus.IS_HOST) {
             return Callerphone.Callerphone + "This channel is already hosting a pool." +
                     "\nThis channel's pool ID is: `" + channel.getId() + "`" +
                     (ChannelPool.hasPassword(channel.getId())
                             ? "\nThis channel's password is: ||`" + ChannelPool.getPassword(channel.getId()) + "`||"
                             : "\nSet a password with: `" + Callerphone.Prefix + "pwdpool <password>`") +
                     "\nEnd pool with: `" + Callerphone.Prefix + "endpool`";
-        } else if (stat == ChannelPool.IS_CHILD) {
+        } else if (stat == PoolStatus.IS_CHILD) {
             return Callerphone.Callerphone + "This channel is already in a pool." +
                     "\nLeave pool with: `" + Callerphone.Prefix + "leavepool`";
-        } else if (stat == ChannelPool.SUCCESS) {
+        } else if (stat == PoolStatus.SUCCESS) {
             return Callerphone.Callerphone + "Successfully hosted channel pool for `#" + channel.getName() + "`!" +
                     "\nThis channel's pool ID is: `" + channel.getId() + "`" +
                     "\nSet a password with: `" + Callerphone.Prefix + "poolpass <password>`" +
