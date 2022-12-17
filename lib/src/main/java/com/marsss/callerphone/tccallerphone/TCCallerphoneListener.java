@@ -61,7 +61,7 @@ public class TCCallerphoneListener extends ListenerAdapter {
         c.addMessage((c.getCallerTCID().equals(CHANNELID) ? "Caller " : "Receiver ") + MESSAGE.getAuthor().getAsTag() + "(" + MESSAGE.getAuthor().getId() + ")" + ": " + MESSAGERAW);
         c.setLastMessage(System.currentTimeMillis());
 
-        if (MESSAGERAW.length() > 3500)
+        if (MESSAGERAW.length() > 1500)
             MESSAGERAW = ":x: I sent a message too long for Callerphone to handle! :x:";
 
         if (c.getCallerTCID().equals(CHANNELID)) {
