@@ -19,43 +19,39 @@ public class TCCallerphone {
         final Logger logger = LoggerFactory.getLogger(TCCallerphone.class);
         final String CHANNELID = tcchannel.getId();
         final JDA jda = Callerphone.jda;
-        for (int i = 0; i < 10; i++) {
-            System.out.println(convos.get(i).getCallerTCID() + "-" + convos.get(i).getReceiverTCID());
-        }
+
         for (int i = 0; i < convos.size(); i++) {
-            if (!convos.get(i).getCallerTCID().equals("empty") && convos.get(i).getReceiverTCID().equals("")) {
+            ConvoStorage convo = convos.get(i);
+            if (!convo.getCallerTCID().equals("empty") && convo.getReceiverTCID().equals("")) {
                 StringBuilder msg = new StringBuilder();
                 if (!cens) {
                     msg.append("This chat will be uncensored, if you do not wish to proceed please run `" + Callerphone.Prefix + "endchat`");
                 }
-                convos.get(i).setRFF(cens);
-                convos.get(i).setRAnon(anon);
-                convos.get(i).setReceiverTCID(CHANNELID);
-                convos.get(i).setLastMessage(System.currentTimeMillis());
+                convo.setRFF(cens);
+                convo.setRAnon(anon);
+                convo.setReceiverTCID(CHANNELID);
+                convo.setLastMessage(System.currentTimeMillis());
 
-                jda.getTextChannelById(convos.get(i).getCallerTCID()).sendMessage(Callerphone.Callerphone + "Someone picked up the phone!").queue();
+                jda.getTextChannelById(convo.getCallerTCID()).sendMessage(Callerphone.Callerphone + "Someone picked up the phone!").queue();
 
-                msg.append(Callerphone.Callerphone + "Calling...");
-                msg.append(Callerphone.Callerphone + "Someone picked up the phone!");
+                msg.append((!cens ? "\n\n" : "") + Callerphone.Callerphone + "Calling...");
+                jda.getTextChannelById(convo.getReceiverTCID()).sendMessage(Callerphone.Callerphone + "Someone picked up the phone!").queue();
 
-                // logger.info("From TC: " + convos[i].getCallerTCID() + " - To TC: " + convos[i].getReceiverTCID());
-                //logger.info("From Guild: " + jda.getTextChannelById(convos[i].getCallerTCID()).getGuild().getId() + " - To Guild: " + jda.getTextChannelById(convos[i].getReceiverTCID()).getGuild().getId());
+                logger.info("From TC: " + convo.getCallerTCID() + " - To TC: " + convo.getReceiverTCID());
+                logger.info("From Guild: " + jda.getTextChannelById(convo.getCallerTCID()).getGuild().getId() + " - To Guild: " + jda.getTextChannelById(convo.getReceiverTCID()).getGuild().getId());
 
                 return msg.toString();
-            } else if (convos.get(i).getCallerTCID().equals("empty")) {
+            } else if (convo.getCallerTCID().equals("empty")) {
                 StringBuilder msg = new StringBuilder();
                 if (!cens) {
                     msg.append("This chat will be uncensored, if you do not wish to proceed please run `" + Callerphone.Prefix + "endchat`");
                 }
 
-                convos.get(i).setCFF(cens);
-                convos.get(i).setCAnon(anon);
-                convos.get(i).setCallerTCID(CHANNELID);
+                convo.setCFF(cens);
+                convo.setCAnon(anon);
+                convo.setCallerTCID(CHANNELID);
 
-
-                System.out.println(convos.get(i).getCallerTCID());
-
-                msg.append(Callerphone.Callerphone + "Calling...");
+                msg.append((!cens ? "\n\n" : "") + Callerphone.Callerphone + "Calling...");
 
                 return msg.toString();
             }
@@ -65,7 +61,7 @@ public class TCCallerphone {
     }
 
     public static String onEndCallCommand(TextChannel channel) {
-        if(!hasCall(channel.getId())) {
+        if (!hasCall(channel.getId())) {
             return Callerphone.Callerphone + "There is no call to end!";
         }
 
