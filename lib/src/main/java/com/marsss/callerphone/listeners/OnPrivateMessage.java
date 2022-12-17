@@ -99,6 +99,7 @@ public class OnPrivateMessage extends ListenerAdapter {
                                 myWriter.close();
                                 MESSAGE.reply("ID: `" + id + "` added to blacklist").queue();
                             } catch (IOException e) {
+                                e.printStackTrace();
                                 MESSAGE.reply("An error occured").queue();
                             }
                         }
@@ -124,6 +125,7 @@ public class OnPrivateMessage extends ListenerAdapter {
                                 myWriter.close();
                                 MESSAGE.reply("ID: `" + id + "` now has prefix `" + prefix + "`").queue();
                             } catch (IOException e) {
+                                e.printStackTrace();
                                 MESSAGE.reply("An error occured").queue();
                             }
                         }
@@ -144,6 +146,7 @@ public class OnPrivateMessage extends ListenerAdapter {
                                 myWriter.close();
                                 MESSAGE.reply("ID: `" + id + "` added to mod list").queue();
                             } catch (IOException e) {
+                                e.printStackTrace();
                                 MESSAGE.reply("An error occured").queue();
                             }
                         }
@@ -165,6 +168,7 @@ public class OnPrivateMessage extends ListenerAdapter {
                                 myWriter.close();
                                 MESSAGE.reply("ID: `" + id + "` removed from blacklist").queue();
                             } catch (IOException e) {
+                                e.printStackTrace();
                                 MESSAGE.reply("An error occured").queue();
                             }
                         }
@@ -185,6 +189,7 @@ public class OnPrivateMessage extends ListenerAdapter {
                                 myWriter.close();
                                 MESSAGE.reply("ID: `" + id + "` no longer has a prefix").queue();
                             } catch (IOException e) {
+                                e.printStackTrace();
                                 MESSAGE.reply("An error occured").queue();
                             }
                         }
@@ -209,6 +214,7 @@ public class OnPrivateMessage extends ListenerAdapter {
                                 myWriter.close();
                                 MESSAGE.reply("ID: `" + id + "` removed from mod list").queue();
                             } catch (IOException e) {
+                                e.printStackTrace();
                                 MESSAGE.reply("An error occured").queue();
                             }
                         }
@@ -216,6 +222,7 @@ public class OnPrivateMessage extends ListenerAdapter {
 
                 }
             } catch (Exception e) {
+                e.printStackTrace();
                 MESSAGE.reply("Syntax Error").queue();
             }
 
@@ -240,6 +247,7 @@ public class OnPrivateMessage extends ListenerAdapter {
 
             channel.sendMessage(replaceLast(s.replace("{\"cnt\":\"", ""), "\"}", "")).queue();
         } catch (Exception e) {
+            e.printStackTrace();
             channel.sendMessage("An error occured, if this persists please notify ").queue();
         }
 
