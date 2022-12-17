@@ -3,6 +3,7 @@ package com.marsss.callerphone.channelpool.commands;
 import com.marsss.ICommand;
 import com.marsss.callerphone.Callerphone;
 import com.marsss.callerphone.channelpool.ChannelPool;
+import com.marsss.callerphone.channelpool.PoolStatus;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
@@ -29,10 +30,10 @@ public class EndPool implements ICommand {
     }
 
     private String endPool(String id) {
-        int stat = ChannelPool.endPool(id);
-        if (stat == ChannelPool.SUCCESS) {
+        PoolStatus stat = ChannelPool.endPool(id);
+        if (stat == PoolStatus.SUCCESS) {
             return Callerphone.Callerphone + "Successfully ended channel pool!";
-        } else if (stat == ChannelPool.IS_CHILD) {
+        } else if (stat == PoolStatus.IS_CHILD) {
             return Callerphone.Callerphone + "This channel is not hosting a pool.";
         }
         return Callerphone.Callerphone + "An error occurred.";
