@@ -32,6 +32,6 @@ public class EndChat implements ICommand {
 
     @Override
     public String[] getTriggers() {
-        return new String[0];
+        return "end,hangup,endcall,endchat,enduserphone,endcallerphone,endphone,endphonecall".split(",");
     }
 }
