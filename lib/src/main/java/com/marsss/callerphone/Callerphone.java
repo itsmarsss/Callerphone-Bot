@@ -12,7 +12,12 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import com.marsss.callerphone.channelpool.commands.*;
+import com.marsss.callerphone.tccallerphone.TCCallerphone;
 import com.marsss.callerphone.tccallerphone.TCCallerphoneListener;
+import com.marsss.callerphone.tccallerphone.commands.ChatFamilyFriendly;
+import com.marsss.callerphone.tccallerphone.commands.ChatUncensor;
+import com.marsss.callerphone.tccallerphone.commands.EndChat;
+import com.marsss.callerphone.tccallerphone.commands.ReportChat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,7 +27,6 @@ import com.marsss.callerphone.utils.*;
 import com.marsss.callerphone.listeners.*;
 import com.marsss.callerphone.channelpool.*;
 import com.marsss.callerphone.tccallerphone.ConvoStorage;
-import com.marsss.callerphone.tccallerphone.ConvoStorage.Convo;
 
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
