@@ -67,86 +67,30 @@ public class TCCallerphone {
 
         final JDA jda = Callerphone.jda;
 
-        for(ConvoStorage c : convos) {
-            TextChannel CALLER = null;
-            TextChannel RECEIVER = null;
+        ConvoStorage convo = getCall(channel.getId());
 
-            try {
-                CALLER = jda.getTextChannelById(c.getCallerTCID());
-            }catch(Exception e) {}
+        if (convo != null) {
+            final String callerID = convo.getCallerTCID();
+            final String receiverID = convo.getReceiverTCID();
 
-            try {
-                RECEIVER = jda.getTextChannelById(c.getReceiverTCID());
-            }catch(Exception e) {}
-
-            if(CALLER == null) {
-                c.resetMessage();
-                continue;
+            if (receiverID.equals(channel.getId())) {
+                jda.getTextChannelById(callerID).sendMessage(Callerphone.Callerphone + "The other party hung up the phone.").queue();
+            } else {
+                jda.getTextChannelById(receiverID).sendMessage(Callerphone.Callerphone + "The other party hung up the phone.").queue();
             }
 
-            if(CALLER.getId().equals(channel.getId())) {
-                if(RECEIVER != null) {
-                    RECEIVER.sendMessage(Callerphone.Callerphone + "The other party hung up the phone.").queue();
-                }
+            final boolean report = convo.getReport();
 
-                final String callerID = c.getCallerTCID();
-                final String receiverID = c.getReceiverTCID();
+            ArrayList<String> data = new ArrayList<>(convo.getMessages());
 
-                boolean report = c.getReport();
-
-                ArrayList<String> DATA = new ArrayList<>(c.getMessages());
-
-                c.resetMessage();
-
-                if(report) {
-
-                    LocalDateTime now = LocalDateTime.now();
-                    final String month = String.valueOf(now.getMonthValue());
-                    final String day = String.valueOf(now.getDayOfMonth());
-                    final String hour = String.valueOf(now.getHour());
-                    final String minute = String.valueOf(now.getMinute());
-                    final String ID = month + "/" + day + "/" + hour + "/" + minute + "C" + callerID + "R" + receiverID;
-
-                    StringBuilder data = new StringBuilder();
-                    for(String m : DATA)
-                        data.append(m).append("\n");
-                    jda.getTextChannelById(com.marsss.callerphone.Callerphone.reportchannel).sendMessage("**ID:** " + ID).addFile(data.toString().getBytes(), ID + ".txt").queue();
-
-                }
-
-                return Callerphone.Callerphone + "You hung up the phone.";
-            }else if(RECEIVER.getId().equals(channel.getId())) {
-                if(CALLER != null) {
-                    CALLER.sendMessage(Callerphone.Callerphone + "The other party hung up the phone.").queue();
-                }
-
-                final String callerID = c.getCallerTCID();
-                final String receiverID = c.getReceiverTCID();
-
-                boolean report = c.getReport();
-
-                ArrayList<String> DATA = new ArrayList<>(c.getMessages());
-
-                c.resetMessage();
-
-                if(report) {
-                    LocalDateTime now = LocalDateTime.now();
-                    final String month = String.valueOf(now.getMonthValue());
-                    final String day = String.valueOf(now.getDayOfMonth());
-                    final String hour = String.valueOf(now.getHour());
-                    final String minute = String.valueOf(now.getMinute());
-                    final String ID = month + "/" + day + "/" + hour + "/" + minute + "C" + callerID + "R" + receiverID;
-
-                    StringBuilder data = new StringBuilder();
-                    for(String m : DATA)
-                        data.append(m).append("\n");
-                    jda.getTextChannelById(com.marsss.callerphone.Callerphone.reportchannel).sendMessage("**ID:** " + ID).addFile(data.toString().getBytes(), ID + ".txt").queue();
-                }
-
-                return Callerphone.Callerphone + "You hung up the phone.";
+            if (report) {
+                report(data, callerID, receiverID);
             }
+
+            convo.resetMessage();
+
+            return Callerphone.Callerphone + "You hung up the phone.";
         }
-
         return Callerphone.Callerphone + "I was not able to find the call...";
     }
 
