@@ -69,6 +69,7 @@ public class ServerInfo implements ICommand {
             AFKCHANNEL = gld.getAfkChannel().getAsMention();
             AFKTIMEOUT = gld.getAfkTimeout().getSeconds() + "s";
         } catch (NullPointerException ex) {
+            ex.printStackTrace();
         }
 
         @SuppressWarnings("deprecation")
