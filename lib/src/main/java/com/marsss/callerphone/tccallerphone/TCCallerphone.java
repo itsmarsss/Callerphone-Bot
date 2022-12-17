@@ -15,7 +15,7 @@ public class TCCallerphone {
 
     public static ArrayList<ConvoStorage> convos = new ArrayList<>();
 
-    public static String onCallCommand(TextChannel tcchannel, boolean cens, boolean anon) {
+    public static ChatStatus onCallCommand(TextChannel tcchannel, boolean cens, boolean anon) {
         final Logger logger = LoggerFactory.getLogger(TCCallerphone.class);
         final String CHANNELID = tcchannel.getId();
         final JDA jda = Callerphone.jda;
@@ -23,41 +23,25 @@ public class TCCallerphone {
         for (int i = 0; i < convos.size(); i++) {
             ConvoStorage convo = convos.get(i);
             if (!convo.getCallerTCID().equals("empty") && convo.getReceiverTCID().equals("")) {
-                StringBuilder msg = new StringBuilder();
-                if (!cens) {
-                    msg.append("This chat will be uncensored, if you do not wish to proceed please run `" + Callerphone.Prefix + "endchat`");
-                }
                 convo.setRFF(cens);
                 convo.setRAnon(anon);
                 convo.setReceiverTCID(CHANNELID);
                 convo.setLastMessage(System.currentTimeMillis());
 
-                jda.getTextChannelById(convo.getCallerTCID()).sendMessage(Callerphone.Callerphone + "Someone picked up the phone!").queue();
-
-                msg.append((!cens ? "\n\n" : "") + Callerphone.Callerphone + "Calling...");
-                jda.getTextChannelById(convo.getReceiverTCID()).sendMessage(Callerphone.Callerphone + "Someone picked up the phone!").queue();
-
                 logger.info("From TC: " + convo.getCallerTCID() + " - To TC: " + convo.getReceiverTCID());
                 logger.info("From Guild: " + jda.getTextChannelById(convo.getCallerTCID()).getGuild().getId() + " - To Guild: " + jda.getTextChannelById(convo.getReceiverTCID()).getGuild().getId());
 
-                return msg.toString();
+                return ChatStatus.SUCCESS_RECEIVER;
             } else if (convo.getCallerTCID().equals("empty")) {
-                StringBuilder msg = new StringBuilder();
-                if (!cens) {
-                    msg.append("This chat will be uncensored, if you do not wish to proceed please run `" + Callerphone.Prefix + "endchat`");
-                }
-
                 convo.setCFF(cens);
                 convo.setCAnon(anon);
                 convo.setCallerTCID(CHANNELID);
 
-                msg.append((!cens ? "\n\n" : "") + Callerphone.Callerphone + "Calling...");
-
-                return msg.toString();
+                return ChatStatus.SUCCESS_CALLER;
             }
         }
         logger.warn("Port not found");
-        return Callerphone.Callerphone + "Hmmm, I was unable to find an open port!";
+        return ChatStatus.NON_EXISTENT;
     }
 
     public static String onEndCallCommand(TextChannel channel) {
