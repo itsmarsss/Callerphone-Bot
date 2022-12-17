@@ -10,13 +10,6 @@ import java.util.Collection;
 import java.util.HashMap;
 
 public class ChannelPool {
-    public static final int IS_HOST = 1;
-    public static final int IS_CHILD = 2;
-    public static final int NOT_FOUND = 3;
-    public static final int INCORRECT_PASS = 4;
-    public static final int SUCCESS = 5;
-    public static final int ERROR = 6;
-    public static final int FULL = 7;
 
     public static HashMap<String, PoolConfig> config = new HashMap<>();
     public static HashMap<String, String> parent = new HashMap<>();
