@@ -38,6 +38,6 @@ public class ReportChat implements ICommand {
 
     @Override
     public String[] getTriggers() {
-        return new String[0];
+        return "report,reportchat,reportcall,reportphone,reportcallerphone,reportuserphone,reportphonecall".split(",");
     }
 }
