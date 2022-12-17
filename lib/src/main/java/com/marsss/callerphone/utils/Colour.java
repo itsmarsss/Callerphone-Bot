@@ -75,6 +75,7 @@ public class Colour implements ICommand {
                     .setColor(Integer.parseInt(HEX, 16));
             return ColorEmd2.build();
         } catch (Exception e) {
+            e.printStackTrace();
         }
 
         return ColorEmd.build();
@@ -130,6 +131,7 @@ public class Colour implements ICommand {
                     .setColor(Integer.parseInt(hex, 16));
             return ColorEmd2.build();
         } catch (Exception e) {
+            e.printStackTrace();
         }
         return ColorEmd.build();
 
