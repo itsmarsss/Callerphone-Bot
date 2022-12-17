@@ -1,6 +1,9 @@
 package com.marsss.callerphone.tccallerphone.commands;
 
 import com.marsss.ICommand;
+import com.marsss.callerphone.Callerphone;
+import com.marsss.callerphone.tccallerphone.TCCallerphone;
+import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
@@ -36,6 +39,6 @@ public class ChatUncensor implements ICommand {
 
     @Override
     public String[] getTriggers() {
-        return new String[0];
+        return "chat,call,callerphone,userphone,phone,phonecall".split(",");
     }
 }
