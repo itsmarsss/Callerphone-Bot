@@ -167,6 +167,7 @@ public class Callerphone {
             try {
                 getInfo(new File(parent + "/info.txt"));
             } catch (Exception e) {
+                e.printStackTrace();
                 System.out.println("------------------------------");
                 logger.error("Error with info.txt");
                 logger.warn("Critical Issues May Appear (BrainURL and other links)");
@@ -176,6 +177,7 @@ public class Callerphone {
                 EmbedBuilder embedBuilder = new EmbedBuilder().setTitle("Status").setColor(new Color(24, 116, 52)).setFooter("Hello World!").setDescription(jda.getSelfUser().getAsMention() + " is now online;" + startupmsg);
                 jda.getTextChannelById(logstatus).sendMessageEmbeds(embedBuilder.build()).queue();
             } catch (Exception e) {
+                e.printStackTrace();
                 System.out.println("------------------------------");
                 logger.error("Error Sending Startup Message");
             }
@@ -183,6 +185,7 @@ public class Callerphone {
             try {
                 getBlack(new File(parent + "/blacklist.txt"));
             } catch (Exception e) {
+                e.printStackTrace();
                 System.out.println("------------------------------");
                 logger.error("Error with blacklist.txt");
             }
@@ -190,6 +193,7 @@ public class Callerphone {
             try {
                 getPrefix(new File(parent + "/prefix.txt"));
             } catch (Exception e) {
+                e.printStackTrace();
                 System.out.println("------------------------------");
                 logger.error("Error with prefix.txt");
             }
@@ -197,6 +201,7 @@ public class Callerphone {
             try {
                 getAdmin(new File(parent + "/admin.txt"));
             } catch (Exception e) {
+                e.printStackTrace();
                 System.out.println("------------------------------");
                 logger.error("Error with admin.txt");
             }
@@ -204,6 +209,7 @@ public class Callerphone {
             try {
                 getFilter(new File(parent + "/filter.txt"));
             } catch (Exception e) {
+                e.printStackTrace();
                 System.out.println("------------------------------");
                 logger.error("Error with filter.txt");
             }
@@ -214,6 +220,7 @@ public class Callerphone {
             ses.scheduleAtFixedRate(com.marsss.callerphone.Callerphone::kill, 0, 2, TimeUnit.MINUTES);
 
         } catch (Exception e) {
+            e.printStackTrace();
             logger.error(e.toString());
         }
         /*
@@ -499,6 +506,7 @@ public class Callerphone {
                     try {
                         jda.getTextChannelById(logstatus).sendMessageEmbeds(embedBuilder.build()).complete();
                     } catch (Exception e) {
+                        e.printStackTrace();
                         logger.error("Error Sending Shutdown Message");
                     }
                     jda.awaitReady();
@@ -607,6 +615,7 @@ public class Callerphone {
                     continue;
 
                 } catch (Exception e) {
+                    e.printStackTrace();
                     logger.error("Input error, please try again");
                     break;
                 }
@@ -636,6 +645,7 @@ public class Callerphone {
                 try {
                     getInfo(new File(parent + "/info.txt"));
                 } catch (Exception e) {
+                    e.printStackTrace();
                     System.out.println("------------------------------");
                     logger.error("Error with info.txt");
                     logger.warn("Critical Issues May Appear (BrainURL and other links)");
@@ -644,6 +654,7 @@ public class Callerphone {
                 try {
                     getBlack(new File(parent + "/blacklist.txt"));
                 } catch (Exception e) {
+                    e.printStackTrace();
                     System.out.println("------------------------------");
                     logger.error("Error with blacklist.txt");
                 }
@@ -651,6 +662,7 @@ public class Callerphone {
                 try {
                     getPrefix(new File(parent + "/prefix.txt"));
                 } catch (Exception e) {
+                    e.printStackTrace();
                     System.out.println("------------------------------");
                     logger.error("Error with prefix.txt");
                 }
@@ -658,6 +670,7 @@ public class Callerphone {
                 try {
                     getAdmin(new File(parent + "/admin.txt"));
                 } catch (Exception e) {
+                    e.printStackTrace();
                     System.out.println("------------------------------");
                     logger.error("Error with admin.txt");
                 }
@@ -665,6 +678,7 @@ public class Callerphone {
                 try {
                     getFilter(new File(parent + "/filter.txt"));
                 } catch (Exception e) {
+                    e.printStackTrace();
                     System.out.println("------------------------------");
                     logger.error("Error with filter.txt");
                 }
@@ -682,6 +696,7 @@ public class Callerphone {
                     exportPools();
                     logger.info("Successful export");
                 } catch (Exception e) {
+                    e.printStackTrace();
                     System.out.println("------------------------------");
                     logger.error("Error with pools.txt");
                     logger.warn("Some or no pools may be exported");
@@ -694,6 +709,7 @@ public class Callerphone {
                     importPools(new File(parent + "/pools.txt"));
                     logger.info("Successful import");
                 } catch (Exception e) {
+                    e.printStackTrace();
                     System.out.println("------------------------------");
                     logger.error("Error with pools.txt");
                     logger.warn("Some or no pools may be imported");
@@ -706,6 +722,7 @@ public class Callerphone {
                     importPoolsConfig(new File(parent + "/poolconfig.txt"));
                     logger.info("Successful import");
                 } catch (Exception e) {
+                    e.printStackTrace();
                     System.out.println("------------------------------");
                     logger.error("Error with pools.txt");
                     logger.warn("Some or no pool config may be imported");
