@@ -28,6 +28,8 @@ public class TCCallerphone {
                 convo.setReceiverTCID(CHANNELID);
                 convo.setLastMessage(System.currentTimeMillis());
 
+                jda.getTextChannelById(convo.getCallerTCID()).sendMessage(Callerphone.Callerphone + "Someone picked up the phone!").queue();
+
                 logger.info("From TC: " + convo.getCallerTCID() + " - To TC: " + convo.getReceiverTCID());
                 logger.info("From Guild: " + jda.getTextChannelById(convo.getCallerTCID()).getGuild().getId() + " - To Guild: " + jda.getTextChannelById(convo.getReceiverTCID()).getGuild().getId());
 
