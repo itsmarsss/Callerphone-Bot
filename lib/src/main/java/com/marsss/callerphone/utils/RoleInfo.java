@@ -29,6 +29,7 @@ public class RoleInfo implements ICommand {
         try {
             role = Callerphone.jda.getRoleById(Long.parseLong(args[1]));
         }catch(Exception ex) {
+            ex.printStackTrace();
             role = null;
         }
 
