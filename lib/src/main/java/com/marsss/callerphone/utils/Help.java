@@ -108,16 +108,16 @@ public class Help implements ICommand {
 
             case "tccall":
                 TITLE = "TCCall Commands";
-                DESC = TCCallPairer.callHelp() + "\n"
-                        + TCCallPairer.uncenscallHelp() + "\n"
-                        + TCCallPairer.hangupHelp() + "\n"
-                        + TCCallPairer.reportHelp();
+//                DESC = TCCallPairer.callHelp() + "\n"
+//                        + TCCallPairer.uncenscallHelp() + "\n"
+//                        + TCCallPairer.hangupHelp() + "\n"
+//                        + TCCallPairer.reportHelp();
                 break;
 
 
             case "report":
                 TITLE = "Report Commands";
-                DESC = TCCallPairer.reportHelp();
+               // DESC = TCCallPairer.reportHelp();
                 break;
 
 
