@@ -15,7 +15,7 @@ public class EndChat implements ICommand {
 
     @Override
     public void runSlash(SlashCommandEvent e) {
-
+        e.reply(endChat(e.getTextChannel())).queue();
     }
 
     private String endChat(TextChannel channel) {

@@ -16,7 +16,7 @@ public class ReportChat implements ICommand {
 
     @Override
     public void runSlash(SlashCommandEvent e) {
-
+        e.reply(reportChat(e.getTextChannel())).queue();
     }
 
     private String reportChat(TextChannel channel) {
