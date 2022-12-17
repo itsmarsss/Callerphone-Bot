@@ -81,6 +81,7 @@ public class Search implements ICommand {
                         snippet +
                                 "\n[[Link]](" + hyper + ")", false);
             } catch (Exception e) {
+                e.printStackTrace();
             }
 
         }
