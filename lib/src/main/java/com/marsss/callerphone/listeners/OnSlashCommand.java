@@ -17,6 +17,7 @@ public class OnSlashCommand extends ListenerAdapter {
             }
             event.reply(Callerphone.Callerphone + "Hmmm, the slash command `" + event.getName() + "` shouldn't exist! Please join our support server and report this issue. " + Callerphone.support).queue();
         } catch (Exception e) {
+            e.printStackTrace();
             sendError(event, e);
         }
     }
