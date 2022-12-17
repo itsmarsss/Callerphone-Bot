@@ -110,23 +110,27 @@ public class TCCallerphone {
     }
 
     public static ConvoStorage getCall(String tc) {
-        for(ConvoStorage c : convos) {
+        for (ConvoStorage c : convos) {
             try {
-                if((tc.equals(c.getCallerTCID()) || tc.equals(c.getReceiverTCID()))) {
+                if ((tc.equals(c.getCallerTCID()) || tc.equals(c.getReceiverTCID()))) {
                     return c;
                 }
-            }catch(Exception e) {}
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
         return null;
     }
 
     public static boolean hasCall(String tc) {
-        for(ConvoStorage c : convos) {
+        for (ConvoStorage c : convos) {
             try {
-                if((tc.equals(c.getCallerTCID()) || tc.equals(c.getReceiverTCID()))) {
+                if ((tc.equals(c.getCallerTCID()) || tc.equals(c.getReceiverTCID()))) {
                     return true;
                 }
-            }catch(Exception e) {}
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
         return false;
     }
