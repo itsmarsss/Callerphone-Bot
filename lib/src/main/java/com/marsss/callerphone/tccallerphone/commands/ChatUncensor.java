@@ -7,12 +7,26 @@ import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 public class ChatUncensor implements ICommand {
     @Override
     public void runCommand(GuildMessageReceivedEvent e) {
-
+        String[]args = e.getMessage().getContentRaw().split("\\s+");
+        boolean anon = false;
+        if(args.length >= 2) {
+            if(args[1].equalsIgnoreCase("anon")) {
+                anon = true;
+            }
+        }
+        e.getMessage().reply(chatUncensor(e.getChannel(), anon)).queue();
     }
 
     @Override
     public void runSlash(SlashCommandEvent e) {
 
+    }
+
+    private String chatUncensor(TextChannel channel, boolean anon) {
+        if(TCCallerphone.hasCall(channel.getId())) {
+            return Callerphone.Callerphone + "There is already a call going on!";
+        }
+        return TCCallerphone.onCallCommand(channel, false, anon);
     }
 
     @Override
