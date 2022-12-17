@@ -321,50 +321,49 @@ public class Callerphone {
     }
 
     private static void kill() {
-        for (Convo c : ConvoStorage.convo) {
-
-            if (System.currentTimeMillis() - c.getLastMessage() >= 250000) {
-                final String callerID = c.getCallerTCID();
-                if (!c.getConnected()) {
-                    try {
-                        jda.getTextChannelById(callerID).sendMessage(Callerphone + "Took too long for someone to pick up :(").queue();
-                    } catch (Exception ex) {
-                    }
-                    c.resetMessage();
-                    continue;
-                }
-                final String receiverID = c.getReceiverTCID();
-
-                ArrayList<String> DATA = new ArrayList<>(c.getMessages());
-
-                c.resetMessage();
-                try {
-                    jda.getTextChannelById(callerID).sendMessage(Callerphone + "Call ended due to inactivity.").queue();
-                } catch (Exception ex) {
-                }
-                try {
-                    jda.getTextChannelById(receiverID).sendMessage(Callerphone + "Call ended due to inactivity.").queue();
-                } catch (Exception ex) {
-                }
-
-                if (c.getReport()) {
-
-                    LocalDateTime now = LocalDateTime.now();
-                    final String month = String.valueOf(now.getMonthValue());
-                    final String day = String.valueOf(now.getDayOfMonth());
-                    final String hour = String.valueOf(now.getHour());
-                    final String minute = String.valueOf(now.getMinute());
-                    final String ID = month + "/" + day + "/" + hour + "/" + minute + "C" + callerID + "R" + receiverID;
-
-                    StringBuilder data = new StringBuilder();
-                    for (String m : DATA)
-                        data.append(m).append("\n");
-                    jda.getTextChannelById(reportchannel).sendMessage("**ID:** " + ID).addFile(data.toString().getBytes(), ID + ".txt").queue();
-
-                }
-
-            }
-        }
+//        for (ConvoStorage c : TCCallerphone.convos) {
+//
+//            if (System.currentTimeMillis() - c.getLastMessage() >= 250000) {
+//                final String callerID = c.getCallerTCID();
+//                try {
+//                    jda.getTextChannelById(callerID).sendMessage(Callerphone + "Took too long for someone to pick up :(").queue();
+//                    c.resetMessage();
+//                    continue;
+//                } catch (Exception ex) {
+//                }
+//
+//                final String receiverID = c.getReceiverTCID();
+//
+//                ArrayList<String> DATA = new ArrayList<>(c.getMessages());
+//
+//                c.resetMessage();
+//                try {
+//                    jda.getTextChannelById(callerID).sendMessage(Callerphone + "Call ended due to inactivity.").queue();
+//                } catch (Exception ex) {
+//                }
+//                try {
+//                    jda.getTextChannelById(receiverID).sendMessage(Callerphone + "Call ended due to inactivity.").queue();
+//                } catch (Exception ex) {
+//                }
+//
+//                if (c.getReport()) {
+//
+//                    LocalDateTime now = LocalDateTime.now();
+//                    final String month = String.valueOf(now.getMonthValue());
+//                    final String day = String.valueOf(now.getDayOfMonth());
+//                    final String hour = String.valueOf(now.getHour());
+//                    final String minute = String.valueOf(now.getMinute());
+//                    final String ID = month + "/" + day + "/" + hour + "/" + minute + "C" + callerID + "R" + receiverID;
+//
+//                    StringBuilder data = new StringBuilder();
+//                    for (String m : DATA)
+//                        data.append(m).append("\n");
+//                    jda.getTextChannelById(reportchannel).sendMessage("**ID:** " + ID).addFile(data.toString().getBytes(), ID + ".txt").queue();
+//
+//                }
+//
+//            }
+//        }
     }
 
     private static void getInfo(File file) throws IOException, InterruptedException {
