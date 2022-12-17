@@ -13,10 +13,11 @@ import java.util.concurrent.TimeUnit;
 import com.marsss.callerphone.channelpool.commands.*;
 import com.marsss.callerphone.tccallerphone.TCCallerphone;
 import com.marsss.callerphone.tccallerphone.TCCallerphoneListener;
-import com.marsss.callerphone.tccallerphone.commands.ChatFamilyFriendly;
-import com.marsss.callerphone.tccallerphone.commands.ChatUncensor;
+import com.marsss.callerphone.tccallerphone.commands.Chat;
 import com.marsss.callerphone.tccallerphone.commands.EndChat;
 import com.marsss.callerphone.tccallerphone.commands.ReportChat;
+import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -115,8 +116,7 @@ public class Callerphone {
             cmdLst.add(new ServerInfo());
             cmdLst.add(new UserInfo());
 
-            cmdLst.add(new ChatFamilyFriendly());
-            cmdLst.add(new ChatUncensor());
+            cmdLst.add(new Chat());
             cmdLst.add(new EndChat());
             cmdLst.add(new ReportChat());
 
@@ -223,13 +223,21 @@ public class Callerphone {
             e.printStackTrace();
             logger.error(e.toString());
         }
+
         /*
-        //jda.updateCommands().queue();
 
         //-This removes all existing slash command
         //jda.updateCommands().queue();
 
         //-Commands list
+
+            jda.upsertCommand(new CommandData("chat", "Chat with people from other servers")
+                .addSubcommands(
+                        new SubcommandData("default", "Chat with people from other servers"),
+                        new SubcommandData("anonymous", "Chat anonymously"),
+                        new SubcommandData("familyfriendly", "Chat with swear word censoring"),
+                        new SubcommandData("ffandanon", "Chat family friendly and anonymously")))
+                .queue();
 
         jda.upsertCommand(new CommandData("help", "Learn more about my commands")
                         .addOptions(new OptionData(OptionType.STRING, "command", "Which command/category you want to learn more about?").setRequired(false)))
