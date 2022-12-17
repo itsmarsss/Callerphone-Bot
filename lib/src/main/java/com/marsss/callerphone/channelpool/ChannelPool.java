@@ -15,62 +15,62 @@ public class ChannelPool {
     public static HashMap<String, String> parent = new HashMap<>();
     public static HashMap<String, ArrayList<String>> childr = new HashMap<>();
 
-    public static int hostPool(String ID) {
+    public static PoolStatus hostPool(String ID) {
         if (isHost(ID)) {
-            return ChannelPool.IS_HOST;//413
+            return PoolStatus.IS_HOST;//413
         } else if (parent.containsKey(ID)) {
-            return ChannelPool.IS_CHILD;//409
+            return PoolStatus.IS_CHILD;//409
         }
         config.put(ID, new PoolConfig("", 10, true));
         childr.put(ID, new ArrayList<>());
         childr.get(ID).add(ID);
-        return ChannelPool.SUCCESS;//201
+        return PoolStatus.SUCCESS;//201
     }
 
-    public static int joinPool(String IDh, String IDc, String pwd) {
+    public static PoolStatus joinPool(String IDh, String IDc, String pwd) {
         if (isHost(IDc)) {
-            return ChannelPool.IS_HOST;//413
+            return PoolStatus.IS_HOST;//413
         } else if (isChild(IDc)) {
-            return ChannelPool.IS_CHILD;//409
+            return PoolStatus.IS_CHILD;//409
         }
 
         if (!config.get(IDh).isPub()) {
-            return ChannelPool.NOT_FOUND;//404
+            return PoolStatus.NOT_FOUND;//404
         } else if (!config.get(IDh).getPwd().equals(pwd)) {
-            return ChannelPool.INCORRECT_PASS;//401
+            return PoolStatus.INCORRECT_PASS;//401
         }
         return addChildren(IDh, IDc);
     }
 
-    public static int leavePool(String ID) {
+    public static PoolStatus leavePool(String ID) {
         if (isHost(ID)) {
-            return ChannelPool.IS_HOST;
+            return PoolStatus.IS_HOST;
         } else if (isChild(ID)) {
             return removeChildren(parent.get(ID), ID);
         }
-        return ChannelPool.ERROR;
+        return PoolStatus.ERROR;
     }
 
-    public static int endPool(String ID) {
+    public static PoolStatus endPool(String ID) {
         if (isHost(ID)) {
             return clearChildren(ID);
         }
-        return ChannelPool.NOT_FOUND;
+        return PoolStatus.NOT_FOUND;
     }
 
     public static boolean hasPassword(String id) {
         if (config.containsKey(id)) {
-            return config.get(id).getPwd().equals("");
+            return !config.get(id).getPwd().equals("");
         }
         return false;
     }
 
-    public static int setPassword(String id, String pwd) {
+    public static PoolStatus setPassword(String id, String pwd) {
         if (config.containsKey(id)) {
             config.get(id).setPwd(pwd);
-            return ChannelPool.SUCCESS;
+            return PoolStatus.SUCCESS;
         }
-        return ChannelPool.ERROR;
+        return PoolStatus.ERROR;
     }
 
     public static String getPassword(String id) {
@@ -80,20 +80,20 @@ public class ChannelPool {
         return "";
     }
 
-    public static int setCap(String id, int cap) {
+    public static PoolStatus setCap(String id, int cap) {
         if (isHost(id)) {
             config.get(id).setCap(cap);
-            return ChannelPool.SUCCESS;
+            return PoolStatus.SUCCESS;
         }
-        return ChannelPool.ERROR;
+        return PoolStatus.ERROR;
     }
 
-    public static int setPublicity(String id, boolean pub) {
+    public static PoolStatus setPublicity(String id, boolean pub) {
         if (isHost(id)) {
             config.get(id).setPub(pub);
-            return ChannelPool.SUCCESS;
+            return PoolStatus.SUCCESS;
         }
-        return ChannelPool.ERROR;
+        return PoolStatus.ERROR;
     }
 
     public static ArrayList<String> getClients(String ID) {
@@ -107,7 +107,7 @@ public class ChannelPool {
         return childr.get(ID);
     }
 
-    public static int clearChildren(String ID) {
+    public static PoolStatus clearChildren(String ID) {
         if (isHost(ID)) {
             ArrayList<String> pool = childr.get(ID);
             pool.stream()
@@ -119,36 +119,36 @@ public class ChannelPool {
 
             childr.remove(ID);
             config.remove(ID);
-            return ChannelPool.SUCCESS;
+            return PoolStatus.SUCCESS;
         } else if (!isHost(ID)) {
-            return ChannelPool.IS_CHILD;
+            return PoolStatus.IS_CHILD;
         }
-        return ChannelPool.ERROR;
+        return PoolStatus.ERROR;
     }
 
-    public static int addChildren(String IDh, String IDc) {
+    public static PoolStatus addChildren(String IDh, String IDc) {
         if (isHost(IDh)) {
             if (childr.get(IDh).size() >= config.get(IDh).getCap()) {
-                return ChannelPool.FULL;
+                return PoolStatus.FULL;
             }
 
             systemBroadCast(IDh, Callerphone.Callerphone + "Channel `ID: " + IDc + "` (#" + Callerphone.jda.getTextChannelById(IDc).getName() + ") has joined this pool. " + (childr.get(IDh).size() + 1) + "/" + config.get(IDh).getCap());
             childr.get(IDh).add(IDc);
             parent.put(IDc, IDh);
-            return ChannelPool.SUCCESS;
+            return PoolStatus.SUCCESS;
 
         }
-        return ChannelPool.ERROR;
+        return PoolStatus.ERROR;
     }
 
-    public static int removeChildren(String IDh, String IDc) {
+    public static PoolStatus removeChildren(String IDh, String IDc) {
         if (isChild(IDc)) {
             childr.get(IDh).remove(IDc);
             parent.remove(IDc);
             systemBroadCast(IDh, Callerphone.Callerphone + "Channel `ID: " + IDc + "` (#" + Callerphone.jda.getTextChannelById(IDc).getName() + ") has left this pool. " + childr.get(IDh).size() + "/" + config.get(IDh).getCap());
-            return ChannelPool.SUCCESS;
+            return PoolStatus.SUCCESS;
         }
-        return ChannelPool.ERROR;
+        return PoolStatus.ERROR;
     }
 
     public static boolean isHost(String ID) {
