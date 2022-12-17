@@ -30,6 +30,7 @@ public class UserInfo implements ICommand {
 		try {
 			USER = e.getGuild().getMemberById(Long.parseLong(args[1]));
 		} catch (Exception ex) {
+			ex.printStackTrace();
 			USER = null;
 		}
 
