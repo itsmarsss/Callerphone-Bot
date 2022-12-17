@@ -26,6 +26,7 @@ public class ChannelInfo implements ICommand {
         try {
             CHANNEL = Callerphone.jda.getGuildChannelById(Long.parseLong(args[1]));
         } catch (Exception ex) {
+            ex.printStackTrace();
             CHANNEL = null;
         }
 
@@ -40,6 +41,7 @@ public class ChannelInfo implements ICommand {
         try {
             type = CHANNEL.getType();
         } catch (Exception ex) {
+            ex.printStackTrace();
             MESSAGE.reply("Channel not recognized").queue();
             return;
         }
@@ -95,6 +97,7 @@ public class ChannelInfo implements ICommand {
         try {
             PARENT = chnl.getParent().getAsMention();
         } catch (NullPointerException ex) {
+            ex.printStackTrace();
             PARENT = "Server";
         }
 
@@ -138,6 +141,7 @@ public class ChannelInfo implements ICommand {
         try {
             PARENT = chnl.getParent().getAsMention();
         } catch (NullPointerException ex) {
+            ex.printStackTrace();
             PARENT = "Server";
         }
 
