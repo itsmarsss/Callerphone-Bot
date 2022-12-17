@@ -154,6 +154,21 @@ public class TCCallerphone {
         return Callerphone.Callerphone + "I was not able to find the call...";
     }
 
+    private static void report(ArrayList<String> data, String callerID, String receiverID) {
+        LocalDateTime now = LocalDateTime.now();
+        final String month = String.valueOf(now.getMonthValue());
+        final String day = String.valueOf(now.getDayOfMonth());
+        final String hour = String.valueOf(now.getHour());
+        final String minute = String.valueOf(now.getMinute());
+        final String ID = month + "/" + day + "/" + hour + "/" + minute + "C" + callerID + "R" + receiverID;
+
+        StringBuilder dataString = new StringBuilder();
+        for (String m : data)
+            dataString.append(m).append("\n");
+
+        Callerphone.jda.getTextChannelById(Callerphone.reportchannel).sendMessage("**ID:** " + ID).addFile(dataString.toString().getBytes(), ID + ".txt").queue();
+    }
+
     public static ConvoStorage getCall(String tc) {
         for(ConvoStorage c : convos) {
             try {
