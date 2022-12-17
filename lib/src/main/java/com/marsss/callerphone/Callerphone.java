@@ -116,6 +116,11 @@ public class Callerphone {
             cmdLst.add(new ServerInfo());
             cmdLst.add(new UserInfo());
 
+            cmdLst.add(new ChatFamilyFriendly());
+            cmdLst.add(new ChatUncensor());
+            cmdLst.add(new EndChat());
+            cmdLst.add(new ReportChat());
+
             cmdLst.add(new HostPool());
             cmdLst.add(new JoinPool());
             cmdLst.add(new EndPool());
@@ -141,8 +146,8 @@ public class Callerphone {
             jda.addEventListener(new ChannelPoolListener());
 
 
-            for (int i = 0; i < ConvoStorage.convo.length; i++) {
-                ConvoStorage.convo[i] = new Convo(new ConcurrentLinkedQueue<>(), "empty", "", false, 0, true, true, false, false, false);
+            for (int i = 0; i < 10000; i++) {
+                TCCallerphone.convos.add(new ConvoStorage(new ConcurrentLinkedQueue<>(), "empty", "", 0, true, true, false, false, false));
             }
 
             jda.awaitReady();
