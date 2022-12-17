@@ -3,6 +3,7 @@ package com.marsss.callerphone.channelpool.commands;
 import com.marsss.ICommand;
 import com.marsss.callerphone.Callerphone;
 import com.marsss.callerphone.channelpool.ChannelPool;
+import com.marsss.callerphone.channelpool.PoolStatus;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
@@ -41,12 +42,12 @@ public class PoolPwd implements ICommand {
         if (pwd.equals("none"))
             pwd = "";
 
-        int stat = ChannelPool.setPassword(id, pwd);
-        if (stat == ChannelPool.SUCCESS) {
+        PoolStatus stat = ChannelPool.setPassword(id, pwd);
+        if (stat == PoolStatus.SUCCESS) {
             return Callerphone.Callerphone + "This pool now has " +
                     ((pwd.equals("")) ? "no password" : "password ||" + pwd + "||") +
                     ".";
-        } else if (stat == ChannelPool.ERROR) {
+        } else if (stat == PoolStatus.ERROR) {
             return Callerphone.Callerphone + "This pool is not hosting a pool.";
         }
         return Callerphone.Callerphone + "An error occurred.";
