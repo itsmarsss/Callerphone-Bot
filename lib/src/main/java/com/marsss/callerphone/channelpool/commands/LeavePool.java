@@ -3,6 +3,7 @@ package com.marsss.callerphone.channelpool.commands;
 import com.marsss.ICommand;
 import com.marsss.callerphone.Callerphone;
 import com.marsss.callerphone.channelpool.ChannelPool;
+import com.marsss.callerphone.channelpool.PoolStatus;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
@@ -29,17 +30,17 @@ public class LeavePool implements ICommand {
     }
 
     private String leavePool(String id) {
-        int stat = ChannelPool.leavePool(id);
-        if (stat == ChannelPool.ERROR) {
+        PoolStatus stat = ChannelPool.leavePool(id);
+        if (stat == PoolStatus.ERROR) {
             return Callerphone.Callerphone + "This channel is not in a pool.";
-        } else if (stat == ChannelPool.IS_HOST) {
+        } else if (stat == PoolStatus.IS_HOST) {
             return Callerphone.Callerphone + "This channel is already hosting a pool." +
                     "\nThis channel's pool ID is: `" + id + "`" +
                     (ChannelPool.hasPassword(id)
                             ? "\nThis channel's password is: ||`" + ChannelPool.getPassword(id) + "`||"
                             : "\nSet a password with: `" + Callerphone.Prefix + "pwdpool <password>`") +
                     "\nEnd pool with: `" + Callerphone.Prefix + "endpool`";
-        } else if (stat == ChannelPool.SUCCESS) {
+        } else if (stat == PoolStatus.SUCCESS) {
             return Callerphone.Callerphone + "Successfully left channel pool!";
         }
         return Callerphone.Callerphone + "An error occurred.";
