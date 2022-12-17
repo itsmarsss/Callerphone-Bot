@@ -11,23 +11,24 @@ import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 public class Chat implements ICommand {
     @Override
     public void runCommand(GuildMessageReceivedEvent e) {
-        String msg  = e.getMessage().getContentRaw();
+        String msg = e.getMessage().getContentRaw();
         boolean anon = msg.contains("anon");
         boolean famfri = msg.contains("family");
 
         ChatStatus stat = (famfri == true ? chatFamilyFriendly(e.getChannel(), anon) : chatUncensor(e.getChannel(), anon));
 
-        if(stat == ChatStatus.CONFLICT) {
+        if (stat == ChatStatus.CONFLICT) {
             e.getMessage().reply(Callerphone.Callerphone + "There is already a call going on!").queue();
-        }else if (stat == ChatStatus.NON_EXISTENT) {
+        } else if (stat == ChatStatus.NON_EXISTENT) {
             e.getMessage().reply(Callerphone.Callerphone + "Hmmm, I was unable to find an open port!").queue();
         } else if (stat == ChatStatus.SUCCESS_RECEIVER) {
             e.getMessage().reply(Callerphone.Callerphone + "Calling...").queue();
             e.getChannel().sendMessage(Callerphone.Callerphone + "Someone picked up the phone!").queue();
         } else if (stat == ChatStatus.SUCCESS_CALLER) {
             e.getMessage().reply(Callerphone.Callerphone + "Calling...").queue();
+        } else {
+            e.getMessage().reply(Callerphone.Callerphone + "An error occurred.").queue();
         }
-        e.getMessage().reply(Callerphone.Callerphone + "An error occurred.").queue();
     }
 
     @Override
@@ -50,17 +51,18 @@ public class Chat implements ICommand {
                 e.reply(Callerphone.Callerphone + "Hmmm, the slash command `" + e.getName() + " " + e.getSubcommandName() + "` shouldn't exist! Please join our support server and report this issue. " + Callerphone.support).queue();
                 return;
         }
-        if(stat == ChatStatus.CONFLICT) {
+        if (stat == ChatStatus.CONFLICT) {
             e.reply(Callerphone.Callerphone + "There is already a call going on!").setEphemeral(true).queue();
-        }else if (stat == ChatStatus.NON_EXISTENT) {
+        } else if (stat == ChatStatus.NON_EXISTENT) {
             e.reply(Callerphone.Callerphone + "Hmmm, I was unable to find an open port!").setEphemeral(true).queue();
         } else if (stat == ChatStatus.SUCCESS_RECEIVER) {
             e.reply(Callerphone.Callerphone + "Calling...").queue();
             e.getTextChannel().sendMessage(Callerphone.Callerphone + "Someone picked up the phone!").queue();
         } else if (stat == ChatStatus.SUCCESS_CALLER) {
             e.reply(Callerphone.Callerphone + "Calling...").queue();
+        } else {
+            e.reply(Callerphone.Callerphone + "An error occurred.").setEphemeral(true).queue();
         }
-        e.reply(Callerphone.Callerphone + "An error occurred.").setEphemeral(true).queue();
     }
 
     private ChatStatus chatUncensor(TextChannel channel, boolean anon) {
