@@ -59,6 +59,7 @@ public class Callerphone {
 
     public static String brainURL = "http://api.brainshop.ai/get?bid=160403&key=FFFNOBQEMnANoVn1&uid=[uid]&msg=[msg]";
     public static String Callerphone = "<:CallerphoneEmote:899051549173637120> ";
+    public static String CallerphoneCall = "<:Pog:892780255452987402> ";
     public static String logstatus = "852338750519640116";
     public static String reportchannel = "897290511000404008";
     public static String invite = "https://discord.com/oauth2/authorize?client_id=849713468348956692&permissions=414464724040&scope=bot%20applications.commands";

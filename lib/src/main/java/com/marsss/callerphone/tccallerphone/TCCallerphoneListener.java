@@ -84,15 +84,15 @@ public class TCCallerphoneListener extends ListenerAdapter {
 
     private void sendMessage(boolean anon, String destination, String content, Message msg) {
         if (anon) {
-            jda.getTextChannelById(destination).sendMessage("**DiscordUser#0000**: " + content).queue();
+            jda.getTextChannelById(destination).sendMessage("**DiscordUser**#0000 " + Callerphone.CallerphoneCall + content).queue();
             return;
         }
         User auth = msg.getAuthor();
-        String template = "**%s**#%s: %s";
+        String template = "**%s**#%s " + Callerphone.CallerphoneCall + "%s";
         if (Callerphone.admin.contains(msg.getAuthor().getId())) {
-            template = "***[Moderator]* %s**#%s: %s";
+            template = "***[Moderator]* %s**#%s " + Callerphone.CallerphoneCall + "%s";
         } else if (Callerphone.prefix.containsKey(msg.getAuthor().getId())) {
-            template = "***[" + Callerphone.prefix.get(msg.getAuthor().getId()) + "]* %s**#%s: %s";
+            template = "***[" + Callerphone.prefix.get(msg.getAuthor().getId()) + "]* %s**#%s " + Callerphone.CallerphoneCall + "%s";
         }
         jda.getTextChannelById(destination).sendMessage(String.format(template, auth.getName(), auth.getDiscriminator(), content)).queue();
     }
