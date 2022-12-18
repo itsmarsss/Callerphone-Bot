@@ -27,7 +27,7 @@ public class EndChat implements ICommand {
 
     @Override
     public String getHelp() {
-        return null;
+        return "`" + Callerphone.Prefix + "endchat` - End chatting with people from another server.";
     }
 
     @Override

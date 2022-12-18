@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.util.List;
 
 import com.marsss.callerphone.channelpool.commands.*;
+import com.marsss.callerphone.tccallerphone.commands.*;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
@@ -11,7 +12,6 @@ import net.dv8tion.jda.api.entities.MessageEmbed;
 import com.marsss.ICommand;
 import com.marsss.callerphone.Callerphone;
 import com.marsss.callerphone.bot.*;
-import com.marsss.callerphone.tccallerphone.*;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
@@ -108,16 +108,9 @@ public class Help implements ICommand {
 
             case "tccall":
                 TITLE = "TCCall Commands";
-//                DESC = TCCallPairer.callHelp() + "\n"
-//                        + TCCallPairer.uncenscallHelp() + "\n"
-//                        + TCCallPairer.hangupHelp() + "\n"
-//                        + TCCallPairer.reportHelp();
-                break;
-
-
-            case "report":
-                TITLE = "Report Commands";
-               // DESC = TCCallPairer.reportHelp();
+                DESC = new Chat().getHelp() + "\n"
+                        + new EndChat().getHelp() + "\n"
+                        + new ReportChat().getHelp();
                 break;
 
 
