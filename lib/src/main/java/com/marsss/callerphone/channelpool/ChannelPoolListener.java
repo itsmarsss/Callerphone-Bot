@@ -28,7 +28,7 @@ public class ChannelPoolListener extends ListenerAdapter {
         }
 
 
-        String sendCont = "**%s *(%s)*** | <t:%d:f>:\n%s";
+        String sendCont = "**%s** *(%s)* | <t:%d:f>\n%s";
 
         sendCont = String.format(sendCont,
                 message.getAuthor().getAsTag(),
