@@ -6,6 +6,7 @@ import com.marsss.callerphone.Callerphone;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
@@ -13,6 +14,7 @@ public class TCCallerphoneListener extends ListenerAdapter {
     private static final String cpEmj = Callerphone.Callerphone;
 
     private static JDA jda = Callerphone.jda;
+
     public void onGuildMessageReceived(GuildMessageReceivedEvent event) {
 
         if (!event.getChannel().canTalk())
@@ -83,15 +85,16 @@ public class TCCallerphoneListener extends ListenerAdapter {
     private void sendMessage(boolean anon, String destination, String content, Message msg) {
         if (anon) {
             jda.getTextChannelById(destination).sendMessage("**DiscordUser#0000**: " + content).queue();
-        } else {
-            if (Callerphone.admin.contains(msg.getAuthor().getId())) {
-                jda.getTextChannelById(destination).sendMessage("***[Moderator]* " + msg.getAuthor().getAsTag() + "**: " + content).queue();
-            } else if (Callerphone.prefix.containsKey(msg.getAuthor().getId())) {
-                jda.getTextChannelById(destination).sendMessage("***[" + Callerphone.prefix.get(msg.getAuthor().getId()) + "]* " + msg.getAuthor().getAsTag() + "**: " + content).queue();
-            } else {
-                jda.getTextChannelById(destination).sendMessage("**" + msg.getAuthor().getAsTag() + "**: " + content).queue();
-            }
+            return;
         }
+        User auth = msg.getAuthor();
+        String template = "**%s**#%s: %s";
+        if (Callerphone.admin.contains(msg.getAuthor().getId())) {
+            template = "***[Moderator]* %s**#%s: %s";
+        } else if (Callerphone.prefix.containsKey(msg.getAuthor().getId())) {
+            template = "***[" + Callerphone.prefix.get(msg.getAuthor().getId()) + "]* %s**#%s: %s";
+        }
+        jda.getTextChannelById(destination).sendMessage(String.format(template, auth.getName(), auth.getDiscriminator(), content)).queue();
     }
 
     private String filter(String messageraw) {
