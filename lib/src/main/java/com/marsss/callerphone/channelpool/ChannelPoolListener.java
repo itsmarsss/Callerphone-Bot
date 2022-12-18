@@ -18,7 +18,7 @@ public class ChannelPoolListener extends ListenerAdapter {
 
         final Member member = event.getMember();
 
-        final String content = message.getContentRaw();
+        final String content = message.getContentDisplay();
 
         if (member.getUser().isBot() || member.getUser().isSystem())
             return;
@@ -26,6 +26,7 @@ public class ChannelPoolListener extends ListenerAdapter {
         if (content.startsWith("\\\\") || content.startsWith(Callerphone.Prefix)) {
             return;
         }
+
 
         String sendCont = "**%s *(%s)*** | <t:%d:f>:\n%s";
 
