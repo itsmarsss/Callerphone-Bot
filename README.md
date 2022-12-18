@@ -31,8 +31,6 @@
 
 `help` - command help
 
-`poll` - create a poll
-
 `roleinfo` - role information
 
 `search` - search the web without leaving Discord
@@ -66,8 +64,6 @@
 
 ### Text Chats Commands
 `chat` - chat with people from other servers
-
-`chatuncens` - chat with people from other servers without censorship
 
 `endchat` - end a pending or existing chat
 
