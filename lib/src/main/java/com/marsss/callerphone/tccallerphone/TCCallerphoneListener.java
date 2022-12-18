@@ -43,21 +43,12 @@ public class TCCallerphoneListener extends ListenerAdapter {
         ConvoStorage c = TCCallerphone.getCall(CHANNELID);
 
         if (c == null) {
-            System.out.println("Null");
-            try {
-                jda.getTextChannelById(c.getCallerTCID()).sendMessage(cpEmj + "Connection error, call ended.").queue();
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
-            try {
-                jda.getTextChannelById(c.getReceiverTCID()).sendMessage(cpEmj + "Connection error, call ended.").queue();
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
-            c.resetMessage();
             return;
         }
 
+        if (c.getCallerTCID().equals("empty") || c.getReceiverTCID().equals("")) {
+            return;
+        }
         c.addMessage((c.getCallerTCID().equals(CHANNELID) ? "Caller " : "Receiver ") + MESSAGE.getAuthor().getAsTag() + "(" + MESSAGE.getAuthor().getId() + ")" + ": " + MESSAGERAW);
         c.setLastMessage(System.currentTimeMillis());
 
