@@ -9,39 +9,37 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
 public class CommandListener extends ListenerAdapter {
     public void onGuildMessageReceived(GuildMessageReceivedEvent event) {
-
-//        if(Callerphone.blacklist.contains(event.getAuthor().getId())) {
-//            MESSAGE.reply("Sorry you are blacklisted, submit an appeal in our support server").queue();
-//            break;
-//        }
-
-        final Message message = event.getMessage();
-        if (message.isWebhookMessage())
+        final Message MESSAGE = event.getMessage();
+        if (MESSAGE.isWebhookMessage())
             return;
 
         if (!event.getChannel().canTalk())
             return;
 
-        final Member member = event.getMember();
+        final Member MEMBER = event.getMember();
 
-        final String content = message.getContentRaw();
+        final String CONTENT = MESSAGE.getContentRaw();
 
-        final String[] args = content.split("\\s+");
+        final String[] ARGS = CONTENT.split("\\s+");
 
 
-        if (member.getUser().isBot() || member.getUser().isSystem())
+        if (MEMBER.getUser().isBot() || MEMBER.getUser().isSystem())
             return;
 
+        //        if(Callerphone.blacklist.contains(event.getAuthor().getId())) {
+//            MESSAGE.reply("Sorry you are blacklisted, submit an appeal in our support server").queue();
+//            break;
+//        }
 
-        if (content.contains(Callerphone.jda.getSelfUser().getId())) {
-            message.reply("My prefix is `" + Callerphone.Prefix + "`, do `" + Callerphone.Prefix + "help` for a list of commands!").queue();
+        if (CONTENT.contains(Callerphone.jda.getSelfUser().getId())) {
+            MESSAGE.reply("My prefix is `" + Callerphone.Prefix + "`, do `" + Callerphone.Prefix + "help` for a list of commands!").queue();
             return;
         }
 
-        if (!args[0].toLowerCase().startsWith(Callerphone.Prefix))
+        if (!ARGS[0].toLowerCase().startsWith(Callerphone.Prefix))
             return;
 
-        String trigger = args[0].toLowerCase().replace(Callerphone.Prefix, "");
+        String trigger = ARGS[0].toLowerCase().replace(Callerphone.Prefix, "");
 
         try {
             if (Callerphone.cmdMap.containsKey(trigger)) {
