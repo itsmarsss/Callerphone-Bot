@@ -7,40 +7,38 @@ import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
 public class ChannelPoolListener extends ListenerAdapter {
+
     public void onGuildMessageReceived(GuildMessageReceivedEvent event) {
 
-        final Message message = event.getMessage();
-        if (message.isWebhookMessage())
+        final Message MESSAGE = event.getMessage();
+        if (MESSAGE.isWebhookMessage())
             return;
 
         if (!event.getChannel().canTalk())
             return;
 
-        final Member member = event.getMember();
+        final Member MEMBER = event.getMember();
 
-        final String content = message.getContentDisplay();
+        final String CONTENT = MESSAGE.getContentDisplay();
 
-        if (member.getUser().isBot() || member.getUser().isSystem())
+        if (MEMBER.getUser().isBot() || MEMBER.getUser().isSystem())
             return;
 
-        if (content.startsWith("\\\\") || content.startsWith(Callerphone.Prefix)) {
+        if (CONTENT.startsWith("\\\\") || CONTENT.startsWith(Callerphone.Prefix)) {
             return;
         }
 
-
-        String sendCont = "**%s**#%s `%s` | <t:%d:f>\n%s";
-
-        sendCont = String.format(sendCont,
-                message.getAuthor().getName(),
-                message.getAuthor().getDiscriminator(),
-                member.getEffectiveName(),
-                message.getTimeCreated().toEpochSecond(),
-                content
+        String sendCont = String.format("**%s**#%s `%s` | <t:%d:f>\n%s",
+                MESSAGE.getAuthor().getName(),
+                MESSAGE.getAuthor().getDiscriminator(),
+                MEMBER.getEffectiveName(),
+                MESSAGE.getTimeCreated().toEpochSecond(),
+                CONTENT
         );
 
         if (ChannelPool.isHost(event.getChannel().getId()) || ChannelPool.isChild(event.getChannel().getId())) {
             if (sendCont.length() >= 2000) {
-                message.reply(Callerphone.Callerphone + "Message Too Long.").queue();
+                MESSAGE.reply(Callerphone.Callerphone + "Message Too Long.").queue();
                 return;
             }
             ChannelPool.broadCast(event.getChannel().getId(),
