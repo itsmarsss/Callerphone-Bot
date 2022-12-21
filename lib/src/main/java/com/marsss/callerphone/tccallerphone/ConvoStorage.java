@@ -3,7 +3,7 @@ package com.marsss.callerphone.tccallerphone;
 import java.util.Queue;
 
 public class ConvoStorage {
-    private Queue<String> messages;
+    private final Queue<String> messages;
     private String callerTCID;
 
     private String receiverTCID;
