@@ -22,11 +22,11 @@ public class Help implements ICommand {
     public void runCommand(GuildMessageReceivedEvent e) {
         final Message MESSAGE = e.getMessage();
         final String CONTENT = MESSAGE.getContentRaw();
-        final String[] args = CONTENT.split("\\s+");
+        final String[] ARGS = CONTENT.split("\\s+");
 
         boolean admin = Callerphone.admin.contains(e.getAuthor().getId());
-        if (args.length > 1) {
-            MESSAGE.replyEmbeds(help(args[1], admin)).queue();
+        if (ARGS.length > 1) {
+            MESSAGE.replyEmbeds(help(ARGS[1], admin)).queue();
             return;
         }
 
@@ -35,13 +35,13 @@ public class Help implements ICommand {
 
     @Override
     public void runSlash(SlashCommandEvent e) {
-        boolean admin = Callerphone.admin.contains(e.getUser().getId());
-        List<OptionMapping> param = e.getOptions();
-        if(param.size() == 0) {
-            e.replyEmbeds(help("", admin)).queue();
+        final boolean ADMIN = Callerphone.admin.contains(e.getUser().getId());
+        final List<OptionMapping> PARAM = e.getOptions();
+        if(PARAM.size() == 0) {
+            e.replyEmbeds(help("", ADMIN)).queue();
             return;
         }
-        e.replyEmbeds(help(param.get(0).getAsString(), admin)).queue();
+        e.replyEmbeds(help(PARAM.get(0).getAsString(), ADMIN)).queue();
     }
 
     @Override
@@ -124,16 +124,16 @@ public class Help implements ICommand {
 
 
         if (Callerphone.cmdMap.containsKey(name)) {
-            String[] triggers = Callerphone.cmdMap.get(name).getTriggers();
-            StringBuilder trigger = new StringBuilder();
-            for (String trig : triggers) {
-                trigger.append(trig).append(", ");
+            final String[] TRIGGERS = Callerphone.cmdMap.get(name).getTriggers();
+            final StringBuilder TRIGGER = new StringBuilder();
+            for (String trig : TRIGGERS) {
+                TRIGGER.append(trig).append(", ");
             }
 
-            TITLE = trigger.substring(0, trigger.length() - 2);
+            TITLE = TRIGGER.substring(0, TRIGGER.length() - 2);
             DESC = Callerphone.cmdMap.get(name).getHelp();
 
-            if (trigger.toString().contains("search")) {
+            if (TRIGGER.toString().contains("search")) {
                 DESC += "\nWe use Duckduckgo, so click [here](https://help.duckduckgo.com/duckduckgo-help-pages/results/syntax/) for searching syntax!";
 
             }

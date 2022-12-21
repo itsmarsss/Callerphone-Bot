@@ -22,13 +22,13 @@ public class UserInfo implements ICommand {
 	public void runCommand(GuildMessageReceivedEvent e) {
 		final Message MESSAGE = e.getMessage();
 		final String CONTENT = MESSAGE.getContentRaw();
-		final String[] args = CONTENT.split("\\s+");
+		final String[] ARGS = CONTENT.split("\\s+");
 
 		final List<Member> USERS = MESSAGE.getMentionedMembers();
 		Member USER;
 
 		try {
-			USER = e.getGuild().getMemberById(Long.parseLong(args[1]));
+			USER = e.getGuild().getMemberById(Long.parseLong(ARGS[1]));
 		} catch (Exception ex) {
 			ex.printStackTrace();
 			USER = null;
@@ -51,16 +51,16 @@ public class UserInfo implements ICommand {
 
 	public MessageEmbed userinfo(Member mmbr) {
 		Color COLOR = null;
-		String NAME = mmbr.getEffectiveName();
-		String TAG = mmbr.getUser().getName() + "#" + mmbr.getUser().getDiscriminator();
-		String GUILD_JOIN_DATE = mmbr.getTimeJoined().format(DateTimeFormatter.RFC_1123_DATE_TIME);
-		String DISCORD_JOINED_DATE = mmbr.getUser().getTimeCreated().format(DateTimeFormatter.RFC_1123_DATE_TIME);
-		String ID = mmbr.getUser().getId();
+		final String NAME = mmbr.getEffectiveName();
+		final String TAG = mmbr.getUser().getName() + "#" + mmbr.getUser().getDiscriminator();
+		final String GUILD_JOIN_DATE = mmbr.getTimeJoined().format(DateTimeFormatter.RFC_1123_DATE_TIME);
+		final String DISCORD_JOINED_DATE = mmbr.getUser().getTimeCreated().format(DateTimeFormatter.RFC_1123_DATE_TIME);
+		final String ID = mmbr.getUser().getId();
 		StringBuilder PERMISSIONS = new StringBuilder();
 		StringBuilder ROLES = new StringBuilder();
 		String AVATAR = mmbr.getUser().getAvatarUrl();
-		String ISOWNER = String.valueOf(mmbr.isOwner());
-		String ISPENDING = String.valueOf(mmbr.isPending());
+		final String ISOWNER = String.valueOf(mmbr.isOwner());
+		final String ISPENDING = String.valueOf(mmbr.isPending());
 
 		for (Permission p : mmbr.getPermissions()) {
 			PERMISSIONS.append(p.getName()).append(", ");

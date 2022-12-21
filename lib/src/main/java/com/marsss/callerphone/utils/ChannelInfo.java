@@ -18,13 +18,13 @@ public class ChannelInfo implements ICommand {
     public void runCommand(GuildMessageReceivedEvent e) {
         final Message MESSAGE = e.getMessage();
         final String CONTENT = MESSAGE.getContentRaw();
-        final String[] args = CONTENT.split("\\s+");
+        final String[] ARGS = CONTENT.split("\\s+");
 
-        List<TextChannel> CHANNELS = MESSAGE.getMentionedChannels();
+        final List<TextChannel> CHANNELS = MESSAGE.getMentionedChannels();
         GuildChannel CHANNEL;
 
         try {
-            CHANNEL = Callerphone.jda.getGuildChannelById(Long.parseLong(args[1]));
+            CHANNEL = Callerphone.jda.getGuildChannelById(Long.parseLong(ARGS[1]));
         } catch (Exception ex) {
             ex.printStackTrace();
             CHANNEL = null;
@@ -65,19 +65,19 @@ public class ChannelInfo implements ICommand {
 
     @Override
     public void runSlash(SlashCommandEvent e) {
-        GuildChannel channel = e.getOption("channel").getAsGuildChannel();
-        ChannelType type = channel.getType();
+        final GuildChannel CHANNEL = e.getOption("channel").getAsGuildChannel();
+        final ChannelType TYPE = CHANNEL.getType();
 
-        switch (type) {
+        switch (TYPE) {
 
             case TEXT:
-                e.replyEmbeds(textchannelinfo((TextChannel) channel)).queue();
+                e.replyEmbeds(textchannelinfo((TextChannel) CHANNEL)).queue();
                 break;
             case VOICE:
-                e.replyEmbeds(voicechannelinfo((VoiceChannel) channel)).queue();
+                e.replyEmbeds(voicechannelinfo((VoiceChannel) CHANNEL)).queue();
                 break;
             case CATEGORY:
-                e.replyEmbeds(categorychannelinfo((Category) channel)).queue();
+                e.replyEmbeds(categorychannelinfo((Category) CHANNEL)).queue();
                 break;
             default:
                 e.reply("Channel not recognized").queue();
@@ -86,12 +86,12 @@ public class ChannelInfo implements ICommand {
     }
 
     public MessageEmbed textchannelinfo(TextChannel chnl) {
-        String NAME = chnl.getName();
+        final String NAME = chnl.getName();
         String TOPIC = chnl.getTopic();
-        String TYPE = chnl.getType().name();
-        String SLOWMODE = String.valueOf(chnl.getSlowmode());
-        String ID = chnl.getId();
-        String DATE_CREATED = chnl.getTimeCreated().format(DateTimeFormatter.RFC_1123_DATE_TIME);
+        final String TYPE = chnl.getType().name();
+        final String SLOWMODE = String.valueOf(chnl.getSlowmode());
+        final String ID = chnl.getId();
+        final String DATE_CREATED = chnl.getTimeCreated().format(DateTimeFormatter.RFC_1123_DATE_TIME);
         String PARENT;
 
         try {
@@ -101,10 +101,10 @@ public class ChannelInfo implements ICommand {
             PARENT = "Server";
         }
 
-        String POSITION = String.valueOf(chnl.getPosition());
-        String ISNEWS = String.valueOf(chnl.isNews());
-        String ISNSFW = String.valueOf(chnl.isNSFW());
-        String ISSYNCED = String.valueOf(chnl.isSynced());
+        final String POSITION = String.valueOf(chnl.getPosition());
+        final String ISNEWS = String.valueOf(chnl.isNews());
+        final String ISNSFW = String.valueOf(chnl.isNSFW());
+        final String ISSYNCED = String.valueOf(chnl.isSynced());
 
         if (TOPIC == null) {
             TOPIC = "No Topic";
@@ -129,13 +129,13 @@ public class ChannelInfo implements ICommand {
     }
 
     public MessageEmbed voicechannelinfo(VoiceChannel chnl) {
-        String NAME = chnl.getName();
-        String TYPE = String.valueOf(chnl.getType());
-        String BITRATE = String.valueOf(chnl.getBitrate());
-        String REGION = String.valueOf(chnl.getRegion());
+        final String NAME = chnl.getName();
+        final String TYPE = String.valueOf(chnl.getType());
+        final String BITRATE = String.valueOf(chnl.getBitrate());
+        final String REGION = String.valueOf(chnl.getRegion());
         String USERLIMIT = String.valueOf(chnl.getUserLimit());
-        String ID = chnl.getId();
-        String DATE_CREATED = chnl.getTimeCreated().format(DateTimeFormatter.RFC_1123_DATE_TIME);
+        final String ID = chnl.getId();
+        final String DATE_CREATED = chnl.getTimeCreated().format(DateTimeFormatter.RFC_1123_DATE_TIME);
         String PARENT;
 
         try {
@@ -145,8 +145,8 @@ public class ChannelInfo implements ICommand {
             PARENT = "Server";
         }
 
-        String POSITION = String.valueOf(chnl.getPosition());
-        String ISSYNCED = String.valueOf(chnl.isSynced());
+        final String POSITION = String.valueOf(chnl.getPosition());
+        final String ISSYNCED = String.valueOf(chnl.isSynced());
 
 
         if (USERLIMIT.equals("0")) {
@@ -171,13 +171,13 @@ public class ChannelInfo implements ICommand {
     }
 
     public MessageEmbed categorychannelinfo(Category chnl) {
-        String NAME = chnl.getName();
-        String TYPE = String.valueOf(chnl.getType());
-        String TEXTCHANNELS = String.valueOf(chnl.getTextChannels().size());
-        String VOICECHANNELS = String.valueOf(chnl.getVoiceChannels().size());
-        String ID = chnl.getId();
-        String DATE_CREATED = chnl.getTimeCreated().format(DateTimeFormatter.RFC_1123_DATE_TIME);
-        String POSITION = String.valueOf(chnl.getPosition());
+        final String NAME = chnl.getName();
+        final String TYPE = String.valueOf(chnl.getType());
+        final String TEXTCHANNELS = String.valueOf(chnl.getTextChannels().size());
+        final String VOICECHANNELS = String.valueOf(chnl.getVoiceChannels().size());
+        final String ID = chnl.getId();
+        final String DATE_CREATED = chnl.getTimeCreated().format(DateTimeFormatter.RFC_1123_DATE_TIME);
+        final String POSITION = String.valueOf(chnl.getPosition());
 
         EmbedBuilder ChnlInfEmd = new EmbedBuilder()
                 .setColor(new Color(114, 137, 218))

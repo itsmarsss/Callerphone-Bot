@@ -24,20 +24,20 @@ public class BotInfo implements ICommand {
         e.replyEmbeds(botInfo()).setEphemeral(true).queue();
     }
 
-    private MessageEmbed botInfo() {
-        final JDA jda = Callerphone.jda;
-        final DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
-        final String DESC = "**Tag of the bot:** " + jda.getSelfUser().getAsTag() +
-                "\n**Avatar url:** [link](" + jda.getSelfUser().getAvatarUrl() + ")" +
-                "\n**Time created:** " + dtf.format(jda.getSelfUser().getTimeCreated()) +
-                "\n**Id:** " + jda.getSelfUser().getId() +
-                "\n**Shard info:** [" + (jda.getShardInfo().getShardId() + 1) + "/" + jda.getShardInfo().getShardTotal() + "]" +
-                "\n**Servers:** " + jda.getGuilds().size();
+    private final JDA jda = Callerphone.jda;
+    private StringBuilder DESCRIPTION = new StringBuilder()
+            .append("**Tag of the bot:** ").append(jda.getSelfUser().getAsTag())
+            .append("\n**Avatar url:** [link](").append(jda.getSelfUser().getAvatarUrl()).append(")")
+            .append("\n**Time created:** ").append(DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss").format(jda.getSelfUser().getTimeCreated()))
+            .append("\n**Id:** ").append(jda.getSelfUser().getId())
+            .append("\n**Shard info:** [").append((jda.getShardInfo().getShardId() + 1) + "/" + jda.getShardInfo().getShardTotal() + "]")
+            .append("\n**Servers:** ").append(jda.getGuilds().size());
 
+    private MessageEmbed botInfo() {
         EmbedBuilder BotInfo = new EmbedBuilder()
                 .setColor(new Color(114, 137, 218))
                 .setTitle("**Bot Info**")
-                .setDescription(DESC);
+                .setDescription(DESCRIPTION);
 
         return BotInfo.build();
     }

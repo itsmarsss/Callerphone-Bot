@@ -49,25 +49,25 @@ public class Search implements ICommand {
     public MessageEmbed search(String query) throws IOException {
         query = query.substring(1);
 
-        final String url = "https://www.duckduckgo.com/html" + "?q=" + query;
+        final String URL = "https://www.duckduckgo.com/html" + "?q=" + query;
 
-        final Document doc = Jsoup.connect(url).get();
+        final Document DOC = Jsoup.connect(URL).get();
 
-        final Elements links = doc.getElementById("links").getElementsByClass("results_links");
+        final Elements LINKS = DOC.getElementById("links").getElementsByClass("results_links");
 
         final Color COLOR = Colour.randColor();
 
         EmbedBuilder GglEmd = new EmbedBuilder()
                 .setColor(COLOR)
-                .setTitle("Search Results for *" + query + "*", url.replaceAll("\\s+", "%20"));
+                .setTitle("Search Results for *" + query + "*", URL.replaceAll("\\s+", "%20"));
 
         for (int i = 0; i < 3; i++) {
             try {
-                final Element currlink = links.get(i).getElementsByClass("links_main").first().getElementsByTag("a").first();
+                final Element CURRENT_LINK = LINKS.get(i).getElementsByClass("links_main").first().getElementsByTag("a").first();
 
-                String title = currlink.text();
-                String snippet = links.get(i).getElementsByClass("result__snippet").first().text();
-                String hyper = currlink.attr("href");
+                String title = CURRENT_LINK.text();
+                String snippet = LINKS.get(i).getElementsByClass("result__snippet").first().text();
+                String hyper = CURRENT_LINK.attr("href");
 
                 if (title.length() > 100) {
                     title = title.substring(0, 197) + "...";

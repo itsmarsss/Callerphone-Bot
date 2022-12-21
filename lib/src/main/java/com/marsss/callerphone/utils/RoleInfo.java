@@ -22,12 +22,12 @@ public class RoleInfo implements ICommand {
     public void runCommand(GuildMessageReceivedEvent e) {
         final Message MESSAGE = e.getMessage();
         final String CONTENT = MESSAGE.getContentRaw();
-        final String[] args = CONTENT.split("\\s+");
+        final String[] ARGS = CONTENT.split("\\s+");
         final List<Role> ROLES = MESSAGE.getMentionedRoles();
         Role role;
 
         try {
-            role = Callerphone.jda.getRoleById(Long.parseLong(args[1]));
+            role = Callerphone.jda.getRoleById(Long.parseLong(ARGS[1]));
         }catch(Exception ex) {
             ex.printStackTrace();
             role = null;
@@ -50,17 +50,17 @@ public class RoleInfo implements ICommand {
     }
 
     private MessageEmbed roleInfo(Role role) {
-        Color COLOR = role.getColor();
-        String NAME = role.getName();
-        String ID = role.getId();
-        String DATE_CREATED = role.getTimeCreated().format(DateTimeFormatter.RFC_1123_DATE_TIME);
+        final Color COLOR = role.getColor();
+        final String NAME = role.getName();
+        final String ID = role.getId();
+        final String DATE_CREATED = role.getTimeCreated().format(DateTimeFormatter.RFC_1123_DATE_TIME);
         StringBuilder PERMISSIONS = new StringBuilder();
         StringBuilder MEMBERS_WITH_ROLE = new StringBuilder();
-        String POSITION = String.valueOf(role.getGuild().getRoles().size() - role.getPosition());
-        String ISHOISTED = String.valueOf(role.isHoisted());
-        String ISMANAGED = String.valueOf(role.isManaged());
-        String ISMENTIONABLE = String.valueOf(role.isMentionable());
-        String ISPUBLICROLE = String.valueOf(role.isPublicRole());
+        final String POSITION = String.valueOf(role.getGuild().getRoles().size() - role.getPosition());
+        final String ISHOISTED = String.valueOf(role.isHoisted());
+        final String ISMANAGED = String.valueOf(role.isManaged());
+        final String ISMENTIONABLE = String.valueOf(role.isMentionable());
+        final String ISPUBLICROLE = String.valueOf(role.isPublicRole());
 
         for (Permission p : role.getPermissions()) {
             PERMISSIONS.append(p.getName()).append(", ");

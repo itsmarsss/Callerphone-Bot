@@ -20,9 +20,9 @@ public class Colour implements ICommand {
     public void runCommand(GuildMessageReceivedEvent e) {
         final Message MESSAGE = e.getMessage();
         final String CONTENT = MESSAGE.getContentRaw();
-        final String[] args = CONTENT.split("\\s+");
+        final String[] ARGS = CONTENT.split("\\s+");
 
-        switch (args[0].toLowerCase().replace(Callerphone.Prefix, "")) {
+        switch (ARGS[0].toLowerCase().replace(Callerphone.Prefix, "")) {
 
 
             case "color":
@@ -31,19 +31,19 @@ public class Colour implements ICommand {
 
 
             case "colorhex":
-                if (args.length < 2) {
+                if (ARGS.length < 2) {
                     MESSAGE.reply("Please provide hex value").queue();
                 }
-                MESSAGE.replyEmbeds(colorhex(args[1])).queue();
+                MESSAGE.replyEmbeds(colorhex(ARGS[1])).queue();
                 break;
 
 
             case "colorrgb":
-                if (args.length < 4) {
+                if (ARGS.length < 4) {
                     MESSAGE.reply("Please provide r g b values").queue();
                     break;
                 }
-                MESSAGE.replyEmbeds(colorrgb(args[1], args[2], args[3])).queue();
+                MESSAGE.replyEmbeds(colorrgb(ARGS[1], ARGS[2], ARGS[3])).queue();
                 break;
 
         }
@@ -83,8 +83,8 @@ public class Colour implements ICommand {
     }
 
     public static Color randColor() {
-        final Random rand = new Random();
-        final int r = rand.nextInt(256), g = rand.nextInt(256), b = rand.nextInt(256);
+        final Random RAND = new Random();
+        final int r = RAND.nextInt(256), g = RAND.nextInt(256), b = RAND.nextInt(256);
         return new Color(r, g, b);
     }
 
@@ -101,13 +101,13 @@ public class Colour implements ICommand {
     }
 
     public static MessageEmbed color() {
-        final Random rand = new Random();
-        int r = rand.nextInt(256), g = rand.nextInt(256), b = rand.nextInt(256);
+        final Random RAND = new Random();
+        int r = RAND.nextInt(256), g = RAND.nextInt(256), b = RAND.nextInt(256);
         final Color COLOR = new Color(r, g, b);
-        final String hex = String.format("%02X%02X%02X", r, g, b);
+        final String HEX = String.format("%02X%02X%02X", r, g, b);
         EmbedBuilder ColorEmd = new EmbedBuilder()
                 .setTitle("Color")
-                .setDescription("**Hex:** #" + hex + "\n**RGB:** " + r + ", " + g + ", " + b)
+                .setDescription("**Hex:** #" + HEX + "\n**RGB:** " + r + ", " + g + ", " + b)
                 .setColor(COLOR);
 
         return ColorEmd.build();
