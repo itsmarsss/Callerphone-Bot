@@ -4,11 +4,13 @@ import com.marsss.ICommand;
 import com.marsss.callerphone.Callerphone;
 import com.marsss.callerphone.channelpool.ChannelPool;
 import com.marsss.callerphone.channelpool.PoolStatus;
-import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
 public class PoolCap implements ICommand {
+
+    private final String CP_EMJ = Callerphone.Callerphone;
+
     @Override
     public void runCommand(GuildMessageReceivedEvent e) {
         if (ChannelPool.permissionCheck(e.getMember(), e.getMessage())) {
@@ -18,13 +20,13 @@ public class PoolCap implements ICommand {
         String[] args = e.getMessage().getContentRaw().split("\\s+");
 
         if (args.length == 1) {
-            e.getMessage().reply(Callerphone.Callerphone + "Missing parameters, do `" + Callerphone.Prefix + "help poolcap` for more information.").queue();
+            e.getMessage().reply(CP_EMJ + "Missing parameters, do `" + Callerphone.Prefix + "help poolcap` for more information.").queue();
             return;
         }
 
-        final int cap = Integer.parseInt(args[1]);
+        final int CAP = Integer.parseInt(args[1]);
 
-        e.getMessage().reply(poolCap(e.getChannel().getId(), cap)).queue();
+        e.getMessage().reply(poolCap(e.getChannel().getId(), CAP)).queue();
     }
 
     @Override
@@ -39,11 +41,11 @@ public class PoolCap implements ICommand {
     private String poolCap(String id, int cap) {
         PoolStatus stat = ChannelPool.setCap(id, cap);
         if (stat == PoolStatus.SUCCESS) {
-            return Callerphone.Callerphone + "This pool now has capacity **" + ChannelPool.config.get(id).getCap() + "**.";
+            return CP_EMJ + "This pool now has capacity **" + ChannelPool.config.get(id).getCap() + "**.";
         } else if (stat == PoolStatus.ERROR) {
-            return Callerphone.Callerphone + "This channel is not hosing a pool.";
+            return CP_EMJ + "This channel is not hosing a pool.";
         }
-        return Callerphone.Callerphone + "An error occurred.";
+        return CP_EMJ + "An error occurred.";
     }
 
     @Override

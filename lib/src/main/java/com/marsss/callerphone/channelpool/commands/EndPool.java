@@ -4,11 +4,8 @@ import com.marsss.ICommand;
 import com.marsss.callerphone.Callerphone;
 import com.marsss.callerphone.channelpool.ChannelPool;
 import com.marsss.callerphone.channelpool.PoolStatus;
-import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
-
-import java.nio.channels.Channel;
 
 public class EndPool implements ICommand {
 
@@ -30,14 +27,16 @@ public class EndPool implements ICommand {
         e.reply(endPool(e.getChannel().getId())).queue();
     }
 
+    private final String CP_EMJ = Callerphone.Callerphone;
+
     private String endPool(String id) {
         PoolStatus stat = ChannelPool.endPool(id);
         if (stat == PoolStatus.SUCCESS) {
-            return Callerphone.Callerphone + "Successfully ended channel pool!";
+            return CP_EMJ + "Successfully ended channel pool!";
         } else if (stat == PoolStatus.IS_CHILD) {
-            return Callerphone.Callerphone + "This channel is not hosting a pool.";
+            return CP_EMJ + "This channel is not hosting a pool.";
         }
-        return Callerphone.Callerphone + "An error occurred.";
+        return CP_EMJ + "An error occurred.";
     }
 
     @Override

@@ -19,25 +19,27 @@ public class PoolParticipants implements ICommand {
         e.reply(poolParticipants(e.getChannel().getId())).queue();
     }
 
+    private final String CP_EMJ = Callerphone.Callerphone;
+
     private String poolParticipants(String id) {
-        final ArrayList<String> participants = ChannelPool.getClients(id);
-        if (participants.size() == 0) {
-            return Callerphone.Callerphone + "This channel is not in a pool.";
+        final ArrayList<String> PARTICIPANTS = ChannelPool.getClients(id);
+        if (PARTICIPANTS.size() == 0) {
+            return CP_EMJ + "This channel is not in a pool.";
         }
-        StringBuilder list = new StringBuilder();
-        for (int i = 0; i < participants.size(); i++) {
-            list.append("\n`ID: ")
-                    .append(participants.get(i))
+        final StringBuilder LIST = new StringBuilder();
+        for (int i = 0; i < PARTICIPANTS.size(); i++) {
+            LIST.append("\n`ID: ")
+                    .append(PARTICIPANTS.get(i))
                     .append("` (#")
-                    .append(Callerphone.jda.getTextChannelById(participants.get(i)).getName())
+                    .append(Callerphone.jda.getTextChannelById(PARTICIPANTS.get(i)).getName())
                     .append(")");
             if (i == 0) {
-                list.append(" [Host] :crown:");
+                LIST.append(" [Host] :crown:");
             } else {
-                list.append(" [Client] :link:");
+                LIST.append(" [Client] :link:");
             }
         }
-        return list.toString();
+        return LIST.toString();
     }
 
     @Override

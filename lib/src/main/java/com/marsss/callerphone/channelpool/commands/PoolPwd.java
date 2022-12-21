@@ -4,11 +4,13 @@ import com.marsss.ICommand;
 import com.marsss.callerphone.Callerphone;
 import com.marsss.callerphone.channelpool.ChannelPool;
 import com.marsss.callerphone.channelpool.PoolStatus;
-import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
 public class PoolPwd implements ICommand {
+
+    private final String CP_EMJ = Callerphone.Callerphone;
+
     @Override
     public void runCommand(GuildMessageReceivedEvent e) {
         if (ChannelPool.permissionCheck(e.getMember(), e.getMessage())) {
@@ -18,13 +20,13 @@ public class PoolPwd implements ICommand {
         String[] args = e.getMessage().getContentRaw().split("\\s+");
 
         if (args.length == 1) {
-            e.getMessage().reply(Callerphone.Callerphone + "Missing parameters, do `" + Callerphone.Prefix + "help poolpwd` for more information.").queue();
+            e.getMessage().reply(CP_EMJ + "Missing parameters, do `" + Callerphone.Prefix + "help poolpwd` for more information.").queue();
             return;
         }
 
-        final String pwd = args[1];
+        final String PWD = args[1];
 
-        e.getMessage().reply(poolPwd(e.getChannel().getId(), pwd)).queue();
+        e.getMessage().reply(poolPwd(e.getChannel().getId(), PWD)).queue();
     }
 
     @Override
@@ -42,13 +44,13 @@ public class PoolPwd implements ICommand {
 
         PoolStatus stat = ChannelPool.setPassword(id, pwd);
         if (stat == PoolStatus.SUCCESS) {
-            return Callerphone.Callerphone + "This pool now has " +
+            return CP_EMJ + "This pool now has " +
                     ((pwd.equals("")) ? "no password" : "password ||" + pwd + "||") +
                     ".";
         } else if (stat == PoolStatus.ERROR) {
-            return Callerphone.Callerphone + "This pool is not hosting a pool.";
+            return CP_EMJ + "This pool is not hosting a pool.";
         }
-        return Callerphone.Callerphone + "An error occurred.";
+        return CP_EMJ + "An error occurred.";
     }
 
     @Override

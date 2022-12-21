@@ -4,11 +4,13 @@ import com.marsss.ICommand;
 import com.marsss.callerphone.Callerphone;
 import com.marsss.callerphone.channelpool.ChannelPool;
 import com.marsss.callerphone.channelpool.PoolStatus;
-import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
 public class PoolKick implements ICommand {
+
+    private final String CP_EMJ = Callerphone.Callerphone;
+
     @Override
     public void runCommand(GuildMessageReceivedEvent e) {
         if (ChannelPool.permissionCheck(e.getMember(), e.getMessage())) {
@@ -18,13 +20,13 @@ public class PoolKick implements ICommand {
         String[] args = e.getMessage().getContentRaw().split("\\s+");
 
         if (args.length == 1) {
-            e.getMessage().reply(Callerphone.Callerphone + "Missing parameters, do `" + Callerphone.Prefix + "help kickchan` for more information.").queue();
+            e.getMessage().reply(CP_EMJ + "Missing parameters, do `" + Callerphone.Prefix + "help kickchan` for more information.").queue();
             return;
         }
 
-        final String id = args[1];
+        final String CHANNELID = args[1];
 
-        e.getMessage().reply(poolKick(e.getChannel().getId(), id)).queue();
+        e.getMessage().reply(poolKick(e.getChannel().getId(), CHANNELID)).queue();
     }
 
     @Override
@@ -39,12 +41,12 @@ public class PoolKick implements ICommand {
     private String poolKick(String IDh, String IDc) {
         PoolStatus stat = ChannelPool.removeChildren(IDh, IDc);
         if (stat == PoolStatus.SUCCESS) {
-            Callerphone.jda.getTextChannelById(IDc).sendMessage(Callerphone.Callerphone + "You have been kicked from the pool.").queue();
-            return Callerphone.Callerphone + "Successfully kicked `ID: " + IDc + "` (#" + Callerphone.jda.getTextChannelById(IDc).getName() + ") from this pool.";
+            Callerphone.jda.getTextChannelById(IDc).sendMessage(CP_EMJ + "You have been kicked from the pool.").queue();
+            return CP_EMJ + "Successfully kicked `ID: " + IDc + "` (#" + Callerphone.jda.getTextChannelById(IDc).getName() + ") from this pool.";
         } else if (stat == PoolStatus.ERROR) {
-            return Callerphone.Callerphone + "Requested pool not found.";
+            return CP_EMJ + "Requested pool not found.";
         }
-        return Callerphone.Callerphone + "An error occurred.";
+        return CP_EMJ + "An error occurred.";
     }
 
     @Override

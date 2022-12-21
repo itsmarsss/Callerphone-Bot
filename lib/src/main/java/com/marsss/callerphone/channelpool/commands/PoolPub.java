@@ -4,11 +4,13 @@ import com.marsss.ICommand;
 import com.marsss.callerphone.Callerphone;
 import com.marsss.callerphone.channelpool.ChannelPool;
 import com.marsss.callerphone.channelpool.PoolStatus;
-import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
 public class PoolPub implements ICommand {
+
+    private final String CP_EMJ = Callerphone.Callerphone;
+
     @Override
     public void runCommand(GuildMessageReceivedEvent e) {
         if (ChannelPool.permissionCheck(e.getMember(), e.getMessage())) {
@@ -18,13 +20,13 @@ public class PoolPub implements ICommand {
         String[] args = e.getMessage().getContentRaw().split("\\s+");
 
         if (args.length == 1) {
-            e.getMessage().reply(Callerphone.Callerphone + "Missing parameters, do `" + Callerphone.Prefix + "help poolpub` for more information.").queue();
+            e.getMessage().reply(CP_EMJ + "Missing parameters, do `" + Callerphone.Prefix + "help poolpub` for more information.").queue();
             return;
         }
 
-        final boolean pub = Boolean.parseBoolean(args[1]);
+        final boolean PUB = Boolean.parseBoolean(args[1]);
 
-        e.getMessage().reply(poolPub(e.getChannel().getId(), pub)).queue();
+        e.getMessage().reply(poolPub(e.getChannel().getId(), PUB)).queue();
     }
 
     @Override
@@ -39,11 +41,11 @@ public class PoolPub implements ICommand {
     private String poolPub(String id, boolean pub) {
         PoolStatus stat = ChannelPool.setPublicity(id, pub);
         if (stat == PoolStatus.SUCCESS) {
-            return Callerphone.Callerphone + "This pool is now **" + (pub ? "public" : "private") + "**.";
+            return CP_EMJ + "This pool is now **" + (pub ? "public" : "private") + "**.";
         } else if (stat == PoolStatus.ERROR) {
-            return Callerphone.Callerphone + "This pool is not hosting a pool.";
+            return CP_EMJ + "This pool is not hosting a pool.";
         }
-        return Callerphone.Callerphone + "An error occurred.";
+        return CP_EMJ + "An error occurred.";
     }
 
     @Override
