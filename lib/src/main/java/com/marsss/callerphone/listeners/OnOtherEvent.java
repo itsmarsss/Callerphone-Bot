@@ -25,7 +25,7 @@ public class OnOtherEvent extends ListenerAdapter {
     }
 
     public void onResumed(ResumedEvent event) {
-        final TextChannel channel = event.getJDA().getTextChannelById(Callerphone.logstatus);
+        final TextChannel CHANNEL = event.getJDA().getTextChannelById(Callerphone.logstatus);
         EmbedBuilder Emd = new EmbedBuilder()
                 .setColor(Color.RED)
                 .setTitle("Disconnected");
@@ -45,8 +45,8 @@ public class OnOtherEvent extends ListenerAdapter {
                         "Response number: " + event.getResponseNumber())
                 .setTimestamp(OffsetDateTime.now())
                 .setFooter("The bot disconnected " + disconnectCount + " times already since the last startup.");
-        if (channel.getGuild().getSelfMember().hasPermission(channel, Permission.MESSAGE_WRITE)) {
-            channel.sendMessageEmbeds(Emd.build()).queue();
+        if (CHANNEL.getGuild().getSelfMember().hasPermission(CHANNEL, Permission.MESSAGE_WRITE)) {
+            CHANNEL.sendMessageEmbeds(Emd.build()).queue();
         }
     }
 }

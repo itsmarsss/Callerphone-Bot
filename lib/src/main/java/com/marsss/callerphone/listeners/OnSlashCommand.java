@@ -7,7 +7,6 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.jetbrains.annotations.NotNull;
 
 public class OnSlashCommand extends ListenerAdapter {
-    // TODO: Do Slash Commands
 
     public void onSlashCommand(@NotNull SlashCommandEvent event) {
         try {
@@ -15,7 +14,13 @@ public class OnSlashCommand extends ListenerAdapter {
                 Callerphone.cmdMap.get(event.getName()).runSlash(event);
                 return;
             }
-            event.reply(Callerphone.Callerphone + "Hmmm, the slash command `" + event.getName() + "` shouldn't exist! Please join our support server and report this issue. " + Callerphone.support).queue();
+            event.reply(
+                    Callerphone.Callerphone
+                            + "Hmmm, the slash command `"
+                            + event.getName()
+                            + "` shouldn't exist! Please join our support server and report this issue. "
+                            + Callerphone.support
+            ).queue();
         } catch (Exception e) {
             e.printStackTrace();
             sendError(event, e);
