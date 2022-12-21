@@ -11,27 +11,39 @@ import java.util.ArrayList;
 
 public class TCCallerphone {
 
-    //public static ConvoStorage[]convos = new ConvoStorage[10000];
-
     public static ArrayList<ConvoStorage> convos = new ArrayList<>();
+
+    private static final JDA jda = Callerphone.jda;
+
+    private static final String CP_EMJ = Callerphone.Callerphone;
+
+    private static final String PICKED_UP = CP_EMJ + "Someone picked up the phone!";
 
     public static ChatStatus onCallCommand(TextChannel tcchannel, boolean cens, boolean anon) {
         final Logger logger = LoggerFactory.getLogger(TCCallerphone.class);
         final String CHANNELID = tcchannel.getId();
-        final JDA jda = Callerphone.jda;
 
-        for (int i = 0; i < convos.size(); i++) {
-            ConvoStorage convo = convos.get(i);
+        for (ConvoStorage convo : convos) {
             if (!convo.getCallerTCID().equals("empty") && convo.getReceiverTCID().equals("")) {
                 convo.setRFF(cens);
                 convo.setRAnon(anon);
                 convo.setReceiverTCID(CHANNELID);
                 convo.setLastMessage(System.currentTimeMillis());
 
-                jda.getTextChannelById(convo.getCallerTCID()).sendMessage(Callerphone.Callerphone + "Someone picked up the phone!").queue();
+                jda.getTextChannelById(convo.getCallerTCID())
+                        .sendMessage(PICKED_UP)
+                        .queue();
 
-                logger.info("From TC: " + convo.getCallerTCID() + " - To TC: " + convo.getReceiverTCID());
-                logger.info("From Guild: " + jda.getTextChannelById(convo.getCallerTCID()).getGuild().getId() + " - To Guild: " + jda.getTextChannelById(convo.getReceiverTCID()).getGuild().getId());
+                logger.info("From TC: "
+                        + convo.getCallerTCID()
+                        + " - To TC: "
+                        + convo.getReceiverTCID()
+                );
+                logger.info("From Guild: "
+                        + jda.getTextChannelById(convo.getCallerTCID()).getGuild().getId()
+                        + " - To Guild: "
+                        + jda.getTextChannelById(convo.getReceiverTCID()).getGuild().getId()
+                );
 
                 return ChatStatus.SUCCESS_RECEIVER;
             } else if (convo.getCallerTCID().equals("empty")) {
@@ -46,12 +58,16 @@ public class TCCallerphone {
         return ChatStatus.NON_EXISTENT;
     }
 
+    private static final String NO_CALL = CP_EMJ + "There is no call to end!";
+    private static final String OTHER_PARTY_HUNG_UP = CP_EMJ + "The other party hung up the phone.";
+    private static final String HUNG_UP = CP_EMJ + "You hung up the phone.";
+
+    private static final String NOT_FOUND = CP_EMJ + "I was not able to find the call...";
+
     public static String onEndCallCommand(TextChannel channel) {
         if (!hasCall(channel.getId())) {
-            return Callerphone.Callerphone + "There is no call to end!";
+            return NO_CALL;
         }
-
-        final JDA jda = Callerphone.jda;
 
         ConvoStorage convo = getCall(channel.getId());
 
@@ -60,9 +76,9 @@ public class TCCallerphone {
             final String receiverID = convo.getReceiverTCID();
 
             if (receiverID.equals(channel.getId())) {
-                jda.getTextChannelById(callerID).sendMessage(Callerphone.Callerphone + "The other party hung up the phone.").queue();
+                jda.getTextChannelById(callerID).sendMessage(OTHER_PARTY_HUNG_UP).queue();
             } else {
-                jda.getTextChannelById(receiverID).sendMessage(Callerphone.Callerphone + "The other party hung up the phone.").queue();
+                jda.getTextChannelById(receiverID).sendMessage(OTHER_PARTY_HUNG_UP).queue();
             }
 
             final boolean report = convo.getReport();
@@ -75,9 +91,9 @@ public class TCCallerphone {
 
             convo.resetMessage();
 
-            return Callerphone.Callerphone + "You hung up the phone.";
+            return HUNG_UP;
         }
-        return Callerphone.Callerphone + "I was not able to find the call...";
+        return NOT_FOUND;
     }
 
     private static void report(ArrayList<String> data, String callerID, String receiverID) {
@@ -92,7 +108,7 @@ public class TCCallerphone {
         for (String m : data)
             dataString.append(m).append("\n");
 
-        Callerphone.jda.getTextChannelById(Callerphone.reportchannel).sendMessage("**ID:** " + ID).addFile(dataString.toString().getBytes(), ID + ".txt").queue();
+        jda.getTextChannelById(Callerphone.reportchannel).sendMessage("**ID:** " + ID).addFile(dataString.toString().getBytes(), ID + ".txt").queue();
     }
 
     public static ConvoStorage getCall(String tc) {
