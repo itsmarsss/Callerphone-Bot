@@ -9,25 +9,32 @@ import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
 public class Chat implements ICommand {
+
+    private final String CP_EMJ = Callerphone.Callerphone;
+    private final String ALREADY_CALL = CP_EMJ + "There is already a call going on!";
+    private final String NO_PORT = CP_EMJ + "Hmmm, I was unable to find an open port!";
+    private final String CALLING = CP_EMJ + "Someone picked up the phone!";
+    private final String PICKED_UP = CP_EMJ + "Calling...";
+    private final String ERROR = CP_EMJ + "An error occurred.";
     @Override
     public void runCommand(GuildMessageReceivedEvent e) {
-        String msg = e.getMessage().getContentRaw();
-        boolean anon = msg.contains("anon");
-        boolean famfri = msg.contains("family");
+        final String MESSAGE = e.getMessage().getContentRaw();
+        boolean anon = MESSAGE.contains("anon");
+        boolean famfri = MESSAGE.contains("family");
 
-        ChatStatus stat = (famfri == true ? chatFamilyFriendly(e.getChannel(), anon) : chatUncensor(e.getChannel(), anon));
+        ChatStatus stat = (famfri ? chatFamilyFriendly(e.getChannel(), anon) : chatUncensor(e.getChannel(), anon));
 
         if (stat == ChatStatus.CONFLICT) {
-            e.getMessage().reply(Callerphone.Callerphone + "There is already a call going on!").queue();
+            e.getMessage().reply(ALREADY_CALL).queue();
         } else if (stat == ChatStatus.NON_EXISTENT) {
-            e.getMessage().reply(Callerphone.Callerphone + "Hmmm, I was unable to find an open port!").queue();
+            e.getMessage().reply(NO_PORT).queue();
         } else if (stat == ChatStatus.SUCCESS_RECEIVER) {
-            e.getMessage().reply(Callerphone.Callerphone + "Calling...").queue();
-            e.getChannel().sendMessage(Callerphone.Callerphone + "Someone picked up the phone!").queue();
+            e.getMessage().reply(CALLING).queue();
+            e.getChannel().sendMessage(PICKED_UP).queue();
         } else if (stat == ChatStatus.SUCCESS_CALLER) {
-            e.getMessage().reply(Callerphone.Callerphone + "Calling...").queue();
+            e.getMessage().reply(CALLING).queue();
         } else {
-            e.getMessage().reply(Callerphone.Callerphone + "An error occurred.").queue();
+            e.getMessage().reply(ERROR).queue();
         }
     }
 
@@ -52,16 +59,16 @@ public class Chat implements ICommand {
                 return;
         }
         if (stat == ChatStatus.CONFLICT) {
-            e.reply(Callerphone.Callerphone + "There is already a call going on!").setEphemeral(true).queue();
+            e.reply(ALREADY_CALL).setEphemeral(true).queue();
         } else if (stat == ChatStatus.NON_EXISTENT) {
-            e.reply(Callerphone.Callerphone + "Hmmm, I was unable to find an open port!").setEphemeral(true).queue();
+            e.reply(NO_PORT).setEphemeral(true).queue();
         } else if (stat == ChatStatus.SUCCESS_RECEIVER) {
-            e.reply(Callerphone.Callerphone + "Calling...").queue();
-            e.getTextChannel().sendMessage(Callerphone.Callerphone + "Someone picked up the phone!").queue();
+            e.reply(CALLING).queue();
+            e.getTextChannel().sendMessage(PICKED_UP).queue();
         } else if (stat == ChatStatus.SUCCESS_CALLER) {
-            e.reply(Callerphone.Callerphone + "Calling...").queue();
+            e.reply(CALLING).queue();
         } else {
-            e.reply(Callerphone.Callerphone + "An error occurred.").setEphemeral(true).queue();
+            e.reply(ERROR).setEphemeral(true).queue();
         }
     }
 
