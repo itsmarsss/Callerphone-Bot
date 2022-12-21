@@ -8,11 +8,13 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
+import java.nio.channels.Channel;
+
 public class EndPool implements ICommand {
+
     @Override
     public void runCommand(GuildMessageReceivedEvent e) {
-        if (!e.getMember().hasPermission(Permission.MANAGE_CHANNEL)) {
-            e.getMessage().reply(Callerphone.Callerphone + "You need `Manage Channel` permission to run this command.").queue();
+        if (ChannelPool.permissionCheck(e.getMember(), e.getMessage())) {
             return;
         }
 
@@ -21,8 +23,7 @@ public class EndPool implements ICommand {
 
     @Override
     public void runSlash(SlashCommandEvent e) {
-        if (!e.getMember().hasPermission(Permission.MANAGE_CHANNEL)) {
-            e.reply(Callerphone.Callerphone + "You need `Manage Channel` permission to run this command.").setEphemeral(true).queue();
+        if (ChannelPool.permissionCheck(e.getMember(), e)) {
             return;
         }
 

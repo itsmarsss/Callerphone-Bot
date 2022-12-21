@@ -15,8 +15,7 @@ import java.util.List;
 public class JoinPool implements ICommand {
     @Override
     public void runCommand(GuildMessageReceivedEvent e) {
-        if (!e.getMember().hasPermission(Permission.MANAGE_CHANNEL)) {
-            e.getMessage().reply(Callerphone.Callerphone + "You need `Manage Channel` permission to run this command.").queue();
+        if (ChannelPool.permissionCheck(e.getMember(), e.getMessage())) {
             return;
         }
 
@@ -39,8 +38,7 @@ public class JoinPool implements ICommand {
 
     @Override
     public void runSlash(SlashCommandEvent e) {
-        if (!e.getMember().hasPermission(Permission.MANAGE_CHANNEL)) {
-            e.reply(Callerphone.Callerphone + "You need `Manage Channel` permission to run this command.").setEphemeral(true).queue();
+        if (ChannelPool.permissionCheck(e.getMember(), e)) {
             return;
         }
         List<OptionMapping> param = e.getOptions();

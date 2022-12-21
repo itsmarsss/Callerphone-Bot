@@ -1,6 +1,11 @@
 package com.marsss.callerphone.channelpool;
 
 import com.marsss.callerphone.Callerphone;
+import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.Button;
 import net.dv8tion.jda.api.requests.restaction.MessageAction;
@@ -14,6 +19,28 @@ public class ChannelPool {
     public static HashMap<String, PoolConfig> config = new HashMap<>();
     public static HashMap<String, String> parent = new HashMap<>();
     public static HashMap<String, ArrayList<String>> childr = new HashMap<>();
+
+    private static final JDA jda = Callerphone.jda;
+    private static final String CP_EMJ = Callerphone.Callerphone;
+    private static final String NO_PERMISSION = CP_EMJ + "You need `Manage Channel` permission to run this command.";
+
+    public static boolean permissionCheck(Member member, SlashCommandEvent e) {
+        final boolean PERMS = !member.hasPermission(Permission.MANAGE_CHANNEL);
+        if (PERMS) {
+            e.reply(NO_PERMISSION).queue();
+
+        }
+        return PERMS;
+    }
+
+    public static boolean permissionCheck(Member member, Message message) {
+        final boolean PERMS = !member.hasPermission(Permission.MANAGE_CHANNEL);
+        if (PERMS) {
+            message.reply(NO_PERMISSION).queue();
+
+        }
+        return PERMS;
+    }
 
     public static PoolStatus hostPool(String ID) {
         if (isHost(ID)) {
@@ -113,7 +140,11 @@ public class ChannelPool {
             pool.stream()
                     .filter(cur -> !cur.equals(ID))
                     .forEach(id -> {
-                        Callerphone.jda.getTextChannelById(id).sendMessage(Callerphone.Callerphone + "This pool has been ended by the host channel `ID: " + id + "` (#" + Callerphone.jda.getTextChannelById(id).getName() + ").").queue();
+                        jda.getTextChannelById(id)
+                                .sendMessage(
+                                        CP_EMJ + "This pool has been ended by the host channel `ID: " + id
+                                                + "` (#" + jda.getTextChannelById(id).getName() + ")."
+                                ).queue();
                         parent.remove(id);
                     });
 
@@ -132,7 +163,11 @@ public class ChannelPool {
                 return PoolStatus.FULL;
             }
 
-            systemBroadCast(IDh, Callerphone.Callerphone + "Channel `ID: " + IDc + "` (#" + Callerphone.jda.getTextChannelById(IDc).getName() + ") has joined this pool. " + (childr.get(IDh).size() + 1) + "/" + config.get(IDh).getCap());
+            systemBroadCast(IDh,
+                    CP_EMJ + "Channel `ID: " + IDc
+                            + "` (#" + jda.getTextChannelById(IDc).getName() + ") has joined this pool. "
+                            + (childr.get(IDh).size() + 1) + "/" + config.get(IDh).getCap()
+            );
             childr.get(IDh).add(IDc);
             parent.put(IDc, IDh);
             return PoolStatus.SUCCESS;
@@ -145,7 +180,10 @@ public class ChannelPool {
         if (isChild(IDc)) {
             childr.get(IDh).remove(IDc);
             parent.remove(IDc);
-            systemBroadCast(IDh, Callerphone.Callerphone + "Channel `ID: " + IDc + "` (#" + Callerphone.jda.getTextChannelById(IDc).getName() + ") has left this pool. " + childr.get(IDh).size() + "/" + config.get(IDh).getCap());
+            systemBroadCast(IDh,
+                    CP_EMJ + "Channel `ID: " + IDc + "` (#" + jda.getTextChannelById(IDc).getName() + ") has left this pool. "
+                            + childr.get(IDh).size() + "/" + config.get(IDh).getCap()
+            );
             return PoolStatus.SUCCESS;
         }
         return PoolStatus.ERROR;
@@ -170,7 +208,7 @@ public class ChannelPool {
     private static void handleIsHost(String sender, String original, String msg) {
         ArrayList<String> pool = childr.get(sender);
         pool.stream().filter(id -> !id.equals(original)).forEach(id -> {
-            if (Callerphone.jda.getTextChannelById(id) == null) {
+            if (jda.getTextChannelById(id) == null) {
                 handleChannelLeft(sender, id);
                 return;
             }
@@ -179,13 +217,23 @@ public class ChannelPool {
     }
 
     private static MessageAction buildMessageAction(String original, String msg, String id) {
-        MessageAction ma = Callerphone.jda.getTextChannelById(id).sendMessage(msg);
+        MessageAction ma = jda.getTextChannelById(id).sendMessage(msg);
         Collection<ActionRow> actionrow = new ArrayList<>();
         Collection<Button> collection = new ArrayList<>();
 
-        String link = String.format("https://discord.com/channels/%s/%s", Callerphone.jda.getTextChannelById(original).getGuild().getId(), Callerphone.jda.getTextChannelById(original).getId());
+        String link = String.format(
+                "https://discord.com/channels/%s/%s",
+                jda.getTextChannelById(original).getGuild().getId(),
+                jda.getTextChannelById(original).getId()
+        );
 
-        collection.add(Button.link(link, "From: #" + Callerphone.jda.getTextChannelById(original).getName() + " (" + Callerphone.jda.getTextChannelById(original).getGuild().getName() + ")"));
+        collection.add(
+                Button.link(
+                        link,
+                        "From: #" + jda.getTextChannelById(original).getName()
+                                + " (" + jda.getTextChannelById(original).getGuild().getName() + ")"
+                )
+        );
 
         ActionRow row = ActionRow.of(collection);
         actionrow.add(row);
@@ -193,24 +241,25 @@ public class ChannelPool {
         return ma;
     }
 
+    private static final String LEFT_POOL = CP_EMJ + "Channel `ID: %s` has left this pool.";
     private static void handleChannelLeft(String sender, String id) {
         if (sender.equals(id)) {
             clearChildren(sender);
             return;
         }
         childr.get(sender).remove(id);
-        systemBroadCast(sender, Callerphone.Callerphone + "Channel `ID: " + id + "` has left this pool.");
+        systemBroadCast(sender, String.format(LEFT_POOL, id));
     }
 
 
     public static void systemBroadCast(String IDhost, String msg) {
         ArrayList<String> pool = childr.get(IDhost);
         for (String id : pool) {
-            if (Callerphone.jda.getTextChannelById(id) == null) {
-                systemBroadCast(IDhost, Callerphone.Callerphone + "Channel `ID: " + id + "` has left this pool.");
+            if (jda.getTextChannelById(id) == null) {
+                systemBroadCast(IDhost, String.format(LEFT_POOL, id));
                 continue;
             }
-            MessageAction ma = Callerphone.jda.getTextChannelById(id).sendMessage(msg);
+            MessageAction ma = jda.getTextChannelById(id).sendMessage(msg);
             ma.queue();
         }
     }
