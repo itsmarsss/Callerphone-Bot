@@ -19,6 +19,7 @@ import net.dv8tion.jda.api.events.message.priv.PrivateMessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.utils.AttachmentOption;
 
+// IF IT WORKS DON'T TOUCH IT
 public class OnPrivateMessage extends ListenerAdapter {
     public void onPrivateMessageReceived(PrivateMessageReceivedEvent event) {
         if (event.getAuthor().isBot() || event.getAuthor().isSystem())
