@@ -190,7 +190,7 @@ public class Callerphone {
             }
 
             try {
-                getBlack(new File(parent + "/blacklist.txt"));
+                importBlack(new File(parent + "/blacklist.txt"));
             } catch (Exception e) {
                 e.printStackTrace();
                 System.out.println("------------------------------");
@@ -198,7 +198,7 @@ public class Callerphone {
             }
 
             try {
-                getPrefix(new File(parent + "/prefix.txt"));
+                importPrefix(new File(parent + "/prefix.txt"));
             } catch (Exception e) {
                 e.printStackTrace();
                 System.out.println("------------------------------");
@@ -206,7 +206,7 @@ public class Callerphone {
             }
 
             try {
-                getAdmin(new File(parent + "/admin.txt"));
+                importAdmin(new File(parent + "/admin.txt"));
             } catch (Exception e) {
                 e.printStackTrace();
                 System.out.println("------------------------------");
@@ -347,6 +347,7 @@ public class Callerphone {
             }
         }
     }
+
     private static void exportMessages() throws FileNotFoundException {
         StringBuilder sb = new StringBuilder();
         try (PrintWriter myWriter = new PrintWriter(parent + "/messages.txt")) {
@@ -377,6 +378,7 @@ public class Callerphone {
             }
         }
     }
+
     private static void exportCredits() throws FileNotFoundException {
         StringBuilder sb = new StringBuilder();
         try (PrintWriter myWriter = new PrintWriter(parent + "/credits.txt")) {
@@ -438,7 +440,18 @@ public class Callerphone {
         System.out.println();
     }
 
-    private static void getAdmin(File file) throws IOException {
+    private static void exportAdmin() throws IOException {
+        StringBuilder sb = new StringBuilder();
+        for (String m : admin) {
+            sb.append(m).append("\n");
+        }
+        FileWriter myWriter = new FileWriter(parent + "/admin.txt");
+        myWriter.write(sb.toString());
+        myWriter.close();
+
+    }
+
+    private static void importAdmin(File file) throws IOException {
         try (BufferedReader br = new BufferedReader(new FileReader(file))) {
             String line = br.readLine();
 
@@ -449,7 +462,18 @@ public class Callerphone {
         }
     }
 
-    private static void getPrefix(File file) throws IOException {
+
+    private static void exportPrefix() throws IOException {
+        StringBuilder sb = new StringBuilder();
+        for (String key : prefix.keySet()) {
+            sb.append(key).append("|").append(prefix.get(key)).append("\n");
+        }
+        FileWriter myWriter = new FileWriter(parent + "/prefix.txt");
+        myWriter.write(sb.toString());
+        myWriter.close();
+    }
+
+    private static void importPrefix(File file) throws IOException {
         try (BufferedReader br = new BufferedReader(new FileReader(file))) {
             String line = br.readLine();
             while (line != null) {
@@ -460,7 +484,18 @@ public class Callerphone {
         }
     }
 
-    private static void getBlack(File file) throws IOException {
+    private static void exportBlack() throws FileNotFoundException {
+        StringBuilder sb = new StringBuilder();
+        for (String m : blacklist) {
+            sb.append(m).append("\n");
+        }
+        PrintWriter myWriter = new PrintWriter(parent + "/blacklist.txt");
+        myWriter.print(sb);
+        myWriter.close();
+
+    }
+
+    private static void importBlack(File file) throws IOException {
         try (BufferedReader br = new BufferedReader(new FileReader(file))) {
             String line = br.readLine();
 
@@ -671,7 +706,7 @@ public class Callerphone {
                 }
 
                 try {
-                    getBlack(new File(parent + "/blacklist.txt"));
+                    importBlack(new File(parent + "/blacklist.txt"));
                 } catch (Exception e) {
                     e.printStackTrace();
                     System.out.println("------------------------------");
@@ -679,7 +714,7 @@ public class Callerphone {
                 }
 
                 try {
-                    getPrefix(new File(parent + "/prefix.txt"));
+                    importPrefix(new File(parent + "/prefix.txt"));
                 } catch (Exception e) {
                     e.printStackTrace();
                     System.out.println("------------------------------");
@@ -687,7 +722,7 @@ public class Callerphone {
                 }
 
                 try {
-                    getAdmin(new File(parent + "/admin.txt"));
+                    importAdmin(new File(parent + "/admin.txt"));
                 } catch (Exception e) {
                     e.printStackTrace();
                     System.out.println("------------------------------");
@@ -700,6 +735,40 @@ public class Callerphone {
                     e.printStackTrace();
                     System.out.println("------------------------------");
                     logger.error("Error with filter.txt");
+                }
+
+                System.out.println("------------------------------");
+
+                try {
+                    importPools(new File(parent + "/pools.txt"));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    System.out.println("------------------------------");
+                    logger.error("Error with pools.txt");
+                }
+
+                try {
+                    importPoolsConfig(new File(parent + "/poolconfig.txt"));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    System.out.println("------------------------------");
+                    logger.error("Error with poolconfig.txt");
+                }
+
+                try {
+                    importCredits(new File(parent + "/credits.txt"));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    System.out.println("------------------------------");
+                    logger.error("Error with credits.txt");
+                }
+
+                try {
+                    importMessages(new File(parent + "/messages.txt"));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    System.out.println("------------------------------");
+                    logger.error("Error with messages.txt");
                 }
 
                 System.out.println("------------------------------");
