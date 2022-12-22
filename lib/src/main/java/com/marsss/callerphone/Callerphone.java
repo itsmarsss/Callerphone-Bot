@@ -110,6 +110,7 @@ public class Callerphone {
             cmdLst.add(new Donate());
             cmdLst.add(new Invite());
             cmdLst.add(new Ping());
+            cmdLst.add(new Profile());
             cmdLst.add(new Uptime());
 
 
@@ -124,6 +125,7 @@ public class Callerphone {
 
             cmdLst.add(new Chat());
             cmdLst.add(new EndChat());
+            cmdLst.add(new Prefix());
             cmdLst.add(new ReportChat());
 
             cmdLst.add(new HostPool());
