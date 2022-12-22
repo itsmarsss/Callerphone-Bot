@@ -37,7 +37,7 @@ public class Help implements ICommand {
     public void runSlash(SlashCommandEvent e) {
         final boolean ADMIN = Callerphone.admin.contains(e.getUser().getId());
         final List<OptionMapping> PARAM = e.getOptions();
-        if(PARAM.size() == 0) {
+        if (PARAM.size() == 0) {
             e.replyEmbeds(help("", ADMIN)).queue();
             return;
         }
@@ -72,9 +72,12 @@ public class Help implements ICommand {
 
             case "bot":
                 TITLE = "Bot Commands";
-                DESC = new Donate().getHelp() + "\n"
+                DESC = new About().getHelp() + "\n"
+                        + new BotInfo().getHelp() + "\n"
+                        + new Donate().getHelp() + "\n"
                         + new Invite().getHelp() + "\n"
                         + new Ping().getHelp() + "\n"
+                        + new Profile().getHelp() + "\n"
                         + new Uptime().getHelp();
                 break;
 
@@ -110,13 +113,32 @@ public class Help implements ICommand {
                 TITLE = "TCCall Commands";
                 DESC = new Chat().getHelp() + "\n"
                         + new EndChat().getHelp() + "\n"
-                        + new ReportChat().getHelp();
+                        + new ReportChat().getHelp() + "\n"
+                        + new Prefix();
                 break;
 
 
             case "music":
                 TITLE = "Music Commands";
                 DESC = "Callerphone no longer can play music, however I've created a new bot called **Tunes**...\nJoin [this](" + Callerphone.tunessupport + ") server for more information!";
+                break;
+
+
+            case "creds":
+                TITLE = "**EARN CREDITS**";
+                DESC = "__Commands:__" +
+                        "\n> Message ~ `\u00A9 1`" +
+                        "\n> Slash ~ `\u00A9 2`" +
+                        "\n\n__Messages:__" +
+                        "\n> Channel Pool ~ `\u00A9 3`" +
+                        "\n> Channel Chat ~ `\u00A9 5`" +
+                        "\n\n__Other:__" +
+                        "\n> Bug Report ~ `\u00A9 5,000`";
+                break;
+
+            case "exp":
+                TITLE = "Uh Oh.";
+                DESC = ":construction: !!! We're currently underconstruction !!! :construction:";
                 break;
 
 
@@ -135,10 +157,8 @@ public class Help implements ICommand {
 
             if (TRIGGER.toString().contains("search")) {
                 DESC += "\nWe use Duckduckgo, so click [here](https://help.duckduckgo.com/duckduckgo-help-pages/results/syntax/) for searching syntax!";
-
             }
         }
-
 
         EmbedBuilder HelpEmd = new EmbedBuilder()
                 .setTitle(TITLE)
