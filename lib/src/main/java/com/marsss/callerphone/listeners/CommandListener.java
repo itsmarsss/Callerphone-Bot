@@ -2,10 +2,13 @@ package com.marsss.callerphone.listeners;
 
 import com.marsss.callerphone.Callerphone;
 
+import com.marsss.callerphone.bot.Profile;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+
+import java.util.Arrays;
 
 public class CommandListener extends ListenerAdapter {
     public void onGuildMessageReceived(GuildMessageReceivedEvent event) {
@@ -44,6 +47,10 @@ public class CommandListener extends ListenerAdapter {
         try {
             if (Callerphone.cmdMap.containsKey(trigger)) {
                 Callerphone.cmdMap.get(trigger).runCommand(event);
+                if (!Arrays.asList(new Profile().getTriggers()).contains(trigger)) {
+                    Callerphone.award(event.getAuthor(), 1);
+                }
+                Callerphone.addExecute(event.getAuthor(), 1);
             }
         } catch (Exception ex) {
             ex.printStackTrace();
