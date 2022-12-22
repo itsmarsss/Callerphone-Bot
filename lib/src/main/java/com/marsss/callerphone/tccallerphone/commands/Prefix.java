@@ -27,7 +27,12 @@ public class Prefix implements ICommand {
 
     @Override
     public void runSlash(SlashCommandEvent e) {
-        e.reply(setPrefix(e.getUser(), e.getOption("prefix").getAsString())).queue();
+        final String PREFIX = e.getOption("prefix").getAsString();
+        if (PREFIX.length() > 15) {
+            e.reply(CP_EMJ + "Prefix too long (Maximum length is 15 characters)").setEphemeral(true).queue();
+            return;
+        }
+        e.reply(setPrefix(e.getUser(), PREFIX)).queue();
     }
 
     private final String CP_EMJ = Callerphone.Callerphone;
