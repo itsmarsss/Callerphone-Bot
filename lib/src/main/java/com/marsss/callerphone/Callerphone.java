@@ -136,96 +136,14 @@ public class Callerphone {
             }else if (cmd.equals("presence")) {
                 if (jda == null) {
                     logger.info("Bot Is Offline");
-                    //continue;
+                    continue;
                 }
-
-                Activity act;
-                logger.info("Change Presence...");
+                if (jda != null) {
+                    jda.getPresence().setPresence(s, act);
+                    continue;
+                }
                 try {
-                    label:
-                    while (true) {
-
-                        System.out.println("Activity: ");
-                        String msg = sc.next().toLowerCase();
-
-                        switch (msg) {
-                            case "<rs>":
-                                act = null;
-                                break label;
-                            case "competing":
-                                System.out.println("Status Message: ");
-                                sc.nextLine();
-                                String comp = sc.nextLine();
-                                System.out.println("Competing: " + comp);
-                                act = Activity.competing(comp);
-                                break label;
-
-                            case "listening":
-                                System.out.println("Status Message: ");
-                                sc.nextLine();
-                                String song = sc.nextLine();
-                                System.out.println("Listening: " + song);
-                                act = Activity.listening(song);
-                                break label;
-
-                            case "playing":
-                                System.out.println("Status Message: ");
-                                sc.nextLine();
-                                String game = sc.nextLine();
-                                System.out.println("Playing: " + game);
-                                act = Activity.playing(game);
-                                break label;
-
-                            case "streaming":
-                                System.out.println("Title Message: ");
-                                sc.nextLine();
-                                String title = sc.nextLine();
-                                System.out.println("Stream Link: ");
-                                String link = sc.nextLine();
-                                System.out.println("Title: " + title + "\n" + "Link: " + link);
-                                act = Activity.streaming(title, link);
-                                break label;
-
-                            case "watching":
-                                System.out.println("Status Message: ");
-                                sc.nextLine();
-                                String watch = sc.nextLine();
-                                System.out.println("Watching: " + watch);
-                                act = Activity.watching(watch);
-                                break label;
-                        }
-                    }
-
-                    OnlineStatus s;
-
-                    while (true) {
-                        System.out.println("Online Status: ");
-                        String msg = sc.next().toLowerCase();
-
-                        if (msg.toLowerCase().startsWith("onl")) {
-                            s = OnlineStatus.ONLINE;
-                            break;
-
-                        } else if (msg.toLowerCase().startsWith("idl")) {
-                            s = OnlineStatus.IDLE;
-                            break;
-
-                        } else if (msg.toLowerCase().startsWith("dnd")) {
-                            s = OnlineStatus.DO_NOT_DISTURB;
-                            break;
-
-                        } else if (msg.toLowerCase().startsWith("inv")) {
-                            s = OnlineStatus.INVISIBLE;
-                            break;
-
-                        }
-
-                    }
-                    if (jda != null) {
-                        jda.getPresence().setPresence(s, act);
-                        continue;
-                    }
-
+                    setActivity();
                     logger.info("Bot Is Offline");
 
                 } catch (Exception e) {
@@ -380,6 +298,90 @@ public class Callerphone {
             logger.error(e.toString());
         }
 
+    }
+
+    public static void setActivty() {
+        Activity act;
+        logger.info("Change Presence...");
+        try {
+            label:
+            while (true) {
+
+                System.out.println("Activity: ");
+                String msg = sc.next().toLowerCase();
+
+                switch (msg) {
+                    case "<rs>":
+                        act = null;
+                        break label;
+                    case "competing":
+                        System.out.println("Status Message: ");
+                        sc.nextLine();
+                        String comp = sc.nextLine();
+                        System.out.println("Competing: " + comp);
+                        act = Activity.competing(comp);
+                        break label;
+
+                    case "listening":
+                        System.out.println("Status Message: ");
+                        sc.nextLine();
+                        String song = sc.nextLine();
+                        System.out.println("Listening: " + song);
+                        act = Activity.listening(song);
+                        break label;
+
+                    case "playing":
+                        System.out.println("Status Message: ");
+                        sc.nextLine();
+                        String game = sc.nextLine();
+                        System.out.println("Playing: " + game);
+                        act = Activity.playing(game);
+                        break label;
+
+                    case "streaming":
+                        System.out.println("Title Message: ");
+                        sc.nextLine();
+                        String title = sc.nextLine();
+                        System.out.println("Stream Link: ");
+                        String link = sc.nextLine();
+                        System.out.println("Title: " + title + "\n" + "Link: " + link);
+                        act = Activity.streaming(title, link);
+                        break label;
+
+                    case "watching":
+                        System.out.println("Status Message: ");
+                        sc.nextLine();
+                        String watch = sc.nextLine();
+                        System.out.println("Watching: " + watch);
+                        act = Activity.watching(watch);
+                        break label;
+                }
+            }
+
+            OnlineStatus s;
+
+            while (true) {
+                System.out.println("Online Status: ");
+                String msg = sc.next().toLowerCase();
+
+                if (msg.toLowerCase().startsWith("onl")) {
+                    s = OnlineStatus.ONLINE;
+                    break;
+
+                } else if (msg.toLowerCase().startsWith("idl")) {
+                    s = OnlineStatus.IDLE;
+                    break;
+
+                } else if (msg.toLowerCase().startsWith("dnd")) {
+                    s = OnlineStatus.DO_NOT_DISTURB;
+                    break;
+
+                } else if (msg.toLowerCase().startsWith("inv")) {
+                    s = OnlineStatus.INVISIBLE;
+                    break;
+
+                }
+            }
     }
 
     private static void readData() {
