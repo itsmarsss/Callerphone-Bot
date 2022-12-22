@@ -13,9 +13,8 @@ import java.util.concurrent.TimeUnit;
 import com.marsss.callerphone.channelpool.commands.*;
 import com.marsss.callerphone.tccallerphone.TCCallerphone;
 import com.marsss.callerphone.tccallerphone.TCCallerphoneListener;
-import com.marsss.callerphone.tccallerphone.commands.Chat;
-import com.marsss.callerphone.tccallerphone.commands.EndChat;
-import com.marsss.callerphone.tccallerphone.commands.ReportChat;
+import com.marsss.callerphone.tccallerphone.commands.*;
+import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
@@ -818,6 +817,7 @@ public class Callerphone {
     private static void update() {
         jda.updateCommands().queue();
     }
+
     private static void upsert() {
         jda.upsertCommand(new CommandData("about", "About Callerphone")).queue();
         jda.upsertCommand(new CommandData("donate", "Help us out by donating")).queue();

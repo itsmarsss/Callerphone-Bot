@@ -27,7 +27,9 @@ public class ChannelPoolListener extends ListenerAdapter {
         if (CONTENT.startsWith("\\\\") || CONTENT.startsWith(Callerphone.Prefix)) {
             return;
         }
-
+        if (!(ChannelPool.isHost(event.getChannel().getId()) || ChannelPool.isChild(event.getChannel().getId()))) {
+            return;
+        }
         String sendCont = String.format("**%s**#%s `%s` | <t:%d:f>\n%s",
                 MESSAGE.getAuthor().getName(),
                 MESSAGE.getAuthor().getDiscriminator(),
