@@ -12,7 +12,7 @@ public class OnSlashCommand extends ListenerAdapter {
         try {
             if (Callerphone.cmdMap.containsKey(event.getName())) {
                 Callerphone.cmdMap.get(event.getName()).runSlash(event);
-                Callerphone.award(event.getUser(), 3);
+                Callerphone.reward(event.getUser(), 3);
                 Callerphone.addExecute(event.getUser(), 1);
                 return;
             }
