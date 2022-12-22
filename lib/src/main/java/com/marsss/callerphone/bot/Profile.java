@@ -22,15 +22,15 @@ public class Profile implements ICommand {
         e.replyEmbeds(profile(e.getUser())).queue();
     }
 
-    private final String GENERAL = "Level: `%s`\nExperience: `%s`\nPrefix: `%s`";
-    private final String CREDITS = "Credits: `\u00A9%s`\nRedeemed: `\u00A9%s`\nNet: `\u00A9%s`";
-    private final String MESSAGE = "Executed: `%s`\n Transmitted: `%s`";
+    private final String GENERAL = "Level: `%d`\nExperience: `%d/100`\nPrefix: %s\n\n[`c?help exp`]";
+    private final String CREDITS = "Credits: `\u00A9 %d`\nRedeemed: `\u00A9 %d`\nNet: `\u00A9 %d`\n\n[`c?help creds`]";
+    private final String MESSAGE = "Executed: `%d`\n Transmitted: `%s`\nTotal: `%s`";
 
     private MessageEmbed profile(User user) {
 
-        String general = String.format(GENERAL);
-        String credits = String.format(CREDITS);
-        String message = String.format(MESSAGE);
+        String general = String.format(GENERAL, LVL, EXP, PREFIX);
+        String credits = String.format(CREDITS, Callerphone.getCredits(user), 0, 0);
+        String message = String.format(MESSAGE, EXECUTED, TRANSMITTED, TOTAL);
 
         EmbedBuilder proEmd = new EmbedBuilder()
                 .setTitle("**" + user.getName() + "'s Profile**")
