@@ -137,8 +137,9 @@ public class Help implements ICommand {
                 break;
 
             case "exp":
-                TITLE = "Uh Oh.";
-                DESC = ":construction: !!! We're currently underconstruction !!! :construction:";
+                TITLE = "**EARN EXPERIENCE**";
+                DESC = "__Temporary:**" +
+                        "\n> Each level required 100 exp, and each command/message transferred are worth 1 exp.";
                 break;
 
 
