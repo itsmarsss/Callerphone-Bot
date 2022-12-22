@@ -11,7 +11,13 @@ public class Prefix implements ICommand {
     @Override
     public void runCommand(GuildMessageReceivedEvent e) {
         final String[]ARGS = e.getMessage().getContentRaw().split("\\s+");
-        final String PREFIX = ARGS[2];
+
+        if (ARGS.length == 1) {
+            e.getMessage().reply(CP_EMJ + "Missing parameters, do `" + Callerphone.Prefix + "help prefix` for more information.").queue();
+            return;
+        }
+
+        final String PREFIX = ARGS[1];
         if (PREFIX.length() > 15) {
             e.getMessage().reply(CP_EMJ + "Prefix too long (Maximum length is 15 characters)").queue();
             return;
@@ -36,7 +42,7 @@ public class Prefix implements ICommand {
 
     @Override
     public String getHelp() {
-        return "`" + Callerphone.Prefix + "prefix` - Set chat prefix (if more than lvl 50).";
+        return "`" + Callerphone.Prefix + "prefix <prefix>` - Set chat prefix (if more than lvl 50).";
     }
 
     @Override
