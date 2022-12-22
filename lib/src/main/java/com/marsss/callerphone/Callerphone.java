@@ -72,6 +72,9 @@ public class Callerphone {
 
     public static JDA jda;
 
+    private static HashMap<String, Long> userCredits = new HashMap<String, Long>();
+    private static HashMap<String, Long> userExecuted = new HashMap<String, Long>();
+    private static HashMap<String, Long> userTransmitted = new HashMap<String, Long>();
     public static final String ERROR_MSG = "An error occurred with error: `%s`." +
             "\nIf this is a recurring problem, please join our support server and report this issue. " + support;
 
@@ -667,6 +670,35 @@ public class Callerphone {
                 logger.warn("Unknown Command");
 
         }
+    }
+
+    public static void award(User user, int amount) {
+        userCredits.put(user.getId(), userCredits.getOrDefault(user.getId(), 0L) + amount);
+        logger.info("User: " + user.getId() + " earned: " + amount + " credits.");
+    }
+
+    public static long getCredits(User user) {
+        return userCredits.getOrDefault(user.getId(), 0L);
+    }
+
+    public static void addExecute(User user, int amount) {
+        userExecuted.put(user.getId(), userExecuted.getOrDefault(user.getId(), 0L) + amount);
+
+        userTransmitted.put(user.getId(), userTransmitted.getOrDefault(user.getId(), 0L));
+    }
+
+    public static long getExecuted(User user) {
+        return userExecuted.getOrDefault(user.getId(), 0L);
+    }
+
+    public static void addTransmit(User user, int amount) {
+        userTransmitted.put(user.getId(), userTransmitted.getOrDefault(user.getId(), 0L) + amount);
+
+        userExecuted.put(user.getId(), userExecuted.getOrDefault(user.getId(), 0L));
+    }
+
+    public static long getTransmitted(User user) {
+        return userTransmitted.getOrDefault(user.getId(), 0L);
     }
 
     private static void update() {
