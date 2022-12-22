@@ -32,7 +32,7 @@ public class Prefix implements ICommand {
 
     private final String CP_EMJ = Callerphone.Callerphone;
     private String setPrefix(User user, String prefix) {
-        final long LVL = Callerphone.getExecuted(user) + Callerphone.getTransmitted(user)%100;
+        final long LVL = (Callerphone.getExecuted(user) + Callerphone.getTransmitted(user))/100;
         if(LVL < 50){
             return CP_EMJ + "You need to have at least 50 levels to set your own prefix.";
         }
