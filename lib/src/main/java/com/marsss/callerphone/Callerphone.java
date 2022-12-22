@@ -11,6 +11,8 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import com.marsss.callerphone.channelpool.commands.*;
+import com.marsss.callerphone.credits.commands.DeductCredits;
+import com.marsss.callerphone.credits.commands.RewardCredits;
 import com.marsss.callerphone.tccallerphone.TCCallerphone;
 import com.marsss.callerphone.tccallerphone.TCCallerphoneListener;
 import com.marsss.callerphone.tccallerphone.commands.*;
@@ -106,7 +108,7 @@ public class Callerphone {
                     isQuickStart = false;
                     BotInit(TOKEN, cmd.replaceFirst("start", ""), false);
                 }
-            }else if (cmd.startsWith("quickstart")) {
+            } else if (cmd.startsWith("quickstart")) {
                 System.out.println("Token: ");
                 String TOKEN = sc.nextLine();
                 logger.info("Starting Bot...");
@@ -116,7 +118,7 @@ public class Callerphone {
                     isQuickStart = true;
                     BotInit(TOKEN, cmd.replaceFirst("quickstart", ""), true);
                 }
-            }else if (cmd.equals("shutdown")) {
+            } else if (cmd.equals("shutdown")) {
                 logger.info("Shutting Down Bot...");
                 if (jda != null) {
                     EmbedBuilder embedBuilder = new EmbedBuilder().setTitle("Status").setColor(new Color(213, 0, 0)).setFooter("Goodbye World...").setDescription(jda.getSelfUser().getAsMention() + " is going offline;" + cmd.replaceFirst("shutdown", ""));
@@ -133,25 +135,15 @@ public class Callerphone {
                 logger.info("Bot Offline");
                 sc.close();
                 System.exit(0);
-            }else if (cmd.equals("presence")) {
+            } else if (cmd.equals("presence")) {
                 if (jda == null) {
                     logger.info("Bot Is Offline");
                     continue;
                 }
-                if (jda != null) {
-                    jda.getPresence().setPresence(s, act);
-                    continue;
-                }
-                try {
-                    setActivity();
+                    setActivity(sc);
                     logger.info("Bot Is Offline");
 
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    logger.error("Input error, please try again");
-                }
-
-            }else if (cmd.equals("info")) {
+            } else if (cmd.equals("info")) {
                 if (jda != null) {
                     String tag = jda.getSelfUser().getAsTag();
                     String avatarUrl = jda.getSelfUser().getAvatarUrl();
@@ -166,7 +158,7 @@ public class Callerphone {
                     continue;
                 }
                 logger.info("Bot Is Offline");
-            }else if (cmd.equals("recal")) {
+            } else if (cmd.equals("recal")) {
                 logger.info("Recalibrating...");
                 try {
                     readData();
@@ -174,15 +166,15 @@ public class Callerphone {
                     e.printStackTrace();
                 }
                 logger.info("Done recalibration!");
-            }else if (cmd.equals("poolnum")) {
+            } else if (cmd.equals("poolnum")) {
                 System.out.println("Currently there are " + ChannelPool.config.size() + " channel pools running.");
-            }else if (cmd.equals("updateCMD")) {
+            } else if (cmd.equals("updateCMD")) {
                 update();
                 System.out.println("Done Updating");
-            }else if (cmd.equals("upsertCMD")) {
+            } else if (cmd.equals("upsertCMD")) {
                 upsert();
                 System.out.println("Done Upserting");
-            }else if (cmd.equals("help")) {
+            } else if (cmd.equals("help")) {
                 System.out.println(
                         "Option 1: start <msg> = To start the bot\n" +
                                 "Option 2: shutdown = To shutdown the bot\n" +
@@ -194,7 +186,7 @@ public class Callerphone {
                                 "Option 8: upsertCMD = Upsert all slash commands\n" +
                                 "Option 9: help = UBCL help (this)\n\n" +
                                 "Other: quickstart <msg> = To start the bot quicker");
-            }else {
+            } else {
                 logger.warn("Unknown Command");
             }
         }
@@ -251,6 +243,9 @@ public class Callerphone {
             cmdLst.add(new PoolPwd());
             cmdLst.add(new PoolKick());
 
+            cmdLst.add(new DeductCredits());
+            cmdLst.add(new RewardCredits());
+
             for (ICommand cmd : cmdLst) {
                 for (String trigger : cmd.getTriggers()) {
                     cmdMap.put(trigger, cmd);
@@ -290,6 +285,15 @@ public class Callerphone {
                 e.printStackTrace();
             }
 
+            try {
+                EmbedBuilder embedBuilder = new EmbedBuilder().setTitle("Status").setColor(new Color(24, 116, 52)).setFooter("Hello World!").setDescription(jda.getSelfUser().getAsMention() + " is now online;" + startupmsg);
+                jda.getTextChannelById(logstatus).sendMessageEmbeds(embedBuilder.build()).queue();
+            } catch (Exception e) {
+                e.printStackTrace();
+                System.out.println("------------------------------");
+                logger.error("Error Sending Startup Message");
+            }
+
             ScheduledExecutorService ses = Executors.newSingleThreadScheduledExecutor();
             ses.scheduleAtFixedRate(com.marsss.callerphone.Callerphone::kill, 0, 2, TimeUnit.MINUTES);
 
@@ -300,7 +304,7 @@ public class Callerphone {
 
     }
 
-    public static void setActivty() {
+    private static void setActivity(Scanner sc) {
         Activity act;
         logger.info("Change Presence...");
         try {
@@ -382,6 +386,10 @@ public class Callerphone {
 
                 }
             }
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.error("Input error, please try again");
+        }
     }
 
     private static void readData() {
@@ -392,15 +400,6 @@ public class Callerphone {
             System.out.println("------------------------------");
             logger.error("Error with info.txt");
             logger.warn("Critical Issues May Appear (BrainURL and other links)");
-        }
-
-        try {
-            EmbedBuilder embedBuilder = new EmbedBuilder().setTitle("Status").setColor(new Color(24, 116, 52)).setFooter("Hello World!").setDescription(jda.getSelfUser().getAsMention() + " is now online;" + startupmsg);
-            jda.getTextChannelById(logstatus).sendMessageEmbeds(embedBuilder.build()).queue();
-        } catch (Exception e) {
-            e.printStackTrace();
-            System.out.println("------------------------------");
-            logger.error("Error Sending Startup Message");
         }
 
         try {
@@ -538,6 +537,64 @@ public class Callerphone {
 //        }
     }
 
+    private static void getFilter(File file) throws IOException {
+        try (BufferedReader br = new BufferedReader(new FileReader(file))) {
+            String line = br.readLine();
+
+            while (line != null) {
+                filter.add(line);
+                line = br.readLine();
+            }
+        }
+    }
+
+    private static void getInfo(File file) throws IOException, InterruptedException {
+        System.out.println("\nInfo.txt:");
+        BufferedReader br = new BufferedReader(new FileReader(file));
+        String line = br.readLine();
+
+        while (line != null) {
+            if (line.startsWith("brainurl=")) {
+                brainURL = line.substring(9).trim();
+            } else if (line.startsWith("emoji=")) {
+                Callerphone = line.substring(6).trim() + " ";
+            } else if (line.startsWith("log=")) {
+                logstatus = line.substring(4).trim();
+            } else if (line.startsWith("report=")) {
+                reportchannel = line.substring(7).trim();
+            } else if (line.startsWith("invite=")) {
+                invite = line.substring(7).trim();
+            } else if (line.startsWith("support=")) {
+                support = line.substring(8).trim();
+            } else if (line.startsWith("tunessupport=")) {
+                tunessupport = line.substring(13).trim();
+            } else if (line.startsWith("donate=")) {
+                donate = line.substring(7).trim();
+            } else if (line.startsWith("owner=")) {
+                owner = line.substring(6).trim();
+            } else {
+                System.out.println("Unused value:");
+            }
+
+            System.out.println(line);
+
+            line = br.readLine();
+        }
+        br.close();
+
+        jda.awaitReady();
+
+        System.out.println("Log Status Channel: " + jda.getTextChannelById(logstatus).getAsMention());
+        System.out.println("Report Channel: " + jda.getTextChannelById(reportchannel).getAsMention());
+        if (isQuickStart) {
+            System.out.println("Owner: " + owner + " (unable to obtain tag because of quickstart)");
+        } else {
+            System.out.println("Owner: " + jda.getUserById(owner).getAsTag());
+        }
+
+        System.out.println();
+    }
+
     private static void importMessages(File file) throws IOException {
         try (BufferedReader br = new BufferedReader(new FileReader(file))) {
             String line = br.readLine();
@@ -599,52 +656,7 @@ public class Callerphone {
         }
     }
 
-    private static void getInfo(File file) throws IOException, InterruptedException {
-        System.out.println("\nInfo.txt:");
-        BufferedReader br = new BufferedReader(new FileReader(file));
-        String line = br.readLine();
 
-        while (line != null) {
-            if (line.startsWith("brainurl=")) {
-                brainURL = line.substring(9).trim();
-            } else if (line.startsWith("emoji=")) {
-                Callerphone = line.substring(6).trim() + " ";
-            } else if (line.startsWith("log=")) {
-                logstatus = line.substring(4).trim();
-            } else if (line.startsWith("report=")) {
-                reportchannel = line.substring(7).trim();
-            } else if (line.startsWith("invite=")) {
-                invite = line.substring(7).trim();
-            } else if (line.startsWith("support=")) {
-                support = line.substring(8).trim();
-            } else if (line.startsWith("tunessupport=")) {
-                tunessupport = line.substring(13).trim();
-            } else if (line.startsWith("donate=")) {
-                donate = line.substring(7).trim();
-            } else if (line.startsWith("owner=")) {
-                owner = line.substring(6).trim();
-            } else {
-                System.out.println("Unused value:");
-            }
-
-            System.out.println(line);
-
-            line = br.readLine();
-        }
-        br.close();
-
-        jda.awaitReady();
-
-        System.out.println("Log Status Channel: " + jda.getTextChannelById(logstatus).getAsMention());
-        System.out.println("Report Channel: " + jda.getTextChannelById(reportchannel).getAsMention());
-        if (isQuickStart) {
-            System.out.println("Owner: " + owner + " (unable to obtain tag because of quickstart)");
-        } else {
-            System.out.println("Owner: " + jda.getUserById(owner).getAsTag());
-        }
-
-        System.out.println();
-    }
 
     private static void importAdmin(File file) throws IOException {
         try (BufferedReader br = new BufferedReader(new FileReader(file))) {
@@ -711,17 +723,6 @@ public class Callerphone {
 
     }
 
-    private static void getFilter(File file) throws IOException {
-        try (BufferedReader br = new BufferedReader(new FileReader(file))) {
-            String line = br.readLine();
-
-            while (line != null) {
-                filter.add(line);
-                line = br.readLine();
-            }
-        }
-    }
-
     private static void importPoolsConfig(File file) throws IOException {
         try (BufferedReader br = new BufferedReader(new FileReader(file))) {
             String line = br.readLine();
@@ -781,7 +782,7 @@ public class Callerphone {
         }
     }
 
-    public static void award(User user, int amount) {
+    public static void reward(User user, int amount) {
         userCredits.put(user.getId(), userCredits.getOrDefault(user.getId(), 0L) + amount);
         logger.info("User: " + user.getId() + " earned: " + amount + " credits.");
     }
@@ -819,6 +820,10 @@ public class Callerphone {
         jda.upsertCommand(new CommandData("donate", "Help us out by donating")).queue();
         jda.upsertCommand(new CommandData("invite", "Invite Callerphone")).queue();
         jda.upsertCommand(new CommandData("ping", "Get the bot's ping")).queue();
+        jda.upsertCommand(new CommandData("profile", "Get your profile")
+                .addOptions(
+                        new OptionData(OptionType.USER, "target", "Target user").setRequired(true)
+                )).queue();
         jda.upsertCommand(new CommandData("uptime", "Get the bot's uptime")).queue();
 
         jda.upsertCommand(new CommandData("chat", "Chat with people from other servers")
@@ -829,6 +834,10 @@ public class Callerphone {
                                 new SubcommandData("ffandanon", "Chat family friendly and anonymously")))
                 .queue();
         jda.upsertCommand(new CommandData("endchat", "End chatting with people from another server")).queue();
+        jda.upsertCommand(new CommandData("prefix", "Set in text prefix")
+                .addOptions(
+                        new OptionData(OptionType.STRING, "prefix", "Set prefix").setRequired(true)
+                )).queue();
         jda.upsertCommand(new CommandData("reportchat", "Report a chat with people from another server")).queue();
 
         jda.upsertCommand(new CommandData("endpool", "End a channel pool")).queue();
