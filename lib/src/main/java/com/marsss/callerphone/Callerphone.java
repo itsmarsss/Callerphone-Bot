@@ -748,35 +748,6 @@ public class Callerphone {
         }
     }
 
-    private static void exportPools() throws FileNotFoundException {
-        StringBuilder sb = new StringBuilder();
-        try (PrintWriter myWriter = new PrintWriter(parent + "/pools.txt")) {
-            for (Map.Entry<String, ArrayList<String>> pool : ChannelPool.childr.entrySet()) {
-                sb.append(pool.getKey()).append(":");
-                for (String id : pool.getValue()) {
-                    sb.append(id).append(",");
-                }
-                sb.deleteCharAt(sb.length() - 1);
-                sb.append("\n");
-            }
-
-            myWriter.print(sb);
-            myWriter.close();
-        }
-        StringBuilder sb2 = new StringBuilder();
-        try (PrintWriter myWriter = new PrintWriter(parent + "/poolconfig.txt")) {
-            for (Map.Entry<String, PoolConfig> pool : ChannelPool.config.entrySet()) {
-                sb2.append(pool.getKey()).append(":");
-                PoolConfig config = pool.getValue();
-                sb2.append(config.getPwd()).append(",").append(config.getCap()).append(",").append(config.isPub());
-                sb2.append("\n");
-            }
-
-            myWriter.print(sb2);
-            myWriter.close();
-        }
-    }
-
     private static void importPoolsConfig(File file) throws IOException {
         try (BufferedReader br = new BufferedReader(new FileReader(file))) {
             String line = br.readLine();
@@ -804,6 +775,35 @@ public class Callerphone {
                 }
                 line = br.readLine();
             }
+        }
+    }
+
+    private static void exportPools() throws FileNotFoundException {
+        StringBuilder sb = new StringBuilder();
+        try (PrintWriter myWriter = new PrintWriter(parent + "/pools.txt")) {
+            for (Map.Entry<String, ArrayList<String>> pool : ChannelPool.childr.entrySet()) {
+                sb.append(pool.getKey()).append(":");
+                for (String id : pool.getValue()) {
+                    sb.append(id).append(",");
+                }
+                sb.deleteCharAt(sb.length() - 1);
+                sb.append("\n");
+            }
+
+            myWriter.print(sb);
+            myWriter.close();
+        }
+        StringBuilder sb2 = new StringBuilder();
+        try (PrintWriter myWriter = new PrintWriter(parent + "/poolconfig.txt")) {
+            for (Map.Entry<String, PoolConfig> pool : ChannelPool.config.entrySet()) {
+                sb2.append(pool.getKey()).append(":");
+                PoolConfig config = pool.getValue();
+                sb2.append(config.getPwd()).append(",").append(config.getCap()).append(",").append(config.isPub());
+                sb2.append("\n");
+            }
+
+            myWriter.print(sb2);
+            myWriter.close();
         }
     }
 
