@@ -87,6 +87,9 @@ public class TCCallerphoneListener extends ListenerAdapter {
                 terminate(c, jda);
             }
         }
+
+        Callerphone.award(event.getAuthor(), 5);
+        Callerphone.addTransmit(event.getAuthor(), 1);
     }
 
     private final String DEFAULT_TEMPLATE = "**%s**#%s " + Callerphone.CallerphoneCall + "%s";
@@ -103,7 +106,7 @@ public class TCCallerphoneListener extends ListenerAdapter {
         if (Callerphone.admin.contains(msg.getAuthor().getId())) {
             template = MODERATOR_TEMPLATE;
         } else if (Callerphone.prefix.containsKey(msg.getAuthor().getId())) {
-            template = String.format(PREFIX_TEMPLATE, Callerphone.prefix.get(msg.getAuthor().getId()));
+            template = PREFIX_TEMPLATE.replaceFirst("%s", Callerphone.prefix.get(msg.getAuthor().getId()));
         }
         jda.getTextChannelById(destination).sendMessage(String.format(template, auth.getName(), auth.getDiscriminator(), content)).queue();
     }
