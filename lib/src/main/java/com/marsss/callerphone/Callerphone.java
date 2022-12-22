@@ -498,6 +498,24 @@ public class Callerphone {
         System.out.println("------------------------------");
     }
 
+    private static void writeData() {
+        try {
+            exportPools();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        try {
+            exportMessages();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        try {
+            exportCredits();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     private static void kill() {
         writeData();
         logger.info("All data exported.");
@@ -544,24 +562,6 @@ public class Callerphone {
 //
 //            }
 //        }
-    }
-
-    private static void writeData() {
-        try {
-            exportPools();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        try {
-            exportMessages();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        try {
-            exportCredits();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 
     private static void importMessages(File file) throws IOException {
@@ -672,17 +672,6 @@ public class Callerphone {
         System.out.println();
     }
 
-    private static void exportAdmin() throws IOException {
-        StringBuilder sb = new StringBuilder();
-        for (String m : admin) {
-            sb.append(m).append("\n");
-        }
-        FileWriter myWriter = new FileWriter(parent + "/admin.txt");
-        myWriter.write(sb.toString());
-        myWriter.close();
-
-    }
-
     private static void importAdmin(File file) throws IOException {
         try (BufferedReader br = new BufferedReader(new FileReader(file))) {
             String line = br.readLine();
@@ -694,6 +683,27 @@ public class Callerphone {
         }
     }
 
+    private static void exportAdmin() throws IOException {
+        StringBuilder sb = new StringBuilder();
+        for (String m : admin) {
+            sb.append(m).append("\n");
+        }
+        FileWriter myWriter = new FileWriter(parent + "/admin.txt");
+        myWriter.write(sb.toString());
+        myWriter.close();
+
+    }
+
+    private static void importPrefix(File file) throws IOException {
+        try (BufferedReader br = new BufferedReader(new FileReader(file))) {
+            String line = br.readLine();
+            while (line != null) {
+                int split = line.indexOf("|");
+                prefix.put(line.substring(0, split), line.substring(split + 1));
+                line = br.readLine();
+            }
+        }
+    }
 
     private static void exportPrefix() throws IOException {
         StringBuilder sb = new StringBuilder();
@@ -705,12 +715,12 @@ public class Callerphone {
         myWriter.close();
     }
 
-    private static void importPrefix(File file) throws IOException {
+    private static void importBlack(File file) throws IOException {
         try (BufferedReader br = new BufferedReader(new FileReader(file))) {
             String line = br.readLine();
+
             while (line != null) {
-                int split = line.indexOf("|");
-                prefix.put(line.substring(0, split), line.substring(split + 1));
+                blacklist.add(line);
                 line = br.readLine();
             }
         }
@@ -727,23 +737,71 @@ public class Callerphone {
 
     }
 
-    private static void importBlack(File file) throws IOException {
-        try (BufferedReader br = new BufferedReader(new FileReader(file))) {
-            String line = br.readLine();
-
-            while (line != null) {
-                blacklist.add(line);
-                line = br.readLine();
-            }
-        }
-    }
-
     private static void getFilter(File file) throws IOException {
         try (BufferedReader br = new BufferedReader(new FileReader(file))) {
             String line = br.readLine();
 
             while (line != null) {
                 filter.add(line);
+                line = br.readLine();
+            }
+        }
+    }
+
+    private static void exportPools() throws FileNotFoundException {
+        StringBuilder sb = new StringBuilder();
+        try (PrintWriter myWriter = new PrintWriter(parent + "/pools.txt")) {
+            for (Map.Entry<String, ArrayList<String>> pool : ChannelPool.childr.entrySet()) {
+                sb.append(pool.getKey()).append(":");
+                for (String id : pool.getValue()) {
+                    sb.append(id).append(",");
+                }
+                sb.deleteCharAt(sb.length() - 1);
+                sb.append("\n");
+            }
+
+            myWriter.print(sb);
+            myWriter.close();
+        }
+        StringBuilder sb2 = new StringBuilder();
+        try (PrintWriter myWriter = new PrintWriter(parent + "/poolconfig.txt")) {
+            for (Map.Entry<String, PoolConfig> pool : ChannelPool.config.entrySet()) {
+                sb2.append(pool.getKey()).append(":");
+                PoolConfig config = pool.getValue();
+                sb2.append(config.getPwd()).append(",").append(config.getCap()).append(",").append(config.isPub());
+                sb2.append("\n");
+            }
+
+            myWriter.print(sb2);
+            myWriter.close();
+        }
+    }
+
+    private static void importPoolsConfig(File file) throws IOException {
+        try (BufferedReader br = new BufferedReader(new FileReader(file))) {
+            String line = br.readLine();
+            while (line != null) {
+                String[] split = line.split(":");
+                String host = split[0];
+                String[] config = split[1].split(",");
+                ChannelPool.config.put(host, new PoolConfig(config[0], Integer.parseInt(config[1]), Boolean.parseBoolean(config[2])));
+
+                line = br.readLine();
+            }
+        }
+    }
+
+    private static void importPools(File file) throws IOException {
+        try (BufferedReader br = new BufferedReader(new FileReader(file))) {
+            String line = br.readLine();
+            while (line != null) {
+                String[] split = line.split(":");
+                String host = split[0];
+                String[] children = split[1].split(",");
+                ChannelPool.hostPool(host);
+                for (String id : children) {
+                    ChannelPool.joinPool(host, id, "");
+                }
                 line = br.readLine();
             }
         }
@@ -868,64 +926,5 @@ public class Callerphone {
                                 .setRequired(true)
                 )
         ).queue();
-    }
-
-    private static void exportPools() throws FileNotFoundException {
-        StringBuilder sb = new StringBuilder();
-        try (PrintWriter myWriter = new PrintWriter(parent + "/pools.txt")) {
-            for (Map.Entry<String, ArrayList<String>> pool : ChannelPool.childr.entrySet()) {
-                sb.append(pool.getKey()).append(":");
-                for (String id : pool.getValue()) {
-                    sb.append(id).append(",");
-                }
-                sb.deleteCharAt(sb.length() - 1);
-                sb.append("\n");
-            }
-
-            myWriter.print(sb);
-            myWriter.close();
-        }
-        StringBuilder sb2 = new StringBuilder();
-        try (PrintWriter myWriter = new PrintWriter(parent + "/poolconfig.txt")) {
-            for (Map.Entry<String, PoolConfig> pool : ChannelPool.config.entrySet()) {
-                sb2.append(pool.getKey()).append(":");
-                PoolConfig config = pool.getValue();
-                sb2.append(config.getPwd()).append(",").append(config.getCap()).append(",").append(config.isPub());
-                sb2.append("\n");
-            }
-
-            myWriter.print(sb2);
-            myWriter.close();
-        }
-    }
-
-    private static void importPoolsConfig(File file) throws IOException {
-        try (BufferedReader br = new BufferedReader(new FileReader(file))) {
-            String line = br.readLine();
-            while (line != null) {
-                String[] split = line.split(":");
-                String host = split[0];
-                String[] config = split[1].split(",");
-                ChannelPool.config.put(host, new PoolConfig(config[0], Integer.parseInt(config[1]), Boolean.parseBoolean(config[2])));
-
-                line = br.readLine();
-            }
-        }
-    }
-
-    private static void importPools(File file) throws IOException {
-        try (BufferedReader br = new BufferedReader(new FileReader(file))) {
-            String line = br.readLine();
-            while (line != null) {
-                String[] split = line.split(":");
-                String host = split[0];
-                String[] children = split[1].split(",");
-                ChannelPool.hostPool(host);
-                for (String id : children) {
-                    ChannelPool.joinPool(host, id, "");
-                }
-                line = br.readLine();
-            }
-        }
     }
 }
