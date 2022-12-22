@@ -106,10 +106,7 @@ public class Callerphone {
                     isQuickStart = false;
                     BotInit(TOKEN, cmd.replaceFirst("start", ""), false);
                 }
-                continue;
-            }
-
-            if (cmd.startsWith("quickstart")) {
+            }else if (cmd.startsWith("quickstart")) {
                 System.out.println("Token: ");
                 String TOKEN = sc.nextLine();
                 logger.info("Starting Bot...");
@@ -119,10 +116,7 @@ public class Callerphone {
                     isQuickStart = true;
                     BotInit(TOKEN, cmd.replaceFirst("quickstart", ""), true);
                 }
-                continue;
-            }
-
-            if (cmd.equals("shutdown")) {
+            }else if (cmd.equals("shutdown")) {
                 logger.info("Shutting Down Bot...");
                 if (jda != null) {
                     EmbedBuilder embedBuilder = new EmbedBuilder().setTitle("Status").setColor(new Color(213, 0, 0)).setFooter("Goodbye World...").setDescription(jda.getSelfUser().getAsMention() + " is going offline;" + cmd.replaceFirst("shutdown", ""));
@@ -139,9 +133,7 @@ public class Callerphone {
                 logger.info("Bot Offline");
                 sc.close();
                 System.exit(0);
-            }
-
-            if (cmd.equals("presence")) {
+            }else if (cmd.equals("presence")) {
                 if (jda == null) {
                     logger.info("Bot Is Offline");
                     //continue;
@@ -235,17 +227,13 @@ public class Callerphone {
                     }
 
                     logger.info("Bot Is Offline");
-                    continue;
 
                 } catch (Exception e) {
                     e.printStackTrace();
                     logger.error("Input error, please try again");
-                    break;
                 }
 
-            }
-
-            if (cmd.equals("info")) {
+            }else if (cmd.equals("info")) {
                 if (jda != null) {
                     String tag = jda.getSelfUser().getAsTag();
                     String avatarUrl = jda.getSelfUser().getAvatarUrl();
@@ -260,36 +248,23 @@ public class Callerphone {
                     continue;
                 }
                 logger.info("Bot Is Offline");
-                continue;
-            }
-
-            if (cmd.equals("recal")) {
+            }else if (cmd.equals("recal")) {
                 logger.info("Recalibrating...");
                 try {
                     readData();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-            }
-
-            if (cmd.equals("poolnum")) {
+                logger.info("Done recalibration!");
+            }else if (cmd.equals("poolnum")) {
                 System.out.println("Currently there are " + ChannelPool.config.size() + " channel pools running.");
-                continue;
-            }
-
-            if (cmd.equals("updateCMD")) {
+            }else if (cmd.equals("updateCMD")) {
                 update();
                 System.out.println("Done Updating");
-                continue;
-            }
-
-            if (cmd.equals("upsertCMD")) {
+            }else if (cmd.equals("upsertCMD")) {
                 upsert();
                 System.out.println("Done Upserting");
-                continue;
-            }
-
-            if (cmd.equals("help")) {
+            }else if (cmd.equals("help")) {
                 System.out.println(
                         "Option 1: start <msg> = To start the bot\n" +
                                 "Option 2: shutdown = To shutdown the bot\n" +
@@ -301,12 +276,9 @@ public class Callerphone {
                                 "Option 8: upsertCMD = Upsert all slash commands\n" +
                                 "Option 9: help = UBCL help (this)\n\n" +
                                 "Other: quickstart <msg> = To start the bot quicker");
-                continue;
-            }
-
-            if (!cmd.equals(""))
+            }else {
                 logger.warn("Unknown Command");
-
+            }
         }
     }
 
