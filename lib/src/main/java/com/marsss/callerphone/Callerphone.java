@@ -269,6 +269,7 @@ public class Callerphone {
 
     private static void kill() {
         writeData();
+        logger.info("All data exported.");
 //        for (ConvoStorage c : TCCallerphone.convos) {
 //
 //            if (System.currentTimeMillis() - c.getLastMessage() >= 250000) {
