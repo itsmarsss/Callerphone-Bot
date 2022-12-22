@@ -90,19 +90,6 @@ public class OnPrivateMessage extends ListenerAdapter {
                             MESSAGE.reply("ID blacklisted already").queue();
                         } else {
                             Callerphone.blacklist.add(id);
-                            StringBuilder sb = new StringBuilder();
-                            try {
-                                for (String m : Callerphone.blacklist) {
-                                    sb.append(m).append("\n");
-                                }
-                                FileWriter myWriter = new FileWriter(Callerphone.parent + "/blacklist.txt");
-                                myWriter.write(sb.toString());
-                                myWriter.close();
-                                MESSAGE.reply("ID: `" + id + "` added to blacklist").queue();
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                                MESSAGE.reply("An error occured").queue();
-                            }
                         }
                         break;
 
@@ -116,19 +103,7 @@ public class OnPrivateMessage extends ListenerAdapter {
                                 break;
                             }
                             Callerphone.prefix.put(id, prefix);
-                            StringBuilder sb = new StringBuilder();
-                            try {
-                                for (String key : Callerphone.prefix.keySet()) {
-                                    sb.append(key).append("|").append(Callerphone.prefix.get(key)).append("\n");
-                                }
-                                FileWriter myWriter = new FileWriter(Callerphone.parent + "/prefix.txt");
-                                myWriter.write(sb.toString());
-                                myWriter.close();
-                                MESSAGE.reply("ID: `" + id + "` now has prefix `" + prefix + "`").queue();
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                                MESSAGE.reply("An error occured").queue();
-                            }
+                            MESSAGE.reply("ID: `" + id + "` now has prefix `" + prefix + "`").queue();
                         }
                         break;
 
@@ -137,19 +112,7 @@ public class OnPrivateMessage extends ListenerAdapter {
                             MESSAGE.reply("ID is mod already").queue();
                         } else {
                             Callerphone.admin.add(id);
-                            StringBuilder sb = new StringBuilder();
-                            try {
-                                for (String m : Callerphone.admin) {
-                                    sb.append(m).append("\n");
-                                }
-                                FileWriter myWriter = new FileWriter(Callerphone.parent + "/admin.txt");
-                                myWriter.write(sb.toString());
-                                myWriter.close();
-                                MESSAGE.reply("ID: `" + id + "` added to mod list").queue();
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                                MESSAGE.reply("An error occured").queue();
-                            }
+                            MESSAGE.reply("ID: `" + id + "` added to mod list").queue();
                         }
                         break;
 
@@ -159,19 +122,7 @@ public class OnPrivateMessage extends ListenerAdapter {
                             MESSAGE.reply("ID not blacklisted").queue();
                         } else {
                             Callerphone.blacklist.remove(id);
-                            StringBuilder sb = new StringBuilder();
-                            try {
-                                for (String m : Callerphone.blacklist) {
-                                    sb.append(m).append("\n");
-                                }
-                                PrintWriter myWriter = new PrintWriter(Callerphone.parent + "/blacklist.txt");
-                                myWriter.print(sb);
-                                myWriter.close();
-                                MESSAGE.reply("ID: `" + id + "` removed from blacklist").queue();
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                                MESSAGE.reply("An error occured").queue();
-                            }
+                            MESSAGE.reply("ID: `" + id + "` removed from blacklist").queue();
                         }
                         break;
 
@@ -180,19 +131,7 @@ public class OnPrivateMessage extends ListenerAdapter {
                             MESSAGE.reply("ID does not have a prefix").queue();
                         } else {
                             Callerphone.prefix.remove(id);
-                            StringBuilder sb = new StringBuilder();
-                            try {
-                                for (String key : Callerphone.prefix.keySet()) {
-                                    sb.append(key).append("|").append(Callerphone.prefix.get(key)).append("\n");
-                                }
-                                PrintWriter myWriter = new PrintWriter(Callerphone.parent + "/prefix.txt");
-                                myWriter.print(sb);
-                                myWriter.close();
-                                MESSAGE.reply("ID: `" + id + "` no longer has a prefix").queue();
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                                MESSAGE.reply("An error occured").queue();
-                            }
+                            MESSAGE.reply("ID: `" + id + "` no longer has a prefix").queue();
                         }
                         break;
 
@@ -205,19 +144,7 @@ public class OnPrivateMessage extends ListenerAdapter {
                                 break;
                             }
                             Callerphone.admin.remove(id);
-                            StringBuilder sb = new StringBuilder();
-                            try {
-                                for (String m : Callerphone.admin) {
-                                    sb.append(m).append("\n");
-                                }
-                                PrintWriter myWriter = new PrintWriter(Callerphone.parent + "/admin.txt");
-                                myWriter.print(sb);
-                                myWriter.close();
-                                MESSAGE.reply("ID: `" + id + "` removed from mod list").queue();
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                                MESSAGE.reply("An error occured").queue();
-                            }
+                            MESSAGE.reply("ID: `" + id + "` removed from mod list").queue();
                         }
                         break;
 
