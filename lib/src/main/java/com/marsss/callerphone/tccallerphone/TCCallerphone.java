@@ -76,9 +76,13 @@ public class TCCallerphone {
             final String receiverID = convo.getReceiverTCID();
 
             if (receiverID.equals(channel.getId())) {
-                jda.getTextChannelById(callerID).sendMessage(OTHER_PARTY_HUNG_UP).queue();
+                if(!convo.getCallerTCID().equals("empty")) {
+                    jda.getTextChannelById(callerID).sendMessage(OTHER_PARTY_HUNG_UP).queue();
+                }
             } else {
-                jda.getTextChannelById(receiverID).sendMessage(OTHER_PARTY_HUNG_UP).queue();
+                if(!convo.getReceiverTCID().equals("")) {
+                    jda.getTextChannelById(receiverID).sendMessage(OTHER_PARTY_HUNG_UP).queue();
+                }
             }
 
             final boolean report = convo.getReport();
