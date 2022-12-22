@@ -86,6 +86,301 @@ public class Callerphone {
             GatewayIntent.GUILD_INVITES,
             GatewayIntent.DIRECT_MESSAGES);
 
+    public static void run() throws InterruptedException {
+        commandPrompt();
+    }
+
+    private static void commandPrompt() throws InterruptedException {
+        Scanner sc = new Scanner(System.in);
+        System.out.println("{}Command Line Loaded...{}\nWelcome to Callerphone Bot Command Line (CBCL)!");
+
+        while (true) {
+            String cmd = sc.nextLine();
+            if (cmd.startsWith("start")) {
+                System.out.println("Token: ");
+                String TOKEN = sc.nextLine();
+                logger.info("Starting Bot...");
+                if (jda != null) {
+                    logger.info("Bot Is Online Right Now");
+                } else {
+                    isQuickStart = false;
+                    BotInit(TOKEN, cmd.replaceFirst("start", ""), false);
+                }
+                continue;
+            }
+
+            if (cmd.startsWith("quickstart")) {
+                System.out.println("Token: ");
+                String TOKEN = sc.nextLine();
+                logger.info("Starting Bot...");
+                if (jda != null) {
+                    logger.info("Bot Is Online Right Now");
+                } else {
+                    isQuickStart = true;
+                    BotInit(TOKEN, cmd.replaceFirst("quickstart", ""), true);
+                }
+                continue;
+            }
+
+            if (cmd.equals("shutdown")) {
+                logger.info("Shutting Down Bot...");
+                if (jda != null) {
+                    EmbedBuilder embedBuilder = new EmbedBuilder().setTitle("Status").setColor(new Color(213, 0, 0)).setFooter("Goodbye World...").setDescription(jda.getSelfUser().getAsMention() + " is going offline;" + cmd.replaceFirst("shutdown", ""));
+                    try {
+                        jda.getTextChannelById(logstatus).sendMessageEmbeds(embedBuilder.build()).complete();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        logger.error("Error Sending Shutdown Message");
+                    }
+                    jda.awaitReady();
+                    jda.shutdown();
+                    jda = null;
+                }
+                logger.info("Bot Offline");
+                sc.close();
+                System.exit(0);
+            }
+
+            if (cmd.equals("presence")) {
+                if (jda == null) {
+                    logger.info("Bot Is Offline");
+                    //continue;
+                }
+
+                Activity act;
+                logger.info("Change Presence...");
+                try {
+                    label:
+                    while (true) {
+
+                        System.out.println("Activity: ");
+                        String msg = sc.next().toLowerCase();
+
+                        switch (msg) {
+                            case "<rs>":
+                                act = null;
+                                break label;
+                            case "competing":
+                                System.out.println("Status Message: ");
+                                sc.nextLine();
+                                String comp = sc.nextLine();
+                                System.out.println("Competing: " + comp);
+                                act = Activity.competing(comp);
+                                break label;
+
+                            case "listening":
+                                System.out.println("Status Message: ");
+                                sc.nextLine();
+                                String song = sc.nextLine();
+                                System.out.println("Listening: " + song);
+                                act = Activity.listening(song);
+                                break label;
+
+                            case "playing":
+                                System.out.println("Status Message: ");
+                                sc.nextLine();
+                                String game = sc.nextLine();
+                                System.out.println("Playing: " + game);
+                                act = Activity.playing(game);
+                                break label;
+
+                            case "streaming":
+                                System.out.println("Title Message: ");
+                                sc.nextLine();
+                                String title = sc.nextLine();
+                                System.out.println("Stream Link: ");
+                                String link = sc.nextLine();
+                                System.out.println("Title: " + title + "\n" + "Link: " + link);
+                                act = Activity.streaming(title, link);
+                                break label;
+
+                            case "watching":
+                                System.out.println("Status Message: ");
+                                sc.nextLine();
+                                String watch = sc.nextLine();
+                                System.out.println("Watching: " + watch);
+                                act = Activity.watching(watch);
+                                break label;
+                        }
+                    }
+
+                    OnlineStatus s;
+
+                    while (true) {
+                        System.out.println("Online Status: ");
+                        String msg = sc.next().toLowerCase();
+
+                        if (msg.toLowerCase().startsWith("onl")) {
+                            s = OnlineStatus.ONLINE;
+                            break;
+
+                        } else if (msg.toLowerCase().startsWith("idl")) {
+                            s = OnlineStatus.IDLE;
+                            break;
+
+                        } else if (msg.toLowerCase().startsWith("dnd")) {
+                            s = OnlineStatus.DO_NOT_DISTURB;
+                            break;
+
+                        } else if (msg.toLowerCase().startsWith("inv")) {
+                            s = OnlineStatus.INVISIBLE;
+                            break;
+
+                        }
+
+                    }
+                    if (jda != null) {
+                        jda.getPresence().setPresence(s, act);
+                        continue;
+                    }
+
+                    logger.info("Bot Is Offline");
+                    continue;
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    logger.error("Input error, please try again");
+                    break;
+                }
+
+            }
+
+            if (cmd.equals("info")) {
+                if (jda != null) {
+                    String tag = jda.getSelfUser().getAsTag();
+                    String avatarUrl = jda.getSelfUser().getAvatarUrl();
+                    OffsetDateTime timeCreated = jda.getSelfUser().getTimeCreated();
+                    String id = jda.getSelfUser().getId();
+                    System.out.println("Tag of the bot: " + tag);
+                    System.out.println("Avatar url: " + avatarUrl);
+                    System.out.println("Time created: " + timeCreated);
+                    System.out.println("Id: " + id);
+                    System.out.println("Shard info: " + jda.getShardInfo().getShardString());
+                    System.out.println("Guilds: " + jda.getGuilds().size());
+                    continue;
+                }
+                logger.info("Bot Is Offline");
+                continue;
+            }
+
+            if (cmd.equals("recal")) {
+                logger.info("Recalibrating...");
+                try {
+                    getInfo(new File(parent + "/info.txt"));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    System.out.println("------------------------------");
+                    logger.error("Error with info.txt");
+                    logger.warn("Critical Issues May Appear (BrainURL and other links)");
+                }
+
+                try {
+                    importBlack(new File(parent + "/blacklist.txt"));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    System.out.println("------------------------------");
+                    logger.error("Error with blacklist.txt");
+                }
+
+                try {
+                    importPrefix(new File(parent + "/prefix.txt"));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    System.out.println("------------------------------");
+                    logger.error("Error with prefix.txt");
+                }
+
+                try {
+                    importAdmin(new File(parent + "/admin.txt"));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    System.out.println("------------------------------");
+                    logger.error("Error with admin.txt");
+                }
+
+                try {
+                    getFilter(new File(parent + "/filter.txt"));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    System.out.println("------------------------------");
+                    logger.error("Error with filter.txt");
+                }
+
+                System.out.println("------------------------------");
+
+                try {
+                    importPools(new File(parent + "/pools.txt"));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    System.out.println("------------------------------");
+                    logger.error("Error with pools.txt");
+                }
+
+                try {
+                    importPoolsConfig(new File(parent + "/poolconfig.txt"));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    System.out.println("------------------------------");
+                    logger.error("Error with poolconfig.txt");
+                }
+
+                try {
+                    importCredits(new File(parent + "/credits.txt"));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    System.out.println("------------------------------");
+                    logger.error("Error with credits.txt");
+                }
+
+                try {
+                    importMessages(new File(parent + "/messages.txt"));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    System.out.println("------------------------------");
+                    logger.error("Error with messages.txt");
+                }
+
+                System.out.println("------------------------------");
+            }
+
+            if (cmd.equals("poolnum")) {
+                System.out.println("Currently there are " + ChannelPool.config.size() + " channel pools running.");
+                continue;
+            }
+
+            if (cmd.equals("updateCMD")) {
+                update();
+                System.out.println("Done Updating");
+                continue;
+            }
+
+            if (cmd.equals("upsertCMD")) {
+                upsert();
+                System.out.println("Done Upserting");
+                continue;
+            }
+
+            if (cmd.equals("help")) {
+                System.out.println(
+                        "Option 1: start <msg> = To start the bot\n" +
+                                "Option 2: shutdown = To shutdown the bot\n" +
+                                "Option 3: presence = To set presence\n" +
+                                "Option 4: info = To get info of the bot\n" +
+                                "Option 5: recal = To read resources again\n" +
+                                "Option 6: poolnum = To see number of running pools\n" +
+                                "Option 7: updateCMD = Remove all slash commands\n" +
+                                "Option 8: upsertCMD = Upsert all slash commands\n" +
+                                "Option 9: help = UBCL help (this)\n\n" +
+                                "Other: quickstart <msg> = To start the bot quicker");
+                continue;
+            }
+
+            if (!cmd.equals(""))
+                logger.warn("Unknown Command");
+
+        }
+    }
+
     private static void BotInit(String token, String startupmsg, boolean quickStart) {
 
         try {
@@ -515,301 +810,6 @@ public class Callerphone {
                 filter.add(line);
                 line = br.readLine();
             }
-        }
-    }
-
-    public static void run() throws InterruptedException {
-        commandPrompt();
-    }
-
-    private static void commandPrompt() throws InterruptedException {
-        Scanner sc = new Scanner(System.in);
-        System.out.println("{}Command Line Loaded...{}\nWelcome to Callerphone Bot Command Line (CBCL)!");
-
-        while (true) {
-            String cmd = sc.nextLine();
-            if (cmd.startsWith("start")) {
-                System.out.println("Token: ");
-                String TOKEN = sc.nextLine();
-                logger.info("Starting Bot...");
-                if (jda != null) {
-                    logger.info("Bot Is Online Right Now");
-                } else {
-                    isQuickStart = false;
-                    BotInit(TOKEN, cmd.replaceFirst("start", ""), false);
-                }
-                continue;
-            }
-
-            if (cmd.startsWith("quickstart")) {
-                System.out.println("Token: ");
-                String TOKEN = sc.nextLine();
-                logger.info("Starting Bot...");
-                if (jda != null) {
-                    logger.info("Bot Is Online Right Now");
-                } else {
-                    isQuickStart = true;
-                    BotInit(TOKEN, cmd.replaceFirst("quickstart", ""), true);
-                }
-                continue;
-            }
-
-            if (cmd.equals("shutdown")) {
-                logger.info("Shutting Down Bot...");
-                if (jda != null) {
-                    EmbedBuilder embedBuilder = new EmbedBuilder().setTitle("Status").setColor(new Color(213, 0, 0)).setFooter("Goodbye World...").setDescription(jda.getSelfUser().getAsMention() + " is going offline;" + cmd.replaceFirst("shutdown", ""));
-                    try {
-                        jda.getTextChannelById(logstatus).sendMessageEmbeds(embedBuilder.build()).complete();
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        logger.error("Error Sending Shutdown Message");
-                    }
-                    jda.awaitReady();
-                    jda.shutdown();
-                    jda = null;
-                }
-                logger.info("Bot Offline");
-                sc.close();
-                System.exit(0);
-            }
-
-            if (cmd.equals("presence")) {
-                if (jda == null) {
-                    logger.info("Bot Is Offline");
-                    //continue;
-                }
-
-                Activity act;
-                logger.info("Change Presence...");
-                try {
-                    label:
-                    while (true) {
-
-                        System.out.println("Activity: ");
-                        String msg = sc.next().toLowerCase();
-
-                        switch (msg) {
-                            case "<rs>":
-                                act = null;
-                                break label;
-                            case "competing":
-                                System.out.println("Status Message: ");
-                                sc.nextLine();
-                                String comp = sc.nextLine();
-                                System.out.println("Competing: " + comp);
-                                act = Activity.competing(comp);
-                                break label;
-
-                            case "listening":
-                                System.out.println("Status Message: ");
-                                sc.nextLine();
-                                String song = sc.nextLine();
-                                System.out.println("Listening: " + song);
-                                act = Activity.listening(song);
-                                break label;
-
-                            case "playing":
-                                System.out.println("Status Message: ");
-                                sc.nextLine();
-                                String game = sc.nextLine();
-                                System.out.println("Playing: " + game);
-                                act = Activity.playing(game);
-                                break label;
-
-                            case "streaming":
-                                System.out.println("Title Message: ");
-                                sc.nextLine();
-                                String title = sc.nextLine();
-                                System.out.println("Stream Link: ");
-                                String link = sc.nextLine();
-                                System.out.println("Title: " + title + "\n" + "Link: " + link);
-                                act = Activity.streaming(title, link);
-                                break label;
-
-                            case "watching":
-                                System.out.println("Status Message: ");
-                                sc.nextLine();
-                                String watch = sc.nextLine();
-                                System.out.println("Watching: " + watch);
-                                act = Activity.watching(watch);
-                                break label;
-                        }
-                    }
-
-                    OnlineStatus s;
-
-                    while (true) {
-                        System.out.println("Online Status: ");
-                        String msg = sc.next().toLowerCase();
-
-                        if (msg.toLowerCase().startsWith("onl")) {
-                            s = OnlineStatus.ONLINE;
-                            break;
-
-                        } else if (msg.toLowerCase().startsWith("idl")) {
-                            s = OnlineStatus.IDLE;
-                            break;
-
-                        } else if (msg.toLowerCase().startsWith("dnd")) {
-                            s = OnlineStatus.DO_NOT_DISTURB;
-                            break;
-
-                        } else if (msg.toLowerCase().startsWith("inv")) {
-                            s = OnlineStatus.INVISIBLE;
-                            break;
-
-                        }
-
-                    }
-                    if (jda != null) {
-                        jda.getPresence().setPresence(s, act);
-                        continue;
-                    }
-
-                    logger.info("Bot Is Offline");
-                    continue;
-
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    logger.error("Input error, please try again");
-                    break;
-                }
-
-            }
-
-            if (cmd.equals("info")) {
-                if (jda != null) {
-                    String tag = jda.getSelfUser().getAsTag();
-                    String avatarUrl = jda.getSelfUser().getAvatarUrl();
-                    OffsetDateTime timeCreated = jda.getSelfUser().getTimeCreated();
-                    String id = jda.getSelfUser().getId();
-                    System.out.println("Tag of the bot: " + tag);
-                    System.out.println("Avatar url: " + avatarUrl);
-                    System.out.println("Time created: " + timeCreated);
-                    System.out.println("Id: " + id);
-                    System.out.println("Shard info: " + jda.getShardInfo().getShardString());
-                    System.out.println("Guilds: " + jda.getGuilds().size());
-                    continue;
-                }
-                logger.info("Bot Is Offline");
-                continue;
-            }
-
-            if (cmd.equals("recal")) {
-                logger.info("Recalibrating...");
-                try {
-                    getInfo(new File(parent + "/info.txt"));
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    System.out.println("------------------------------");
-                    logger.error("Error with info.txt");
-                    logger.warn("Critical Issues May Appear (BrainURL and other links)");
-                }
-
-                try {
-                    importBlack(new File(parent + "/blacklist.txt"));
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    System.out.println("------------------------------");
-                    logger.error("Error with blacklist.txt");
-                }
-
-                try {
-                    importPrefix(new File(parent + "/prefix.txt"));
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    System.out.println("------------------------------");
-                    logger.error("Error with prefix.txt");
-                }
-
-                try {
-                    importAdmin(new File(parent + "/admin.txt"));
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    System.out.println("------------------------------");
-                    logger.error("Error with admin.txt");
-                }
-
-                try {
-                    getFilter(new File(parent + "/filter.txt"));
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    System.out.println("------------------------------");
-                    logger.error("Error with filter.txt");
-                }
-
-                System.out.println("------------------------------");
-
-                try {
-                    importPools(new File(parent + "/pools.txt"));
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    System.out.println("------------------------------");
-                    logger.error("Error with pools.txt");
-                }
-
-                try {
-                    importPoolsConfig(new File(parent + "/poolconfig.txt"));
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    System.out.println("------------------------------");
-                    logger.error("Error with poolconfig.txt");
-                }
-
-                try {
-                    importCredits(new File(parent + "/credits.txt"));
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    System.out.println("------------------------------");
-                    logger.error("Error with credits.txt");
-                }
-
-                try {
-                    importMessages(new File(parent + "/messages.txt"));
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    System.out.println("------------------------------");
-                    logger.error("Error with messages.txt");
-                }
-
-                System.out.println("------------------------------");
-            }
-
-            if (cmd.equals("poolnum")) {
-                System.out.println("Currently there are " + ChannelPool.config.size() + " channel pools running.");
-                continue;
-            }
-
-            if (cmd.equals("updateCMD")) {
-                update();
-                System.out.println("Done Updating");
-                continue;
-            }
-
-            if (cmd.equals("upsertCMD")) {
-                upsert();
-                System.out.println("Done Upserting");
-                continue;
-            }
-
-            if (cmd.equals("help")) {
-                System.out.println(
-                        "Option 1: start <msg> = To start the bot\n" +
-                                "Option 2: shutdown = To shutdown the bot\n" +
-                                "Option 3: presence = To set presence\n" +
-                                "Option 4: info = To get info of the bot\n" +
-                                "Option 5: recal = To read resources again\n" +
-                                "Option 6: poolnum = To see number of running pools\n" +
-                                "Option 7: updateCMD = Remove all slash commands\n" +
-                                "Option 8: upsertCMD = Upsert all slash commands\n" +
-                                "Option 9: help = UBCL help (this)\n\n" +
-                                "Other: quickstart <msg> = To start the bot quicker");
-                continue;
-            }
-
-            if (!cmd.equals(""))
-                logger.warn("Unknown Command");
-
         }
     }
 
