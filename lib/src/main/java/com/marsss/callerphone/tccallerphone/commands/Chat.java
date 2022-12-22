@@ -13,8 +13,8 @@ public class Chat implements ICommand {
     private final String CP_EMJ = Callerphone.Callerphone;
     private final String ALREADY_CALL = CP_EMJ + "There is already a call going on!";
     private final String NO_PORT = CP_EMJ + "Hmmm, I was unable to find an open port!";
-    private final String CALLING = CP_EMJ + "Someone picked up the phone!";
-    private final String PICKED_UP = CP_EMJ + "Calling...";
+    private final String CALLING = CP_EMJ + "Calling...";
+    private final String PICKED_UP = CP_EMJ + "Someone picked up the phone!";
     private final String ERROR = CP_EMJ + "An error occurred.";
     @Override
     public void runCommand(GuildMessageReceivedEvent e) {
