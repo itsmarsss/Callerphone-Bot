@@ -780,45 +780,6 @@ public class Callerphone {
                 continue;
             }
 
-            if (cmd.equals("exportpools")) {
-                try {
-                    exportPools();
-                    logger.info("Successful export");
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    System.out.println("------------------------------");
-                    logger.error("Error with pools.txt");
-                    logger.warn("Some or no pools may be exported");
-                }
-                continue;
-            }
-
-            if (cmd.equals("importpools")) {
-                try {
-                    importPools(new File(parent + "/pools.txt"));
-                    logger.info("Successful import");
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    System.out.println("------------------------------");
-                    logger.error("Error with pools.txt");
-                    logger.warn("Some or no pools may be imported");
-                }
-                continue;
-            }
-
-            if (cmd.equals("importconfig")) {
-                try {
-                    importPoolsConfig(new File(parent + "/poolconfig.txt"));
-                    logger.info("Successful import");
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    System.out.println("------------------------------");
-                    logger.error("Error with pools.txt");
-                    logger.warn("Some or no pool config may be imported");
-                }
-                continue;
-            }
-
             if (cmd.equals("updateCMD")) {
                 update();
                 System.out.println("Done Updating");
@@ -833,18 +794,15 @@ public class Callerphone {
 
             if (cmd.equals("help")) {
                 System.out.println(
-                        "Option  1: start <msg> = To start the bot\n" +
-                                "Option  2: shutdown = To shutdown the bot\n" +
-                                "Option  3: presence = To set presence\n" +
-                                "Option  4: info = To get info of the bot\n" +
-                                "Option  5: recal = To read resources again\n" +
-                                "Option  6: poolnum = To see number of running pools\n" +
-                                "Option  7: exportpools = Export pools to pools.txt and poolconfig.txt\n" +
-                                "Option  8: importpools = Import pools from pools.txt\n" +
-                                "Option  9: importconfig = Import pools config from poolconfig.txt\n" +
-                                "Option 10: updateCMD = Remove all slash commands\n" +
-                                "Option 11: upsertCMD = Upsert all slash commands\n" +
-                                "Option 12: help = UBCL help (this)\n\n" +
+                        "Option 1: start <msg> = To start the bot\n" +
+                                "Option 2: shutdown = To shutdown the bot\n" +
+                                "Option 3: presence = To set presence\n" +
+                                "Option 4: info = To get info of the bot\n" +
+                                "Option 5: recal = To read resources again\n" +
+                                "Option 6: poolnum = To see number of running pools\n" +
+                                "Option 7: updateCMD = Remove all slash commands\n" +
+                                "Option 8: upsertCMD = Upsert all slash commands\n" +
+                                "Option 9: help = UBCL help (this)\n\n" +
                                 "Other: quickstart <msg> = To start the bot quicker");
                 continue;
             }
