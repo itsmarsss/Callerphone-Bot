@@ -32,7 +32,7 @@ public class Profile implements ICommand {
         final long TOTAL = EXECUTED + TRANSMITTED;
         final int LVL = (TOTAL >= 100 ? (int) TOTAL % 100 : 0);
         final int EXP = (int) TOTAL - 100 * LVL;
-        final String PREFIX = Callerphone.prefix.getOrDefault(user.getId(), (LVL > 5 ? ":unlock: `c?prefix <prefix>`" : ":lock: `Level 5`"));
+        final String PREFIX = Callerphone.prefix.getOrDefault(user.getId(), (LVL > 5 ? ":unlock: `c?prefix <prefix>`" : ":lock: `Level 50`"));
 
         String general = String.format(GENERAL, LVL, EXP, PREFIX);
         String credits = String.format(CREDITS, Callerphone.getCredits(user), 0, 0);
