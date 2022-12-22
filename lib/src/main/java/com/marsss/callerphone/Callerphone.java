@@ -222,6 +222,40 @@ public class Callerphone {
 
             System.out.println("------------------------------");
 
+            try {
+                importPools(new File(parent + "/pools.txt"));
+            } catch (Exception e) {
+                e.printStackTrace();
+                System.out.println("------------------------------");
+                logger.error("Error with pools.txt");
+            }
+
+            try {
+                importPoolsConfig(new File(parent + "/poolconfig.txt"));
+            } catch (Exception e) {
+                e.printStackTrace();
+                System.out.println("------------------------------");
+                logger.error("Error with poolconfig.txt");
+            }
+
+            try {
+                importCredits(new File(parent + "/credits.txt"));
+            } catch (Exception e) {
+                e.printStackTrace();
+                System.out.println("------------------------------");
+                logger.error("Error with credits.txt");
+            }
+
+            try {
+                importMessages(new File(parent + "/messages.txt"));
+            } catch (Exception e) {
+                e.printStackTrace();
+                System.out.println("------------------------------");
+                logger.error("Error with messages.txt");
+            }
+
+            System.out.println("------------------------------");
+
             ScheduledExecutorService ses = Executors.newSingleThreadScheduledExecutor();
             ses.scheduleAtFixedRate(com.marsss.callerphone.Callerphone::kill, 0, 2, TimeUnit.MINUTES);
 
@@ -233,6 +267,7 @@ public class Callerphone {
     }
 
     private static void kill() {
+        writeData();
 //        for (ConvoStorage c : TCCallerphone.convos) {
 //
 //            if (System.currentTimeMillis() - c.getLastMessage() >= 250000) {
@@ -276,6 +311,83 @@ public class Callerphone {
 //
 //            }
 //        }
+    }
+
+    private static void writeData() {
+        try {
+            exportPools();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        try {
+            exportMessages();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        try {
+            exportCredits();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static void importMessages(File file) throws IOException {
+        try (BufferedReader br = new BufferedReader(new FileReader(file))) {
+            String line = br.readLine();
+            while (line != null) {
+                String[] split = line.split(":");
+                String user = split[0];
+                String[] messages = split[1].split(",");
+
+                userExecuted.put(user, Long.valueOf(messages[0]));
+                userTransmitted.put(user, Long.valueOf(messages[1]));
+
+                line = br.readLine();
+            }
+        }
+    }
+    private static void exportMessages() throws FileNotFoundException {
+        StringBuilder sb = new StringBuilder();
+        try (PrintWriter myWriter = new PrintWriter(parent + "/messages.txt")) {
+            for (Map.Entry<String, Long> user : userExecuted.entrySet()) {
+                sb.append(user.getKey()).append(":");
+                sb.append(userExecuted.get(user.getKey()))
+                        .append(",")
+                        .append(userTransmitted.get(user.getKey()));
+                sb.append("\n");
+            }
+
+            myWriter.print(sb);
+            myWriter.close();
+        }
+    }
+
+    private static void importCredits(File file) throws IOException {
+        try (BufferedReader br = new BufferedReader(new FileReader(file))) {
+            String line = br.readLine();
+            while (line != null) {
+                String[] split = line.split(":");
+                String user = split[0];
+                String credits = split[1];
+
+                userCredits.put(user, Long.valueOf(credits));
+
+                line = br.readLine();
+            }
+        }
+    }
+    private static void exportCredits() throws FileNotFoundException {
+        StringBuilder sb = new StringBuilder();
+        try (PrintWriter myWriter = new PrintWriter(parent + "/credits.txt")) {
+            for (Map.Entry<String, Long> user : userCredits.entrySet()) {
+                sb.append(user.getKey()).append(":");
+                sb.append(userCredits.get(user.getKey()));
+                sb.append("\n");
+            }
+
+            myWriter.print(sb);
+            myWriter.close();
+        }
     }
 
     private static void getInfo(File file) throws IOException, InterruptedException {
