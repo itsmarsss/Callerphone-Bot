@@ -266,81 +266,10 @@ public class Callerphone {
             if (cmd.equals("recal")) {
                 logger.info("Recalibrating...");
                 try {
-                    getInfo(new File(parent + "/info.txt"));
+                    readData();
                 } catch (Exception e) {
                     e.printStackTrace();
-                    System.out.println("------------------------------");
-                    logger.error("Error with info.txt");
-                    logger.warn("Critical Issues May Appear (BrainURL and other links)");
                 }
-
-                try {
-                    importBlack(new File(parent + "/blacklist.txt"));
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    System.out.println("------------------------------");
-                    logger.error("Error with blacklist.txt");
-                }
-
-                try {
-                    importPrefix(new File(parent + "/prefix.txt"));
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    System.out.println("------------------------------");
-                    logger.error("Error with prefix.txt");
-                }
-
-                try {
-                    importAdmin(new File(parent + "/admin.txt"));
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    System.out.println("------------------------------");
-                    logger.error("Error with admin.txt");
-                }
-
-                try {
-                    getFilter(new File(parent + "/filter.txt"));
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    System.out.println("------------------------------");
-                    logger.error("Error with filter.txt");
-                }
-
-                System.out.println("------------------------------");
-
-                try {
-                    importPools(new File(parent + "/pools.txt"));
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    System.out.println("------------------------------");
-                    logger.error("Error with pools.txt");
-                }
-
-                try {
-                    importPoolsConfig(new File(parent + "/poolconfig.txt"));
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    System.out.println("------------------------------");
-                    logger.error("Error with poolconfig.txt");
-                }
-
-                try {
-                    importCredits(new File(parent + "/credits.txt"));
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    System.out.println("------------------------------");
-                    logger.error("Error with credits.txt");
-                }
-
-                try {
-                    importMessages(new File(parent + "/messages.txt"));
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    System.out.println("------------------------------");
-                    logger.error("Error with messages.txt");
-                }
-
-                System.out.println("------------------------------");
             }
 
             if (cmd.equals("poolnum")) {
@@ -465,7 +394,11 @@ public class Callerphone {
             parent = URLDecoder.decode(new File(Callerphone.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getParentFile().getPath(), "UTF-8");
             System.out.println("\nParent - " + parent);
 
-            readData()(
+            try {
+                readData();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
 
             ScheduledExecutorService ses = Executors.newSingleThreadScheduledExecutor();
             ses.scheduleAtFixedRate(com.marsss.callerphone.Callerphone::kill, 0, 2, TimeUnit.MINUTES);
