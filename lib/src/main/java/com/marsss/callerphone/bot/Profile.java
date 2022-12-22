@@ -10,16 +10,20 @@ import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
 import java.awt.*;
 import java.time.Instant;
+import java.util.List;
 
 public class Profile implements ICommand {
     @Override
     public void runCommand(GuildMessageReceivedEvent e) {
-        e.getMessage().replyEmbeds(profile(e.getAuthor())).queue();
+        final List<User> MENTIONS = e.getMessage().getMentionedUsers();
+        final User USER = MENTIONS.size() > 0 ? MENTIONS.get(0) : e.getAuthor();
+
+        e.getMessage().replyEmbeds(profile(USER)).queue();
     }
 
     @Override
     public void runSlash(SlashCommandEvent e) {
-        e.replyEmbeds(profile(e.getUser())).queue();
+        e.replyEmbeds(profile(e.getOption("target").getAsUser())).queue();
     }
 
     private final String GENERAL = "Level: `%d`\nExperience: `%d/100`\nPrefix: %s\n\n[`c?help exp`]";
@@ -30,7 +34,7 @@ public class Profile implements ICommand {
         final long EXECUTED = Callerphone.getExecuted(user);
         final long TRANSMITTED = Callerphone.getTransmitted(user);
         final long TOTAL = EXECUTED + TRANSMITTED;
-        final int LVL = TOTAL/100;
+        final int LVL = (int) TOTAL/100;
         final int EXP = (int) TOTAL - 100 * LVL;
         final String PREFIX = Callerphone.prefix.getOrDefault(user.getId(), (LVL > 5 ? ":unlock: `c?prefix <prefix>`" : ":lock: `Level 50`"));
 
