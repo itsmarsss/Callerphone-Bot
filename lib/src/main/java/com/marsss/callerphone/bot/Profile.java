@@ -27,6 +27,12 @@ public class Profile implements ICommand {
     private final String MESSAGE = "Executed: `%d`\n Transmitted: `%s`\nTotal: `%s`";
 
     private MessageEmbed profile(User user) {
+        final long EXECUTED = Callerphone.getExecuted(user);
+        final long TRANSMITTED = Callerphone.getTransmitted(user);
+        final long TOTAL = EXECUTED + TRANSMITTED;
+        final int LVL = (TOTAL >= 100 ? (int) TOTAL % 100 : 0);
+        final int EXP = (int) TOTAL - 100 * LVL;
+        final String PREFIX = Callerphone.prefix.getOrDefault(user.getId(), (LVL > 5 ? ":unlock: `c?prefix <prefix>`" : ":lock: `Level 5`"));
 
         String general = String.format(GENERAL, LVL, EXP, PREFIX);
         String credits = String.format(CREDITS, Callerphone.getCredits(user), 0, 0);
