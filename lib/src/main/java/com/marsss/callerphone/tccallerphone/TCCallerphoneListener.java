@@ -88,7 +88,7 @@ public class TCCallerphoneListener extends ListenerAdapter {
             }
         }
 
-        Callerphone.award(event.getAuthor(), 5);
+        Callerphone.reward(event.getAuthor(), 5);
         Callerphone.addTransmit(event.getAuthor(), 1);
     }
 
