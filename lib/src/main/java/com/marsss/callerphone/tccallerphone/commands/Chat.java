@@ -16,6 +16,7 @@ public class Chat implements ICommand {
     private final String CALLING = CP_EMJ + "Calling...";
     private final String PICKED_UP = CP_EMJ + "Someone picked up the phone!";
     private final String ERROR = CP_EMJ + "An error occurred.";
+
     @Override
     public void runCommand(GuildMessageReceivedEvent e) {
         final String MESSAGE = e.getMessage().getContentRaw();
@@ -24,17 +25,20 @@ public class Chat implements ICommand {
 
         ChatStatus stat = (famfri ? chatFamilyFriendly(e.getChannel(), anon) : chatUncensor(e.getChannel(), anon));
 
-        if (stat == ChatStatus.CONFLICT) {
-            e.getMessage().reply(ALREADY_CALL).queue();
-        } else if (stat == ChatStatus.NON_EXISTENT) {
-            e.getMessage().reply(NO_PORT).queue();
-        } else if (stat == ChatStatus.SUCCESS_RECEIVER) {
-            e.getMessage().reply(CALLING).queue();
-            e.getChannel().sendMessage(PICKED_UP).queue();
-        } else if (stat == ChatStatus.SUCCESS_CALLER) {
-            e.getMessage().reply(CALLING).queue();
-        } else {
-            e.getMessage().reply(ERROR).queue();
+        try {
+            if (stat == ChatStatus.CONFLICT) {
+                e.getMessage().reply(ALREADY_CALL).queue();
+            } else if (stat == ChatStatus.NON_EXISTENT) {
+                e.getMessage().reply(NO_PORT).queue();
+            } else if (stat == ChatStatus.SUCCESS_RECEIVER) {
+                e.getMessage().reply(CALLING).queue();
+                e.getChannel().sendMessage(PICKED_UP).queue();
+            } else if (stat == ChatStatus.SUCCESS_CALLER) {
+                e.getMessage().reply(CALLING).queue();
+            } else {
+                e.getMessage().reply(ERROR).queue();
+            }
+        } catch (Exception ex) {
         }
     }
 
@@ -58,17 +62,20 @@ public class Chat implements ICommand {
                 e.reply(Callerphone.Callerphone + "Hmmm, the slash command `" + e.getName() + " " + e.getSubcommandName() + "` shouldn't exist! Please join our support server and report this issue. " + Callerphone.support).queue();
                 return;
         }
-        if (stat == ChatStatus.CONFLICT) {
-            e.reply(ALREADY_CALL).setEphemeral(true).queue();
-        } else if (stat == ChatStatus.NON_EXISTENT) {
-            e.reply(NO_PORT).setEphemeral(true).queue();
-        } else if (stat == ChatStatus.SUCCESS_RECEIVER) {
-            e.reply(CALLING).queue();
-            e.getTextChannel().sendMessage(PICKED_UP).queue();
-        } else if (stat == ChatStatus.SUCCESS_CALLER) {
-            e.reply(CALLING).queue();
-        } else {
-            e.reply(ERROR).setEphemeral(true).queue();
+        try {
+            if (stat == ChatStatus.CONFLICT) {
+                e.reply(ALREADY_CALL).setEphemeral(true).queue();
+            } else if (stat == ChatStatus.NON_EXISTENT) {
+                e.reply(NO_PORT).setEphemeral(true).queue();
+            } else if (stat == ChatStatus.SUCCESS_RECEIVER) {
+                e.reply(CALLING).queue();
+                e.getTextChannel().sendMessage(PICKED_UP).queue();
+            } else if (stat == ChatStatus.SUCCESS_CALLER) {
+                e.reply(CALLING).queue();
+            } else {
+                e.reply(ERROR).setEphemeral(true).queue();
+            }
+        } catch (Exception ex) {
         }
     }
 

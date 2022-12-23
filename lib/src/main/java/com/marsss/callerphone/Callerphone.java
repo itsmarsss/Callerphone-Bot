@@ -140,8 +140,8 @@ public class Callerphone {
                     logger.info("Bot Is Offline");
                     continue;
                 }
-                    setActivity(sc);
-                    logger.info("Bot Is Offline");
+                setActivity(sc);
+                logger.info("Bot Is Offline");
 
             } else if (cmd.equals("info")) {
                 if (jda != null) {
@@ -220,13 +220,13 @@ public class Callerphone {
 
 
             cmdLst.add(new BotInfo());
-            cmdLst.add(new ChannelInfo());
+            //cmdLst.add(new ChannelInfo());
             cmdLst.add(new Colour());
             cmdLst.add(new Help());
-            cmdLst.add(new RoleInfo());
+            //cmdLst.add(new RoleInfo());
             cmdLst.add(new Search());
-            cmdLst.add(new ServerInfo());
-            cmdLst.add(new UserInfo());
+            //cmdLst.add(new ServerInfo());
+            //cmdLst.add(new UserInfo());
 
             cmdLst.add(new Chat());
             cmdLst.add(new EndChat());
@@ -583,9 +583,14 @@ public class Callerphone {
         br.close();
 
         jda.awaitReady();
-
-        System.out.println("Log Status Channel: " + jda.getTextChannelById(logstatus).getAsMention());
-        System.out.println("Report Channel: " + jda.getTextChannelById(reportchannel).getAsMention());
+        try {
+            System.out.println("Log Status Channel: " + jda.getTextChannelById(logstatus).getAsMention());
+        } catch (Exception e) {
+        }
+        try {
+            System.out.println("Report Channel: " + jda.getTextChannelById(reportchannel).getAsMention());
+        } catch (Exception e) {
+        }
         if (isQuickStart) {
             System.out.println("Owner: " + owner + " (unable to obtain tag because of quickstart)");
         } else {
@@ -655,7 +660,6 @@ public class Callerphone {
             myWriter.close();
         }
     }
-
 
 
     private static void importAdmin(File file) throws IOException {
@@ -910,4 +914,5 @@ public class Callerphone {
                 )
         ).queue();
     }
+
 }

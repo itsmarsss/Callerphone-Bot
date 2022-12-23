@@ -44,7 +44,7 @@ public class JoinPool implements ICommand {
             return;
         }
         List<OptionMapping> param = e.getOptions();
-        if(param.size() == 1) {
+        if (param.size() == 1) {
             e.reply(joinPool(e.getChannel(), e.getOption("hostid").getAsString(), "")).queue();
             return;
         }
@@ -66,13 +66,23 @@ public class JoinPool implements ICommand {
         } else if (stat == PoolStatus.NOT_FOUND) {
             return CP_EMJ + "Requested pool `ID: " + host + "` does not exist.";
         } else if (stat == PoolStatus.INCORRECT_PASS) {
-            Callerphone.jda.getTextChannelById(host).sendMessage(CP_EMJ + "Channel `ID: " + channel.getId() + "` attempted to join with incorrect password.").queue();
+            try {
+                Callerphone.jda.getTextChannelById(host).sendMessage(CP_EMJ + "Channel `ID: " + channel.getId() + "` attempted to join with incorrect password.").queue();
+            } catch (Exception e) {
+            }
             return CP_EMJ + "Requested pool `ID: " + host + "` does not exist.";
         } else if (stat == PoolStatus.FULL) {
-            Callerphone.jda.getTextChannelById(host).sendMessage(CP_EMJ + "Channel `ID: " + channel.getId() + "` attempted to join this full pool.").queue();
+            try {
+                Callerphone.jda.getTextChannelById(host).sendMessage(CP_EMJ + "Channel `ID: " + channel.getId() + "` attempted to join this full pool.").queue();
+            } catch (Exception e) {
+            }
             return CP_EMJ + "This pool is already full " + ChannelPool.config.get(host).getCap() + "/" + ChannelPool.config.get(host).getCap() + ".";
         } else if (stat == PoolStatus.SUCCESS) {
-            return CP_EMJ + "Successfully joined channel pool hosted by `#" + Callerphone.jda.getTextChannelById(host).getName() + "`*(ID: " + host + ")*!";
+            try {
+                return CP_EMJ + "Successfully joined channel pool hosted by `#" + Callerphone.jda.getTextChannelById(host).getName() + "`*(ID: " + host + ")*!";
+            } catch (Exception e) {
+                return CP_EMJ + "Successfully joined channel pool hosted by `#[N/A NOT FOUND]!";
+            }
         }
         return CP_EMJ + "An error occurred.";
     }

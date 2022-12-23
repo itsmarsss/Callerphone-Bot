@@ -30,9 +30,13 @@ public class PoolParticipants implements ICommand {
         for (int i = 0; i < PARTICIPANTS.size(); i++) {
             LIST.append("\n`ID: ")
                     .append(PARTICIPANTS.get(i))
-                    .append("` (#")
-                    .append(Callerphone.jda.getTextChannelById(PARTICIPANTS.get(i)).getName())
-                    .append(")");
+                    .append("` (#");
+            try {
+                LIST.append(Callerphone.jda.getTextChannelById(PARTICIPANTS.get(i)).getName())
+                        .append(")");
+            } catch (Exception e) {
+                LIST.append("#[N/A NOT FOUND])");
+            }
             if (i == 0) {
                 LIST.append(" [Host] :crown:");
             } else {

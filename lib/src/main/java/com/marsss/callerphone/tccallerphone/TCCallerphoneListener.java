@@ -98,7 +98,10 @@ public class TCCallerphoneListener extends ListenerAdapter {
 
     private void sendMessage(boolean anon, String destination, String content, Message msg) {
         if (anon) {
-            jda.getTextChannelById(destination).sendMessage("**DiscordUser**#0000 " + Callerphone.CallerphoneCall + content).queue();
+            try {
+                jda.getTextChannelById(destination).sendMessage("**DiscordUser**#0000 " + Callerphone.CallerphoneCall + content).queue();
+            } catch (Exception e) {
+            }
             return;
         }
         User auth = msg.getAuthor();
@@ -108,7 +111,10 @@ public class TCCallerphoneListener extends ListenerAdapter {
         } else if (Callerphone.prefix.containsKey(msg.getAuthor().getId())) {
             template = PREFIX_TEMPLATE.replaceFirst("%s", Callerphone.prefix.get(msg.getAuthor().getId()));
         }
-        jda.getTextChannelById(destination).sendMessage(String.format(template, auth.getName(), auth.getDiscriminator(), content)).queue();
+        try {
+            jda.getTextChannelById(destination).sendMessage(String.format(template, auth.getName(), auth.getDiscriminator(), content)).queue();
+        } catch (Exception e) {
+        }
     }
 
     private String filter(String messageraw) {
@@ -149,10 +155,13 @@ public class TCCallerphoneListener extends ListenerAdapter {
 
         final String DATA = data.toString();
         if (c.getReport()) {
-            jda.getTextChannelById(Callerphone.reportchannel)
-                    .sendMessage("**ID:** " + ID)
-                    .addFile(DATA.getBytes(), ID + ".txt")
-                    .queue();
+            try {
+                jda.getTextChannelById(Callerphone.reportchannel)
+                        .sendMessage("**ID:** " + ID)
+                        .addFile(DATA.getBytes(), ID + ".txt")
+                        .queue();
+            } catch (Exception e) {
+            }
         }
     }
 }

@@ -138,7 +138,7 @@ public class Help implements ICommand {
 
             case "exp":
                 TITLE = "**EARN EXPERIENCE**";
-                DESC = "__Temporary:**" +
+                DESC = "__**Temporary:**__" +
                         "\n> Each level required 100 exp, and each command/message transferred are worth 1 exp.";
                 break;
 

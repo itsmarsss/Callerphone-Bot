@@ -176,7 +176,10 @@ public class OnPrivateMessage extends ListenerAdapter {
             channel.sendMessage(replaceLast(s.replace("{\"cnt\":\"", ""), "\"}", "")).queue();
         } catch (Exception e) {
             e.printStackTrace();
-            channel.sendMessage("An error occured, if this persists please notify ").queue();
+            try {
+                channel.sendMessage("An error occured, if this persists please notify ").queue();
+            } catch (Exception ex) {
+            }
         }
 
     }
@@ -187,8 +190,11 @@ public class OnPrivateMessage extends ListenerAdapter {
     }
 
     public void sendPrivateEmbed(User user, MessageEmbed embed) {
-        user.openPrivateChannel().queue((channel) ->
-                channel.sendMessageEmbeds(embed).queue());
+        try {
+            user.openPrivateChannel().queue((channel) ->
+                    channel.sendMessageEmbeds(embed).queue());
+        } catch (Exception e) {
+        }
     }
 
     private static String replaceLast(final String text, final String regex, final String replacement) {

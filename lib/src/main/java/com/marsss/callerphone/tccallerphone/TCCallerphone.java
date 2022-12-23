@@ -30,20 +30,27 @@ public class TCCallerphone {
                 convo.setReceiverTCID(CHANNELID);
                 convo.setLastMessage(System.currentTimeMillis());
 
-                jda.getTextChannelById(convo.getCallerTCID())
-                        .sendMessage(PICKED_UP)
-                        .queue();
+                try {
+                    jda.getTextChannelById(convo.getCallerTCID())
+                            .sendMessage(PICKED_UP)
+                            .queue();
+                } catch (Exception e) {
+                }
 
                 logger.info("From TC: "
                         + convo.getCallerTCID()
                         + " - To TC: "
                         + convo.getReceiverTCID()
                 );
-                logger.info("From Guild: "
-                        + jda.getTextChannelById(convo.getCallerTCID()).getGuild().getId()
-                        + " - To Guild: "
-                        + jda.getTextChannelById(convo.getReceiverTCID()).getGuild().getId()
-                );
+                try {
+                    logger.info("From Guild: "
+                            + jda.getTextChannelById(convo.getCallerTCID()).getGuild().getId()
+                            + " - To Guild: "
+                            + jda.getTextChannelById(convo.getReceiverTCID()).getGuild().getId()
+                    );
+                } catch (Exception e) {
+                    logger.info("From Guild: N/A - To Guild: N/A");
+                }
 
                 return ChatStatus.SUCCESS_RECEIVER;
             } else if (convo.getCallerTCID().equals("empty")) {
@@ -76,12 +83,18 @@ public class TCCallerphone {
             final String receiverID = convo.getReceiverTCID();
 
             if (receiverID.equals(channel.getId())) {
-                if(!convo.getCallerTCID().equals("empty")) {
-                    jda.getTextChannelById(callerID).sendMessage(OTHER_PARTY_HUNG_UP).queue();
+                if (!convo.getCallerTCID().equals("empty")) {
+                    try {
+                        jda.getTextChannelById(callerID).sendMessage(OTHER_PARTY_HUNG_UP).queue();
+                    } catch (Exception e) {
+                    }
                 }
             } else {
-                if(!convo.getReceiverTCID().equals("")) {
-                    jda.getTextChannelById(receiverID).sendMessage(OTHER_PARTY_HUNG_UP).queue();
+                if (!convo.getReceiverTCID().equals("")) {
+                    try {
+                        jda.getTextChannelById(receiverID).sendMessage(OTHER_PARTY_HUNG_UP).queue();
+                    } catch (Exception e) {
+                    }
                 }
             }
 
@@ -112,7 +125,10 @@ public class TCCallerphone {
         for (String m : data)
             dataString.append(m).append("\n");
 
-        jda.getTextChannelById(Callerphone.reportchannel).sendMessage("**ID:** " + ID).addFile(dataString.toString().getBytes(), ID + ".txt").queue();
+        try {
+            jda.getTextChannelById(Callerphone.reportchannel).sendMessage("**ID:** " + ID).addFile(dataString.toString().getBytes(), ID + ".txt").queue();
+        } catch (Exception e) {
+        }
     }
 
     public static ConvoStorage getCall(String tc) {

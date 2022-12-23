@@ -140,11 +140,14 @@ public class ChannelPool {
             pool.stream()
                     .filter(cur -> !cur.equals(ID))
                     .forEach(id -> {
-                        jda.getTextChannelById(id)
-                                .sendMessage(
-                                        CP_EMJ + "This pool has been ended by the host channel `ID: " + id
-                                                + "` (#" + jda.getTextChannelById(id).getName() + ")."
-                                ).queue();
+                        try {
+                            jda.getTextChannelById(id)
+                                    .sendMessage(
+                                            CP_EMJ + "This pool has been ended by the host channel `ID: " + id
+                                                    + "` (#" + jda.getTextChannelById(id).getName() + ")."
+                                    ).queue();
+                        } catch (Exception e) {
+                        }
                         parent.remove(id);
                     });
 
@@ -162,12 +165,19 @@ public class ChannelPool {
             if (childr.get(IDh).size() >= config.get(IDh).getCap()) {
                 return PoolStatus.FULL;
             }
-
-            systemBroadCast(IDh,
-                    CP_EMJ + "Channel `ID: " + IDc
-                            + "` (#" + jda.getTextChannelById(IDc).getName() + ") has joined this pool. "
-                            + (childr.get(IDh).size() + 1) + "/" + config.get(IDh).getCap()
-            );
+            try {
+                systemBroadCast(IDh,
+                        CP_EMJ + "Channel `ID: " + IDc
+                                + "` (#" + jda.getTextChannelById(IDc).getName() + ") has joined this pool. "
+                                + (childr.get(IDh).size() + 1) + "/" + config.get(IDh).getCap()
+                );
+            } catch (Exception e) {
+                systemBroadCast(IDh,
+                        CP_EMJ + "Channel `ID: " + IDc
+                                + "` (#[N/A NOT FOUND]) has joined this pool. "
+                                + (childr.get(IDh).size() + 1) + "/" + config.get(IDh).getCap()
+                );
+            }
             childr.get(IDh).add(IDc);
             parent.put(IDc, IDh);
             return PoolStatus.SUCCESS;
@@ -180,10 +190,18 @@ public class ChannelPool {
         if (isChild(IDc)) {
             childr.get(IDh).remove(IDc);
             parent.remove(IDc);
-            systemBroadCast(IDh,
-                    CP_EMJ + "Channel `ID: " + IDc + "` (#" + jda.getTextChannelById(IDc).getName() + ") has left this pool. "
-                            + childr.get(IDh).size() + "/" + config.get(IDh).getCap()
-            );
+            try {
+                systemBroadCast(IDh,
+                        CP_EMJ + "Channel `ID: " + IDc + "` (#" + jda.getTextChannelById(IDc).getName() + ") has left this pool. "
+                                + childr.get(IDh).size() + "/" + config.get(IDh).getCap()
+                );
+            } catch (Exception e) {
+                systemBroadCast(IDh,
+                        CP_EMJ + "Channel `ID: " + IDc + "` (#[N/A NOT FOUND]) has left this pool. "
+                                + childr.get(IDh).size() + "/" + config.get(IDh).getCap()
+                );
+            }
+
             return PoolStatus.SUCCESS;
         }
         return PoolStatus.ERROR;
@@ -212,28 +230,51 @@ public class ChannelPool {
                 handleChannelLeft(sender, id);
                 return;
             }
-            buildMessageAction(original, msg, id).queue();
+            try {
+                buildMessageAction(original, msg, id).queue();
+            } catch (Exception e) {
+            }
         });
     }
 
     private static MessageAction buildMessageAction(String original, String msg, String id) {
-        MessageAction ma = jda.getTextChannelById(id).sendMessage(msg);
+        MessageAction ma;
+        try {
+            ma = jda.getTextChannelById(id).sendMessage(msg);
+        } catch (Exception e) {
+            return null;
+        }
         Collection<ActionRow> actionrow = new ArrayList<>();
         Collection<Button> collection = new ArrayList<>();
 
-        String link = String.format(
+        String link;
+
+        try{
+            link = String.format(
                 "https://discord.com/channels/%s/%s",
                 jda.getTextChannelById(original).getGuild().getId(),
                 jda.getTextChannelById(original).getId()
         );
+        } catch (Exception e) {
+            link = "[N/A NOT FOUND]";
+        }
 
-        collection.add(
-                Button.link(
-                        link,
-                        "From: #" + jda.getTextChannelById(original).getName()
-                                + " (" + jda.getTextChannelById(original).getGuild().getName() + ")"
-                )
-        );
+        try {
+            collection.add(
+                    Button.link(
+                            link,
+                            "From: #" + jda.getTextChannelById(original).getName()
+                                    + " (" + jda.getTextChannelById(original).getGuild().getName() + ")"
+                    )
+            );
+        } catch (Exception e) {
+            collection.add(
+                    Button.link(
+                            link,
+                            "From: [N/A NOT FOUND])"
+                    )
+            );
+        }
 
         ActionRow row = ActionRow.of(collection);
         actionrow.add(row);
@@ -242,6 +283,7 @@ public class ChannelPool {
     }
 
     private static final String LEFT_POOL = CP_EMJ + "Channel `ID: %s` has left this pool.";
+
     private static void handleChannelLeft(String sender, String id) {
         if (sender.equals(id)) {
             clearChildren(sender);
@@ -259,8 +301,11 @@ public class ChannelPool {
                 systemBroadCast(IDhost, String.format(LEFT_POOL, id));
                 continue;
             }
-            MessageAction ma = jda.getTextChannelById(id).sendMessage(msg);
-            ma.queue();
+            try {
+                MessageAction ma = jda.getTextChannelById(id).sendMessage(msg);
+                ma.queue();
+            } catch (Exception e) {
+            }
         }
     }
 

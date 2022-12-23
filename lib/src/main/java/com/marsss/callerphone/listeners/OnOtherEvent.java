@@ -46,7 +46,10 @@ public class OnOtherEvent extends ListenerAdapter {
                 .setTimestamp(OffsetDateTime.now())
                 .setFooter("The bot disconnected " + disconnectCount + " times already since the last startup.");
         if (CHANNEL.getGuild().getSelfMember().hasPermission(CHANNEL, Permission.MESSAGE_WRITE)) {
-            CHANNEL.sendMessageEmbeds(Emd.build()).queue();
+            try {
+                CHANNEL.sendMessageEmbeds(Emd.build()).queue();
+            } catch (Exception e) {
+            }
         }
     }
 }
