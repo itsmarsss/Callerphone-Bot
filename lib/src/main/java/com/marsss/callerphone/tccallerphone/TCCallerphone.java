@@ -128,7 +128,7 @@ public class TCCallerphone {
 
         final TextChannel REPORT_CHANNEL = Callerphone.getTextChannel(Callerphone.reportchannel);
         if (REPORT_CHANNEL != null) {
-            jda.getTextChannelById(Callerphone.reportchannel).sendMessage("**ID:** " + ID).addFile(dataString.toString().getBytes(), ID + ".txt").queue();
+            REPORT_CHANNEL.sendMessage("**ID:** " + ID).addFile(dataString.toString().getBytes(), ID + ".txt").queue();
         }
     }
 

@@ -585,14 +585,14 @@ public class Callerphone {
         if(LOG_CHANNEL == null) {
             System.out.println("Report Channel: [N/A NOT FOUND]");
         } else {
-            System.out.println("Log Status Channel: " + jda.getTextChannelById(logstatus).getAsMention());
+            System.out.println("Log Status Channel: " + LOG_CHANNEL.getAsMention());
         }
 
         final TextChannel REPORT_CHANNEL = getTextChannel(logstatus);
         if(REPORT_CHANNEL == null) {
             System.out.println("Report Channel: [N/A NOT FOUND]");
         } else {
-            System.out.println("Report Channel: " + jda.getTextChannelById(reportchannel).getAsMention());
+            System.out.println("Report Channel: " + REPORT_CHANNEL.getAsMention());
         }
 
         if (isQuickStart) {

@@ -236,14 +236,12 @@ public class ChannelPool {
     private static void handleIsHost(String sender, String original, String msg) {
         ArrayList<String> pool = childr.get(sender);
         pool.stream().filter(id -> !id.equals(original)).forEach(id -> {
-            if (jda.getTextChannelById(id) == null) {
+            final TextChannel TEXT_CHANNEL = Callerphone.getTextChannel(id);
+            if (TEXT_CHANNEL == null) {
                 handleChannelLeft(sender, id);
                 return;
             }
-            try {
-                buildMessageAction(original, msg, id).queue();
-            } catch (Exception e) {
-            }
+            buildMessageAction(original, msg, id).queue();
         });
     }
 
