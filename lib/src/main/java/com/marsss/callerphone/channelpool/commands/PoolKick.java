@@ -57,7 +57,7 @@ public class PoolKick implements ICommand {
             if(CHILD_CHANNEL != null){
                 CHILD_CHANNEL.sendMessage(CP_EMJ + "You have been kicked from the pool.").queue();
             }
-            return CP_EMJ + "Successfully kicked `ID: " + IDc + " from this pool.";
+            return CP_EMJ + "Successfully kicked `ID: " + IDc + "` from this pool.";
         } else if (stat == PoolStatus.ERROR) {
             return CP_EMJ + "Requested pool not found.";
         }
