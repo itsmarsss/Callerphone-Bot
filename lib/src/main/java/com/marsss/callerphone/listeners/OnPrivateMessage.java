@@ -2,15 +2,12 @@ package com.marsss.callerphone.listeners;
 
 import java.awt.Color;
 import java.io.File;
-import java.net.URL;
-import java.util.Scanner;
 
 import com.marsss.callerphone.Callerphone;
 
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
-import net.dv8tion.jda.api.entities.PrivateChannel;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.message.priv.PrivateMessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
@@ -150,35 +147,7 @@ public class OnPrivateMessage extends ListenerAdapter {
                 e.printStackTrace();
                 MESSAGE.reply("Syntax Error").queue();
             }
-
-            return;
         }
-
-        normalMessage(event.getChannel(), CONTENT);
-    }
-
-    public void normalMessage(PrivateChannel channel, String msg) {
-        msg = msg.replaceAll("\\s+", "%20");
-
-        try {
-            final URL url = new URL(Callerphone.brainURL.replace("[uid]", channel.getId()).replace("[msg]", msg));
-            final Scanner sc = new Scanner(url.openStream());
-
-            String s = sc.nextLine();
-
-            s = s.replace("<a href=\\\"", "");
-            s = s.replace("\">", " ");
-            s = s.replace("<\\/a>", "");
-
-            channel.sendMessage(replaceLast(s.replace("{\"cnt\":\"", ""))).queue();
-        } catch (Exception e) {
-            e.printStackTrace();
-            try {
-                channel.sendMessage("An error occured, if this persists please notify ").queue();
-            } catch (Exception ex) {
-            }
-        }
-
     }
 
     public void sendPrivateFile(User user, File file, String title) {
@@ -193,9 +162,4 @@ public class OnPrivateMessage extends ListenerAdapter {
         } catch (Exception e) {
         }
     }
-
-    private static String replaceLast(final String text) {
-        return text.replaceFirst("(?s)(.*)" + "\"}", "$1" + "");
-    }
-
 }
