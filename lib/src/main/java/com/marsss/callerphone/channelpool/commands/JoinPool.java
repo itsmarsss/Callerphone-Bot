@@ -4,6 +4,7 @@ import com.marsss.ICommand;
 import com.marsss.callerphone.Callerphone;
 import com.marsss.callerphone.channelpool.ChannelPool;
 import com.marsss.callerphone.channelpool.PoolStatus;
+import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
@@ -18,7 +19,12 @@ public class JoinPool implements ICommand {
 
     @Override
     public void runCommand(GuildMessageReceivedEvent e) {
-        if (ChannelPool.permissionCheck(e.getMember(), e.getMessage())) {
+        final Member MEMBER = e.getMember();
+        if (MEMBER == null) {
+            return;
+        }
+
+        if (ChannelPool.permissionCheck(MEMBER, e.getMessage())) {
             return;
         }
 
@@ -41,7 +47,12 @@ public class JoinPool implements ICommand {
 
     @Override
     public void runSlash(SlashCommandEvent e) {
-        if (ChannelPool.permissionCheck(e.getMember(), e)) {
+        final Member MEMBER = e.getMember();
+        if (MEMBER == null) {
+            return;
+        }
+
+        if (ChannelPool.permissionCheck(MEMBER, e)) {
             return;
         }
         List<OptionMapping> param = e.getOptions();
