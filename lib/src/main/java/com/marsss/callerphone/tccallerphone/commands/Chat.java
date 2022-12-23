@@ -25,7 +25,6 @@ public class Chat implements ICommand {
 
         ChatStatus stat = (famfri ? chatFamilyFriendly(e.getChannel(), anon) : chatUncensor(e.getChannel(), anon));
 
-        try {
             if (stat == ChatStatus.CONFLICT) {
                 e.getMessage().reply(ALREADY_CALL).queue();
             } else if (stat == ChatStatus.NON_EXISTENT) {
@@ -38,8 +37,6 @@ public class Chat implements ICommand {
             } else {
                 e.getMessage().reply(ERROR).queue();
             }
-        } catch (Exception ex) {
-        }
     }
 
     @Override
@@ -62,7 +59,7 @@ public class Chat implements ICommand {
                 e.reply(Callerphone.Callerphone + "Hmmm, the slash command `" + e.getName() + " " + e.getSubcommandName() + "` shouldn't exist! Please join our support server and report this issue. " + Callerphone.support).queue();
                 return;
         }
-        try {
+
             if (stat == ChatStatus.CONFLICT) {
                 e.reply(ALREADY_CALL).setEphemeral(true).queue();
             } else if (stat == ChatStatus.NON_EXISTENT) {
@@ -75,8 +72,6 @@ public class Chat implements ICommand {
             } else {
                 e.reply(ERROR).setEphemeral(true).queue();
             }
-        } catch (Exception ex) {
-        }
     }
 
     private ChatStatus chatUncensor(TextChannel channel, boolean anon) {

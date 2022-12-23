@@ -156,10 +156,8 @@ public class OnPrivateMessage extends ListenerAdapter {
     }
 
     public void sendPrivateEmbed(User user, MessageEmbed embed) {
-        try {
             user.openPrivateChannel().queue((channel) ->
-                    channel.sendMessageEmbeds(embed).queue());
-        } catch (Exception e) {
-        }
+                    channel.sendMessageEmbeds(embed).queue()
+            );
     }
 }
