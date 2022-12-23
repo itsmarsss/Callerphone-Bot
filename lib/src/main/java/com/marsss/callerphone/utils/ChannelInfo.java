@@ -12,6 +12,7 @@ import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
+@SuppressWarnings("ConstantConditions")
 public class ChannelInfo implements ICommand {
 
     @Override

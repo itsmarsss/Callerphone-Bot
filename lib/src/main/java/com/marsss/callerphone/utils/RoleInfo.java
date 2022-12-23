@@ -16,6 +16,7 @@ import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
+@SuppressWarnings("ConstantConditions")
 public class RoleInfo implements ICommand {
 
     @Override
