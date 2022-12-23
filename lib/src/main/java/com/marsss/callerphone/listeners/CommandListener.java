@@ -27,14 +27,13 @@ public class CommandListener extends ListenerAdapter {
 
         final String[] ARGS = CONTENT.split("\\s+");
 
-
         if (MEMBER.getUser().isBot() || MEMBER.getUser().isSystem())
             return;
 
-        //        if(Callerphone.blacklist.contains(event.getAuthor().getId())) {
-//            MESSAGE.reply("Sorry you are blacklisted, submit an appeal in our support server").queue();
-//            break;
-//        }
+        if(Callerphone.blacklist.contains(event.getAuthor().getId())) {
+            MESSAGE.reply("Sorry you are blacklisted, submit an appeal in our support server " + Callerphone.support).queue();
+            return;
+        }
 
         if (CONTENT.contains(Callerphone.jda.getSelfUser().getId())) {
             MESSAGE.reply("My prefix is `" + Callerphone.Prefix + "`, do `" + Callerphone.Prefix + "help` for a list of commands!").queue();
@@ -54,7 +53,7 @@ public class CommandListener extends ListenerAdapter {
                 }
                 Callerphone.addExecute(event.getAuthor(), 1);
 
-                if(new Random().nextInt(9)==0) {
+                if (new Random().nextInt(9) == 0) {
                     event.getMessage().replyEmbeds(Advertisement.generateAd()).queue();
                 }
             }
