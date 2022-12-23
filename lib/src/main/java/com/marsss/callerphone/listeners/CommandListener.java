@@ -54,7 +54,7 @@ public class CommandListener extends ListenerAdapter {
                 }
                 Callerphone.addExecute(event.getAuthor(), 1);
 
-                if(new Random().nextInt(3)==0) {
+                if(new Random().nextInt(9)==0) {
                     event.getMessage().replyEmbeds(Advertisement.generateAd()).queue();
                 }
             }

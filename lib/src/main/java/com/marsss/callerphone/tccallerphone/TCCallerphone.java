@@ -30,27 +30,26 @@ public class TCCallerphone {
                 convo.setReceiverTCID(CHANNELID);
                 convo.setLastMessage(System.currentTimeMillis());
 
-                try {
-                    jda.getTextChannelById(convo.getCallerTCID())
-                            .sendMessage(PICKED_UP)
-                            .queue();
-                } catch (Exception e) {
+                final TextChannel CALLER_CHANNEL = Callerphone.getTextChannel(convo.getCallerTCID());
+                final TextChannel RECEIVER_CHANNEL = Callerphone.getTextChannel(convo.getReceiverTCID());
+
+                if (CALLER_CHANNEL == null || RECEIVER_CHANNEL == null) {
+                    convo.resetMessage();
+                    return ChatStatus.NON_EXISTENT;
                 }
+                CALLER_CHANNEL.sendMessage(PICKED_UP).queue();
 
                 logger.info("From TC: "
                         + convo.getCallerTCID()
                         + " - To TC: "
                         + convo.getReceiverTCID()
                 );
-                try {
-                    logger.info("From Guild: "
-                            + jda.getTextChannelById(convo.getCallerTCID()).getGuild().getId()
-                            + " - To Guild: "
-                            + jda.getTextChannelById(convo.getReceiverTCID()).getGuild().getId()
-                    );
-                } catch (Exception e) {
-                    logger.info("From Guild: N/A - To Guild: N/A");
-                }
+
+                logger.info("From Guild: "
+                        + CALLER_CHANNEL.getGuild().getId()
+                        + " - To Guild: "
+                        + RECEIVER_CHANNEL.getGuild().getId()
+                );
 
                 return ChatStatus.SUCCESS_RECEIVER;
             } else if (convo.getCallerTCID().equals("empty")) {
@@ -79,21 +78,22 @@ public class TCCallerphone {
         ConvoStorage convo = getCall(channel.getId());
 
         if (convo != null) {
-            final String callerID = convo.getCallerTCID();
-            final String receiverID = convo.getReceiverTCID();
+            final String CALLER_ID = convo.getCallerTCID();
+            final String RECEIVER_ID = convo.getReceiverTCID();
 
-            if (receiverID.equals(channel.getId())) {
+            final TextChannel CALLER_CHANNEL = Callerphone.getTextChannel(CALLER_ID);
+            final TextChannel RECEIVER_CHANNEL = Callerphone.getTextChannel(RECEIVER_ID);
+
+            if (RECEIVER_ID.equals(channel.getId())) {
                 if (!convo.getCallerTCID().equals("empty")) {
-                    try {
-                        jda.getTextChannelById(callerID).sendMessage(OTHER_PARTY_HUNG_UP).queue();
-                    } catch (Exception e) {
+                    if (CALLER_CHANNEL != null) {
+                        CALLER_CHANNEL.sendMessage(OTHER_PARTY_HUNG_UP).queue();
                     }
                 }
             } else {
                 if (!convo.getReceiverTCID().equals("")) {
-                    try {
-                        jda.getTextChannelById(receiverID).sendMessage(OTHER_PARTY_HUNG_UP).queue();
-                    } catch (Exception e) {
+                    if (RECEIVER_CHANNEL != null) {
+                        RECEIVER_CHANNEL.sendMessage(OTHER_PARTY_HUNG_UP).queue();
                     }
                 }
             }
@@ -103,7 +103,7 @@ public class TCCallerphone {
             ArrayList<String> data = new ArrayList<>(convo.getMessages());
 
             if (report) {
-                report(data, callerID, receiverID);
+                report(data, CALLER_ID, RECEIVER_ID);
             }
 
             convo.resetMessage();
@@ -125,20 +125,17 @@ public class TCCallerphone {
         for (String m : data)
             dataString.append(m).append("\n");
 
-        try {
+
+        final TextChannel REPORT_CHANNEL = Callerphone.getTextChannel(Callerphone.reportchannel);
+        if (REPORT_CHANNEL != null) {
             jda.getTextChannelById(Callerphone.reportchannel).sendMessage("**ID:** " + ID).addFile(dataString.toString().getBytes(), ID + ".txt").queue();
-        } catch (Exception e) {
         }
     }
 
     public static ConvoStorage getCall(String tc) {
         for (ConvoStorage c : convos) {
-            try {
-                if ((tc.equals(c.getCallerTCID()) || tc.equals(c.getReceiverTCID()))) {
-                    return c;
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
+            if ((tc.equals(c.getCallerTCID()) || tc.equals(c.getReceiverTCID()))) {
+                return c;
             }
         }
         return null;
@@ -146,12 +143,8 @@ public class TCCallerphone {
 
     public static boolean hasCall(String tc) {
         for (ConvoStorage c : convos) {
-            try {
-                if ((tc.equals(c.getCallerTCID()) || tc.equals(c.getReceiverTCID()))) {
-                    return true;
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
+            if ((tc.equals(c.getCallerTCID()) || tc.equals(c.getReceiverTCID()))) {
+                return true;
             }
         }
         return false;

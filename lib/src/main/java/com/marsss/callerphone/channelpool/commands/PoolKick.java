@@ -4,6 +4,7 @@ import com.marsss.ICommand;
 import com.marsss.callerphone.Callerphone;
 import com.marsss.callerphone.channelpool.ChannelPool;
 import com.marsss.callerphone.channelpool.PoolStatus;
+import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
@@ -41,9 +42,9 @@ public class PoolKick implements ICommand {
     private String poolKick(String IDh, String IDc) {
         PoolStatus stat = ChannelPool.removeChildren(IDh, IDc);
         if (stat == PoolStatus.SUCCESS) {
-            try {
-                Callerphone.jda.getTextChannelById(IDc).sendMessage(CP_EMJ + "You have been kicked from the pool.").queue();
-            } catch (Exception e) {
+            final TextChannel CHILD_CHANNEL = Callerphone.getTextChannel(IDc);
+            if(CHILD_CHANNEL != null){
+                CHILD_CHANNEL.sendMessage(CP_EMJ + "You have been kicked from the pool.").queue();
             }
             return CP_EMJ + "Successfully kicked `ID: " + IDc + " from this pool.";
         } else if (stat == PoolStatus.ERROR) {

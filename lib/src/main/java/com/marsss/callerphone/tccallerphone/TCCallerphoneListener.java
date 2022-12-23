@@ -6,13 +6,12 @@ import com.marsss.callerphone.Callerphone;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
 public class TCCallerphoneListener extends ListenerAdapter {
-
-    private JDA jda = Callerphone.jda;
 
     private final String CP_EMJ = Callerphone.Callerphone;
     private final String MESSAGE_TOO_LONG = ":x: I sent a message too long for Callerphone to handle! :x:";
@@ -69,23 +68,14 @@ public class TCCallerphoneListener extends ListenerAdapter {
                 messageRaw = filter(messageRaw);
             }
 
-            try {
-                sendMessage(c.getCAnon(), c.getReceiverTCID(), messageRaw, MESSAGE);
-            } catch (Exception e) {
-                e.printStackTrace();
-                terminate(c, jda);
-            }
+            sendMessage(c, c.getCAnon(), c.getReceiverTCID(), messageRaw, MESSAGE);
+
         } else if (c.getReceiverTCID().equals(CHANNELID)) {
             if (c.getCFF()) {
                 messageRaw = filter(messageRaw);
             }
 
-            try {
-                sendMessage(c.getRAnon(), c.getCallerTCID(), messageRaw, MESSAGE);
-            } catch (Exception e) {
-                e.printStackTrace();
-                terminate(c, jda);
-            }
+            sendMessage(c, c.getRAnon(), c.getCallerTCID(), messageRaw, MESSAGE);
         }
 
         Callerphone.reward(event.getAuthor(), 5);
@@ -96,11 +86,14 @@ public class TCCallerphoneListener extends ListenerAdapter {
     private final String MODERATOR_TEMPLATE = "***[Moderator]* %s**#%s " + Callerphone.CallerphoneCall + "%s";
     private final String PREFIX_TEMPLATE = "***[%s]* %s**#%s " + Callerphone.CallerphoneCall + "%s";
 
-    private void sendMessage(boolean anon, String destination, String content, Message msg) {
+    private void sendMessage(ConvoStorage c, boolean anon, String destination, String content, Message msg) {
+        final TextChannel DESTINATION_CHANNEL = Callerphone.getTextChannel(destination);
+
         if (anon) {
-            try {
-                jda.getTextChannelById(destination).sendMessage("**DiscordUser**#0000 " + Callerphone.CallerphoneCall + content).queue();
-            } catch (Exception e) {
+            if (DESTINATION_CHANNEL != null) {
+                DESTINATION_CHANNEL.sendMessage("**DiscordUser**#0000 " + Callerphone.CallerphoneCall + content).queue();
+            } else {
+                terminate(c);
             }
             return;
         }
@@ -111,9 +104,10 @@ public class TCCallerphoneListener extends ListenerAdapter {
         } else if (Callerphone.prefix.containsKey(msg.getAuthor().getId())) {
             template = PREFIX_TEMPLATE.replaceFirst("%s", Callerphone.prefix.get(msg.getAuthor().getId()));
         }
-        try {
-            jda.getTextChannelById(destination).sendMessage(String.format(template, auth.getName(), auth.getDiscriminator(), content)).queue();
-        } catch (Exception e) {
+        if (DESTINATION_CHANNEL != null) {
+            DESTINATION_CHANNEL.sendMessage(String.format(template, auth.getName(), auth.getDiscriminator(), content)).queue();
+        } else {
+            terminate(c);
         }
     }
 
@@ -130,21 +124,21 @@ public class TCCallerphoneListener extends ListenerAdapter {
 
     private final String CONNECTION_ERROR = CP_EMJ + "Connection error, call ended.";
 
-    private void terminate(ConvoStorage c, JDA jda) {
+    private void terminate(ConvoStorage c) {
         StringBuilder data = new StringBuilder();
         for (String m : c.getMessages())
             data.append(m).append("\n");
 
-        try {
-            jda.getTextChannelById(c.getCallerTCID()).sendMessage(CONNECTION_ERROR).queue();
-        } catch (Exception ex) {
-            ex.printStackTrace();
+        final TextChannel CALLER_CHANNEL = Callerphone.getTextChannel(c.getCallerTCID());
+        final TextChannel RECEIVER_CHANNEL = Callerphone.getTextChannel(c.getReceiverTCID());
+        if (CALLER_CHANNEL != null) {
+            CALLER_CHANNEL.sendMessage(CONNECTION_ERROR).queue();
         }
-        try {
-            jda.getTextChannelById(c.getReceiverTCID()).sendMessage(CONNECTION_ERROR).queue();
-        } catch (Exception ex) {
-            ex.printStackTrace();
+
+        if (RECEIVER_CHANNEL != null) {
+            RECEIVER_CHANNEL.sendMessage(CONNECTION_ERROR).queue();
         }
+
         c.resetMessage();
         LocalDateTime now = LocalDateTime.now();
         String month = String.valueOf(now.getMonthValue());
@@ -155,12 +149,14 @@ public class TCCallerphoneListener extends ListenerAdapter {
 
         final String DATA = data.toString();
         if (c.getReport()) {
-            try {
-                jda.getTextChannelById(Callerphone.reportchannel)
+            final TextChannel REPORT_CHANNEL = Callerphone.getTextChannel(Callerphone.reportchannel);
+            if (REPORT_CHANNEL == null) {
+                System.out.println("Invalid REPORT channel.");
+            } else {
+                REPORT_CHANNEL
                         .sendMessage("**ID:** " + ID)
                         .addFile(DATA.getBytes(), ID + ".txt")
                         .queue();
-            } catch (Exception e) {
             }
         }
     }

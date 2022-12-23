@@ -16,6 +16,8 @@ import com.marsss.callerphone.credits.commands.RewardCredits;
 import com.marsss.callerphone.tccallerphone.TCCallerphone;
 import com.marsss.callerphone.tccallerphone.TCCallerphoneListener;
 import com.marsss.callerphone.tccallerphone.commands.*;
+import net.dv8tion.jda.api.*;
+import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
@@ -31,10 +33,6 @@ import com.marsss.callerphone.listeners.*;
 import com.marsss.callerphone.channelpool.*;
 import com.marsss.callerphone.tccallerphone.ConvoStorage;
 
-import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.JDABuilder;
-import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.requests.GatewayIntent;
@@ -122,11 +120,11 @@ public class Callerphone {
                 logger.info("Shutting Down Bot...");
                 if (jda != null) {
                     EmbedBuilder embedBuilder = new EmbedBuilder().setTitle("Status").setColor(new Color(213, 0, 0)).setFooter("Goodbye World...").setDescription(jda.getSelfUser().getAsMention() + " is going offline;" + cmd.replaceFirst("shutdown", ""));
-                    try {
-                        jda.getTextChannelById(logstatus).sendMessageEmbeds(embedBuilder.build()).complete();
-                    } catch (Exception e) {
-                        e.printStackTrace();
+                    final TextChannel LOG_CHANNEL = getTextChannel(logstatus);
+                    if(LOG_CHANNEL == null) {
                         logger.error("Error Sending Shutdown Message");
+                    }else{
+                        LOG_CHANNEL.sendMessageEmbeds(embedBuilder.build()).complete();
                     }
                     jda.awaitReady();
                     jda.shutdown();
@@ -285,13 +283,13 @@ public class Callerphone {
                 e.printStackTrace();
             }
 
-            try {
-                EmbedBuilder embedBuilder = new EmbedBuilder().setTitle("Status").setColor(new Color(24, 116, 52)).setFooter("Hello World!").setDescription(jda.getSelfUser().getAsMention() + " is now online;" + startupmsg);
-                jda.getTextChannelById(logstatus).sendMessageEmbeds(embedBuilder.build()).queue();
-            } catch (Exception e) {
-                e.printStackTrace();
+            final TextChannel LOG_CHANNEL = getTextChannel(logstatus);
+            if(LOG_CHANNEL == null){
                 System.out.println("------------------------------");
                 logger.error("Error Sending Startup Message");
+            } else {
+                EmbedBuilder embedBuilder = new EmbedBuilder().setTitle("Status").setColor(new Color(24, 116, 52)).setFooter("Hello World!").setDescription(jda.getSelfUser().getAsMention() + " is now online;" + startupmsg);
+                LOG_CHANNEL.sendMessageEmbeds(embedBuilder.build()).queue();
             }
 
             ScheduledExecutorService ses = Executors.newSingleThreadScheduledExecutor();
@@ -583,14 +581,20 @@ public class Callerphone {
         br.close();
 
         jda.awaitReady();
-        try {
+        final TextChannel LOG_CHANNEL = getTextChannel(logstatus);
+        if(LOG_CHANNEL == null) {
+            System.out.println("Report Channel: [N/A NOT FOUND]");
+        } else {
             System.out.println("Log Status Channel: " + jda.getTextChannelById(logstatus).getAsMention());
-        } catch (Exception e) {
         }
-        try {
+
+        final TextChannel REPORT_CHANNEL = getTextChannel(logstatus);
+        if(REPORT_CHANNEL == null) {
+            System.out.println("Report Channel: [N/A NOT FOUND]");
+        } else {
             System.out.println("Report Channel: " + jda.getTextChannelById(reportchannel).getAsMention());
-        } catch (Exception e) {
         }
+
         if (isQuickStart) {
             System.out.println("Owner: " + owner + " (unable to obtain tag because of quickstart)");
         } else {
@@ -913,6 +917,19 @@ public class Callerphone {
                                 .setRequired(true)
                 )
         ).queue();
+    }
+
+    public static TextChannel getTextChannel(String id) {
+        final TextChannel CHANNEL = jda.getTextChannelById(id);
+
+        if (CHANNEL == null)
+            return null;
+
+        if (!CHANNEL.getGuild().getSelfMember().hasPermission(CHANNEL, Permission.MESSAGE_WRITE)) {
+            return null;
+        }
+
+        return CHANNEL;
     }
 
 }

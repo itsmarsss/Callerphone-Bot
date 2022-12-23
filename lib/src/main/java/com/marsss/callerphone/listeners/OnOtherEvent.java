@@ -3,7 +3,6 @@ package com.marsss.callerphone.listeners;
 import java.awt.Color;
 import java.time.OffsetDateTime;
 
-import net.dv8tion.jda.api.Permission;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,7 +24,7 @@ public class OnOtherEvent extends ListenerAdapter {
     }
 
     public void onResumed(ResumedEvent event) {
-        final TextChannel CHANNEL = event.getJDA().getTextChannelById(Callerphone.logstatus);
+        final TextChannel LOG_CHANNEL = Callerphone.getTextChannel(Callerphone.logstatus);
         EmbedBuilder Emd = new EmbedBuilder()
                 .setColor(Color.RED)
                 .setTitle("Disconnected");
@@ -45,11 +44,11 @@ public class OnOtherEvent extends ListenerAdapter {
                         "Response number: " + event.getResponseNumber())
                 .setTimestamp(OffsetDateTime.now())
                 .setFooter("The bot disconnected " + disconnectCount + " times already since the last startup.");
-        if (CHANNEL.getGuild().getSelfMember().hasPermission(CHANNEL, Permission.MESSAGE_WRITE)) {
-            try {
-                CHANNEL.sendMessageEmbeds(Emd.build()).queue();
-            } catch (Exception e) {
-            }
+
+        if (LOG_CHANNEL == null) {
+            logger.warn("Invalid LOG channel.");
+        } else {
+            LOG_CHANNEL.sendMessageEmbeds(Emd.build()).queue();
         }
     }
 }

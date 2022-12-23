@@ -5,6 +5,7 @@ import com.marsss.callerphone.Callerphone;
 import com.marsss.callerphone.channelpool.ChannelPool;
 import com.marsss.callerphone.channelpool.PoolStatus;
 import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
@@ -53,6 +54,11 @@ public class JoinPool implements ICommand {
 
     private String joinPool(MessageChannel channel, String host, String pwd) {
         PoolStatus stat = ChannelPool.joinPool(host, channel.getId(), pwd);
+        final TextChannel HOST_CHANNEL = Callerphone.getTextChannel(host);
+        if (HOST_CHANNEL == null) {
+            ChannelPool.clearChildren(host);
+            return CP_EMJ + "An error occured.";
+        }
         if (stat == PoolStatus.IS_HOST) {
             return CP_EMJ + "This channel is already hosting a pool." +
                     "\nThis channel's pool ID is: `" + channel.getId() + "`" +
@@ -66,23 +72,13 @@ public class JoinPool implements ICommand {
         } else if (stat == PoolStatus.NOT_FOUND) {
             return CP_EMJ + "Requested pool `ID: " + host + "` does not exist.";
         } else if (stat == PoolStatus.INCORRECT_PASS) {
-            try {
-                Callerphone.jda.getTextChannelById(host).sendMessage(CP_EMJ + "Channel `ID: " + channel.getId() + "` attempted to join with incorrect password.").queue();
-            } catch (Exception e) {
-            }
+            HOST_CHANNEL.sendMessage(CP_EMJ + "Channel `ID: " + channel.getId() + "` attempted to join with incorrect password.").queue();
             return CP_EMJ + "Requested pool `ID: " + host + "` does not exist.";
         } else if (stat == PoolStatus.FULL) {
-            try {
-                Callerphone.jda.getTextChannelById(host).sendMessage(CP_EMJ + "Channel `ID: " + channel.getId() + "` attempted to join this full pool.").queue();
-            } catch (Exception e) {
-            }
+            HOST_CHANNEL.sendMessage(CP_EMJ + "Channel `ID: " + channel.getId() + "` attempted to join this full pool.").queue();
             return CP_EMJ + "This pool is already full " + ChannelPool.config.get(host).getCap() + "/" + ChannelPool.config.get(host).getCap() + ".";
         } else if (stat == PoolStatus.SUCCESS) {
-            try {
-                return CP_EMJ + "Successfully joined channel pool hosted by `#" + Callerphone.jda.getTextChannelById(host).getName() + "`*(ID: " + host + ")*!";
-            } catch (Exception e) {
-                return CP_EMJ + "Successfully joined channel pool hosted by `#[N/A NOT FOUND]!";
-            }
+            return CP_EMJ + "Successfully joined channel pool hosted by `#" + HOST_CHANNEL.getName() + "`*(ID: " + host + ")*!";
         }
         return CP_EMJ + "An error occurred.";
     }

@@ -3,6 +3,7 @@ package com.marsss.callerphone.channelpool.commands;
 import com.marsss.ICommand;
 import com.marsss.callerphone.Callerphone;
 import com.marsss.callerphone.channelpool.ChannelPool;
+import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
@@ -31,11 +32,13 @@ public class PoolParticipants implements ICommand {
             LIST.append("\n`ID: ")
                     .append(PARTICIPANTS.get(i))
                     .append("` (#");
-            try {
-                LIST.append(Callerphone.jda.getTextChannelById(PARTICIPANTS.get(i)).getName())
-                        .append(")");
-            } catch (Exception e) {
+
+            final TextChannel TEXT_CHANNEL = Callerphone.getTextChannel(PARTICIPANTS.get(i));
+            if(TEXT_CHANNEL == null) {
                 LIST.append("#[N/A NOT FOUND])");
+            } else {
+                LIST.append(TEXT_CHANNEL.getName())
+                        .append(")");
             }
             if (i == 0) {
                 LIST.append(" [Host] :crown:");
