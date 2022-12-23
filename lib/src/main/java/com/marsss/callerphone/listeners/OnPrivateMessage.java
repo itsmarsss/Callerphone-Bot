@@ -2,9 +2,6 @@ package com.marsss.callerphone.listeners;
 
 import java.awt.Color;
 import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
 import java.net.URL;
 import java.util.Scanner;
 
@@ -173,7 +170,7 @@ public class OnPrivateMessage extends ListenerAdapter {
             s = s.replace("\">", " ");
             s = s.replace("<\\/a>", "");
 
-            channel.sendMessage(replaceLast(s.replace("{\"cnt\":\"", ""), "\"}", "")).queue();
+            channel.sendMessage(replaceLast(s.replace("{\"cnt\":\"", ""))).queue();
         } catch (Exception e) {
             e.printStackTrace();
             try {
@@ -197,8 +194,8 @@ public class OnPrivateMessage extends ListenerAdapter {
         }
     }
 
-    private static String replaceLast(final String text, final String regex, final String replacement) {
-        return text.replaceFirst("(?s)(.*)" + regex, "$1" + replacement);
+    private static String replaceLast(final String text) {
+        return text.replaceFirst("(?s)(.*)" + "\"}", "$1" + "");
     }
 
 }

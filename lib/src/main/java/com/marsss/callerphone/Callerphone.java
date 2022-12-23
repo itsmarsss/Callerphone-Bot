@@ -46,19 +46,19 @@ public class Callerphone {
 
     public static String parent;
 
-    public static LinkedList<String> blacklist = new LinkedList<>();
-    public static HashMap<String, String> prefix = new HashMap<>();
-    public static LinkedList<String> admin = new LinkedList<>();
+    public static final LinkedList<String> blacklist = new LinkedList<>();
+    public static final HashMap<String, String> prefix = new HashMap<>();
+    public static final LinkedList<String> admin = new LinkedList<>();
 
-    public static LinkedList<String> filter = new LinkedList<>();
+    public static final LinkedList<String> filter = new LinkedList<>();
 
-    public static HashMap<String, ICommand> cmdMap = new HashMap<>();
+    public static final HashMap<String, ICommand> cmdMap = new HashMap<>();
 
     public static final String Prefix = "c?";
 
     public static String brainURL = "http://api.brainshop.ai/get?bid=160403&key=FFFNOBQEMnANoVn1&uid=[uid]&msg=[msg]";
     public static String Callerphone = "<:CallerphoneEmote:899051549173637120> ";
-    public static String CallerphoneCall = "<:Pog:892780255452987402> ";
+    public static final String CallerphoneCall = "<:Pog:892780255452987402> ";
     public static String logstatus = "852338750519640116";
     public static String reportchannel = "897290511000404008";
     public static String invite = "https://discord.com/oauth2/authorize?client_id=849713468348956692&permissions=414464724040&scope=bot%20applications.commands";
@@ -71,9 +71,9 @@ public class Callerphone {
 
     public static JDA jda;
 
-    private static HashMap<String, Long> userCredits = new HashMap<String, Long>();
-    private static HashMap<String, Long> userExecuted = new HashMap<String, Long>();
-    private static HashMap<String, Long> userTransmitted = new HashMap<String, Long>();
+    private static final HashMap<String, Long> userCredits = new HashMap<>();
+    private static final HashMap<String, Long> userExecuted = new HashMap<>();
+    private static final HashMap<String, Long> userTransmitted = new HashMap<>();
     public static final String ERROR_MSG = "An error occurred with error: `%s`." +
             "\nIf this is a recurring problem, please join our support server and report this issue. " + support;
 
@@ -384,6 +384,7 @@ public class Callerphone {
 
                 }
             }
+            jda.getPresence().setPresence(s, act);
         } catch (Exception e) {
             e.printStackTrace();
             logger.error("Input error, please try again");
@@ -632,7 +633,6 @@ public class Callerphone {
             }
 
             myWriter.print(sb);
-            myWriter.close();
         }
     }
 
@@ -661,7 +661,6 @@ public class Callerphone {
             }
 
             myWriter.print(sb);
-            myWriter.close();
         }
     }
 
@@ -774,7 +773,6 @@ public class Callerphone {
             }
 
             myWriter.print(sb);
-            myWriter.close();
         }
         StringBuilder sb2 = new StringBuilder();
         try (PrintWriter myWriter = new PrintWriter(parent + "/poolconfig.txt")) {
@@ -786,7 +784,6 @@ public class Callerphone {
             }
 
             myWriter.print(sb2);
-            myWriter.close();
         }
     }
 

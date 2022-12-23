@@ -2,7 +2,6 @@ package com.marsss.callerphone.bot;
 
 import com.marsss.ICommand;
 import com.marsss.callerphone.Callerphone;
-import com.sun.org.apache.xerces.internal.xs.ItemPSVI;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 

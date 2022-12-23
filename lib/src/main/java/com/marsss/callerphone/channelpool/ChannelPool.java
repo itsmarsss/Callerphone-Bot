@@ -17,9 +17,9 @@ import java.util.HashMap;
 
 public class ChannelPool {
 
-    public static HashMap<String, PoolConfig> config = new HashMap<>();
-    public static HashMap<String, String> parent = new HashMap<>();
-    public static HashMap<String, ArrayList<String>> childr = new HashMap<>();
+    public static final HashMap<String, PoolConfig> config = new HashMap<>();
+    public static final HashMap<String, String> parent = new HashMap<>();
+    public static final HashMap<String, ArrayList<String>> childr = new HashMap<>();
 
     private static final JDA jda = Callerphone.jda;
     private static final String CP_EMJ = Callerphone.Callerphone;

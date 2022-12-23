@@ -21,9 +21,9 @@ public class RewardCredits implements ICommand {
         final String[] ARGS = e.getMessage().getContentRaw().split("\\s+");
         final List<User> MENTIONS = e.getMessage().getMentionedUsers();
         final User USER = MENTIONS.size() > 0 ? MENTIONS.get(0) : e.getAuthor();
-        int amount = 0;
+        int amount;
         try {
-            amount = Integer.valueOf(ARGS[1]);
+            amount = Integer.parseInt(ARGS[1]);
         } catch (Exception ex) {
             ex.printStackTrace();
             e.getMessage().reply(CP_EMJ+"`c?rewardcreds <amount> <@user>`").queue();
@@ -33,9 +33,7 @@ public class RewardCredits implements ICommand {
     }
 
     @Override
-    public void runSlash(SlashCommandEvent e) {
-        return;
-    }
+    public void runSlash(SlashCommandEvent e) {}
 
     private String rewardCredits(User user, int amount) {
         Callerphone.reward(user, amount);

@@ -11,7 +11,7 @@ import java.util.ArrayList;
 
 public class TCCallerphone {
 
-    public static ArrayList<ConvoStorage> convos = new ArrayList<>();
+    public static final ArrayList<ConvoStorage> convos = new ArrayList<>();
 
     private static final JDA jda = Callerphone.jda;
 

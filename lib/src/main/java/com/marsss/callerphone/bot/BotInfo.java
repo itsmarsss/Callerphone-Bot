@@ -25,7 +25,7 @@ public class BotInfo implements ICommand {
     }
 
     private final JDA jda = Callerphone.jda;
-    private StringBuilder DESCRIPTION = new StringBuilder()
+    private final StringBuilder DESCRIPTION = new StringBuilder()
             .append("**Tag of the bot:** ").append(jda.getSelfUser().getAsTag())
             .append("\n**Avatar url:** [link](").append(jda.getSelfUser().getAvatarUrl()).append(")")
             .append("\n**Time created:** ").append(DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss").format(jda.getSelfUser().getTimeCreated()))
