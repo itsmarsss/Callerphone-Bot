@@ -89,7 +89,7 @@ public class JoinPool implements ICommand {
             HOST_CHANNEL.sendMessage(CP_EMJ + "Channel `ID: " + channel.getId() + "` attempted to join this full pool.").queue();
             return CP_EMJ + "This pool is already full " + ChannelPool.config.get(host).getCap() + "/" + ChannelPool.config.get(host).getCap() + ".";
         } else if (stat == PoolStatus.SUCCESS) {
-            return CP_EMJ + "Successfully joined channel pool hosted by `#" + HOST_CHANNEL.getName() + "`*(ID: " + host + ")*!";
+            return CP_EMJ + "Successfully joined channel pool hosted by `ID: " + host + "(#" + HOST_CHANNEL.getName() + ")!";
         }
         return CP_EMJ + "An error occurred.";
     }
