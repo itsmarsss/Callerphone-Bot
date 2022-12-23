@@ -1,7 +1,6 @@
 package com.marsss.callerphone.tccallerphone;
 
 import com.marsss.callerphone.Callerphone;
-import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.TextChannel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,8 +11,6 @@ import java.util.ArrayList;
 public class TCCallerphone {
 
     public static final ArrayList<ConvoStorage> convos = new ArrayList<>();
-
-    private static final JDA jda = Callerphone.jda;
 
     private static final String CP_EMJ = Callerphone.Callerphone;
 

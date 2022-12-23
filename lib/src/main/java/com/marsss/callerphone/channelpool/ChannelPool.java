@@ -1,7 +1,6 @@
 package com.marsss.callerphone.channelpool;
 
 import com.marsss.callerphone.Callerphone;
-import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
@@ -20,8 +19,6 @@ public class ChannelPool {
     public static final HashMap<String, PoolConfig> config = new HashMap<>();
     public static final HashMap<String, String> parent = new HashMap<>();
     public static final HashMap<String, ArrayList<String>> childr = new HashMap<>();
-
-    private static final JDA jda = Callerphone.jda;
     private static final String CP_EMJ = Callerphone.Callerphone;
     private static final String NO_PERMISSION = CP_EMJ + "You need `Manage Channel` permission to run this command.";
 

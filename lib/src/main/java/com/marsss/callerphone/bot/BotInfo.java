@@ -30,7 +30,7 @@ public class BotInfo implements ICommand {
             .append("\n**Avatar url:** [link](").append(jda.getSelfUser().getAvatarUrl()).append(")")
             .append("\n**Time created:** ").append(DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss").format(jda.getSelfUser().getTimeCreated()))
             .append("\n**Id:** ").append(jda.getSelfUser().getId())
-            .append("\n**Shard info:** [").append((jda.getShardInfo().getShardId() + 1) + "/" + jda.getShardInfo().getShardTotal() + "]")
+            .append("\n**Shard info:** [").append(jda.getShardInfo().getShardId() + 1).append("/").append(jda.getShardInfo().getShardTotal()).append("]")
             .append("\n**Servers:** ").append(jda.getGuilds().size());
 
     private MessageEmbed botInfo() {
