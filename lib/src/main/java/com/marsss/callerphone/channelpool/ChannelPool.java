@@ -238,7 +238,10 @@ public class ChannelPool {
                 handleChannelLeft(sender, id);
                 return;
             }
-            buildMessageAction(original, msg, id).queue();
+            final MessageAction MESSAGE_ACTION = buildMessageAction(original, msg, id);
+            if (MESSAGE_ACTION != null) {
+                MESSAGE_ACTION.queue();
+            }
         });
     }
 
@@ -288,7 +291,7 @@ public class ChannelPool {
 
         ActionRow row = ActionRow.of(collection);
         actionrow.add(row);
-        ma.setActionRows(actionrow);
+        ma = ma.setActionRows(actionrow);
         return ma;
     }
 
