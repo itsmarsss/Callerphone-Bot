@@ -921,6 +921,10 @@ public class Callerphone {
     }
 
     public static TextChannel getTextChannel(String id) {
+        if(id.isEmpty()){
+            return null;
+        }
+
         final TextChannel CHANNEL = jda.getTextChannelById(id);
 
         if (CHANNEL == null)
