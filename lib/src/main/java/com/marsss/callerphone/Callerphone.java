@@ -56,9 +56,8 @@ public class Callerphone {
 
     public static final String Prefix = "c?";
 
-    public static String brainURL = "http://api.brainshop.ai/get?bid=160403&key=FFFNOBQEMnANoVn1&uid=[uid]&msg=[msg]";
     public static String Callerphone = "<:CallerphoneEmote:899051549173637120> ";
-    public static final String CallerphoneCall = "<:Pog:892780255452987402> ";
+    public static String CallerphoneCall = "<:Pog:892780255452987402> ";
     public static String logstatus = "852338750519640116";
     public static String reportchannel = "897290511000404008";
     public static String invite = "https://discord.com/oauth2/authorize?client_id=849713468348956692&permissions=414464724040&scope=bot%20applications.commands";
@@ -121,9 +120,9 @@ public class Callerphone {
                 if (jda != null) {
                     EmbedBuilder embedBuilder = new EmbedBuilder().setTitle("Status").setColor(new Color(213, 0, 0)).setFooter("Goodbye World...").setDescription(jda.getSelfUser().getAsMention() + " is going offline;" + cmd.replaceFirst("shutdown", ""));
                     final TextChannel LOG_CHANNEL = getTextChannel(logstatus);
-                    if(LOG_CHANNEL == null) {
+                    if (LOG_CHANNEL == null) {
                         logger.error("Error Sending Shutdown Message");
-                    }else{
+                    } else {
                         LOG_CHANNEL.sendMessageEmbeds(embedBuilder.build()).complete();
                     }
                     jda.awaitReady();
@@ -284,7 +283,7 @@ public class Callerphone {
             }
 
             final TextChannel LOG_CHANNEL = getTextChannel(logstatus);
-            if(LOG_CHANNEL == null){
+            if (LOG_CHANNEL == null) {
                 System.out.println("------------------------------");
                 logger.error("Error Sending Startup Message");
             } else {
@@ -398,7 +397,7 @@ public class Callerphone {
             e.printStackTrace();
             System.out.println("------------------------------");
             logger.error("Error with info.txt");
-            logger.warn("Critical Issues May Appear (BrainURL and other links)");
+            logger.warn("Critical Issues May Appear (Ex: links)");
         }
 
         try {
@@ -553,10 +552,10 @@ public class Callerphone {
         String line = br.readLine();
 
         while (line != null) {
-            if (line.startsWith("brainurl=")) {
-                brainURL = line.substring(9).trim();
-            } else if (line.startsWith("emoji=")) {
+            if (line.startsWith("emoji=")) {
                 Callerphone = line.substring(6).trim() + " ";
+            } else if (line.startsWith("callemoji=")) {
+                Callerphone = line.substring(10).trim() + " ";
             } else if (line.startsWith("log=")) {
                 logstatus = line.substring(4).trim();
             } else if (line.startsWith("report=")) {
@@ -583,14 +582,14 @@ public class Callerphone {
 
         jda.awaitReady();
         final TextChannel LOG_CHANNEL = getTextChannel(logstatus);
-        if(LOG_CHANNEL == null) {
+        if (LOG_CHANNEL == null) {
             System.out.println("Report Channel: [N/A NOT FOUND]");
         } else {
             System.out.println("Log Status Channel: " + LOG_CHANNEL.getAsMention());
         }
 
         final TextChannel REPORT_CHANNEL = getTextChannel(logstatus);
-        if(REPORT_CHANNEL == null) {
+        if (REPORT_CHANNEL == null) {
             System.out.println("Report Channel: [N/A NOT FOUND]");
         } else {
             System.out.println("Report Channel: " + REPORT_CHANNEL.getAsMention());
@@ -599,7 +598,12 @@ public class Callerphone {
         if (isQuickStart) {
             System.out.println("Owner: " + owner + " (unable to obtain tag because of quickstart)");
         } else {
-            System.out.println("Owner: " + jda.getUserById(owner).getAsTag());
+            final User OWNER = jda.getUserById(owner);
+            if (OWNER == null) {
+                System.out.println("Owner: [N/A NOT FOUND]");
+            } else {
+                System.out.println("Owner: " + OWNER.getAsTag());
+            }
         }
 
         System.out.println();
