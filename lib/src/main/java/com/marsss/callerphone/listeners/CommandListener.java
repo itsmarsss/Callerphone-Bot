@@ -4,6 +4,7 @@ import com.marsss.callerphone.Callerphone;
 
 import com.marsss.callerphone.bot.Advertisement;
 import com.marsss.callerphone.bot.Profile;
+import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
@@ -47,6 +48,16 @@ public class CommandListener extends ListenerAdapter {
 
         try {
             if (Callerphone.cmdMap.containsKey(trigger)) {
+                if(Callerphone.getCredits(event.getAuthor()) == 0) {
+                    event.getMessage().replyEmbeds(
+                            new EmbedBuilder()
+                                    .setTitle("User Agreement", event.getAuthor().getAvatarUrl())
+                                    .setDescription("By issuing another Callerphone (**\"Bot\"**) command, it is expected that you (**\"User\"**) have read, and User has agreed to both Bot's [Privacy Policy](" + Callerphone.privacy + ") and [Terms of Service](" + Callerphone.terms + "). It is User's responsibility to regularly check for updates to these documents.")
+                                    .setFooter("This is to protect both Bot and User from unforeseen issues in the future. Please read these documents carefully.", Callerphone.jda.getSelfUser().getAvatarUrl())
+                                    .build()
+                    ).queue();
+                    return;
+                }
                 Callerphone.cmdMap.get(trigger).runCommand(event);
                 if (!Arrays.asList(new Profile().getTriggers()).contains(trigger)) {
                     Callerphone.reward(event.getAuthor(), 1);
