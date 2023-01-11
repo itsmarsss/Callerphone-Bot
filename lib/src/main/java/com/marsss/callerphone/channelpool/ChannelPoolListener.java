@@ -47,11 +47,11 @@ public class ChannelPoolListener extends ListenerAdapter {
             );
         }
 
-        if(!Callerphone.poolChatCoolDown.containsKey(event.getAuthor())) {
+        if(!Callerphone.poolChatCoolDown.containsKey(event.getAuthor().getId())) {
             Callerphone.poolChatCoolDown.put(event.getAuthor().getId(), 0L);
         }
 
-        if((System.currentTimeMillis() - Callerphone.poolChatCoolDown.get(event.getAuthor().getId())) > 30000) {
+        if((System.currentTimeMillis() - Callerphone.poolChatCoolDown.get(event.getAuthor().getId())) > Callerphone.cooldown) {
             Callerphone.poolChatCoolDown.put(event.getAuthor().getId(), System.currentTimeMillis());
 
             Callerphone.reward(event.getAuthor(), 3);

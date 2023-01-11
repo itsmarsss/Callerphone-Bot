@@ -66,6 +66,8 @@ public class Callerphone {
     public static String donate = "https://www.patreon.com/itsmarsss";
     public static String owner = "841028865995964477";
 
+    public static int cooldown = 15000;
+
     public static boolean isQuickStart;
 
     public static JDA jda;

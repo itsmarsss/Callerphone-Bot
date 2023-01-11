@@ -48,7 +48,8 @@ public class Profile implements ICommand {
                 .addField("**General**", general, true)
                 .addField("**Credits**", credits, true)
                 .addField("**Messages**", message, true)
-                .setFooter("Your Profile", "https://cdn.discordapp.com/emojis/899042768394006540.webp")
+                .addField("**Pool and Chat credit cooldowns)**", ((System.currentTimeMillis() - Callerphone.poolChatCoolDown.get(user.getId())) < Callerphone.cooldown ? ":clock: " + ((System.currentTimeMillis() - Callerphone.poolChatCoolDown.get(user.getId())) / 1000) + " seconds" : ":white_check_mark: None"), true)
+                .setFooter("Your Profile", Callerphone.jda.getSelfUser().getAvatarUrl())
                 .setTimestamp(Instant.now())
                 .setColor(new Color(114, 137, 218));
 
