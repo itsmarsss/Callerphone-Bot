@@ -259,7 +259,7 @@ public class Callerphone {
 
 
             for (int i = 0; i < 10000; i++) {
-                TCCallerphone.convos.add(new ConvoStorage(new ConcurrentLinkedQueue<>(), "empty", "", 0, true, true, false, false, false));
+                TCCallerphone.convos.add(new ConvoStorage(new ConcurrentLinkedQueue<>(), "empty", "", 0, 0, true, true, false, false, false));
             }
 
             jda.awaitReady();
