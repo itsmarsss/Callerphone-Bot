@@ -64,6 +64,8 @@ public class Callerphone {
     public static String support = "https://discord.gg/jcYKsfw48p";
     public static String tunessupport = "https://discord.gg/TyHaxtWAmX";
     public static String donate = "https://www.patreon.com/itsmarsss";
+    public static String privacy = "https://github.com/itsmarsss/Callerphone-Bot/blob/main/assets/PRIVACY.md";
+    public static String terms = "https://github.com/itsmarsss/Callerphone-Bot/blob/main/assets/TERMSOFSERVICE.md";
     public static String owner = "841028865995964477";
 
     public static int cooldown = 15000;
