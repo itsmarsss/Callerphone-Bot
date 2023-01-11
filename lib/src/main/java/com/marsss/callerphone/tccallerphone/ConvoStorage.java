@@ -8,25 +8,27 @@ public class ConvoStorage {
 
     private String receiverTCID;
 
-    private long lastMessage;
+    private long callerLastMessage;
+    private long receiverLastMessage;
 
-    private boolean CFF;
-    private boolean RFF;
+    private boolean callerFamilyFriendly;
+    private boolean receiverFamilyFriendly;
 
-    private boolean CAnon;
-    private boolean RAnon;
+    private boolean callerAnonymous;
+    private boolean receiverAnonymous;
 
     private boolean report;
 
-    public ConvoStorage(Queue<String> messages, String callerTCID, String receiverTCID, int lastMessage, boolean CFF, boolean RFF, boolean CAnon, boolean RAnon, boolean report) {
+    public ConvoStorage(Queue<String> messages, String callerTCID, String receiverTCID, long callerLastMessage, long receiverLastMessage, boolean callerFamilyFriendly, boolean receiverFamilyFriendly, boolean callerAnonymous, boolean receiverAnonymous, boolean report) {
         this.messages = messages;
         this.callerTCID = callerTCID;
         this.receiverTCID = receiverTCID;
-        this.lastMessage = lastMessage;
-        this.CFF = CFF;
-        this.RFF = RFF;
-        this.CAnon = CAnon;
-        this.RAnon = RAnon;
+        this.callerLastMessage = callerLastMessage;
+        this.receiverLastMessage = receiverLastMessage;
+        this.callerFamilyFriendly = callerFamilyFriendly;
+        this.receiverFamilyFriendly = receiverFamilyFriendly;
+        this.callerAnonymous = callerAnonymous;
+        this.receiverAnonymous = receiverAnonymous;
         this.report = report;
     }
 
@@ -44,24 +46,27 @@ public class ConvoStorage {
         return receiverTCID;
     }
 
-    public long getLastMessage() {
-        return lastMessage;
+    public long getCallerLastMessage() {
+        return callerLastMessage;
+    }
+    public long getReceiverLastMessage() {
+        return receiverLastMessage;
     }
 
-    public boolean getCFF() {
-        return CFF;
+    public boolean getCallerFamilyFriendly() {
+        return callerFamilyFriendly;
     }
 
-    public boolean getRFF() {
-        return RFF;
+    public boolean getReceiverFamilyFriendly() {
+        return receiverFamilyFriendly;
     }
 
-    public boolean getCAnon() {
-        return CAnon;
+    public boolean getCallerAnonymous() {
+        return callerAnonymous;
     }
 
-    public boolean getRAnon() {
-        return RAnon;
+    public boolean getReceiverAnonymous() {
+        return receiverAnonymous;
     }
 
     public boolean getReport() {
@@ -82,24 +87,27 @@ public class ConvoStorage {
         receiverTCID = ID;
     }
 
-    public void setLastMessage(long time) {
-        lastMessage = time;
+    public void setCallerLastMessage(long time) {
+        callerLastMessage = time;
+    }
+    public void setReceiverLastMessage(long time) {
+        receiverLastMessage = time;
     }
 
-    public void setCFF(boolean ccf) {
-        CFF = ccf;
+    public void setCallerFamilyFriendly(boolean ccf) {
+        callerFamilyFriendly = ccf;
     }
 
-    public void setRFF(boolean rff) {
-        RFF = rff;
+    public void setReceiverFamilyFriendly(boolean rff) {
+        receiverFamilyFriendly = rff;
     }
 
-    public void setCAnon(boolean canon) {
-        CAnon = canon;
+    public void setCallerAnonymous(boolean canon) {
+        callerAnonymous = canon;
     }
 
-    public void setRAnon(boolean ranon) {
-        RAnon = ranon;
+    public void setReceiverAnonymous(boolean ranon) {
+        receiverAnonymous = ranon;
     }
 
     public void setReport(boolean rep) {
@@ -110,11 +118,12 @@ public class ConvoStorage {
         messages.clear();
         callerTCID = "empty";
         receiverTCID = "";
-        lastMessage = 0;
-        CFF = true;
-        RFF = true;
-        CAnon = false;
-        RAnon = false;
+        callerLastMessage = 0;
+        receiverLastMessage = 0;
+        callerFamilyFriendly = true;
+        receiverFamilyFriendly = true;
+        callerAnonymous = false;
+        receiverAnonymous = false;
         report = false;
     }
 

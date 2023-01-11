@@ -57,24 +57,25 @@ public class TCCallerphoneListener extends ListenerAdapter {
                         + "(" + MESSAGE.getAuthor().getId() + ")"
                         + ": " + messageRaw
         );
-        c.setLastMessage(System.currentTimeMillis());
 
         if (messageRaw.length() > 1500)
             messageRaw = MESSAGE_TOO_LONG;
 
         if (c.getCallerTCID().equals(CHANNELID)) {
-            if (c.getRFF()) {
+            if (c.getReceiverFamilyFriendly()) {
                 messageRaw = filter(messageRaw);
             }
 
-            sendMessage(c, c.getCAnon(), c.getReceiverTCID(), messageRaw, MESSAGE);
+            c.setCallerLastMessage(System.currentTimeMillis());
+            sendMessage(c, c.getCallerAnonymous(), c.getReceiverTCID(), messageRaw, MESSAGE);
 
         } else if (c.getReceiverTCID().equals(CHANNELID)) {
-            if (c.getCFF()) {
+            if (c.getCallerFamilyFriendly()) {
                 messageRaw = filter(messageRaw);
             }
 
-            sendMessage(c, c.getRAnon(), c.getCallerTCID(), messageRaw, MESSAGE);
+            c.setReceiverLastMessage(System.currentTimeMillis());
+            sendMessage(c, c.getReceiverAnonymous(), c.getCallerTCID(), messageRaw, MESSAGE);
         }
 
         Callerphone.reward(event.getAuthor(), 5);

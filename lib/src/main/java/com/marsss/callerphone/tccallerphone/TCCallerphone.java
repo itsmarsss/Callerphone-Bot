@@ -22,10 +22,11 @@ public class TCCallerphone {
 
         for (ConvoStorage convo : convos) {
             if (!convo.getCallerTCID().equals("empty") && convo.getReceiverTCID().equals("")) {
-                convo.setRFF(cens);
-                convo.setRAnon(anon);
+                convo.setReceiverFamilyFriendly(cens);
+                convo.setReceiverAnonymous(anon);
                 convo.setReceiverTCID(CHANNELID);
-                convo.setLastMessage(System.currentTimeMillis());
+                convo.setCallerLastMessage(System.currentTimeMillis());
+                convo.setReceiverLastMessage(System.currentTimeMillis());
 
                 final TextChannel CALLER_CHANNEL = Callerphone.getTextChannel(convo.getCallerTCID());
                 final TextChannel RECEIVER_CHANNEL = Callerphone.getTextChannel(convo.getReceiverTCID());
@@ -50,8 +51,8 @@ public class TCCallerphone {
 
                 return ChatStatus.SUCCESS_RECEIVER;
             } else if (convo.getCallerTCID().equals("empty")) {
-                convo.setCFF(cens);
-                convo.setCAnon(anon);
+                convo.setCallerFamilyFriendly(cens);
+                convo.setCallerAnonymous(anon);
                 convo.setCallerTCID(CHANNELID);
 
                 return ChatStatus.SUCCESS_CALLER;
