@@ -26,8 +26,8 @@ public class Profile implements ICommand {
         e.replyEmbeds(profile(e.getOption("target").getAsUser())).queue();
     }
 
-    private final String GENERAL = "Level: `%d`\nExperience: `%d/100`\nPrefix: %s\n\n[`c?help exp`]";
-    private final String CREDITS = "Credits: `\u00A9 %d`\nRedeemed: `\u00A9 %d`\nNet: `\u00A9 %d`\n\n[`c?help creds`]";
+    private final String GENERAL = "Level: `%d`\nExperience: `%d/100`\nPrefix: %s\n\n[`" + Callerphone.Prefix + "help exp`]";
+    private final String CREDITS = "Credits: `\u00A9 %d`\nRedeemed: `\u00A9 %d`\nNet: `\u00A9 %d`\n\n[`" + Callerphone.Prefix + "help creds`]";
     private final String MESSAGE = "Executed: `%d`\n Transmitted: `%s`\nTotal: `%s`";
 
     private MessageEmbed profile(User user) {
@@ -36,7 +36,7 @@ public class Profile implements ICommand {
         final long TOTAL = EXECUTED + TRANSMITTED;
         final int LVL = (int) TOTAL/100;
         final int EXP = (int) TOTAL - 100 * LVL;
-        final String PREFIX = Callerphone.prefix.getOrDefault(user.getId(), (LVL > 5 ? ":unlock: `c?prefix <prefix>`" : ":lock: `Level 50`"));
+        final String PREFIX = Callerphone.prefix.getOrDefault(user.getId(), (LVL > 5 ? ":unlock: `" + Callerphone.Prefix + "prefix <prefix>`" : ":lock: `Level 50`"));
 
         String general = String.format(GENERAL, LVL, EXP, PREFIX);
         String credits = String.format(CREDITS, Callerphone.getCredits(user), 0, 0);

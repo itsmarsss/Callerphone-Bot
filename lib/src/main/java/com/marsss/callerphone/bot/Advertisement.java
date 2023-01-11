@@ -10,7 +10,7 @@ public class Advertisement {
         EmbedBuilder advEmd = new EmbedBuilder()
                 .setColor(Colour.randColor())
                 .setTitle("**UPCOMING ECONOMY BOT!!!**")
-                .setDescription("You can earn credits that can be converted to currency by interacting with **Callerphone**. See `c?profile` and `c?help creds`...")
+                .setDescription("You can earn credits that can be converted to currency by interacting with **Callerphone**. See `" + Callerphone.Prefix + "profile` and `" + Callerphone.Prefix + "help creds`...")
                 .appendDescription("\n\nJoin " + Callerphone.support + " and view <#1055259828135657482> for more information!");
 
         return advEmd.build();

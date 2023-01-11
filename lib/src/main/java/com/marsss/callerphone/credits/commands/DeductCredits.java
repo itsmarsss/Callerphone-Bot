@@ -26,7 +26,7 @@ public class DeductCredits implements ICommand {
             amount = Integer.parseInt(ARGS[1]);
         } catch (Exception ex) {
             ex.printStackTrace();
-            e.getMessage().reply(CP_EMJ+"`c?deductcreds <amount> <@user>`").queue();
+            e.getMessage().reply(CP_EMJ+"`" + Callerphone.Prefix + "deductcreds <amount> <@user>`").queue();
             return;
         }
         e.getMessage().reply(deductCredits(USER, amount)).queue();

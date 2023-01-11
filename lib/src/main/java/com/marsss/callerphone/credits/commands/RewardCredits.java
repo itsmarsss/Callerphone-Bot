@@ -26,7 +26,7 @@ public class RewardCredits implements ICommand {
             amount = Integer.parseInt(ARGS[1]);
         } catch (Exception ex) {
             ex.printStackTrace();
-            e.getMessage().reply(CP_EMJ+"`c?rewardcreds <amount> <@user>`").queue();
+            e.getMessage().reply(CP_EMJ+"`" + Callerphone.Prefix + "rewardcreds <amount> <@user>`").queue();
             return;
         }
         e.getMessage().reply(rewardCredits(USER, amount)).queue();
