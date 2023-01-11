@@ -46,7 +46,9 @@ public class About implements ICommand {
             .append("\n[Upvote bot (dbl)](https://discordbotlist.com/bots/callerphone/upvote)")
             .append("\n[Upvote support server (top.gg)](https://top.gg/servers/798428155907801089/vote)")
             .append("\n[Upvote support server (dbl)](https://discordbotlist.com/servers/legendary-bot-official-server/upvote)")
-            .append("\n");
+            .append("\n")
+            .append("\n[Privacy Policy](").append(Callerphone.privacy).append(")")
+            .append("\n[Terms of Service](").append(Callerphone.terms).append(")");
     private MessageEmbed about() {
         final JDA jda = Callerphone.jda;
 

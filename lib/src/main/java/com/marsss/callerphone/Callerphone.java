@@ -57,18 +57,18 @@ public class Callerphone {
     public static final String Prefix = "c?";
 
     public static String Callerphone = "<:CallerphoneEmote:899051549173637120> ";
-    public static String CallerphoneCall = "<:Pog:892780255452987402> ";
+    public static final String CallerphoneCall = "<:Pog:892780255452987402> ";
     public static String logstatus = "852338750519640116";
     public static String reportchannel = "897290511000404008";
     public static String invite = "https://discord.com/oauth2/authorize?client_id=849713468348956692&permissions=414464724040&scope=bot%20applications.commands";
     public static String support = "https://discord.gg/jcYKsfw48p";
     public static String tunessupport = "https://discord.gg/TyHaxtWAmX";
     public static String donate = "https://www.patreon.com/itsmarsss";
-    public static String privacy = "https://github.com/itsmarsss/Callerphone-Bot/blob/main/assets/PRIVACY.md";
-    public static String terms = "https://github.com/itsmarsss/Callerphone-Bot/blob/main/assets/TERMSOFSERVICE.md";
+    public static final String privacy = "https://github.com/itsmarsss/Callerphone-Bot/blob/main/assets/PRIVACY.md";
+    public static final String terms = "https://github.com/itsmarsss/Callerphone-Bot/blob/main/assets/TERMSOFSERVICE.md";
     public static String owner = "841028865995964477";
 
-    public static int cooldown = 15000;
+    public static final int cooldown = 15000;
 
     public static boolean isQuickStart;
 
@@ -487,6 +487,21 @@ public class Callerphone {
         }
         try {
             exportCredits();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        try {
+            exportAdmin();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        try {
+            exportBlack();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        try {
+            exportPrefix();
         } catch (Exception e) {
             e.printStackTrace();
         }
