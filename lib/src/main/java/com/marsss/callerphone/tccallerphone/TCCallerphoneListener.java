@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 
 import com.marsss.callerphone.Callerphone;
 
+import com.marsss.callerphone.listeners.CommandListener;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.User;
@@ -78,8 +79,17 @@ public class TCCallerphoneListener extends ListenerAdapter {
             sendMessage(c, c.getReceiverAnonymous(), c.getCallerTCID(), messageRaw, MESSAGE);
         }
 
-        Callerphone.reward(event.getAuthor(), 5);
-        Callerphone.addTransmit(event.getAuthor(), 1);
+        if(!Callerphone.poolChatCoolDown.containsKey(event.getAuthor())) {
+            Callerphone.poolChatCoolDown.put(event.getAuthor().getId(), 0L);
+        }
+
+        if((System.currentTimeMillis() - Callerphone.poolChatCoolDown.get(event.getAuthor().getId())) > 30000) {
+            Callerphone.poolChatCoolDown.put(event.getAuthor().getId(), System.currentTimeMillis());
+
+            Callerphone.reward(event.getAuthor(), 5);
+            Callerphone.addTransmit(event.getAuthor(), 1);
+        }
+
     }
 
     private final String DEFAULT_TEMPLATE = "**%s**#%s " + Callerphone.CallerphoneCall + "%s";

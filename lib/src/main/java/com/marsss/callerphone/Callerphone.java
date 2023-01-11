@@ -73,6 +73,7 @@ public class Callerphone {
     private static final HashMap<String, Long> userCredits = new HashMap<>();
     private static final HashMap<String, Long> userExecuted = new HashMap<>();
     private static final HashMap<String, Long> userTransmitted = new HashMap<>();
+    public static final HashMap<String, Long> poolChatCoolDown = new HashMap<>();
     public static final String ERROR_MSG = "An error occurred with error: `%s`." +
             "\nIf this is a recurring problem, please join our support server and report this issue. " + support;
 
