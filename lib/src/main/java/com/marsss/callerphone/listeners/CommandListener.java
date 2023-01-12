@@ -10,6 +10,7 @@ import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
+import java.awt.*;
 import java.util.Arrays;
 import java.util.Random;
 
@@ -57,10 +58,11 @@ public class CommandListener extends ListenerAdapter {
                 if(Callerphone.getCredits(event.getAuthor()) == 0) {
                     event.getMessage().replyEmbeds(
                             new EmbedBuilder()
-                                    .setAuthor("Must Read", event.getAuthor().getAvatarUrl())
+                                    .setAuthor("Must Read", null, event.getAuthor().getAvatarUrl())
                                     .setTitle("User Agreement")
                                     .setDescription("By issuing another Callerphone (**\"Bot\"**) command, it is expected that you (**\"User\"**) have read, and User has agreed to both Bot's [Privacy Policy](" + Callerphone.privacy + ") and [Terms of Service](" + Callerphone.terms + "). It is User's responsibility to regularly check for updates to these documents.")
                                     .setFooter("This is to protect both Bot and User from unforeseen issues in the future. Please read these documents carefully.", Callerphone.jda.getSelfUser().getAvatarUrl())
+                                    .setColor(new Color(114, 137, 218))
                                     .build()
                     ).queue();
                     return;
