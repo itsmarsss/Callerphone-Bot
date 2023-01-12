@@ -12,6 +12,10 @@ public class OnSlashCommand extends ListenerAdapter {
     public void onSlashCommand(@NotNull SlashCommandEvent event) {
         try {
             if (Callerphone.cmdMap.containsKey(event.getName())) {
+
+                Callerphone.reward(event.getUser(), 3);
+                Callerphone.addExecute(event.getUser(), 1);
+
                 if(Callerphone.getCredits(event.getUser()) == 0) {
                     event.replyEmbeds(
                             new EmbedBuilder()
@@ -24,8 +28,6 @@ public class OnSlashCommand extends ListenerAdapter {
                 }
 
                 Callerphone.cmdMap.get(event.getName()).runSlash(event);
-                Callerphone.reward(event.getUser(), 3);
-                Callerphone.addExecute(event.getUser(), 1);
                 return;
             }
             event.reply(

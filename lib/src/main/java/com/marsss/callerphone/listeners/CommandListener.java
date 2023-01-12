@@ -48,6 +48,12 @@ public class CommandListener extends ListenerAdapter {
 
         try {
             if (Callerphone.cmdMap.containsKey(trigger)) {
+
+                if (!Arrays.asList(new Profile().getTriggers()).contains(trigger)) {
+                    Callerphone.reward(event.getAuthor(), 1);
+                }
+                Callerphone.addExecute(event.getAuthor(), 1);
+
                 if(Callerphone.getCredits(event.getAuthor()) == 0) {
                     event.getMessage().replyEmbeds(
                             new EmbedBuilder()
@@ -58,11 +64,8 @@ public class CommandListener extends ListenerAdapter {
                     ).queue();
                     return;
                 }
+
                 Callerphone.cmdMap.get(trigger).runCommand(event);
-                if (!Arrays.asList(new Profile().getTriggers()).contains(trigger)) {
-                    Callerphone.reward(event.getAuthor(), 1);
-                }
-                Callerphone.addExecute(event.getAuthor(), 1);
 
                 if (new Random().nextInt(9) == 0) {
                     event.getMessage().replyEmbeds(Advertisement.generateAd()).queue();

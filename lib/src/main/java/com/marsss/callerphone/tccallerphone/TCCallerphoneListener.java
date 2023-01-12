@@ -78,12 +78,8 @@ public class TCCallerphoneListener extends ListenerAdapter {
             sendMessage(c, c.getReceiverAnonymous(), c.getCallerTCID(), messageRaw, MESSAGE);
         }
 
-        if(!Callerphone.poolChatCoolDown.containsKey(event.getAuthor().getId())) {
-            Callerphone.poolChatCoolDown.put(event.getAuthor().getId(), 0L);
-        }
-
-        if((System.currentTimeMillis() - Callerphone.poolChatCoolDown.get(event.getAuthor().getId())) > Callerphone.cooldown) {
-            Callerphone.poolChatCoolDown.put(event.getAuthor().getId(), System.currentTimeMillis());
+        if((System.currentTimeMillis() - Callerphone.getUserCooldown(event.getAuthor())) > Callerphone.cooldown) {
+            Callerphone.updateUserCooldown(event.getAuthor());
 
             Callerphone.reward(event.getAuthor(), 5);
             Callerphone.addTransmit(event.getAuthor(), 1);

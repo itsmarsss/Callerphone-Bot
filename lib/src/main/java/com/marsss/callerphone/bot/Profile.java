@@ -48,7 +48,7 @@ public class Profile implements ICommand {
                 .addField("**General**", general, true)
                 .addField("**Credits**", credits, true)
                 .addField("**Messages**", message, true)
-                .addField("**Pool and Chat credit cooldowns)**", ((System.currentTimeMillis() - Callerphone.poolChatCoolDown.get(user.getId())) < Callerphone.cooldown ? ":clock: " + ((System.currentTimeMillis() - Callerphone.poolChatCoolDown.get(user.getId())) / 1000) + " seconds" : ":white_check_mark: None"), true)
+                .addField("**Pool and Chat credit cooldowns)**", ((System.currentTimeMillis() - Callerphone.getUserCooldown(user)) < Callerphone.cooldown ? ":clock: " + ((System.currentTimeMillis() - Callerphone.getUserCooldown(user)) / 1000) + " seconds" : ":white_check_mark: None"), true)
                 .setFooter("Your Profile", Callerphone.jda.getSelfUser().getAvatarUrl())
                 .setTimestamp(Instant.now())
                 .setColor(new Color(114, 137, 218));

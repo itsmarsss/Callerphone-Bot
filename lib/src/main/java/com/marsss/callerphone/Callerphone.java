@@ -840,6 +840,16 @@ public class Callerphone {
         return userTransmitted.getOrDefault(user.getId(), 0L);
     }
 
+    public static long getUserCooldown(User user){
+        poolChatCoolDown.put(user.getId(), poolChatCoolDown.getOrDefault(user.getId(), 0L));
+
+        return poolChatCoolDown.get(user.getId());
+    }
+
+    public static void updateUserCooldown(User user) {
+        poolChatCoolDown.put(user.getId(), System.currentTimeMillis());
+    }
+
     private static void update() {
         jda.updateCommands().queue();
     }
