@@ -18,18 +18,17 @@ public class DeductCredits implements ICommand {
             e.getMessage().reply(CP_EMJ + "Run this command once you own this bot...").queue();
             return;
         }
-        final String[] ARGS = e.getMessage().getContentRaw().split("\\s+");
-        final List<User> MENTIONS = e.getMessage().getMentionedUsers();
-        final User USER = MENTIONS.size() > 0 ? MENTIONS.get(0) : e.getAuthor();
-        int amount;
         try {
+            final String[] ARGS = e.getMessage().getContentRaw().split("\\s+");
+            final List<User> MENTIONS = e.getMessage().getMentionedUsers();
+            final User USER = MENTIONS.size() > 0 ? MENTIONS.get(0) : e.getAuthor();
+            int amount;
             amount = Integer.parseInt(ARGS[1]);
+            e.getMessage().reply(deductCredits(USER, amount)).queue();
         } catch (Exception ex) {
             ex.printStackTrace();
             e.getMessage().reply(CP_EMJ+"`" + Callerphone.Prefix + "deductcreds <amount> <@user>`").queue();
-            return;
         }
-        e.getMessage().reply(deductCredits(USER, amount)).queue();
     }
 
     @Override

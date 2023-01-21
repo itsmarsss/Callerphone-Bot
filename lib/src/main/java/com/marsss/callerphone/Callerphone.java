@@ -840,7 +840,7 @@ public class Callerphone {
         return userTransmitted.getOrDefault(user.getId(), 0L);
     }
 
-    public static long getUserCooldown(User user){
+    public static long getUserCooldown(User user) {
         poolChatCoolDown.put(user.getId(), poolChatCoolDown.getOrDefault(user.getId(), 0L));
 
         return poolChatCoolDown.get(user.getId());
@@ -951,11 +951,18 @@ public class Callerphone {
     }
 
     public static TextChannel getTextChannel(String id) {
-        if(id.isEmpty()){
+        if (id.isEmpty()) {
             return null;
         }
 
-        final TextChannel CHANNEL = jda.getTextChannelById(id);
+        long idL;
+        try {
+            idL = Long.valueOf(id);
+        } catch (Exception e) {
+            return null;
+        }
+
+        final TextChannel CHANNEL = jda.getTextChannelById(idL);
 
         if (CHANNEL == null)
             return null;
