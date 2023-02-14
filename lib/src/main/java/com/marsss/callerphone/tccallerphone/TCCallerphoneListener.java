@@ -1,6 +1,9 @@
 package com.marsss.callerphone.tccallerphone;
 
 import java.time.LocalDateTime;
+import java.util.LinkedList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import com.marsss.callerphone.Callerphone;
 
@@ -14,6 +17,8 @@ public class TCCallerphoneListener extends ListenerAdapter {
 
     private final String CP_EMJ = Callerphone.Callerphone;
     private final String MESSAGE_TOO_LONG = ":x: I sent a message too long for Callerphone to handle! :x:";
+    private final String ATTEMPTED_PING = ":x: I tried to ping everyone :( :x:";
+    private final String ATTEMPTED_LINK = ":x: I tried to send a link :( :x:";
 
     public void onGuildMessageReceived(GuildMessageReceivedEvent event) {
 
@@ -58,8 +63,7 @@ public class TCCallerphoneListener extends ListenerAdapter {
                         + ": " + messageRaw
         );
 
-        if (messageRaw.length() > 1500)
-            messageRaw = MESSAGE_TOO_LONG;
+        messageRaw = messageCheck(messageRaw);
 
         if (c.getCallerTCID().equals(CHANNELID)) {
             if (c.getReceiverFamilyFriendly()) {
@@ -165,4 +169,30 @@ public class TCCallerphoneListener extends ListenerAdapter {
             }
         }
     }
+
+    private String messageCheck(String messageRaw) {
+        if(messageRaw.contains("@here") || messageRaw.contains("@everyone"))
+            return ATTEMPTED_PING;
+
+        if(hasLink(messageRaw))
+            return ATTEMPTED_LINK;
+
+        if (messageRaw.length() > 1500)
+            return MESSAGE_TOO_LONG;
+
+        return messageRaw;
+    }
+
+    private boolean hasLink(String msg) {
+        LinkedList<String> links = new LinkedList<>();
+        String regexString = "\\b(https://|www[.])[A-Za-z0-9+&@#/%?=~_()|!:,.;]*[-A-Za-z0-9+&@#/%=~_()|]";
+        Pattern pattern = Pattern.compile(regexString,Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(msg);
+        while (matcher.find()) {
+            links.add(msg.substring(matcher.start(0),matcher.end(0)));
+        }
+
+        return links.size()!=0;
+    }
+
 }
