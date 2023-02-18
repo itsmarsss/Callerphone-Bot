@@ -84,14 +84,18 @@ public class Help implements ICommand {
 
             case "utils":
                 TITLE = "Util Commands";
+//                DESC = new BotInfo().getHelp() + "\n"
+//                        + new ChannelInfo().getHelp() + "\n"
+//                        + new Colour().getHelp() + "\n"
+//                        + new Help().getHelp() + "\n"
+//                        + new RoleInfo().getHelp() + "\n"
+//                        + new Search().getHelp() + "\n"
+//                        + new ServerInfo().getHelp() + "\n"
+//                        + new UserInfo().getHelp();
+
                 DESC = new BotInfo().getHelp() + "\n"
-                        + new ChannelInfo().getHelp() + "\n"
                         + new Colour().getHelp() + "\n"
-                        + new Help().getHelp() + "\n"
-                        + new RoleInfo().getHelp() + "\n"
-                        + new Search().getHelp() + "\n"
-                        + new ServerInfo().getHelp() + "\n"
-                        + new UserInfo().getHelp();
+                        + new Help().getHelp();
                 break;
 
 
