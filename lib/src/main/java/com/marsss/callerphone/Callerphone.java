@@ -103,13 +103,14 @@ public class Callerphone {
 
     private static void commandPrompt() throws InterruptedException, URISyntaxException, UnsupportedEncodingException {
         Scanner sc = new Scanner(System.in);
-        System.out.println("[Command Line Loaded...]\nWelcome to Callerphone Bot Command Line (CBCL)!");
+
+        ToolSet.printWelcome();
 
         parent = URLDecoder.decode(new File(Callerphone.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getParentFile().getPath(), "UTF-8");
 
         System.out.println("\nParent - " + parent);
 
-        if(!readConfigYML()) {
+        if (!readConfigYML()) {
             System.out.println("______________________________________________________");
             System.out.println("There was an error with config.yml");
             System.out.println("\t1. Make sure config.yml template exists");

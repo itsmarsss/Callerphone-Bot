@@ -18,7 +18,6 @@ public class ToolSet {
     public static final long CREDIT_COOLDOWN = 15000;
 
 
-
     // https://programming.guide/java/formatting-byte-size-to-human-readable-format.html {
 
     public static String convert(long bytes) {
@@ -60,10 +59,10 @@ public class ToolSet {
     }
 
     public static String messageCheck(String messageRaw) {
-        if(messageRaw.contains("@here") || messageRaw.contains("@everyone"))
+        if (messageRaw.contains("@here") || messageRaw.contains("@everyone"))
             return Response.ATTEMPTED_PING.toString();
 
-        if(hasLink(messageRaw))
+        if (hasLink(messageRaw))
             return Response.ATTEMPTED_LINK.toString();
 
         if (messageRaw.length() > 1500)
@@ -75,12 +74,26 @@ public class ToolSet {
     public static boolean hasLink(String msg) {
         LinkedList<String> links = new LinkedList<>();
         String regexString = "\\b(https://|www[.])[A-Za-z0-9+&@#/%?=~_()|!:,.;]*[-A-Za-z0-9+&@#/%=~_()|]";
-        Pattern pattern = Pattern.compile(regexString,Pattern.CASE_INSENSITIVE);
+        Pattern pattern = Pattern.compile(regexString, Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(msg);
         while (matcher.find()) {
-            links.add(msg.substring(matcher.start(0),matcher.end(0)));
+            links.add(msg.substring(matcher.start(0), matcher.end(0)));
         }
 
-        return links.size()!=0;
+        return links.size() != 0;
+    }
+
+    public static void printWelcome() {
+        System.out.println("  _____          _      _      ______ _____  _____  _    _  ____  _   _ ______ ");
+        System.out.println(" / ____|   /\\   | |    | |    |  ____|  __ \\|  __ \\| |  | |/ __ \\| \\ | |  ____|");
+        System.out.println("| |       /  \\  | |    | |    | |__  | |__) | |__) | |__| | |  | |  \\| | |__");
+        System.out.println("| |      / /\\ \\ | |    | |    |  __| |  _  /|  ___/|  __  | |  | | . ` |  __|  ");
+        System.out.println("| |____ / ____ \\| |____| |____| |____| | \\ \\| |    | |  | | |__| | |\\  | |____ ");
+        System.out.println(" \\_____/_/    \\_\\______|______|______|_|  \\_\\_|    |_|  |_|\\____/|_| \\_|______|");
+        System.out.println("-------------------------------------------------------------------------------");
+        System.out.println("               ============== PROGRAM SOURCE CODE =============");
+        System.out.println("               = https://github.com/itsmarsss/Callerphone-Bot =");
+        System.out.println("               ================================================");
+        System.out.println("                    Welcome to Callerphone's Control Prompt");
     }
 }
