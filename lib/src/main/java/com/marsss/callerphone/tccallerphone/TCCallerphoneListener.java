@@ -59,19 +59,15 @@ public class TCCallerphoneListener extends ListenerAdapter {
 
         messageRaw = ToolSet.messageCheck(messageRaw);
 
-        if (c.getCallerTCID().equals(CHANNELID)) {
-            if (c.getReceiverFamilyFriendly()) {
-                messageRaw = filter(messageRaw);
-            }
+        if (c.getReceiverFamilyFriendly()) {
+            messageRaw = filter(messageRaw);
+        }
 
+        if (c.getCallerTCID().equals(CHANNELID)) {
             c.setCallerLastMessage(System.currentTimeMillis());
             sendMessage(c, c.getCallerAnonymous(), c.getReceiverTCID(), messageRaw, MESSAGE);
 
         } else if (c.getReceiverTCID().equals(CHANNELID)) {
-            if (c.getCallerFamilyFriendly()) {
-                messageRaw = filter(messageRaw);
-            }
-
             c.setReceiverLastMessage(System.currentTimeMillis());
             sendMessage(c, c.getReceiverAnonymous(), c.getCallerTCID(), messageRaw, MESSAGE);
         }

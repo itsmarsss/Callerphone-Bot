@@ -125,7 +125,7 @@ public class TCCallerphone {
             dataString.append(m).append("\n");
 
 
-        final TextChannel REPORT_CHANNEL = ToolSet.getTextChannel(Callerphone.reportchannel);
+        final TextChannel REPORT_CHANNEL = ToolSet.getTextChannel("867770751440650260"/*Callerphone.reportchannel*/);
         if (REPORT_CHANNEL != null) {
             REPORT_CHANNEL.sendMessage("**ID:** " + ID).addFile(dataString.toString().getBytes(), ID + ".txt").queue();
         }

@@ -1,6 +1,8 @@
 package com.marsss.callerphone.channelpool;
 
 import com.marsss.callerphone.Callerphone;
+import com.marsss.callerphone.Response;
+import com.marsss.callerphone.ToolSet;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
@@ -19,35 +21,34 @@ public class ChannelPoolListener extends ListenerAdapter {
 
         final Member MEMBER = event.getMember();
 
-        final String CONTENT = MESSAGE.getContentDisplay();
+        String content = MESSAGE.getContentRaw();
 
         if (MEMBER.getUser().isBot() || MEMBER.getUser().isSystem())
             return;
 
-        if (CONTENT.startsWith("\\\\") || CONTENT.startsWith(Callerphone.Prefix)) {
+        if (content.startsWith("\\\\") || content.startsWith(Callerphone.Prefix)) {
             return;
         }
         if (!(ChannelPool.isHost(event.getChannel().getId()) || ChannelPool.isChild(event.getChannel().getId()))) {
             return;
         }
+
+        content = ToolSet.messageCheck(content);
+
         String sendCont = String.format("**%s**#%s `%s` | <t:%d:f>\n%s",
                 MESSAGE.getAuthor().getName(),
                 MESSAGE.getAuthor().getDiscriminator(),
                 MEMBER.getEffectiveName(),
                 MESSAGE.getTimeCreated().toEpochSecond(),
-                CONTENT
+                content
         );
 
-        if (sendCont.length() >= 2000) {
-            MESSAGE.reply(Callerphone.Callerphone + "Message Too Long.").queue();
-        } else {
-            ChannelPool.broadCast(event.getChannel().getId(),
-                    event.getChannel().getId(),
-                    sendCont
-            );
-        }
+        ChannelPool.broadCast(event.getChannel().getId(),
+                event.getChannel().getId(),
+                sendCont
+        );
 
-        if((System.currentTimeMillis() - Callerphone.getUserCooldown(event.getAuthor())) > Callerphone.cooldown) {
+        if ((System.currentTimeMillis() - Callerphone.getUserCooldown(event.getAuthor())) > Callerphone.cooldown) {
             Callerphone.updateUserCooldown(event.getAuthor());
 
             Callerphone.reward(event.getAuthor(), 3);
