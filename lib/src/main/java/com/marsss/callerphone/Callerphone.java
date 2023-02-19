@@ -2,7 +2,10 @@ package com.marsss.callerphone;
 
 import java.awt.Color;
 import java.io.*;
+import java.net.URISyntaxException;
 import java.net.URLDecoder;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.time.OffsetDateTime;
 import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -32,6 +35,9 @@ import com.marsss.callerphone.utils.*;
 import com.marsss.callerphone.listeners.*;
 import com.marsss.callerphone.channelpool.*;
 import com.marsss.callerphone.tccallerphone.ConvoStorage;
+
+import org.yaml.snakeyaml.Yaml;
+import org.yaml.snakeyaml.constructor.Constructor;
 
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.Guild;
@@ -69,11 +75,11 @@ public class Callerphone {
     public static final String terms = "https://github.com/itsmarsss/Callerphone-Bot/blob/main/assets/TERMSOFSERVICE.md";
     public static String owner = "841028865995964477";
 
-    public static final int cooldown = 15000;
-
     public static boolean isQuickStart;
 
     public static JDA jda;
+
+    public static Config config;
 
     private static final HashMap<String, Long> userCredits = new HashMap<>();
     private static final HashMap<String, Long> userExecuted = new HashMap<>();
@@ -91,35 +97,43 @@ public class Callerphone {
             GatewayIntent.GUILD_INVITES,
             GatewayIntent.DIRECT_MESSAGES);
 
-    public static void run() throws InterruptedException {
+    public static void run() throws InterruptedException, URISyntaxException, UnsupportedEncodingException {
         commandPrompt();
     }
 
-    private static void commandPrompt() throws InterruptedException {
+    private static void commandPrompt() throws InterruptedException, URISyntaxException, UnsupportedEncodingException {
         Scanner sc = new Scanner(System.in);
-        System.out.println("{}Command Line Loaded...{}\nWelcome to Callerphone Bot Command Line (CBCL)!");
+        System.out.println("[Command Line Loaded...]\nWelcome to Callerphone Bot Command Line (CBCL)!");
+
+        parent = URLDecoder.decode(new File(Callerphone.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getParentFile().getPath(), "UTF-8");
+
+        System.out.println("\nParent - " + parent);
+
+        if(!readConfigYML()) {
+            System.out.println("______________________________________________________");
+            System.out.println("There was an error with config.yml");
+            System.out.println("\t1. Make sure config.yml template exists");
+            System.out.println("\t2. Make sure config.yml values are correctly inputted");
+            System.exit(0);
+        }
 
         while (true) {
             String cmd = sc.nextLine();
             if (cmd.startsWith("start")) {
-                System.out.println("Token: ");
-                String TOKEN = sc.nextLine();
                 logger.info("Starting Bot...");
                 if (jda != null) {
                     logger.info("Bot Is Online Right Now");
                 } else {
                     isQuickStart = false;
-                    BotInit(TOKEN, cmd.replaceFirst("start", ""), false);
+                    BotInit(config.getBotToken(), cmd.replaceFirst("start", ""), false);
                 }
             } else if (cmd.startsWith("quickstart")) {
-                System.out.println("Token: ");
-                String TOKEN = sc.nextLine();
                 logger.info("Starting Bot...");
                 if (jda != null) {
                     logger.info("Bot Is Online Right Now");
                 } else {
                     isQuickStart = true;
-                    BotInit(TOKEN, cmd.replaceFirst("quickstart", ""), true);
+                    BotInit(config.getBotToken(), cmd.replaceFirst("quickstart", ""), true);
                 }
             } else if (cmd.equals("shutdown")) {
                 logger.info("Shutting Down Bot...");
@@ -192,6 +206,19 @@ public class Callerphone {
             } else {
                 logger.warn("Unknown Command");
             }
+        }
+    }
+
+    private static boolean readConfigYML() {
+        InputStream is;
+        try {
+            is = Files.newInputStream(Paths.get(parent + "/config.yml"));
+            Yaml yml = new Yaml(new Constructor(Config.class));
+            config = (Config) yml.load(is);
+            return config.isValid();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
         }
     }
 
@@ -277,10 +304,6 @@ public class Callerphone {
             for (Guild g : jda.getGuilds()) {
                 System.out.println("- " + g.getName());
             }
-
-
-            parent = URLDecoder.decode(new File(Callerphone.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getParentFile().getPath(), "UTF-8");
-            System.out.println("\nParent - " + parent);
 
             try {
                 readData();

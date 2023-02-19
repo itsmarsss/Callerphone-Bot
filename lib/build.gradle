@@ -33,6 +33,7 @@ jar {
 dependencies {
     implementation group: 'net.dv8tion', name: 'JDA', version: '4.4.0_352'
     implementation("ch.qos.logback:logback-classic:1.2.3")
+    implementation group: 'org.yaml', name: 'snakeyaml', version: '1.8'
     implementation 'org.jsoup:jsoup:1.14.3'
 }
 

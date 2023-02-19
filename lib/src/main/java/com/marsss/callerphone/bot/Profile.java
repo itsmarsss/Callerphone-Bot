@@ -3,6 +3,7 @@ package com.marsss.callerphone.bot;
 import com.marsss.ICommand;
 import com.marsss.callerphone.Callerphone;
 import com.marsss.callerphone.Response;
+import com.marsss.callerphone.ToolSet;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.User;
@@ -45,7 +46,7 @@ public class Profile implements ICommand {
                 .addField("**General**", general, true)
                 .addField("**Credits**", credits, true)
                 .addField("**Messages**", message, true)
-                .addField("**Pool and Chat credit cooldowns**", ((System.currentTimeMillis() - Callerphone.getUserCooldown(user)) < Callerphone.cooldown ? ":alarm_clock: " + ((Callerphone.cooldown - (System.currentTimeMillis() - Callerphone.getUserCooldown(user))) / 1000) + " seconds" : ":white_check_mark: None"), true)
+                .addField("**Pool and Chat credit cooldowns**", ((System.currentTimeMillis() - Callerphone.getUserCooldown(user)) < ToolSet.CREDIT_COOLDOWN ? ":alarm_clock: " + ((ToolSet.CREDIT_COOLDOWN - (System.currentTimeMillis() - Callerphone.getUserCooldown(user))) / 1000) + " seconds" : ":white_check_mark: None"), true)
                 .setFooter("Your Profile", Callerphone.jda.getSelfUser().getAvatarUrl())
                 .setTimestamp(Instant.now())
                 .setColor(new Color(114, 137, 218));

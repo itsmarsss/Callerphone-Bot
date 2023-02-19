@@ -3,6 +3,7 @@ package com.marsss.callerphone.utils;
 import java.awt.Color;
 import java.util.List;
 
+import com.marsss.callerphone.ToolSet;
 import com.marsss.callerphone.channelpool.commands.*;
 import com.marsss.callerphone.tccallerphone.commands.*;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -138,7 +139,7 @@ public class Help implements ICommand {
                         "\n> Channel Chat ~ `\u00A9 5`" +
                         "\n\n__Other:__" +
                         "\n> Bug Report ~ `\u00A9 5,000`" +
-                "\n\n**NOTE:** Channel Pool/Chat can be earned a maximum of once per " + (Callerphone.cooldown/1000) + " seconds. *(Spam prevention)*";
+                "\n\n**NOTE:** Channel Pool/Chat can be earned a maximum of once per " + (ToolSet.CREDIT_COOLDOWN/1000) + " seconds. *(Spam prevention)*";
                 break;
 
             case "exp":

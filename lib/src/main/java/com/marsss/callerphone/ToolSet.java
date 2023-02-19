@@ -14,6 +14,8 @@ public class ToolSet {
     public static final JDA jda = Callerphone.jda;
     public static final String CP_EMJ = Callerphone.Callerphone;
     public static final String CP_ERR = Callerphone.CallerphoneError;
+    public static final long MESSAGE_COOLDOWN = 500;
+    public static final long CREDIT_COOLDOWN = 15000;
 
 
 

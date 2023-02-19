@@ -48,7 +48,7 @@ public class ChannelPoolListener extends ListenerAdapter {
                 sendCont
         );
 
-        if ((System.currentTimeMillis() - Callerphone.getUserCooldown(event.getAuthor())) > Callerphone.cooldown) {
+        if ((System.currentTimeMillis() - Callerphone.getUserCooldown(event.getAuthor())) > ToolSet.CREDIT_COOLDOWN) {
             Callerphone.updateUserCooldown(event.getAuthor());
 
             Callerphone.reward(event.getAuthor(), 3);

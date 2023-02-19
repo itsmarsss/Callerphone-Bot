@@ -59,20 +59,27 @@ public class TCCallerphoneListener extends ListenerAdapter {
 
         messageRaw = ToolSet.messageCheck(messageRaw);
 
-        if (c.getReceiverFamilyFriendly()) {
-            messageRaw = filter(messageRaw);
-        }
-
         if (c.getCallerTCID().equals(CHANNELID)) {
-            c.setCallerLastMessage(System.currentTimeMillis());
-            sendMessage(c, c.getCallerAnonymous(), c.getReceiverTCID(), messageRaw, MESSAGE);
+            if (System.currentTimeMillis() - c.getCallerLastMessage() > ToolSet.MESSAGE_COOLDOWN) {
+                if (c.getReceiverFamilyFriendly()) {
+                    messageRaw = filter(messageRaw);
+                }
 
+                c.setCallerLastMessage(System.currentTimeMillis());
+                sendMessage(c, c.getCallerAnonymous(), c.getReceiverTCID(), messageRaw, MESSAGE);
+            }
         } else if (c.getReceiverTCID().equals(CHANNELID)) {
-            c.setReceiverLastMessage(System.currentTimeMillis());
-            sendMessage(c, c.getReceiverAnonymous(), c.getCallerTCID(), messageRaw, MESSAGE);
+            if (System.currentTimeMillis() - c.getReceiverLastMessage() > ToolSet.MESSAGE_COOLDOWN) {
+                if (c.getCallerFamilyFriendly()) {
+                    messageRaw = filter(messageRaw);
+                }
+
+                c.setReceiverLastMessage(System.currentTimeMillis());
+                sendMessage(c, c.getReceiverAnonymous(), c.getCallerTCID(), messageRaw, MESSAGE);
+            }
         }
 
-        if((System.currentTimeMillis() - Callerphone.getUserCooldown(event.getAuthor())) > Callerphone.cooldown) {
+        if ((System.currentTimeMillis() - Callerphone.getUserCooldown(event.getAuthor())) > ToolSet.CREDIT_COOLDOWN) {
             Callerphone.updateUserCooldown(event.getAuthor());
 
             Callerphone.reward(event.getAuthor(), 5);
@@ -86,7 +93,7 @@ public class TCCallerphoneListener extends ListenerAdapter {
 
         if (anon) {
             if (DESTINATION_CHANNEL != null) {
-                DESTINATION_CHANNEL.sendMessage("**DiscordUser**#0000 " + Callerphone.CallerphoneCall + content).queue();
+                DESTINATION_CHANNEL.sendMessage("**DiscordUser**#0000 " + Callerphone.CallerphoneCall + content).complete();
             } else {
                 terminate(c);
             }
@@ -100,7 +107,7 @@ public class TCCallerphoneListener extends ListenerAdapter {
             template = Response.PREFIX_MESSAGE_TEMPLATE.toString().replaceFirst("%s", Callerphone.prefix.get(msg.getAuthor().getId()));
         }
         if (DESTINATION_CHANNEL != null) {
-            DESTINATION_CHANNEL.sendMessage(String.format(template, auth.getName(), auth.getDiscriminator(), content)).queue();
+            DESTINATION_CHANNEL.sendMessage(String.format(template, auth.getName(), auth.getDiscriminator(), content)).complete();
         } else {
             terminate(c);
         }
