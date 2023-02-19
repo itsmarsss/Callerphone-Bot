@@ -13,6 +13,7 @@ import java.util.regex.Pattern;
 public class ToolSet {
     public static final JDA jda = Callerphone.jda;
     public static final String CP_EMJ = Callerphone.Callerphone;
+    public static final String CP_ERR = Callerphone.CallerphoneError;
 
 
 

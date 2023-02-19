@@ -2,15 +2,13 @@ package com.marsss.callerphone;
 
 public enum Response {
     /*
-    Naming convention: classname_event/item_status
-    classname_eventitem_status("str"),
+    Naming convention: event/item_status
+    eventitem_status("str"),
      */
 
-    // Universal
     ERROR(ToolSet.CP_EMJ + "An error occurred."),
     MISSING_PARAM(ToolSet.CP_EMJ + "Missing parameters, do `" + Callerphone.Prefix + "help <command name>` for more information."),
 
-    // Ping
     PING_TEMPLATE("**Reset ping:** %sms \n**WS ping:** %sms"),
 
     // Profile
@@ -22,12 +20,10 @@ public enum Response {
     DEFAULT_MESSAGE_TEMPLATE("**%s**#%s " + Callerphone.CallerphoneCall + "%s"),
     MODERATOR_MESSAGE_TEMPLATE("***[Moderator]* %s**#%s " + Callerphone.CallerphoneCall + "%s"),
     PREFIX_MESSAGE_TEMPLATE("***[%s]* %s**#%s " + Callerphone.CallerphoneCall + "%s"),
-    MESSAGE_TOO_LONG(":x: I sent a message too long for Callerphone to handle! :x:"),
-    ATTEMPTED_PING(":x: I tried to ping everyone :( :x:"),
-    ATTEMPTED_LINK(":x: I tried to send a link :( :x:"),
-    // Pools
-    // EndPool
-    TEMP("asd");
+    MESSAGE_TOO_LONG(ToolSet.CP_ERR + " I sent a message too long for Callerphone to handle " + ToolSet.CP_ERR),
+    ATTEMPTED_PING(ToolSet.CP_ERR + " I tried to ping everyone " + ToolSet.CP_ERR),
+    ATTEMPTED_LINK(ToolSet.CP_ERR + " I tried to send a link " + ToolSet.CP_ERR),
+    TEMP("There is no set return message");
     public final String label;
 
     Response(String label) {

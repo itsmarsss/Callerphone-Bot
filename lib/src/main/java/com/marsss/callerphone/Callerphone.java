@@ -57,6 +57,7 @@ public class Callerphone {
     public static final String Prefix = "c?";
 
     public static String Callerphone = "<:CallerphoneEmote:899051549173637120> ";
+    public static String CallerphoneError = "<:CallerphoneErrorEmote:1076946722049232906> ";
     public static final String CallerphoneCall = "<:Pog:892780255452987402> ";
     public static String logstatus = "852338750519640116";
     public static String reportchannel = "897290511000404008";

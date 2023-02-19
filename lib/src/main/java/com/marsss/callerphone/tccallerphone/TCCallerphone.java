@@ -1,6 +1,5 @@
 package com.marsss.callerphone.tccallerphone;
 
-import com.marsss.callerphone.Callerphone;
 import com.marsss.callerphone.ToolSet;
 import net.dv8tion.jda.api.entities.TextChannel;
 import org.slf4j.Logger;
@@ -12,10 +11,6 @@ import java.util.ArrayList;
 public class TCCallerphone {
 
     public static final ArrayList<ConvoStorage> convos = new ArrayList<>();
-
-    private static final String CP_EMJ = Callerphone.Callerphone;
-
-    private static final String PICKED_UP = CP_EMJ + "Someone picked up the phone!";
 
     public static ChatStatus onCallCommand(TextChannel tcchannel, boolean cens, boolean anon) {
         final Logger logger = LoggerFactory.getLogger(TCCallerphone.class);
@@ -36,7 +31,7 @@ public class TCCallerphone {
                     convo.resetMessage();
                     return ChatStatus.NON_EXISTENT;
                 }
-                CALLER_CHANNEL.sendMessage(PICKED_UP).queue();
+                CALLER_CHANNEL.sendMessage(ChatResponse.PICKED_UP.toString()).queue();
 
                 logger.info("From TC: "
                         + convo.getCallerTCID()
@@ -63,15 +58,9 @@ public class TCCallerphone {
         return ChatStatus.NON_EXISTENT;
     }
 
-    private static final String NO_CALL = CP_EMJ + "There is no call to end!";
-    private static final String OTHER_PARTY_HUNG_UP = CP_EMJ + "The other party hung up the phone.";
-    private static final String HUNG_UP = CP_EMJ + "You hung up the phone.";
-
-    private static final String NOT_FOUND = CP_EMJ + "I was not able to find the call...";
-
     public static String onEndCallCommand(TextChannel channel) {
         if (!hasCall(channel.getId())) {
-            return NO_CALL;
+            return ChatResponse.NO_CALL.toString();
         }
 
         ConvoStorage convo = getCall(channel.getId());
@@ -86,13 +75,13 @@ public class TCCallerphone {
             if (RECEIVER_ID.equals(channel.getId())) {
                 if (!convo.getCallerTCID().equals("empty")) {
                     if (CALLER_CHANNEL != null) {
-                        CALLER_CHANNEL.sendMessage(OTHER_PARTY_HUNG_UP).queue();
+                        CALLER_CHANNEL.sendMessage(ChatResponse.OTHER_PARTY_HUNG_UP.toString()).queue();
                     }
                 }
             } else {
                 if (!convo.getReceiverTCID().equals("")) {
                     if (RECEIVER_CHANNEL != null) {
-                        RECEIVER_CHANNEL.sendMessage(OTHER_PARTY_HUNG_UP).queue();
+                        RECEIVER_CHANNEL.sendMessage(ChatResponse.OTHER_PARTY_HUNG_UP.toString()).queue();
                     }
                 }
             }
@@ -107,9 +96,9 @@ public class TCCallerphone {
 
             convo.resetMessage();
 
-            return HUNG_UP;
+            return ChatResponse.HUNG_UP.toString();
         }
-        return NOT_FOUND;
+        return ChatResponse.NO_CALL.toString();
     }
 
     private static void report(ArrayList<String> data, String callerID, String receiverID) {
