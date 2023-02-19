@@ -2,7 +2,9 @@ package com.marsss.callerphone.channelpool.commands;
 
 import com.marsss.ICommand;
 import com.marsss.callerphone.Callerphone;
+import com.marsss.callerphone.Response;
 import com.marsss.callerphone.channelpool.ChannelPool;
+import com.marsss.callerphone.channelpool.PoolResponse;
 import com.marsss.callerphone.channelpool.PoolStatus;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
@@ -13,9 +15,6 @@ public class EndPool implements ICommand {
     @Override
     public void runCommand(GuildMessageReceivedEvent e) {
         final Member MEMBER = e.getMember();
-        if (MEMBER == null) {
-            return;
-        }
 
         if (ChannelPool.permissionCheck(MEMBER, e.getMessage())) {
             return;
@@ -27,9 +26,6 @@ public class EndPool implements ICommand {
     @Override
     public void runSlash(SlashCommandEvent e) {
         final Member MEMBER = e.getMember();
-        if (MEMBER == null) {
-            return;
-        }
 
         if (ChannelPool.permissionCheck(MEMBER, e)) {
             return;
@@ -38,16 +34,24 @@ public class EndPool implements ICommand {
         e.reply(endPool(e.getChannel().getId())).queue();
     }
 
-    private final String CP_EMJ = Callerphone.Callerphone;
-
     private String endPool(String id) {
         PoolStatus stat = ChannelPool.endPool(id);
+
         if (stat == PoolStatus.SUCCESS) {
-            return CP_EMJ + "Successfully ended channel pool!";
+
+            return PoolResponse.END_POOL_SUCCESS.toString();
+
         } else if (stat == PoolStatus.IS_CHILD) {
-            return CP_EMJ + "This channel is not hosting a pool.";
+
+            return PoolResponse.NOT_HOSTING.toString();
+
+        } else if (stat == PoolStatus.NOT_FOUND) {
+
+            return PoolResponse.NOT_IN_POOL.toString();
+
         }
-        return CP_EMJ + "An error occurred.";
+
+        return Response.ERROR.toString();
     }
 
     @Override

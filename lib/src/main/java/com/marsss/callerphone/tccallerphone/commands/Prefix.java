@@ -2,6 +2,7 @@ package com.marsss.callerphone.tccallerphone.commands;
 
 import com.marsss.ICommand;
 import com.marsss.callerphone.Callerphone;
+import com.marsss.callerphone.Response;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
@@ -13,7 +14,7 @@ public class Prefix implements ICommand {
         final String[]ARGS = e.getMessage().getContentRaw().split("\\s+");
 
         if (ARGS.length == 1) {
-            e.getMessage().reply(CP_EMJ + "Missing parameters, do `" + Callerphone.Prefix + "help prefix` for more information.").queue();
+            e.getMessage().reply(Response.MISSING_PARAM.toString()).queue();
             return;
         }
 

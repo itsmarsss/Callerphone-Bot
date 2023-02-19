@@ -2,7 +2,10 @@ package com.marsss.callerphone.channelpool.commands;
 
 import com.marsss.ICommand;
 import com.marsss.callerphone.Callerphone;
+import com.marsss.callerphone.Response;
+import com.marsss.callerphone.ToolSet;
 import com.marsss.callerphone.channelpool.ChannelPool;
+import com.marsss.callerphone.channelpool.PoolResponse;
 import com.marsss.callerphone.channelpool.PoolStatus;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.TextChannel;
@@ -11,14 +14,9 @@ import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
 public class PoolKick implements ICommand {
 
-    private final String CP_EMJ = Callerphone.Callerphone;
-
     @Override
     public void runCommand(GuildMessageReceivedEvent e) {
         final Member MEMBER = e.getMember();
-        if (MEMBER == null) {
-            return;
-        }
 
         if (ChannelPool.permissionCheck(MEMBER, e.getMessage())) {
             return;
@@ -27,7 +25,7 @@ public class PoolKick implements ICommand {
         String[] args = e.getMessage().getContentRaw().split("\\s+");
 
         if (args.length == 1) {
-            e.getMessage().reply(CP_EMJ + "Missing parameters, do `" + Callerphone.Prefix + "help kickchan` for more information.").queue();
+            e.getMessage().reply(Response.MISSING_PARAM.toString()).queue();
             return;
         }
 
@@ -39,9 +37,6 @@ public class PoolKick implements ICommand {
     @Override
     public void runSlash(SlashCommandEvent e) {
         final Member MEMBER = e.getMember();
-        if (MEMBER == null) {
-            return;
-        }
 
         if (ChannelPool.permissionCheck(MEMBER, e)) {
             return;
@@ -50,18 +45,28 @@ public class PoolKick implements ICommand {
         e.reply(poolKick(e.getChannel().getId(), e.getOption("target").getAsString())).queue();
     }
 
-    private String poolKick(String IDh, String IDc) {
-        PoolStatus stat = ChannelPool.removeChildren(IDh, IDc);
-        if (stat == PoolStatus.SUCCESS) {
-            final TextChannel CHILD_CHANNEL = Callerphone.getTextChannel(IDc);
-            if(CHILD_CHANNEL != null){
-                CHILD_CHANNEL.sendMessage(CP_EMJ + "You have been kicked from the pool.").queue();
+    private String poolKick(String requestID, String kickID) {
+        PoolStatus stat = ChannelPool.removeChild(requestID, kickID);
+
+        if (stat == PoolStatus.IS_CHILD) {
+
+            return PoolResponse.NOT_HOSTING.toString();
+
+        } else if (stat == PoolStatus.SUCCESS) {
+
+            final TextChannel CHILD_CHANNEL = ToolSet.getTextChannel(kickID);
+            if (CHILD_CHANNEL != null) {
+                CHILD_CHANNEL.sendMessage(PoolResponse.KICKED_FROM_POOL.toString()).queue();
             }
-            return CP_EMJ + "Successfully kicked `ID: " + IDc + "` from this pool.";
-        } else if (stat == PoolStatus.ERROR) {
-            return CP_EMJ + "Requested pool not found.";
+            return String.format(PoolResponse.KICK_POOL_SUCCESS.toString(), kickID);
+
+        } else if (stat == PoolStatus.NOT_FOUND) {
+
+            return PoolResponse.REQUESTED_NOT_FOUND.toString();
+
         }
-        return CP_EMJ + "An error occurred.";
+
+        return Response.ERROR.toString();
     }
 
     @Override

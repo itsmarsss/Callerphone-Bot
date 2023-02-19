@@ -54,5 +54,4 @@ public class ChannelPoolListener extends ListenerAdapter {
             Callerphone.addTransmit(event.getAuthor(), 1);
         }
     }
-
 }

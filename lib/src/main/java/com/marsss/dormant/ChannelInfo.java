@@ -7,6 +7,7 @@ import java.util.List;
 import com.marsss.ICommand;
 import com.marsss.callerphone.Callerphone;
 
+import com.marsss.callerphone.ToolSet;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
@@ -50,7 +51,7 @@ public class ChannelInfo implements ICommand {
         switch (type) {
 
             case TEXT:
-                MESSAGE.replyEmbeds(textchannelinfo(Callerphone.jda.getTextChannelById(CHANNEL.getId()))).queue();
+                MESSAGE.replyEmbeds(textchannelinfo(ToolSet.getTextChannel(CHANNEL.getId()))).queue();
                 break;
             case VOICE:
                 MESSAGE.replyEmbeds(voicechannelinfo(Callerphone.jda.getVoiceChannelById(CHANNEL.getId()))).queue();

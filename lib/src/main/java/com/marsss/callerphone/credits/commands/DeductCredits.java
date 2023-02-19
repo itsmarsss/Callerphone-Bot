@@ -35,7 +35,7 @@ public class DeductCredits implements ICommand {
     public void runSlash(SlashCommandEvent e) {}
 
     private String deductCredits(User user, int amount) {
-        Callerphone.reward(user, (-1*amount));
+        Callerphone.reward(user, (-amount));
         return CP_EMJ + "Deducted `\u00A9 " + amount + "` from " + user.getAsMention();
     }
 

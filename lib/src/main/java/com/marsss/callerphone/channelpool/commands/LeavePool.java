@@ -2,7 +2,9 @@ package com.marsss.callerphone.channelpool.commands;
 
 import com.marsss.ICommand;
 import com.marsss.callerphone.Callerphone;
+import com.marsss.callerphone.Response;
 import com.marsss.callerphone.channelpool.ChannelPool;
+import com.marsss.callerphone.channelpool.PoolResponse;
 import com.marsss.callerphone.channelpool.PoolStatus;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
@@ -12,9 +14,6 @@ public class LeavePool implements ICommand {
     @Override
     public void runCommand(GuildMessageReceivedEvent e) {
         final Member MEMBER = e.getMember();
-        if (MEMBER == null) {
-            return;
-        }
 
         if (ChannelPool.permissionCheck(MEMBER, e.getMessage())) {
             return;
@@ -26,9 +25,6 @@ public class LeavePool implements ICommand {
     @Override
     public void runSlash(SlashCommandEvent e) {
         final Member MEMBER = e.getMember();
-        if (MEMBER == null) {
-            return;
-        }
 
         if (ChannelPool.permissionCheck(MEMBER, e)) {
             return;
@@ -41,19 +37,27 @@ public class LeavePool implements ICommand {
 
     private String leavePool(String id) {
         PoolStatus stat = ChannelPool.leavePool(id);
-        if (stat == PoolStatus.ERROR) {
-            return CP_EMJ + "This channel is not in a pool.";
-        } else if (stat == PoolStatus.IS_HOST) {
-            return CP_EMJ + "This channel is already hosting a pool." +
-                    "\nThis channel's pool ID is: `" + id + "`" +
+
+        if (stat == PoolStatus.IS_HOST) {
+
+            return PoolResponse.ALREADY_HOSTING +
+                    String.format(PoolResponse.POOL_ID.toString(), id) + "\n" +
                     (ChannelPool.hasPassword(id)
-                            ? "\nThis channel's password is: ||`" + ChannelPool.getPassword(id) + "`||"
-                            : "\nSet a password with: `" + Callerphone.Prefix + "pwdpool <password>`") +
-                    "\nEnd pool with: `" + Callerphone.Prefix + "endpool`";
+                            ? String.format(PoolResponse.POOL_PWD.toString(), ChannelPool.getPassword(id))
+                            : PoolResponse.POOL_SET_PWD) + "\n" +
+                    PoolResponse.POOL_END_WITH;
+
         } else if (stat == PoolStatus.SUCCESS) {
-            return CP_EMJ + "Successfully left channel pool!";
+
+            return PoolResponse.LEAVE_POOL_SUCCESS.toString();
+
+        } else if (stat == PoolStatus.NOT_FOUND) {
+
+            return PoolResponse.NOT_IN_POOL.toString();
+
         }
-        return CP_EMJ + "An error occurred.";
+
+        return Response.ERROR.toString();
     }
 
     @Override

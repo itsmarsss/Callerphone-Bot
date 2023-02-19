@@ -2,6 +2,7 @@ package com.marsss.callerphone.bot;
 
 import com.marsss.ICommand;
 import com.marsss.callerphone.Callerphone;
+import com.marsss.callerphone.Response;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.User;
@@ -26,21 +27,17 @@ public class Profile implements ICommand {
         e.replyEmbeds(profile(e.getOption("target").getAsUser())).queue();
     }
 
-    private final String GENERAL = "Level: `%d`\nExperience: `%d/100`\nPrefix: %s\n\n[`" + Callerphone.Prefix + "help exp`]";
-    private final String CREDITS = "Credits: `\u00A9 %d`\nRedeemed: `\u00A9 %d`\nNet: `\u00A9 %d`\n\n[`" + Callerphone.Prefix + "help creds`]";
-    private final String MESSAGE = "Executed: `%d`\n Transmitted: `%s`\nTotal: `%s`";
-
     private MessageEmbed profile(User user) {
         final long EXECUTED = Callerphone.getExecuted(user);
         final long TRANSMITTED = Callerphone.getTransmitted(user);
         final long TOTAL = EXECUTED + TRANSMITTED;
-        final int LVL = (int) TOTAL/100;
+        final int LVL = (int) TOTAL / 100;
         final int EXP = (int) TOTAL - 100 * LVL;
         final String PREFIX = Callerphone.prefix.getOrDefault(user.getId(), (LVL > 5 ? ":unlock: `" + Callerphone.Prefix + "prefix <prefix>`" : ":lock: `Level 50`"));
 
-        String general = String.format(GENERAL, LVL, EXP, PREFIX);
-        String credits = String.format(CREDITS, Callerphone.getCredits(user), 0, 0);
-        String message = String.format(MESSAGE, EXECUTED, TRANSMITTED, TOTAL);
+        String general = String.format(Response.PROFILE_GENERAL.toString(), LVL, EXP, PREFIX);
+        String credits = String.format(Response.PROFILE_CREDITS.toString(), Callerphone.getCredits(user), 0, 0);
+        String message = String.format(Response.PROFILE_MESSAGE.toString(), EXECUTED, TRANSMITTED, TOTAL);
 
         EmbedBuilder proEmd = new EmbedBuilder()
                 .setTitle("**" + user.getName() + "'s Profile**")

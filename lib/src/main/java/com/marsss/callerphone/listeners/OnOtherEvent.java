@@ -3,6 +3,7 @@ package com.marsss.callerphone.listeners;
 import java.awt.Color;
 import java.time.OffsetDateTime;
 
+import com.marsss.callerphone.ToolSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,7 +25,7 @@ public class OnOtherEvent extends ListenerAdapter {
     }
 
     public void onResumed(ResumedEvent event) {
-        final TextChannel LOG_CHANNEL = Callerphone.getTextChannel(Callerphone.logstatus);
+        final TextChannel LOG_CHANNEL = ToolSet.getTextChannel(Callerphone.logstatus);
         EmbedBuilder Emd = new EmbedBuilder()
                 .setColor(Color.RED)
                 .setTitle("Disconnected");

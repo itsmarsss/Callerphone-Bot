@@ -1,6 +1,7 @@
 package com.marsss.callerphone.tccallerphone;
 
 import com.marsss.callerphone.Callerphone;
+import com.marsss.callerphone.ToolSet;
 import net.dv8tion.jda.api.entities.TextChannel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,8 +29,8 @@ public class TCCallerphone {
                 convo.setCallerLastMessage(System.currentTimeMillis());
                 convo.setReceiverLastMessage(System.currentTimeMillis());
 
-                final TextChannel CALLER_CHANNEL = Callerphone.getTextChannel(convo.getCallerTCID());
-                final TextChannel RECEIVER_CHANNEL = Callerphone.getTextChannel(convo.getReceiverTCID());
+                final TextChannel CALLER_CHANNEL = ToolSet.getTextChannel(convo.getCallerTCID());
+                final TextChannel RECEIVER_CHANNEL = ToolSet.getTextChannel(convo.getReceiverTCID());
 
                 if (CALLER_CHANNEL == null || RECEIVER_CHANNEL == null) {
                     convo.resetMessage();
@@ -79,8 +80,8 @@ public class TCCallerphone {
             final String CALLER_ID = convo.getCallerTCID();
             final String RECEIVER_ID = convo.getReceiverTCID();
 
-            final TextChannel CALLER_CHANNEL = Callerphone.getTextChannel(CALLER_ID);
-            final TextChannel RECEIVER_CHANNEL = Callerphone.getTextChannel(RECEIVER_ID);
+            final TextChannel CALLER_CHANNEL = ToolSet.getTextChannel(CALLER_ID);
+            final TextChannel RECEIVER_CHANNEL = ToolSet.getTextChannel(RECEIVER_ID);
 
             if (RECEIVER_ID.equals(channel.getId())) {
                 if (!convo.getCallerTCID().equals("empty")) {
@@ -124,7 +125,7 @@ public class TCCallerphone {
             dataString.append(m).append("\n");
 
 
-        final TextChannel REPORT_CHANNEL = Callerphone.getTextChannel(Callerphone.reportchannel);
+        final TextChannel REPORT_CHANNEL = ToolSet.getTextChannel(Callerphone.reportchannel);
         if (REPORT_CHANNEL != null) {
             REPORT_CHANNEL.sendMessage("**ID:** " + ID).addFile(dataString.toString().getBytes(), ID + ".txt").queue();
         }

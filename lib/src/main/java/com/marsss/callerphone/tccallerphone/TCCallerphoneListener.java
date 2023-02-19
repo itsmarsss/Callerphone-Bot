@@ -1,12 +1,11 @@
 package com.marsss.callerphone.tccallerphone;
 
 import java.time.LocalDateTime;
-import java.util.LinkedList;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import com.marsss.callerphone.Callerphone;
 
+import com.marsss.callerphone.Response;
+import com.marsss.callerphone.ToolSet;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.User;
@@ -14,11 +13,6 @@ import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
 public class TCCallerphoneListener extends ListenerAdapter {
-
-    private final String CP_EMJ = Callerphone.Callerphone;
-    private final String MESSAGE_TOO_LONG = ":x: I sent a message too long for Callerphone to handle! :x:";
-    private final String ATTEMPTED_PING = ":x: I tried to ping everyone :( :x:";
-    private final String ATTEMPTED_LINK = ":x: I tried to send a link :( :x:";
 
     public void onGuildMessageReceived(GuildMessageReceivedEvent event) {
 
@@ -63,7 +57,7 @@ public class TCCallerphoneListener extends ListenerAdapter {
                         + ": " + messageRaw
         );
 
-        messageRaw = messageCheck(messageRaw);
+        messageRaw = ToolSet.messageCheck(messageRaw);
 
         if (c.getCallerTCID().equals(CHANNELID)) {
             if (c.getReceiverFamilyFriendly()) {
@@ -91,12 +85,8 @@ public class TCCallerphoneListener extends ListenerAdapter {
 
     }
 
-    private final String DEFAULT_TEMPLATE = "**%s**#%s " + Callerphone.CallerphoneCall + "%s";
-    private final String MODERATOR_TEMPLATE = "***[Moderator]* %s**#%s " + Callerphone.CallerphoneCall + "%s";
-    private final String PREFIX_TEMPLATE = "***[%s]* %s**#%s " + Callerphone.CallerphoneCall + "%s";
-
     private void sendMessage(ConvoStorage c, boolean anon, String destination, String content, Message msg) {
-        final TextChannel DESTINATION_CHANNEL = Callerphone.getTextChannel(destination);
+        final TextChannel DESTINATION_CHANNEL = ToolSet.getTextChannel(destination);
 
         if (anon) {
             if (DESTINATION_CHANNEL != null) {
@@ -107,11 +97,11 @@ public class TCCallerphoneListener extends ListenerAdapter {
             return;
         }
         User auth = msg.getAuthor();
-        String template = DEFAULT_TEMPLATE;
+        String template = Response.DEFAULT_MESSAGE_TEMPLATE.toString();
         if (Callerphone.admin.contains(msg.getAuthor().getId())) {
-            template = MODERATOR_TEMPLATE;
+            template = Response.MODERATOR_MESSAGE_TEMPLATE.toString();
         } else if (Callerphone.prefix.containsKey(msg.getAuthor().getId())) {
-            template = PREFIX_TEMPLATE.replaceFirst("%s", Callerphone.prefix.get(msg.getAuthor().getId()));
+            template = Response.PREFIX_MESSAGE_TEMPLATE.toString().replaceFirst("%s", Callerphone.prefix.get(msg.getAuthor().getId()));
         }
         if (DESTINATION_CHANNEL != null) {
             DESTINATION_CHANNEL.sendMessage(String.format(template, auth.getName(), auth.getDiscriminator(), content)).queue();
@@ -131,21 +121,19 @@ public class TCCallerphoneListener extends ListenerAdapter {
         return messageraw;
     }
 
-    private final String CONNECTION_ERROR = CP_EMJ + "Connection error, call ended.";
-
     private void terminate(ConvoStorage c) {
         StringBuilder data = new StringBuilder();
         for (String m : c.getMessages())
             data.append(m).append("\n");
 
-        final TextChannel CALLER_CHANNEL = Callerphone.getTextChannel(c.getCallerTCID());
-        final TextChannel RECEIVER_CHANNEL = Callerphone.getTextChannel(c.getReceiverTCID());
+        final TextChannel CALLER_CHANNEL = ToolSet.getTextChannel(c.getCallerTCID());
+        final TextChannel RECEIVER_CHANNEL = ToolSet.getTextChannel(c.getReceiverTCID());
         if (CALLER_CHANNEL != null) {
-            CALLER_CHANNEL.sendMessage(CONNECTION_ERROR).queue();
+            CALLER_CHANNEL.sendMessage(Response.CONNECTION_ERROR.toString()).queue();
         }
 
         if (RECEIVER_CHANNEL != null) {
-            RECEIVER_CHANNEL.sendMessage(CONNECTION_ERROR).queue();
+            RECEIVER_CHANNEL.sendMessage(Response.CONNECTION_ERROR.toString()).queue();
         }
 
         c.resetMessage();
@@ -158,7 +146,7 @@ public class TCCallerphoneListener extends ListenerAdapter {
 
         final String DATA = data.toString();
         if (c.getReport()) {
-            final TextChannel REPORT_CHANNEL = Callerphone.getTextChannel(Callerphone.reportchannel);
+            final TextChannel REPORT_CHANNEL = ToolSet.getTextChannel(Callerphone.reportchannel);
             if (REPORT_CHANNEL == null) {
                 System.out.println("Invalid REPORT channel.");
             } else {
@@ -169,30 +157,4 @@ public class TCCallerphoneListener extends ListenerAdapter {
             }
         }
     }
-
-    private String messageCheck(String messageRaw) {
-        if(messageRaw.contains("@here") || messageRaw.contains("@everyone"))
-            return ATTEMPTED_PING;
-
-        if(hasLink(messageRaw))
-            return ATTEMPTED_LINK;
-
-        if (messageRaw.length() > 1500)
-            return MESSAGE_TOO_LONG;
-
-        return messageRaw;
-    }
-
-    private boolean hasLink(String msg) {
-        LinkedList<String> links = new LinkedList<>();
-        String regexString = "\\b(https://|www[.])[A-Za-z0-9+&@#/%?=~_()|!:,.;]*[-A-Za-z0-9+&@#/%=~_()|]";
-        Pattern pattern = Pattern.compile(regexString,Pattern.CASE_INSENSITIVE);
-        Matcher matcher = pattern.matcher(msg);
-        while (matcher.find()) {
-            links.add(msg.substring(matcher.start(0),matcher.end(0)));
-        }
-
-        return links.size()!=0;
-    }
-
 }

@@ -124,7 +124,7 @@ public class Callerphone {
                 logger.info("Shutting Down Bot...");
                 if (jda != null) {
                     EmbedBuilder embedBuilder = new EmbedBuilder().setTitle("Status").setColor(new Color(213, 0, 0)).setFooter("Goodbye World...").setDescription(jda.getSelfUser().getAsMention() + " is going offline;" + cmd.replaceFirst("shutdown", ""));
-                    final TextChannel LOG_CHANNEL = getTextChannel(logstatus);
+                    final TextChannel LOG_CHANNEL = ToolSet.getTextChannel(logstatus);
                     if (LOG_CHANNEL == null) {
                         logger.error("Error Sending Shutdown Message");
                     } else {
@@ -287,7 +287,7 @@ public class Callerphone {
                 e.printStackTrace();
             }
 
-            final TextChannel LOG_CHANNEL = getTextChannel(logstatus);
+            final TextChannel LOG_CHANNEL = ToolSet.getTextChannel(logstatus);
             if (LOG_CHANNEL == null) {
                 System.out.println("------------------------------");
                 logger.error("Error Sending Startup Message");
@@ -601,14 +601,14 @@ public class Callerphone {
         br.close();
 
         jda.awaitReady();
-        final TextChannel LOG_CHANNEL = getTextChannel(logstatus);
+        final TextChannel LOG_CHANNEL = ToolSet.getTextChannel(logstatus);
         if (LOG_CHANNEL == null) {
             System.out.println("Report Channel: [N/A NOT FOUND]");
         } else {
             System.out.println("Log Status Channel: " + LOG_CHANNEL.getAsMention());
         }
 
-        final TextChannel REPORT_CHANNEL = getTextChannel(logstatus);
+        final TextChannel REPORT_CHANNEL = ToolSet.getTextChannel(logstatus);
         if (REPORT_CHANNEL == null) {
             System.out.println("Report Channel: [N/A NOT FOUND]");
         } else {
@@ -949,29 +949,4 @@ public class Callerphone {
                 )
         ).queue();
     }
-
-    public static TextChannel getTextChannel(String id) {
-        if (id.isEmpty()) {
-            return null;
-        }
-
-        long idL;
-        try {
-            idL = Long.valueOf(id);
-        } catch (Exception e) {
-            return null;
-        }
-
-        final TextChannel CHANNEL = jda.getTextChannelById(idL);
-
-        if (CHANNEL == null)
-            return null;
-
-        if (!CHANNEL.getGuild().getSelfMember().hasPermission(CHANNEL, Permission.MESSAGE_WRITE)) {
-            return null;
-        }
-
-        return CHANNEL;
-    }
-
 }

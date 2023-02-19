@@ -2,7 +2,9 @@ package com.marsss.callerphone.channelpool.commands;
 
 import com.marsss.ICommand;
 import com.marsss.callerphone.Callerphone;
+import com.marsss.callerphone.Response;
 import com.marsss.callerphone.channelpool.ChannelPool;
+import com.marsss.callerphone.channelpool.PoolResponse;
 import com.marsss.callerphone.channelpool.PoolStatus;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
@@ -15,9 +17,6 @@ public class PoolPub implements ICommand {
     @Override
     public void runCommand(GuildMessageReceivedEvent e) {
         final Member MEMBER = e.getMember();
-        if (MEMBER == null) {
-            return;
-        }
 
         if (ChannelPool.permissionCheck(MEMBER, e.getMessage())) {
             return;
@@ -26,7 +25,7 @@ public class PoolPub implements ICommand {
         String[] args = e.getMessage().getContentRaw().split("\\s+");
 
         if (args.length == 1) {
-            e.getMessage().reply(CP_EMJ + "Missing parameters, do `" + Callerphone.Prefix + "help poolpub` for more information.").queue();
+            e.getMessage().reply(Response.MISSING_PARAM.toString()).queue();
             return;
         }
 
@@ -38,9 +37,6 @@ public class PoolPub implements ICommand {
     @Override
     public void runSlash(SlashCommandEvent e) {
         final Member MEMBER = e.getMember();
-        if (MEMBER == null) {
-            return;
-        }
 
         if (ChannelPool.permissionCheck(MEMBER, e)) {
             return;
@@ -51,12 +47,18 @@ public class PoolPub implements ICommand {
 
     private String poolPub(String id, boolean pub) {
         PoolStatus stat = ChannelPool.setPublicity(id, pub);
+
         if (stat == PoolStatus.SUCCESS) {
-            return CP_EMJ + "This pool is now **" + (pub ? "public" : "private") + "**.";
-        } else if (stat == PoolStatus.ERROR) {
-            return CP_EMJ + "This pool is not hosting a pool.";
+
+            return String.format(PoolResponse.POOL_PUB.toString(), (pub ? "public" : "private"));
+
+        } else if (stat == PoolStatus.NOT_FOUND) {
+
+            return PoolResponse.NOT_HOSTING.toString();
+
         }
-        return CP_EMJ + "An error occurred.";
+
+        return Response.ERROR.toString();
     }
 
     @Override

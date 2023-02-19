@@ -2,12 +2,11 @@ package com.marsss.callerphone.bot;
 
 import java.awt.Color;
 import java.lang.management.ManagementFactory;
-import java.text.CharacterIterator;
-import java.text.StringCharacterIterator;
 
 import com.marsss.ICommand;
 import com.marsss.callerphone.Callerphone;
 
+import com.marsss.callerphone.ToolSet;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
@@ -85,8 +84,8 @@ public class About implements ICommand {
                                     ManagementFactory.getOperatingSystemMXBean().getAvailableProcessors() + " processor(s)", true)
 
                     .addField("Memory Usage",
-                            convert(Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) + "\n" +
-                                    convert(Runtime.getRuntime().maxMemory()) + " max\n", true)
+                            ToolSet.convert(Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) + "\n" +
+                                    ToolSet.convert(Runtime.getRuntime().maxMemory()) + " max\n", true)
 
                     .addField("Uptime",
                             Uptime.upTimeAbt(), true)
@@ -99,21 +98,5 @@ public class About implements ICommand {
         });
         return AbtEmd.build();
     }
-
-    // https://programming.guide/java/formatting-byte-size-to-human-readable-format.html {
-
-    public static String convert(long bytes) {
-        if (-1000 < bytes && bytes < 1000) {
-            return bytes + " B";
-        }
-        final CharacterIterator ci = new StringCharacterIterator("kMGTPE");
-        while (bytes <= -999_950 || bytes >= 999_950) {
-            bytes /= 1000;
-            ci.next();
-        }
-        return String.format("%.1f %cB", bytes / 1000.0, ci.current());
-    }
-
-    // }
 
 }
