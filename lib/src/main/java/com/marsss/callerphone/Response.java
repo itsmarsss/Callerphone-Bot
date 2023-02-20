@@ -1,4 +1,5 @@
 package com.marsss.callerphone;
+
 public enum Response {
     /*
     Naming convention: event/item_status
@@ -26,6 +27,8 @@ public enum Response {
     POOL_TEMPLATE("\t\t{\n\t\t\t\"hostID\": \"%s\",\n\t\t\t\"pwd\": \"%s\",\n\t\t\t\"cap\": %s,\n\t\t\t\"pub\": %s,\n\t\t\t\"children\": [\n\t\t\t\t%s\n\t\t\t]\n\t\t}"),
     NO_PERMISSION(ToolSet.CP_EMJ + "You need `Manage Channel` permission to run this command."),
 
+    BLACKLISTED(ToolSet.CP_ERR + "**Blacklisted; Reason:** %s\nSubmit an appeal in our support server " + Callerphone.config.getSupportServer()),
+
 
     ERROR_MSG("An error occurred with error: `%s`." +
             "\nIf this is a recurring problem, please join our support server and report this issue. " + Callerphone.config.getSupportServer()),
@@ -35,6 +38,7 @@ public enum Response {
     Response(String label) {
         this.label = label;
     }
+
     public String toString() {
         return label;
     }

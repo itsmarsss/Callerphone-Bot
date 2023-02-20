@@ -327,4 +327,11 @@ public class Storage {
         }
         return !users.get(id).getPrefix().equals("");
     }
+
+    public static String getReason(String id) {
+        if (!users.containsKey(id)) {
+            createUser(id);
+        }
+        return users.get(id).getReason();
+    }
 }
