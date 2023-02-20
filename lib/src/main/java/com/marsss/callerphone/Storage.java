@@ -272,11 +272,11 @@ public class Storage {
         poolChatCoolDown.put(user.getId(), System.currentTimeMillis());
     }
 
-    public static String getPrefix(User user) {
-        if (!users.containsKey(user.getId())) {
-            createUser(user.getId());
+    public static String getPrefix(String id) {
+        if (!users.containsKey(id)) {
+            createUser(id);
         }
-        return users.get(user.getId()).getPrefix();
+        return users.get(id).getPrefix();
     }
 
     public static boolean isBlacklisted(String id) {
@@ -293,18 +293,25 @@ public class Storage {
         return users.get(id).getStatus() == UserStatus.MODERATOR;
     }
 
-    public void addBlacklist(String id) {
+    public static void addBlacklist(String id) {
         if (!users.containsKey(id)) {
             createUser(id);
         }
         users.get(id).setStatus(UserStatus.BLACKLISTED);
     }
 
-    public void addAdmin(String id) {
+    public static void addAdmin(String id) {
         if (!users.containsKey(id)) {
             createUser(id);
         }
         users.get(id).setStatus(UserStatus.MODERATOR);
+    }
+
+    public static void addUser(String id) {
+        if (!users.containsKey(id)) {
+            createUser(id);
+        }
+        users.get(id).setStatus(UserStatus.USER);
     }
 
     public static void setPrefix(String id, String prefix) {
