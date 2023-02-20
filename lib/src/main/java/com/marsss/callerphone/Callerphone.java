@@ -54,10 +54,7 @@ public class Callerphone {
     public static JDA jda;
 
     public static Config config = new Config();
-    public static Storage storage = new Storage();
-
-    public static final String ERROR_MSG = "An error occurred with error: `%s`." +
-            "\nIf this is a recurring problem, please join our support server and report this issue. " + config.getSupportServer();
+    public static final Storage storage = new Storage();
 
     private static final EnumSet<GatewayIntent> intent = EnumSet.of(
             GatewayIntent.GUILD_MEMBERS,
@@ -83,6 +80,8 @@ public class Callerphone {
             System.exit(0);
         }
 
+        ToolSet.updateToolSet();
+
         new CommandPrompt().startPrompting();
     }
 
@@ -99,7 +98,7 @@ public class Callerphone {
         }
     }
 
-    static void BotInit(String token, String startupmsg, boolean quickStart) {
+    public static void BotInit(String token, String startupmsg, boolean quickStart) {
 
         try {
             if (quickStart) {
