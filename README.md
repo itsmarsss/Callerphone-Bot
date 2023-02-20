@@ -121,7 +121,7 @@
 ## More Information
 ### [Invite Callerphone!](https://discord.com/oauth2/authorize?client_id=849713468348956692&permissions=414464724040&scope=bot%20applications.commands)
 
-### Support server!
+### [Support server!](https://discordbotlist.com/bots/callerphone)
 <a href="https://discord.gg/jcYKsfw48p">
   <img alt="support server" src="https://miro.medium.com/max/800/1*_AsB_hCguMYC-wEG2Bidmw.png" height="35px">
 </a>
