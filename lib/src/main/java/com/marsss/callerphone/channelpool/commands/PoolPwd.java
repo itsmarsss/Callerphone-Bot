@@ -13,8 +13,6 @@ import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
 public class PoolPwd implements ICommand {
 
-    private final String CP_EMJ = Callerphone.Callerphone;
-
     @Override
     public void runCommand(GuildMessageReceivedEvent e) {
         final Member MEMBER = e.getMember();
@@ -56,7 +54,7 @@ public class PoolPwd implements ICommand {
 
             return ToolSet.CP_EMJ + String.format(PoolResponse.POOL_PWD.toString(), pwd);
 
-        } else if (stat == PoolStatus.ERROR) {
+        } else if (stat == PoolStatus.NOT_FOUND) {
 
             return PoolResponse.NOT_HOSTING.toString();
 

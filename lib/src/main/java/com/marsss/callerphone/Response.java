@@ -23,6 +23,7 @@ public enum Response {
     MESSAGE_TOO_LONG(ToolSet.CP_ERR + " I sent a message too long for Callerphone to handle " + ToolSet.CP_ERR),
     ATTEMPTED_PING(ToolSet.CP_ERR + " I tried to ping everyone " + ToolSet.CP_ERR),
     ATTEMPTED_LINK(ToolSet.CP_ERR + " I tried to send a link " + ToolSet.CP_ERR),
+    USER_TEMPLATE("{\\n\"id\": \"%s\",\\n\"status\": \"%s\",\\n\"reason\": \"%s\",\\n\"prefix\": \"%s\",\\n\"credits\": %s,\\n\"executed\": %s,\\n\"transmitted\": %s\\n}"),
     TEMP("There is no set return message");
     public final String label;
 

@@ -312,7 +312,7 @@ public class Callerphone {
                 e.printStackTrace();
             }
 
-            final TextChannel LOG_CHANNEL = ToolSet.getTextChannel("123123");
+            final TextChannel LOG_CHANNEL = ToolSet.getTextChannel(logstatus);
             if (LOG_CHANNEL == null) {
                 System.out.println("------------------------------");
                 logger.error("Error Sending Startup Message");
