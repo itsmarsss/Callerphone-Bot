@@ -37,8 +37,8 @@ public class Profile implements ICommand {
         String tempPrefix = Callerphone.storage.getPrefix(user);
         final String PREFIX = (tempPrefix.equals("") ? (LVL > 5 ? ":unlock: `" + Callerphone.config.getPrefix() + "prefix <prefix>`" : ":lock: `Level 50`") : tempPrefix);
 
-        String general = String.format(Response.PROFILE_GENERAL.toString(), LVL, EXP, PREFIX, Callerphone.config.getPrefix());
-        String credits = String.format(Response.PROFILE_CREDITS.toString(), Callerphone.storage.getCredits(user), 0, 0, Callerphone.config.getPrefix());
+        String general = String.format(Response.PROFILE_GENERAL.toString(), LVL, EXP, PREFIX);
+        String credits = String.format(Response.PROFILE_CREDITS.toString(), Callerphone.storage.getCredits(user), 0, 0);
         String message = String.format(Response.PROFILE_MESSAGE.toString(), EXECUTED, TRANSMITTED, TOTAL);
 
         EmbedBuilder proEmd = new EmbedBuilder()

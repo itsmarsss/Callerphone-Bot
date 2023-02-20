@@ -10,7 +10,7 @@ public class PoolConfig {
     private int cap;
     private boolean pub;
 
-    public LinkedList<String> children = new LinkedList<>();
+    public final LinkedList<String> children = new LinkedList<>();
 
     public PoolConfig(String hostID, String pwd, int cap, boolean pub) {
         this.hostID = hostID;
@@ -44,14 +44,14 @@ public class PoolConfig {
     }
 
     public String toJSON() {
-        String childrenList = "";
+        StringBuilder childrenList = new StringBuilder();
         for (int i = 0; i < children.size(); i++) {
-            childrenList += "\"" + children.get(i) + "\"";
+            childrenList.append("\"").append(children.get(i)).append("\"");
             if (i != children.size() - 1) {
-                childrenList += ",";
+                childrenList.append(",");
             }
         }
 
-        return String.format(Response.POOL_TEMPLATE.toString(), hostID, pwd, cap, pub, childrenList);
+        return String.format(Response.POOL_TEMPLATE.toString(), hostID, pwd, cap, pub, childrenList.toString());
     }
 }

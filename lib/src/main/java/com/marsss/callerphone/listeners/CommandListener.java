@@ -2,6 +2,7 @@ package com.marsss.callerphone.listeners;
 
 import com.marsss.callerphone.Callerphone;
 
+import com.marsss.callerphone.Response;
 import com.marsss.callerphone.bot.Advertisement;
 import com.marsss.callerphone.bot.Profile;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -82,7 +83,7 @@ public class CommandListener extends ListenerAdapter {
     }
 
     public static void sendError(Message message, Exception error) {
-        message.reply(String.format(Callerphone.ERROR_MSG, error.toString())).queue();
+        message.reply(String.format(Response.ERROR_MSG.toString(), error.toString())).queue();
     }
 
     public static String adminHelp() {

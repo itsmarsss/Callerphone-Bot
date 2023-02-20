@@ -3,7 +3,6 @@ package com.marsss.callerphone.tccallerphone.commands;
 import com.marsss.ICommand;
 import com.marsss.callerphone.Callerphone;
 import com.marsss.callerphone.Response;
-import com.marsss.callerphone.ToolSet;
 import com.marsss.callerphone.tccallerphone.ChatResponse;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
@@ -16,7 +15,7 @@ public class Prefix implements ICommand {
         final String[] ARGS = e.getMessage().getContentRaw().split("\\s+");
 
         if (ARGS.length == 1) {
-            e.getMessage().reply(String.format(ToolSet.CP_ERR + Response.MISSING_PARAM.toString(), Callerphone.config.getPrefix())).queue();
+            e.getMessage().reply(Response.MISSING_PARAM.toString()).queue();
             return;
         }
 
@@ -35,16 +34,16 @@ public class Prefix implements ICommand {
     private String setPrefix(User user, String prefix) {
 
         if (prefix.length() > 15) {
-            return ToolSet.CP_EMJ + ChatResponse.PREFIX_TOO_LONG.toString();
+            return ChatResponse.PREFIX_TOO_LONG.toString();
         }
 
         final long LVL = (Callerphone.storage.getExecuted(user) + Callerphone.storage.getTransmitted(user)) / 100;
         if (LVL < 50) {
-            return ToolSet.CP_EMJ + ChatResponse.LEVEL_LOW.toString();
+            return ChatResponse.LEVEL_LOW.toString();
         }
         Callerphone.storage.setPrefix(user.getId(), prefix);
 
-        return String.format(ToolSet.CP_EMJ + ChatResponse.SET_PREFIX_SUCCESS.toString(), prefix);
+        return String.format(ChatResponse.SET_PREFIX_SUCCESS.toString(), prefix);
     }
 
     @Override

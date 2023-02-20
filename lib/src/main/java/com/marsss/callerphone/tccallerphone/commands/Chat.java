@@ -3,7 +3,6 @@ package com.marsss.callerphone.tccallerphone.commands;
 import com.marsss.ICommand;
 import com.marsss.callerphone.Callerphone;
 import com.marsss.callerphone.Response;
-import com.marsss.callerphone.ToolSet;
 import com.marsss.callerphone.tccallerphone.ChatResponse;
 import com.marsss.callerphone.tccallerphone.ChatStatus;
 import com.marsss.callerphone.tccallerphone.TCCallerphone;
@@ -22,16 +21,16 @@ public class Chat implements ICommand {
         ChatStatus stat = (famfri ? chatFamilyFriendly(e.getChannel(), anon) : chatUncensored(e.getChannel(), anon));
 
         if (stat == ChatStatus.CONFLICT) {
-            e.getMessage().reply(ToolSet.CP_EMJ + ChatResponse.ALREADY_CALL.toString()).queue();
+            e.getMessage().reply(ChatResponse.ALREADY_CALL.toString()).queue();
         } else if (stat == ChatStatus.NON_EXISTENT) {
-            e.getMessage().reply(ToolSet.CP_EMJ + ChatResponse.NO_PORT.toString()).queue();
+            e.getMessage().reply(ChatResponse.NO_PORT.toString()).queue();
         } else if (stat == ChatStatus.SUCCESS_RECEIVER) {
-            e.getMessage().reply(ToolSet.CP_EMJ + ChatResponse.CALLING.toString()).queue();
-            e.getChannel().sendMessage(ToolSet.CP_EMJ + ChatResponse.PICKED_UP.toString()).queue();
+            e.getMessage().reply(ChatResponse.CALLING.toString()).queue();
+            e.getChannel().sendMessage(ChatResponse.PICKED_UP.toString()).queue();
         } else if (stat == ChatStatus.SUCCESS_CALLER) {
-            e.getMessage().reply(ToolSet.CP_EMJ + ChatResponse.CALLING.toString()).queue();
+            e.getMessage().reply(ChatResponse.CALLING.toString()).queue();
         } else {
-            e.getMessage().reply(ToolSet.CP_ERR + Response.ERROR.toString()).queue();
+            e.getMessage().reply(Response.ERROR.toString()).queue();
         }
     }
 
@@ -54,16 +53,16 @@ public class Chat implements ICommand {
         }
 
         if (stat == ChatStatus.CONFLICT) {
-            e.reply(ToolSet.CP_EMJ + ChatResponse.ALREADY_CALL.toString()).setEphemeral(true).queue();
+            e.reply(ChatResponse.ALREADY_CALL.toString()).setEphemeral(true).queue();
         } else if (stat == ChatStatus.NON_EXISTENT) {
-            e.reply(ToolSet.CP_EMJ + ChatResponse.NO_PORT.toString()).setEphemeral(true).queue();
+            e.reply(ChatResponse.NO_PORT.toString()).setEphemeral(true).queue();
         } else if (stat == ChatStatus.SUCCESS_RECEIVER) {
-            e.reply(ToolSet.CP_EMJ + ChatResponse.CALLING.toString()).queue();
-            e.getTextChannel().sendMessage(ToolSet.CP_EMJ + ChatResponse.PICKED_UP.toString()).queue();
+            e.reply(ChatResponse.CALLING.toString()).queue();
+            e.getTextChannel().sendMessage(ChatResponse.PICKED_UP.toString()).queue();
         } else if (stat == ChatStatus.SUCCESS_CALLER) {
-            e.reply(ToolSet.CP_EMJ + ChatResponse.CALLING.toString()).queue();
+            e.reply(ChatResponse.CALLING.toString()).queue();
         } else {
-            e.reply(ToolSet.CP_ERR + Response.ERROR.toString()).setEphemeral(true).queue();
+            e.reply(Response.ERROR.toString()).setEphemeral(true).queue();
         }
     }
 

@@ -3,7 +3,6 @@ package com.marsss.callerphone.channelpool.commands;
 import com.marsss.ICommand;
 import com.marsss.callerphone.Callerphone;
 import com.marsss.callerphone.Response;
-import com.marsss.callerphone.ToolSet;
 import com.marsss.callerphone.channelpool.ChannelPool;
 import com.marsss.callerphone.channelpool.PoolResponse;
 import com.marsss.callerphone.channelpool.PoolStatus;
@@ -40,28 +39,27 @@ public class HostPool implements ICommand {
 
         if (stat == PoolStatus.IS_HOST) {
 
-            return ToolSet.CP_EMJ + PoolResponse.ALREADY_HOSTING + "\n" +
+            return PoolResponse.ALREADY_HOSTING + "\n" +
                     String.format(PoolResponse.POOL_ID.toString(), channel.getId()) + "\n" +
                     (ChannelPool.hasPassword(channel.getId())
                             ? String.format(PoolResponse.POOL_PWD.toString(), ChannelPool.getPassword(channel.getId()))
-                            : String.format(PoolResponse.POOL_SET_PWD.toString(), Callerphone.config.getPrefix())) + "\n" +
-                    String.format(PoolResponse.POOL_END_WITH.toString(), Callerphone.config.getPrefix());
+                            : PoolResponse.POOL_SET_PWD.toString()) + "\n" +
+                    PoolResponse.POOL_END_WITH;
 
         } else if (stat == PoolStatus.IS_CHILD) {
 
-            return ToolSet.CP_EMJ + PoolResponse.ALREADY_IN_POOL + "\n" +
-                    String.format(PoolResponse.POOL_LEAVE_WITH.toString(), Callerphone.config.getPrefix());
+            return PoolResponse.ALREADY_IN_POOL + "\n" + PoolResponse.POOL_LEAVE_WITH;
 
         } else if (stat == PoolStatus.SUCCESS) {
 
-            return String.format(ToolSet.CP_EMJ + PoolResponse.HOST_POOL_SUCCESS.toString(), channel.getName()) + "\n" +
+            return String.format(PoolResponse.HOST_POOL_SUCCESS.toString(), channel.getName()) + "\n" +
                     String.format(PoolResponse.POOL_ID.toString(), channel.getId()) + "\n" +
-                    String.format(PoolResponse.POOL_SET_PWD.toString(), Callerphone.config.getPrefix()) + "\n" +
-                    String.format(PoolResponse.POOL_END_WITH.toString(), Callerphone.config.getPrefix());
+                    PoolResponse.POOL_SET_PWD + "\n" +
+                    PoolResponse.POOL_END_WITH;
 
         }
 
-        return ToolSet.CP_ERR + Response.ERROR.toString();
+        return Response.ERROR.toString();
     }
 
     @Override

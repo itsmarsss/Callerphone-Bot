@@ -2,6 +2,7 @@ package com.marsss.callerphone.listeners;
 
 import com.marsss.callerphone.Callerphone;
 
+import com.marsss.callerphone.Response;
 import com.marsss.callerphone.ToolSet;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
@@ -49,6 +50,6 @@ public class OnSlashCommand extends ListenerAdapter {
     }
 
     public static void sendError(SlashCommandEvent event, Exception error) {
-        event.reply(String.format(Callerphone.ERROR_MSG, error.toString())).queue();
+        event.reply(String.format(Response.ERROR_MSG.toString(), error.toString())).queue();
     }
 }

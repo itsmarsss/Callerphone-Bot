@@ -29,7 +29,7 @@ public class ChannelPool {
 
         final boolean PERMS = !member.hasPermission(Permission.MANAGE_CHANNEL);
         if (PERMS) {
-            e.reply(ToolSet.CP_EMJ + Response.NO_PERMISSION.toString()).queue();
+            e.reply(Response.NO_PERMISSION.toString()).queue();
 
         }
         return PERMS;
@@ -42,7 +42,7 @@ public class ChannelPool {
 
         final boolean PERMS = !member.hasPermission(Permission.MANAGE_CHANNEL);
         if (PERMS) {
-            message.reply(ToolSet.CP_EMJ + Response.NO_PERMISSION.toString()).queue();
+            message.reply(Response.NO_PERMISSION.toString()).queue();
 
         }
         return PERMS;
@@ -69,7 +69,9 @@ public class ChannelPool {
     }
 
     public static PoolStatus joinPool(String hostID, String clientID, String pwd) {
-        if (isHost(clientID)) {
+        if (!config.containsKey(hostID)) {
+            return PoolStatus.NOT_FOUND;
+        } else if (isHost(clientID)) {
             return PoolStatus.IS_HOST;
         } else if (isChild(clientID)) {
             return PoolStatus.IS_CHILD;
@@ -254,7 +256,7 @@ public class ChannelPool {
             }
             final MessageAction MESSAGE_ACTION = buildMessageAction(original, msg, id);
             if (MESSAGE_ACTION != null) {
-                MESSAGE_ACTION.queue();
+                MESSAGE_ACTION.complete();
             }
         });
     }
@@ -309,15 +311,13 @@ public class ChannelPool {
         return ma;
     }
 
-    private static final String LEFT_POOL = ToolSet.CP_EMJ + "Channel `ID: %s` has left this pool.";
-
     private static void handleChannelLeft(String sender, String id) {
         if (sender.equals(id)) {
             clearChildren(sender);
             return;
         }
         config.get(sender).children.remove(id);
-        systemBroadCast(sender, String.format(LEFT_POOL, id));
+        systemBroadCast(sender, String.format(PoolResponse.LEFT_POOL.toString(), id));
     }
 
 
@@ -326,11 +326,11 @@ public class ChannelPool {
         for (String id : pool) {
             final TextChannel TEXT_CHANNEL = ToolSet.getTextChannel(id);
             if (TEXT_CHANNEL == null) {
-                systemBroadCast(IDhost, String.format(LEFT_POOL, id));
+                systemBroadCast(IDhost, String.format(PoolResponse.LEFT_POOL.toString(), id));
                 continue;
             }
             MessageAction ma = TEXT_CHANNEL.sendMessage(msg);
-            ma.queue();
+            ma.complete();
         }
     }
 

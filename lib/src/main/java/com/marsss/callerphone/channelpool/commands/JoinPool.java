@@ -29,7 +29,7 @@ public class JoinPool implements ICommand {
         String[] args = e.getMessage().getContentRaw().split("\\s+");
 
         if (args.length == 1) {
-            e.getMessage().reply(String.format(ToolSet.CP_ERR + Response.MISSING_PARAM.toString(), Callerphone.config.getPrefix())).queue();
+            e.getMessage().reply(Response.MISSING_PARAM.toString()).queue();
             return;
         }
 
@@ -70,44 +70,43 @@ public class JoinPool implements ICommand {
 
         if (HOST_CHANNEL == null) {
             ChannelPool.clearChildren(host);
-            return ToolSet.CP_EMJ + PoolResponse.REQUESTED_ID_NOT_FOUND.toString();
+            return String.format(PoolResponse.REQUESTED_ID_NOT_FOUND.toString(), host);
         }
 
         if (stat == PoolStatus.IS_HOST) {
 
-            return ToolSet.CP_EMJ + PoolResponse.ALREADY_HOSTING +
+            return PoolResponse.ALREADY_HOSTING +
                     String.format(PoolResponse.POOL_ID.toString(), id) + "\n" +
                     (ChannelPool.hasPassword(id)
                             ? String.format(PoolResponse.POOL_PWD.toString(), ChannelPool.getPassword(id))
-                            : String.format(PoolResponse.POOL_SET_PWD.toString(), Callerphone.config.getPrefix())) + "\n" +
-                    String.format(PoolResponse.POOL_END_WITH.toString(), Callerphone.config.getPrefix());
+                            : PoolResponse.POOL_SET_PWD) + "\n" +
+                    PoolResponse.POOL_END_WITH;
 
         } else if (stat == PoolStatus.IS_CHILD) {
 
-            return ToolSet.CP_EMJ + PoolResponse.ALREADY_IN_POOL + "\n" +
-                    String.format(PoolResponse.POOL_LEAVE_WITH.toString(), Callerphone.config.getPrefix());
+            return PoolResponse.ALREADY_IN_POOL + "\n" + PoolResponse.POOL_LEAVE_WITH;
 
         } else if (stat == PoolStatus.NOT_FOUND) {
 
-            return String.format(ToolSet.CP_EMJ + PoolResponse.REQUESTED_ID_NOT_FOUND.toString(), host);
+            return String.format(PoolResponse.REQUESTED_ID_NOT_FOUND.toString(), host);
 
         } else if (stat == PoolStatus.INCORRECT_PASS) {
 
-            HOST_CHANNEL.sendMessage(String.format(ToolSet.CP_EMJ + PoolResponse.JOIN_INCORRECT_PWD.toString(), channel.getId())).queue();
-            return String.format(ToolSet.CP_EMJ + PoolResponse.REQUESTED_ID_NOT_FOUND.toString(), host);
+            HOST_CHANNEL.sendMessage(String.format(PoolResponse.JOIN_INCORRECT_PWD.toString(), channel.getId())).queue();
+            return String.format(PoolResponse.REQUESTED_ID_NOT_FOUND.toString(), host);
 
         } else if (stat == PoolStatus.FULL) {
 
-            HOST_CHANNEL.sendMessage(String.format(String.format(ToolSet.CP_EMJ + PoolResponse.JOIN_FULL_POOL.toString(), channel.getId()))).queue();
-            return ToolSet.CP_EMJ + PoolResponse.ALREADY_FULL.toString();
+            HOST_CHANNEL.sendMessage(String.format(String.format(PoolResponse.JOIN_FULL_POOL.toString(), channel.getId()))).queue();
+            return PoolResponse.ALREADY_FULL.toString();
 
         } else if (stat == PoolStatus.SUCCESS) {
 
-            return String.format(ToolSet.CP_EMJ + PoolResponse.JOIN_POOL_SUCCESS.toString(), host, HOST_CHANNEL.getName());
+            return String.format(PoolResponse.JOIN_POOL_SUCCESS.toString(), host, HOST_CHANNEL.getName());
 
        }
 
-        return ToolSet.CP_ERR + Response.ERROR.toString();
+        return Response.ERROR.toString();
     }
 
     @Override

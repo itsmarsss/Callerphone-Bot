@@ -16,6 +16,14 @@ public class ToolSet {
     public static long MESSAGE_COOLDOWN = 500;
     public static long CREDIT_COOLDOWN = 15000;
 
+    public static void updateToolSet() {
+        CP_EMJ = Callerphone.config.getCallerphoneNormal();
+        CP_ERR = Callerphone.config.getCallerphoneError();
+        CP_CALL = Callerphone.config.getCallerphoneCall();
+        MESSAGE_COOLDOWN = 500;
+        CREDIT_COOLDOWN = 15000;
+    }
+
 
     // https://programming.guide/java/formatting-byte-size-to-human-readable-format.html {
 
@@ -59,13 +67,13 @@ public class ToolSet {
 
     public static String messageCheck(String messageRaw) {
         if (messageRaw.contains("@here") || messageRaw.contains("@everyone"))
-            return ToolSet.CP_ERR + Response.ATTEMPTED_PING.toString() + ToolSet.CP_ERR;
+            return Response.ATTEMPTED_PING.toString();
 
         if (hasLink(messageRaw))
-            return ToolSet.CP_ERR + Response.ATTEMPTED_LINK.toString() + ToolSet.CP_ERR;
+            return Response.ATTEMPTED_LINK.toString();
 
         if (messageRaw.length() > 1500)
-            return ToolSet.CP_ERR + Response.MESSAGE_TOO_LONG.toString() + ToolSet.CP_ERR;
+            return Response.MESSAGE_TOO_LONG.toString();
 
         return messageRaw;
     }
@@ -80,6 +88,17 @@ public class ToolSet {
         }
 
         return links.size() != 0;
+    }
+
+    public static String filter(String messageraw) {
+        for (String ftr : Callerphone.storage.filter) {
+            StringBuilder rep = new StringBuilder();
+            for (int i = 0; i < ftr.length(); i++) {
+                rep.append("#");
+            }
+            messageraw = messageraw.replaceAll("(?i)" + ftr, rep.toString());
+        }
+        return messageraw;
     }
 
     public static void printWelcome() {

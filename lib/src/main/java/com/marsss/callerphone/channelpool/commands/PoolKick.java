@@ -25,7 +25,7 @@ public class PoolKick implements ICommand {
         String[] args = e.getMessage().getContentRaw().split("\\s+");
 
         if (args.length == 1) {
-            e.getMessage().reply(String.format(ToolSet.CP_ERR + Response.MISSING_PARAM.toString(), Callerphone.config.getPrefix())).queue();
+            e.getMessage().reply(Response.MISSING_PARAM.toString()).queue();
             return;
         }
 
@@ -50,23 +50,23 @@ public class PoolKick implements ICommand {
 
         if (stat == PoolStatus.IS_CHILD) {
 
-            return ToolSet.CP_EMJ + PoolResponse.NOT_HOSTING.toString();
+            return PoolResponse.NOT_HOSTING.toString();
 
         } else if (stat == PoolStatus.SUCCESS) {
 
             final TextChannel CHILD_CHANNEL = ToolSet.getTextChannel(kickID);
             if (CHILD_CHANNEL != null) {
-                CHILD_CHANNEL.sendMessage(ToolSet.CP_EMJ + PoolResponse.KICKED_FROM_POOL.toString()).queue();
+                CHILD_CHANNEL.sendMessage(PoolResponse.KICKED_FROM_POOL.toString()).queue();
             }
-            return String.format(ToolSet.CP_EMJ + PoolResponse.KICK_POOL_SUCCESS.toString(), kickID);
+            return String.format(PoolResponse.KICK_POOL_SUCCESS.toString(), kickID);
 
         } else if (stat == PoolStatus.NOT_FOUND) {
 
-            return ToolSet.CP_EMJ + PoolResponse.REQUESTED_NOT_FOUND.toString();
+            return PoolResponse.REQUESTED_NOT_FOUND.toString();
 
         }
 
-        return ToolSet.CP_ERR + Response.ERROR.toString();
+        return Response.ERROR.toString();
     }
 
     @Override

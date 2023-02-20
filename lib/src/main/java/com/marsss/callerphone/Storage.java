@@ -2,14 +2,12 @@ package com.marsss.callerphone;
 
 import com.marsss.callerphone.channelpool.ChannelPool;
 import com.marsss.callerphone.channelpool.PoolConfig;
-import com.marsss.callerphone.channelpool.PoolStatus;
 import com.marsss.callerphone.users.BotUser;
 import com.marsss.callerphone.users.UserStatus;
 import net.dv8tion.jda.api.entities.User;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,7 +23,7 @@ public class Storage {
     public static final HashMap<String, BotUser> users = new HashMap<>();
     public static final HashMap<String, Long> poolChatCoolDown = new HashMap<>();
 
-    static void readData() {
+    public static void readData() {
         try {
             getFilter(new File(Callerphone.parent + "/filter.txt"));
         } catch (Exception e) {
@@ -55,7 +53,7 @@ public class Storage {
         System.out.println("------------------------------");
     }
 
-    static void writeData() {
+    public static void writeData() {
         try {
             exportUsers(new File(Callerphone.parent + "/users.json"));
         } catch (Exception e) {
@@ -127,7 +125,6 @@ public class Storage {
 
                     switch (statusStr) {
                         case "user":
-                            status = UserStatus.USER;
                             break;
                         case "moderator":
                             status = UserStatus.MODERATOR;

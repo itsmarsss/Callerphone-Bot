@@ -3,7 +3,6 @@ package com.marsss.callerphone.channelpool.commands;
 import com.marsss.ICommand;
 import com.marsss.callerphone.Callerphone;
 import com.marsss.callerphone.Response;
-import com.marsss.callerphone.ToolSet;
 import com.marsss.callerphone.channelpool.ChannelPool;
 import com.marsss.callerphone.channelpool.PoolResponse;
 import com.marsss.callerphone.channelpool.PoolStatus;
@@ -39,24 +38,24 @@ public class LeavePool implements ICommand {
 
         if (stat == PoolStatus.IS_HOST) {
 
-            return ToolSet.CP_EMJ + PoolResponse.ALREADY_HOSTING +
+            return PoolResponse.ALREADY_HOSTING + "\n" +
                     String.format(PoolResponse.POOL_ID.toString(), id) + "\n" +
                     (ChannelPool.hasPassword(id)
                             ? String.format(PoolResponse.POOL_PWD.toString(), ChannelPool.getPassword(id))
-                            : String.format(PoolResponse.POOL_SET_PWD.toString(), Callerphone.config.getPrefix())) + "\n" +
-                    String.format(PoolResponse.POOL_END_WITH.toString(), Callerphone.config.getPrefix());
+                            : PoolResponse.POOL_SET_PWD) + "\n" +
+                    PoolResponse.POOL_END_WITH;
 
         } else if (stat == PoolStatus.SUCCESS) {
 
-            return ToolSet.CP_EMJ + PoolResponse.LEAVE_POOL_SUCCESS.toString();
+            return PoolResponse.LEAVE_POOL_SUCCESS.toString();
 
         } else if (stat == PoolStatus.NOT_FOUND) {
 
-            return ToolSet.CP_EMJ + PoolResponse.NOT_IN_POOL.toString();
+            return PoolResponse.NOT_IN_POOL.toString();
 
         }
 
-        return ToolSet.CP_ERR + Response.ERROR.toString();
+        return Response.ERROR.toString();
     }
 
     @Override

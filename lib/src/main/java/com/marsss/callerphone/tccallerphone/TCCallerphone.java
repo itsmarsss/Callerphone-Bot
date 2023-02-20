@@ -32,7 +32,7 @@ public class TCCallerphone {
                     convo.resetMessage();
                     return ChatStatus.NON_EXISTENT;
                 }
-                CALLER_CHANNEL.sendMessage(ToolSet.CP_EMJ + ChatResponse.PICKED_UP.toString()).queue();
+                CALLER_CHANNEL.sendMessage(ChatResponse.PICKED_UP.toString()).queue();
 
                 logger.info("From TC: "
                         + convo.getCallerTCID()
@@ -61,7 +61,7 @@ public class TCCallerphone {
 
     public static String onEndCallCommand(TextChannel channel) {
         if (!hasCall(channel.getId())) {
-            return ToolSet.CP_EMJ + ChatResponse.NO_CALL.toString();
+            return ChatResponse.NO_CALL.toString();
         }
 
         ConvoStorage convo = getCall(channel.getId());
@@ -76,13 +76,13 @@ public class TCCallerphone {
             if (RECEIVER_ID.equals(channel.getId())) {
                 if (!convo.getCallerTCID().equals("empty")) {
                     if (CALLER_CHANNEL != null) {
-                        CALLER_CHANNEL.sendMessage(ToolSet.CP_EMJ + ChatResponse.OTHER_PARTY_HUNG_UP.toString()).queue();
+                        CALLER_CHANNEL.sendMessage(ChatResponse.OTHER_PARTY_HUNG_UP.toString()).queue();
                     }
                 }
             } else {
                 if (!convo.getReceiverTCID().equals("")) {
                     if (RECEIVER_CHANNEL != null) {
-                        RECEIVER_CHANNEL.sendMessage(ToolSet.CP_EMJ + ChatResponse.OTHER_PARTY_HUNG_UP.toString()).queue();
+                        RECEIVER_CHANNEL.sendMessage(ChatResponse.OTHER_PARTY_HUNG_UP.toString()).queue();
                     }
                 }
             }
@@ -97,9 +97,9 @@ public class TCCallerphone {
 
             convo.resetMessage();
 
-            return ToolSet.CP_EMJ + ChatResponse.HUNG_UP.toString();
+            return ChatResponse.HUNG_UP.toString();
         }
-        return ToolSet.CP_EMJ + ChatResponse.NO_CALL.toString();
+        return ChatResponse.NO_CALL.toString();
     }
 
     private static void report(ArrayList<String> data, String callerID, String receiverID) {

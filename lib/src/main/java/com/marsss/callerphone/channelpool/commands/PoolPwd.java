@@ -3,7 +3,6 @@ package com.marsss.callerphone.channelpool.commands;
 import com.marsss.ICommand;
 import com.marsss.callerphone.Callerphone;
 import com.marsss.callerphone.Response;
-import com.marsss.callerphone.ToolSet;
 import com.marsss.callerphone.channelpool.ChannelPool;
 import com.marsss.callerphone.channelpool.PoolResponse;
 import com.marsss.callerphone.channelpool.PoolStatus;
@@ -24,7 +23,7 @@ public class PoolPwd implements ICommand {
         String[] args = e.getMessage().getContentRaw().split("\\s+");
 
         if (args.length == 1) {
-            e.getMessage().reply(String.format(ToolSet.CP_ERR + Response.MISSING_PARAM.toString(), Callerphone.config.getPrefix())).queue();
+            e.getMessage().reply(Response.MISSING_PARAM.toString()).queue();
             return;
         }
 
@@ -48,19 +47,22 @@ public class PoolPwd implements ICommand {
         if (pwd.equals("none"))
             pwd = "";
 
+        if(pwd.contains(""))
+            return Response.ERROR.toString();
+
         PoolStatus stat = ChannelPool.setPassword(id, pwd);
 
         if (stat == PoolStatus.SUCCESS) {
 
-            return ToolSet.CP_EMJ + String.format(PoolResponse.POOL_PWD.toString(), pwd);
+            return String.format(PoolResponse.POOL_PWD.toString(), (pwd.equals("") ? "**no password**" : "`||" + pwd + "||`"));
 
         } else if (stat == PoolStatus.NOT_FOUND) {
 
-            return ToolSet.CP_EMJ + PoolResponse.NOT_HOSTING.toString();
+            return PoolResponse.NOT_HOSTING.toString();
 
         }
 
-        return ToolSet.CP_ERR + Response.ERROR.toString();
+        return Response.ERROR.toString();
     }
 
     @Override
