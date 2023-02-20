@@ -18,11 +18,6 @@ public class OnSlashCommand extends ListenerAdapter {
         try {
             if (Callerphone.cmdMap.containsKey(event.getName())) {
 
-                if(Storage.isBlacklisted(event.getUser().getId())) {
-                    event.reply(String.format(Response.BLACKLISTED.toString(), Storage.getReason(event.getUser().getId()))).setEphemeral(true).queue();
-                    return;
-                }
-
                 if(!Storage.hasUser(event.getUser().getId())) {
                     event.replyEmbeds(
                             new EmbedBuilder()
@@ -33,6 +28,11 @@ public class OnSlashCommand extends ListenerAdapter {
                                     .setColor(new Color(114, 137, 218))
                                     .build()
                     ).setEphemeral(true).queue();
+                    return;
+                }
+
+                if(Storage.isBlacklisted(event.getUser().getId())) {
+                    event.reply(String.format(Response.BLACKLISTED.toString(), Storage.getReason(event.getUser().getId()))).setEphemeral(true).queue();
                     return;
                 }
 

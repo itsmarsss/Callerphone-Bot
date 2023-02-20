@@ -47,12 +47,6 @@ public class CommandListener extends ListenerAdapter {
         try {
             if (Callerphone.cmdMap.containsKey(trigger)) {
 
-                if(Storage.isBlacklisted(event.getAuthor().getId())) {
-                    MESSAGE.reply("Sorry you are blacklisted, submit an appeal in our support server " + Callerphone.config.getSupportServer()).queue();
-                    return;
-                }
-
-
                 if(Storage.hasUser(event.getAuthor().getId())) {
                     event.getMessage().replyEmbeds(
                             new EmbedBuilder()
@@ -63,6 +57,11 @@ public class CommandListener extends ListenerAdapter {
                                     .setColor(new Color(114, 137, 218))
                                     .build()
                     ).queue();
+                    return;
+                }
+
+                if(Storage.isBlacklisted(event.getAuthor().getId())) {
+                    MESSAGE.reply("Sorry you are blacklisted, submit an appeal in our support server " + Callerphone.config.getSupportServer()).queue();
                     return;
                 }
 
