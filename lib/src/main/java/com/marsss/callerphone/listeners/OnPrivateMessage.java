@@ -55,24 +55,16 @@ public class OnPrivateMessage extends ListenerAdapter {
 
                 switch (args[0].toLowerCase().replace(Callerphone.config.getPrefix(), "")) {
 
-                    case "blackedlist":
-                        sendPrivateFile(MEMBER, new File(Callerphone.parent + "/blacklist.txt"), "Callerphone Blacklist:");
-                        return;
-
-                    case "prefixlist":
-                        sendPrivateFile(MEMBER, new File(Callerphone.parent + "/prefix.txt"), "Callerphone Prefix list:");
-                        return;
-
-                    case "infolist":
-                        sendPrivateFile(MEMBER, new File(Callerphone.parent + "/info.txt"), "Callerphone Info list:");
-                        return;
-
-                    case "modlist":
-                        sendPrivateFile(MEMBER, new File(Callerphone.parent + "/admin.txt"), "Callerphone Moderator list:");
-                        return;
-
-                    case "filterlist":
+                    case "filters":
                         sendPrivateFile(MEMBER, new File(Callerphone.parent + "/filter.txt"), "Callerphone Filter list:");
+                        return;
+
+                    case "users":
+                        sendPrivateFile(MEMBER, new File(Callerphone.parent + "/users.json"), "Callerphone Filter list:");
+                        return;
+
+                    case "pools":
+                        sendPrivateFile(MEMBER, new File(Callerphone.parent + "/pools.json"), "Callerphone Filter list:");
                         return;
 
                 }
@@ -85,6 +77,7 @@ public class OnPrivateMessage extends ListenerAdapter {
                             MESSAGE.reply("ID blacklisted already").queue();
                         } else {
                             Storage.addBlacklist(id);
+                            MESSAGE.reply("ID: `" + id + "` added to blacklist").queue();
                         }
                         break;
 
@@ -157,8 +150,8 @@ public class OnPrivateMessage extends ListenerAdapter {
     }
 
     public void sendPrivateEmbed(User user, MessageEmbed embed) {
-            user.openPrivateChannel().queue((channel) ->
-                    channel.sendMessageEmbeds(embed).queue()
-            );
+        user.openPrivateChannel().queue((channel) ->
+                channel.sendMessageEmbeds(embed).queue()
+        );
     }
 }
