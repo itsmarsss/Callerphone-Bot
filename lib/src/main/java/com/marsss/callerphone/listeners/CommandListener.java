@@ -34,11 +34,6 @@ public class CommandListener extends ListenerAdapter {
         if (MEMBER.getUser().isBot() || MEMBER.getUser().isSystem())
             return;
 
-        if(Storage.isBlacklisted(event.getAuthor().getId())) {
-            MESSAGE.reply("Sorry you are blacklisted, submit an appeal in our support server " + Callerphone.config.getSupportServer()).queue();
-            return;
-        }
-
         if (CONTENT.contains(Callerphone.jda.getSelfUser().getId())) {
             MESSAGE.reply("My prefix is `" + Callerphone.config.getPrefix() + "`, do `" + Callerphone.config.getPrefix() + "help` for a list of commands!").queue();
             return;
@@ -51,6 +46,11 @@ public class CommandListener extends ListenerAdapter {
 
         try {
             if (Callerphone.cmdMap.containsKey(trigger)) {
+
+                if(Storage.isBlacklisted(event.getAuthor().getId())) {
+                    MESSAGE.reply("Sorry you are blacklisted, submit an appeal in our support server " + Callerphone.config.getSupportServer()).queue();
+                    return;
+                }
 
                 if (!Arrays.asList(new Profile().getTriggers()).contains(trigger)) {
                     Storage.reward(event.getAuthor(), 1);

@@ -18,6 +18,13 @@ public class OnSlashCommand extends ListenerAdapter {
         try {
             if (Callerphone.cmdMap.containsKey(event.getName())) {
 
+                if(Storage.isBlacklisted(event.getUser().getId())) {
+                    event.reply(
+                            "Sorry you are blacklisted, submit an appeal in our support server " + Callerphone.config.getSupportServer()
+                            ).setEphemeral(true).queue();
+                    return;
+                }
+
                 Storage.reward(event.getUser(), 3);
                 Storage.addExecute(event.getUser(), 1);
 
