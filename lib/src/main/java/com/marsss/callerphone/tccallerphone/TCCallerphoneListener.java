@@ -27,7 +27,7 @@ public class TCCallerphoneListener extends ListenerAdapter {
         if (args[0].toLowerCase().startsWith(Callerphone.config.getPrefix()))
             return;
 
-        if (Callerphone.blacklist.contains(event.getAuthor().getId())) {
+        if (Callerphone.storage.isBlacklisted(event.getAuthor().getId())) {
             event.getMessage().addReaction("\u274C").queue();
             return;
         }
@@ -79,11 +79,11 @@ public class TCCallerphoneListener extends ListenerAdapter {
             }
         }
 
-        if ((System.currentTimeMillis() - Callerphone.getUserCooldown(event.getAuthor())) > ToolSet.CREDIT_COOLDOWN) {
-            Callerphone.updateUserCooldown(event.getAuthor());
+        if ((System.currentTimeMillis() - Callerphone.storage.getUserCooldown(event.getAuthor())) > ToolSet.CREDIT_COOLDOWN) {
+            Callerphone.storage.updateUserCooldown(event.getAuthor());
 
-            Callerphone.reward(event.getAuthor(), 5);
-            Callerphone.addTransmit(event.getAuthor(), 1);
+            Callerphone.storage.reward(event.getAuthor(), 5);
+            Callerphone.storage.addTransmit(event.getAuthor(), 1);
         }
 
     }
@@ -100,11 +100,11 @@ public class TCCallerphoneListener extends ListenerAdapter {
             return;
         }
         User auth = msg.getAuthor();
-        String template = Response.DEFAULT_MESSAGE_TEMPLATE.toString();
-        if (Callerphone.admin.contains(msg.getAuthor().getId())) {
-            template = Response.MODERATOR_MESSAGE_TEMPLATE.toString();
-        } else if (Callerphone.prefix.containsKey(msg.getAuthor().getId())) {
-            template = Response.PREFIX_MESSAGE_TEMPLATE.toString().replaceFirst("%s", Callerphone.prefix.get(msg.getAuthor().getId()));
+        String template = Response.DEFAULT_MESSAGE_TEMPLATE.toString().replace("CP_CALL", ToolSet.CP_CALL);
+        if (Callerphone.storage.isAdmin(msg.getAuthor().getId())) {
+            template = Response.MODERATOR_MESSAGE_TEMPLATE.toString().replace("CP_CALL", ToolSet.CP_CALL);
+        } else if (Callerphone.storage.hasPrefix(msg.getAuthor().getId())) {
+            template = Response.PREFIX_MESSAGE_TEMPLATE.toString().replaceFirst("%s", Callerphone.storage.getPrefix(msg.getAuthor())).replace("CP_CALL", ToolSet.CP_CALL);
         }
         if (DESTINATION_CHANNEL != null) {
             DESTINATION_CHANNEL.sendMessage(String.format(template, auth.getName(), auth.getDiscriminator(), content)).complete();
@@ -114,7 +114,7 @@ public class TCCallerphoneListener extends ListenerAdapter {
     }
 
     private String filter(String messageraw) {
-        for (String ftr : Callerphone.filter) {
+        for (String ftr : Callerphone.storage.filter) {
             StringBuilder rep = new StringBuilder();
             for (int i = 0; i < ftr.length(); i++) {
                 rep.append("#");
@@ -132,11 +132,11 @@ public class TCCallerphoneListener extends ListenerAdapter {
         final TextChannel CALLER_CHANNEL = ToolSet.getTextChannel(c.getCallerTCID());
         final TextChannel RECEIVER_CHANNEL = ToolSet.getTextChannel(c.getReceiverTCID());
         if (CALLER_CHANNEL != null) {
-            CALLER_CHANNEL.sendMessage(Response.CONNECTION_ERROR.toString()).queue();
+            CALLER_CHANNEL.sendMessage(ToolSet.CP_EMJ + Response.CONNECTION_ERROR.toString()).queue();
         }
 
         if (RECEIVER_CHANNEL != null) {
-            RECEIVER_CHANNEL.sendMessage(Response.CONNECTION_ERROR.toString()).queue();
+            RECEIVER_CHANNEL.sendMessage(ToolSet.CP_EMJ + Response.CONNECTION_ERROR.toString()).queue();
         }
 
         c.resetMessage();

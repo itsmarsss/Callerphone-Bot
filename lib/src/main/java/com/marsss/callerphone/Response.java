@@ -6,26 +6,27 @@ public enum Response {
     eventitem_status("str"),
      */
 
-    ERROR(ToolSet.CP_EMJ + "An error occurred."),
-    MISSING_PARAM(ToolSet.CP_EMJ + "Missing parameters, do `" + Callerphone.config.getPrefix() + "help <command name>` for more information."),
+    ERROR("An error occurred."),
+    MISSING_PARAM("Missing parameters, do `%shelp <command name>` for more information."),
 
     PING_TEMPLATE("**Reset ping:** %sms \n**WS ping:** %sms"),
 
     // Profile
-    PROFILE_GENERAL("Level: `%d`\nExperience: `%d/100`\nPrefix: %s\n\n[`" + Callerphone.config.getPrefix() + "help exp`]"),
-    PROFILE_CREDITS("Credits: `\u00A9 %d`\nRedeemed: `\u00A9 %d`\nNet: `\u00A9 %d`\n\n[`" + Callerphone.config.getPrefix() + "help creds`]"),
+    PROFILE_GENERAL("Level: `%d`\nExperience: `%d/100`\nPrefix: %s\n\n[`%shelp exp`]"),
+    PROFILE_CREDITS("Credits: `\u00A9 %d`\nRedeemed: `\u00A9 %d`\nNet: `\u00A9 %d`\n\n[`%shelp creds`]"),
     PROFILE_MESSAGE("Executed: `%d`\n Transmitted: `%s`\nTotal: `%s`"),
 
-    CONNECTION_ERROR(ToolSet.CP_EMJ + "Connection error, call ended."),
-    DEFAULT_MESSAGE_TEMPLATE("**%s**#%s " + ToolSet.CP_CALL + "%s"),
-    MODERATOR_MESSAGE_TEMPLATE("***[Moderator]* %s**#%s " + ToolSet.CP_CALL + "%s"),
-    PREFIX_MESSAGE_TEMPLATE("***[%s]* %s**#%s " + ToolSet.CP_CALL + "%s"),
-    MESSAGE_TOO_LONG(ToolSet.CP_ERR + " I sent a message too long for Callerphone to handle " + ToolSet.CP_ERR),
-    ATTEMPTED_PING(ToolSet.CP_ERR + " I tried to ping everyone " + ToolSet.CP_ERR),
-    ATTEMPTED_LINK(ToolSet.CP_ERR + " I tried to send a link " + ToolSet.CP_ERR),
-    USER_TEMPLATE("{\n\"id\": \"%s\",\n\"status\": \"%s\",\n\"reason\": \"%s\",\n\"prefix\": \"%s\",\n\"credits\": %s,\n\"executed\": %s,\n\"transmitted\": %s\n}"),
+    CONNECTION_ERROR("Connection error, call ended."),
+    DEFAULT_MESSAGE_TEMPLATE("**%s**#%s CP_CALL %s"),
+    MODERATOR_MESSAGE_TEMPLATE("***[Moderator]* %s**#%s CP_CALL %s"),
+    PREFIX_MESSAGE_TEMPLATE("***[%s]* %s**#%s CP_CALL %s"),
+    MESSAGE_TOO_LONG(" I sent a message too long for Callerphone to handle "),
+    ATTEMPTED_PING(" I tried to ping everyone "),
+    ATTEMPTED_LINK(" I tried to send a link "),
+    USER_TEMPLATE("\t\t{\n\t\t\t\"id\": \"%s\",\n\t\t\t\"status\": \"%s\",\n\t\t\t\"reason\": \"%s\",\n\t\t\t\"prefix\": \"%s\",\n\t\t\t\"credits\": %s,\n\t\t\t\"executed\": %s,\n\t\t\t\"transmitted\": %s\n\t\t}"),
+    POOL_TEMPLATE("\t\t{\n\t\t\t\"hostID\": \"%s\",\n\t\t\t\"pwd\": \"%s\",\n\t\t\t\"cap\": %s,\n\t\t\t\"pub\": %s,\n\t\t\t\"children\": [\n\t\t\t\t%s\n\t\t\t]\n\t\t}"),
 
-    NO_PERMISSION(ToolSet.CP_EMJ + "You need `Manage Channel` permission to run this command."),
+    NO_PERMISSION("You need `Manage Channel` permission to run this command."),
     TEMP("There is no set return message");
     public final String label;
 

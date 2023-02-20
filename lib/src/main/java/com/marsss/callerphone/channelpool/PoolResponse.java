@@ -30,7 +30,7 @@ public enum PoolResponse {
     REQUESTED_ID_NOT_FOUND(ToolSet.CP_EMJ + "Requested pool `ID: %s` does not exist."),
     REQUESTED_NOT_FOUND(ToolSet.CP_EMJ + "Requested pool not found.");
 
-    public final String label;
+    public String label;
 
     PoolResponse(String label) {
         this.label = label;

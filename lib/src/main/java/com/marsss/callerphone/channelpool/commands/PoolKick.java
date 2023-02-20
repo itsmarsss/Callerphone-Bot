@@ -25,7 +25,7 @@ public class PoolKick implements ICommand {
         String[] args = e.getMessage().getContentRaw().split("\\s+");
 
         if (args.length == 1) {
-            e.getMessage().reply(Response.MISSING_PARAM.toString()).queue();
+            e.getMessage().reply(String.format(ToolSet.CP_ERR + Response.MISSING_PARAM.toString(), Callerphone.config.getPrefix())).queue();
             return;
         }
 
@@ -66,7 +66,7 @@ public class PoolKick implements ICommand {
 
         }
 
-        return Response.ERROR.toString();
+        return ToolSet.CP_ERR + Response.ERROR.toString();
     }
 
     @Override

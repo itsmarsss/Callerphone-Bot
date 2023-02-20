@@ -16,10 +16,10 @@ public class OnSlashCommand extends ListenerAdapter {
         try {
             if (Callerphone.cmdMap.containsKey(event.getName())) {
 
-                Callerphone.reward(event.getUser(), 3);
-                Callerphone.addExecute(event.getUser(), 1);
+                Callerphone.storage.reward(event.getUser(), 3);
+                Callerphone.storage.addExecute(event.getUser(), 1);
 
-                if(Callerphone.getCredits(event.getUser()) == 0) {
+                if(Callerphone.storage.getCredits(event.getUser()) == 0) {
                     event.replyEmbeds(
                             new EmbedBuilder()
                                     .setAuthor("Must Read", null, event.getUser().getAvatarUrl())

@@ -3,6 +3,7 @@ package com.marsss.callerphone.channelpool.commands;
 import com.marsss.ICommand;
 import com.marsss.callerphone.Callerphone;
 import com.marsss.callerphone.Response;
+import com.marsss.callerphone.ToolSet;
 import com.marsss.callerphone.channelpool.ChannelPool;
 import com.marsss.callerphone.channelpool.PoolResponse;
 import com.marsss.callerphone.channelpool.PoolStatus;
@@ -23,7 +24,7 @@ public class PoolPub implements ICommand {
         String[] args = e.getMessage().getContentRaw().split("\\s+");
 
         if (args.length == 1) {
-            e.getMessage().reply(Response.MISSING_PARAM.toString()).queue();
+            e.getMessage().reply(String.format(ToolSet.CP_ERR + Response.MISSING_PARAM.toString(), Callerphone.config.getPrefix())).queue();
             return;
         }
 
@@ -56,7 +57,7 @@ public class PoolPub implements ICommand {
 
         }
 
-        return Response.ERROR.toString();
+        return ToolSet.CP_ERR + Response.ERROR.toString();
     }
 
     @Override

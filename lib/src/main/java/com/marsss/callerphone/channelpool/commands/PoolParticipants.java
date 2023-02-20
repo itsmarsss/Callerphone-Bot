@@ -10,6 +10,7 @@ import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 
 public class PoolParticipants implements ICommand {
     @Override
@@ -23,7 +24,7 @@ public class PoolParticipants implements ICommand {
     }
 
     private String poolParticipants(String id) {
-        final ArrayList<String> PARTICIPANTS = ChannelPool.getClients(id);
+        final LinkedList<String> PARTICIPANTS = ChannelPool.getClients(id);
 
         if (PARTICIPANTS.size() == 0) {
             return PoolResponse.NOT_IN_POOL.toString();

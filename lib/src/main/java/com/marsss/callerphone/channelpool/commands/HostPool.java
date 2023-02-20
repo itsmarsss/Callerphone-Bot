@@ -3,6 +3,7 @@ package com.marsss.callerphone.channelpool.commands;
 import com.marsss.ICommand;
 import com.marsss.callerphone.Callerphone;
 import com.marsss.callerphone.Response;
+import com.marsss.callerphone.ToolSet;
 import com.marsss.callerphone.channelpool.ChannelPool;
 import com.marsss.callerphone.channelpool.PoolResponse;
 import com.marsss.callerphone.channelpool.PoolStatus;
@@ -60,7 +61,7 @@ public class HostPool implements ICommand {
 
         }
 
-        return Response.ERROR.toString();
+        return ToolSet.CP_ERR + Response.ERROR.toString();
     }
 
     @Override

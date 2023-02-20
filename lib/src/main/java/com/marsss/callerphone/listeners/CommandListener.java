@@ -32,7 +32,7 @@ public class CommandListener extends ListenerAdapter {
         if (MEMBER.getUser().isBot() || MEMBER.getUser().isSystem())
             return;
 
-        if(Callerphone.blacklist.contains(event.getAuthor().getId())) {
+        if(Callerphone.storage.isBlacklisted(event.getAuthor().getId())) {
             MESSAGE.reply("Sorry you are blacklisted, submit an appeal in our support server " + Callerphone.config.getSupportServer()).queue();
             return;
         }
@@ -51,11 +51,11 @@ public class CommandListener extends ListenerAdapter {
             if (Callerphone.cmdMap.containsKey(trigger)) {
 
                 if (!Arrays.asList(new Profile().getTriggers()).contains(trigger)) {
-                    Callerphone.reward(event.getAuthor(), 1);
+                    Callerphone.storage.reward(event.getAuthor(), 1);
                 }
-                Callerphone.addExecute(event.getAuthor(), 1);
+                Callerphone.storage.addExecute(event.getAuthor(), 1);
 
-                if(Callerphone.getCredits(event.getAuthor()) == 0) {
+                if(Callerphone.storage.getCredits(event.getAuthor()) == 0) {
                     event.getMessage().replyEmbeds(
                             new EmbedBuilder()
                                     .setAuthor("Must Read", null, event.getAuthor().getAvatarUrl())

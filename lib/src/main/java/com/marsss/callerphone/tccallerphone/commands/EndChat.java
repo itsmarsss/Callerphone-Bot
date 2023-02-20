@@ -2,6 +2,7 @@ package com.marsss.callerphone.tccallerphone.commands;
 
 import com.marsss.ICommand;
 import com.marsss.callerphone.Callerphone;
+import com.marsss.callerphone.ToolSet;
 import com.marsss.callerphone.tccallerphone.ChatResponse;
 import com.marsss.callerphone.tccallerphone.TCCallerphone;
 import net.dv8tion.jda.api.entities.TextChannel;
@@ -21,7 +22,7 @@ public class EndChat implements ICommand {
 
     private String endChat(TextChannel channel) {
         if(!TCCallerphone.hasCall(channel.getId())) {
-            return ChatResponse.NO_CALL.toString();
+            return ToolSet.CP_EMJ + ChatResponse.NO_CALL.toString();
         }
         return TCCallerphone.onEndCallCommand(channel);
     }

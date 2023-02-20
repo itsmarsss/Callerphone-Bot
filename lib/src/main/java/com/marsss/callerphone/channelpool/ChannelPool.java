@@ -14,12 +14,13 @@ import net.dv8tion.jda.api.requests.restaction.MessageAction;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedList;
 
 public class ChannelPool {
 
     public static final HashMap<String, PoolConfig> config = new HashMap<>();
     public static final HashMap<String, String> parent = new HashMap<>();
-    public static final HashMap<String, ArrayList<String>> childr = new HashMap<>();
+    //public static final HashMap<String, ArrayList<String>> childr = new HashMap<>();
 
     public static boolean permissionCheck(Member member, SlashCommandEvent e) {
         if (member == null) {
@@ -28,7 +29,7 @@ public class ChannelPool {
 
         final boolean PERMS = !member.hasPermission(Permission.MANAGE_CHANNEL);
         if (PERMS) {
-            e.reply(Response.NO_PERMISSION.toString()).queue();
+            e.reply(ToolSet.CP_EMJ + Response.NO_PERMISSION.toString()).queue();
 
         }
         return PERMS;
@@ -41,7 +42,7 @@ public class ChannelPool {
 
         final boolean PERMS = !member.hasPermission(Permission.MANAGE_CHANNEL);
         if (PERMS) {
-            message.reply(Response.NO_PERMISSION.toString()).queue();
+            message.reply(ToolSet.CP_EMJ + Response.NO_PERMISSION.toString()).queue();
 
         }
         return PERMS;
@@ -62,9 +63,8 @@ public class ChannelPool {
         } else if (isChild(ID)) {
             return PoolStatus.IS_CHILD;
         }
-        config.put(ID, new PoolConfig("", 10, true));
-        childr.put(ID, new ArrayList<>());
-        childr.get(ID).add(ID);
+        config.put(ID, new PoolConfig(ID, "", 10, true));
+        config.get(ID).children.add(ID);
         return PoolStatus.SUCCESS;
     }
 
@@ -100,15 +100,15 @@ public class ChannelPool {
     }
 
 
-    public static ArrayList<String> getClients(String ID) {
-        if (!parent.containsKey(ID) && !childr.containsKey(ID)) {
-            return new ArrayList<>();
+    public static LinkedList<String> getClients(String ID) {
+        if (!parent.containsKey(ID) && !config.containsKey(ID)) {
+            return new LinkedList<>();
         }
 
         if (parent.containsKey(ID)) {
-            return childr.get(parent.get(ID));
+            return config.get(parent.get(ID)).children;
         }
-        return childr.get(ID);
+        return config.get(ID).children;
     }
 
     public static PoolStatus setPublicity(String id, boolean pub) {
@@ -131,7 +131,7 @@ public class ChannelPool {
         if (isHost(id)) {
             config.get(id).setPwd(pwd);
             return PoolStatus.SUCCESS;
-        }else{
+        } else {
             return PoolStatus.NOT_FOUND;
         }
     }
@@ -145,7 +145,7 @@ public class ChannelPool {
 
     public static PoolStatus clearChildren(String ID) {
         if (isHost(ID)) {
-            ArrayList<String> pool = childr.get(ID);
+            LinkedList<String> pool = config.get(ID).children;
             pool.stream()
                     .filter(cur -> !cur.equals(ID))
                     .forEach(id -> {
@@ -160,7 +160,6 @@ public class ChannelPool {
                         parent.remove(id);
                     });
 
-            childr.remove(ID);
             config.remove(ID);
             return PoolStatus.SUCCESS;
         }
@@ -169,7 +168,7 @@ public class ChannelPool {
 
     public static PoolStatus addChildren(String IDh, String IDc) {
         if (isHost(IDh)) {
-            if (childr.get(IDh).size() >= config.get(IDh).getCap()) {
+            if (config.get(IDh).children.size() >= config.get(IDh).getCap()) {
                 return PoolStatus.FULL;
             }
 
@@ -180,18 +179,18 @@ public class ChannelPool {
                     systemBroadCast(IDh,
                             ToolSet.CP_EMJ + "Channel `ID: " + IDc
                                     + "` (#" + CHILD_CHANNEL.getName() + ") has joined this pool. "
-                                    + (childr.get(IDh).size() + 1) + "/" + config.get(IDh).getCap()
+                                    + (config.get(IDh).children.size() + 1) + "/" + config.get(IDh).getCap()
                     );
                 } else {
                     systemBroadCast(IDh,
                             ToolSet.CP_EMJ + "Channel `ID: " + IDc
                                     + "` (#[N/A NOT FOUND]) has joined this pool. "
-                                    + (childr.get(IDh).size() + 1) + "/" + config.get(IDh).getCap()
+                                    + (config.get(IDh).children.size() + 1) + "/" + config.get(IDh).getCap()
                     );
                 }
             }
 
-            childr.get(IDh).add(IDc);
+            config.get(IDh).children.add(IDc);
             parent.put(IDc, IDh);
             return PoolStatus.SUCCESS;
         }
@@ -204,7 +203,7 @@ public class ChannelPool {
         }
 
         if (isChild(clientID)) {
-            childr.get(hostID).remove(clientID);
+            config.get(hostID).children.remove(clientID);
             parent.remove(clientID);
 
             final TextChannel HOST_CHANNEL = ToolSet.getTextChannel(hostID);
@@ -213,12 +212,12 @@ public class ChannelPool {
                 if (CHILD_CHANNEL != null) {
                     systemBroadCast(hostID,
                             ToolSet.CP_EMJ + "Channel `ID: " + clientID + "` (#" + CHILD_CHANNEL.getName() + ") has left this pool. "
-                                    + childr.get(hostID).size() + "/" + config.get(hostID).getCap()
+                                    + config.get(hostID).children.size() + "/" + config.get(hostID).getCap()
                     );
                 } else {
                     systemBroadCast(hostID,
                             ToolSet.CP_EMJ + "Channel `ID: " + clientID + "` (#[N/A NOT FOUND]) has left this pool. "
-                                    + childr.get(hostID).size() + "/" + config.get(hostID).getCap()
+                                    + config.get(hostID).children.size() + "/" + config.get(hostID).getCap()
                     );
                 }
             }
@@ -230,11 +229,11 @@ public class ChannelPool {
     }
 
     public static boolean isHost(String ID) {
-        return !parent.containsKey(ID) && childr.containsKey(ID);
+        return !parent.containsKey(ID) && config.containsKey(ID);
     }
 
     public static boolean isChild(String ID) {
-        return parent.containsKey(ID) && !childr.containsKey(ID);
+        return parent.containsKey(ID) && !config.containsKey(ID);
     }
 
     public static void broadCast(String sender, String original, String msg) {
@@ -246,7 +245,7 @@ public class ChannelPool {
     }
 
     private static void handleIsHost(String sender, String original, String msg) {
-        ArrayList<String> pool = childr.get(sender);
+        LinkedList<String> pool = config.get(sender).children;
         pool.stream().filter(id -> !id.equals(original)).forEach(id -> {
             final TextChannel TEXT_CHANNEL = ToolSet.getTextChannel(id);
             if (TEXT_CHANNEL == null) {
@@ -317,13 +316,13 @@ public class ChannelPool {
             clearChildren(sender);
             return;
         }
-        childr.get(sender).remove(id);
+        config.get(sender).children.remove(id);
         systemBroadCast(sender, String.format(LEFT_POOL, id));
     }
 
 
     public static void systemBroadCast(String IDhost, String msg) {
-        ArrayList<String> pool = childr.get(IDhost);
+        LinkedList<String> pool = config.get(IDhost).children;
         for (String id : pool) {
             final TextChannel TEXT_CHANNEL = ToolSet.getTextChannel(id);
             if (TEXT_CHANNEL == null) {

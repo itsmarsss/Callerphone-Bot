@@ -47,11 +47,11 @@ public class ChannelPoolListener extends ListenerAdapter {
                 sendCont
         );
 
-        if ((System.currentTimeMillis() - Callerphone.getUserCooldown(event.getAuthor())) > ToolSet.CREDIT_COOLDOWN) {
-            Callerphone.updateUserCooldown(event.getAuthor());
+        if ((System.currentTimeMillis() - Callerphone.storage.getUserCooldown(event.getAuthor())) > ToolSet.CREDIT_COOLDOWN) {
+            Callerphone.storage.updateUserCooldown(event.getAuthor());
 
-            Callerphone.reward(event.getAuthor(), 3);
-            Callerphone.addTransmit(event.getAuthor(), 1);
+            Callerphone.storage.reward(event.getAuthor(), 3);
+            Callerphone.storage.addTransmit(event.getAuthor(), 1);
         }
     }
 }

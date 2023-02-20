@@ -1,11 +1,19 @@
 package com.marsss.callerphone.channelpool;
 
+import com.marsss.callerphone.Response;
+
+import java.util.LinkedList;
+
 public class PoolConfig {
+    private String hostID;
     private String pwd;
     private int cap;
     private boolean pub;
 
-    public PoolConfig(String pwd, int cap, boolean pub) {
+    public LinkedList<String> children = new LinkedList<>();
+
+    public PoolConfig(String hostID, String pwd, int cap, boolean pub) {
+        this.hostID = hostID;
         this.pwd = pwd;
         this.cap = cap;
         this.pub = pub;
@@ -33,5 +41,17 @@ public class PoolConfig {
 
     public void setPub(boolean pub) {
         this.pub = pub;
+    }
+
+    public String toJSON() {
+        String childrenList = "";
+        for (int i = 0; i < children.size(); i++) {
+            childrenList += "\"" + children.get(i) + "\"";
+            if (i != children.size() - 1) {
+                childrenList += ",";
+            }
+        }
+
+        return String.format(Response.POOL_TEMPLATE.toString(), hostID, pwd, cap, pub, childrenList);
     }
 }

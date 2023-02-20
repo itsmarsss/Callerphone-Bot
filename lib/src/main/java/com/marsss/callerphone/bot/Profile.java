@@ -29,15 +29,16 @@ public class Profile implements ICommand {
     }
 
     private MessageEmbed profile(User user) {
-        final long EXECUTED = Callerphone.getExecuted(user);
-        final long TRANSMITTED = Callerphone.getTransmitted(user);
+        final long EXECUTED = Callerphone.storage.getExecuted(user);
+        final long TRANSMITTED = Callerphone.storage.getTransmitted(user);
         final long TOTAL = EXECUTED + TRANSMITTED;
         final int LVL = (int) TOTAL / 100;
         final int EXP = (int) TOTAL - 100 * LVL;
-        final String PREFIX = Callerphone.prefix.getOrDefault(user.getId(), (LVL > 5 ? ":unlock: `" + Callerphone.config.getPrefix() + "prefix <prefix>`" : ":lock: `Level 50`"));
+        String tempPrefix = Callerphone.storage.getPrefix(user);
+        final String PREFIX = (tempPrefix.equals("") ? (LVL > 5 ? ":unlock: `" + Callerphone.config.getPrefix() + "prefix <prefix>`" : ":lock: `Level 50`") : tempPrefix);
 
-        String general = String.format(Response.PROFILE_GENERAL.toString(), LVL, EXP, PREFIX);
-        String credits = String.format(Response.PROFILE_CREDITS.toString(), Callerphone.getCredits(user), 0, 0);
+        String general = String.format(Response.PROFILE_GENERAL.toString(), LVL, EXP, PREFIX, Callerphone.config.getPrefix());
+        String credits = String.format(Response.PROFILE_CREDITS.toString(), Callerphone.storage.getCredits(user), 0, 0, Callerphone.config.getPrefix());
         String message = String.format(Response.PROFILE_MESSAGE.toString(), EXECUTED, TRANSMITTED, TOTAL);
 
         EmbedBuilder proEmd = new EmbedBuilder()
@@ -46,7 +47,7 @@ public class Profile implements ICommand {
                 .addField("**General**", general, true)
                 .addField("**Credits**", credits, true)
                 .addField("**Messages**", message, true)
-                .addField("**Pool and Chat credit cooldowns**", ((System.currentTimeMillis() - Callerphone.getUserCooldown(user)) < ToolSet.CREDIT_COOLDOWN ? ":alarm_clock: " + ((ToolSet.CREDIT_COOLDOWN - (System.currentTimeMillis() - Callerphone.getUserCooldown(user))) / 1000) + " seconds" : ":white_check_mark: None"), true)
+                .addField("**Pool and Chat credit cooldowns**", ((System.currentTimeMillis() - Callerphone.storage.getUserCooldown(user)) < ToolSet.CREDIT_COOLDOWN ? ":alarm_clock: " + ((ToolSet.CREDIT_COOLDOWN - (System.currentTimeMillis() - Callerphone.storage.getUserCooldown(user))) / 1000) + " seconds" : ":white_check_mark: None"), true)
                 .setFooter("Your Profile", Callerphone.jda.getSelfUser().getAvatarUrl())
                 .setTimestamp(Instant.now())
                 .setColor(new Color(114, 137, 218));

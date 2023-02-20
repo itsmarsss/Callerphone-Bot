@@ -35,7 +35,7 @@ public class RewardCredits implements ICommand {
     }
 
     private String rewardCredits(User user, int amount) {
-        Callerphone.reward(user, amount);
+        Callerphone.storage.reward(user, amount);
         return ToolSet.CP_EMJ + "Rewarded `\u00A9 " + amount + "` to " + user.getAsMention();
     }
 

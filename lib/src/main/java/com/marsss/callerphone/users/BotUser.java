@@ -28,6 +28,10 @@ public class BotUser implements Comparable<BotUser> {
     public BotUser() {
     }
 
+    public BotUser(String id) {
+        this.id = id;
+    }
+
     public BotUser(String id, UserStatus status, String reason, String prefix, long credits, long executed, long transmitted) {
         this.id = id;
         this.status = status;
@@ -96,7 +100,7 @@ public class BotUser implements Comparable<BotUser> {
 
     public String toJSON() {
         String status = "user";
-        switch(this.status){
+        switch (this.status) {
             case USER:
                 status = "user";
                 break;
@@ -113,9 +117,21 @@ public class BotUser implements Comparable<BotUser> {
         return String.format(Response.USER_TEMPLATE.toString(), id, status, reason, prefix, credits, executed, transmitted);
     }
 
+    public void addCredits(long amount) {
+        this.credits += amount;
+    }
+
+    public void addExecuted(long amount) {
+        this.executed += amount;
+    }
+
+    public void addTransmitted(long amount) {
+        this.transmitted += amount;
+    }
+
     @Override
     public int compareTo(@NotNull BotUser user) {
-        if(this.credits > user.credits)
+        if (this.credits > user.credits)
             return -1;
         return 1;
     }

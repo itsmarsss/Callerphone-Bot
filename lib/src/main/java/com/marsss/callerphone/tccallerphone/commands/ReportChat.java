@@ -2,6 +2,7 @@ package com.marsss.callerphone.tccallerphone.commands;
 
 import com.marsss.ICommand;
 import com.marsss.callerphone.Callerphone;
+import com.marsss.callerphone.ToolSet;
 import com.marsss.callerphone.tccallerphone.ChatResponse;
 import com.marsss.callerphone.tccallerphone.ConvoStorage;
 import com.marsss.callerphone.tccallerphone.TCCallerphone;
@@ -22,14 +23,14 @@ public class ReportChat implements ICommand {
 
     private String reportChat(TextChannel channel) {
         if (!TCCallerphone.hasCall(channel.getId())) {
-            return ChatResponse.NO_CALL.toString();
+            return ToolSet.CP_EMJ + ChatResponse.NO_CALL.toString();
         }
         ConvoStorage call = TCCallerphone.getCall(channel.getId());
         if (call != null) {
             call.setReport(true);
-            return ChatResponse.CHAT_REPORTED_SUCCESS.toString();
+            return ToolSet.CP_EMJ + ChatResponse.CHAT_REPORTED_SUCCESS.toString();
         }
-        return ChatResponse.CHAT_REPORTED_NOT_SUCCESS.toString();
+        return ToolSet.CP_EMJ + ChatResponse.CHAT_REPORTED_NOT_SUCCESS.toString();
     }
 
     @Override
