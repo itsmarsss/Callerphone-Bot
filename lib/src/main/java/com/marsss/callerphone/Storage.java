@@ -357,11 +357,11 @@ public class Storage {
                 break;
             case WARNED:
                 statusStr = "Warned";
-                statusStr += "\n*Reason:" + getReason(id) + "*";
+                statusStr += " | Reason: " + getReason(id);
                 break;
             case BLACKLISTED:
                 statusStr = "Blacklisted";
-                statusStr += "\n*Reason:" + getReason(id) + "*";
+                statusStr += " | Reason: " + getReason(id);
                 break;
         }
 
