@@ -47,7 +47,7 @@ public class CommandListener extends ListenerAdapter {
         try {
             if (Callerphone.cmdMap.containsKey(trigger)) {
 
-                if(Storage.hasUser(event.getAuthor().getId())) {
+                if(!Storage.hasUser(event.getAuthor().getId())) {
                     event.getMessage().replyEmbeds(
                             new EmbedBuilder()
                                     .setAuthor("Must Read", null, event.getAuthor().getAvatarUrl())
