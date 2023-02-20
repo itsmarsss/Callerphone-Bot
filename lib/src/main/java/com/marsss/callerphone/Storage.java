@@ -342,4 +342,29 @@ public class Storage {
         }
         return true;
     }
+
+    public static String getStatus(String id) {
+        if (!users.containsKey(id)) {
+            createUser(id);
+        }
+
+        UserStatus status = users.get(id).getStatus();
+        String statusStr = "User";
+
+        switch(status) {
+            case MODERATOR:
+                statusStr = "Moderator";
+                break;
+            case WARNED:
+                statusStr = "Warned";
+                statusStr += "\n*Reason:" + getReason(id) + "*";
+                break;
+            case BLACKLISTED:
+                statusStr = "Blacklisted";
+                statusStr += "\n*Reason:" + getReason(id) + "*";
+                break;
+        }
+
+        return statusStr;
+    }
 }
