@@ -3,6 +3,7 @@ package com.marsss.callerphone.utils;
 import java.awt.Color;
 import java.util.List;
 
+import com.marsss.callerphone.Storage;
 import com.marsss.callerphone.ToolSet;
 import com.marsss.callerphone.channelpool.commands.*;
 import com.marsss.callerphone.tccallerphone.commands.*;
@@ -25,7 +26,7 @@ public class Help implements ICommand {
         final String CONTENT = MESSAGE.getContentRaw();
         final String[] ARGS = CONTENT.split("\\s+");
 
-        boolean admin = Callerphone.storage.isAdmin(e.getAuthor().getId());
+        boolean admin = Storage.isAdmin(e.getAuthor().getId());
         if (ARGS.length > 1) {
             MESSAGE.replyEmbeds(help(ARGS[1], admin)).queue();
             return;
@@ -36,7 +37,7 @@ public class Help implements ICommand {
 
     @Override
     public void runSlash(SlashCommandEvent e) {
-        final boolean ADMIN = Callerphone.storage.isAdmin(e.getMember().getId());
+        final boolean ADMIN = Storage.isAdmin(e.getMember().getId());
         final List<OptionMapping> PARAM = e.getOptions();
         if (PARAM.size() == 0) {
             e.replyEmbeds(help("", ADMIN)).queue();

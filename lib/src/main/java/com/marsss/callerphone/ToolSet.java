@@ -91,7 +91,7 @@ public class ToolSet {
     }
 
     public static String filter(String messageraw) {
-        for (String ftr : Callerphone.storage.filter) {
+        for (String ftr : Storage.filter) {
             StringBuilder rep = new StringBuilder();
             for (int i = 0; i < ftr.length(); i++) {
                 rep.append("#");

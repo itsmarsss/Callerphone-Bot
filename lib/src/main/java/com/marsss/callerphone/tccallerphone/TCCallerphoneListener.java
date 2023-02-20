@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import com.marsss.callerphone.Callerphone;
 
 import com.marsss.callerphone.Response;
+import com.marsss.callerphone.Storage;
 import com.marsss.callerphone.ToolSet;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.TextChannel;
@@ -27,7 +28,7 @@ public class TCCallerphoneListener extends ListenerAdapter {
         if (args[0].toLowerCase().startsWith(Callerphone.config.getPrefix()))
             return;
 
-        if (Callerphone.storage.isBlacklisted(event.getAuthor().getId())) {
+        if (Storage.isBlacklisted(event.getAuthor().getId())) {
             event.getMessage().addReaction("\u274C").queue();
             return;
         }
@@ -79,11 +80,11 @@ public class TCCallerphoneListener extends ListenerAdapter {
             }
         }
 
-        if ((System.currentTimeMillis() - Callerphone.storage.getUserCooldown(event.getAuthor())) > ToolSet.CREDIT_COOLDOWN) {
-            Callerphone.storage.updateUserCooldown(event.getAuthor());
+        if ((System.currentTimeMillis() - Storage.getUserCooldown(event.getAuthor())) > ToolSet.CREDIT_COOLDOWN) {
+            Storage.updateUserCooldown(event.getAuthor());
 
-            Callerphone.storage.reward(event.getAuthor(), 5);
-            Callerphone.storage.addTransmit(event.getAuthor(), 1);
+            Storage.reward(event.getAuthor(), 5);
+            Storage.addTransmit(event.getAuthor(), 1);
         }
 
     }
@@ -101,10 +102,10 @@ public class TCCallerphoneListener extends ListenerAdapter {
         }
         User auth = msg.getAuthor();
         String template = Response.DEFAULT_MESSAGE_TEMPLATE.toString();
-        if (Callerphone.storage.isAdmin(msg.getAuthor().getId())) {
+        if (Storage.isAdmin(msg.getAuthor().getId())) {
             template = Response.MODERATOR_MESSAGE_TEMPLATE.toString();
-        } else if (Callerphone.storage.hasPrefix(msg.getAuthor().getId())) {
-            template = Response.PREFIX_MESSAGE_TEMPLATE.toString().replaceFirst("%s", Callerphone.storage.getPrefix(msg.getAuthor()));
+        } else if (Storage.hasPrefix(msg.getAuthor().getId())) {
+            template = Response.PREFIX_MESSAGE_TEMPLATE.toString().replaceFirst("%s", Storage.getPrefix(msg.getAuthor()));
         }
         if (DESTINATION_CHANNEL != null) {
             DESTINATION_CHANNEL.sendMessage(String.format(template, auth.getName(), auth.getDiscriminator(), content)).complete();

@@ -3,6 +3,7 @@ package com.marsss.callerphone.tccallerphone.commands;
 import com.marsss.ICommand;
 import com.marsss.callerphone.Callerphone;
 import com.marsss.callerphone.Response;
+import com.marsss.callerphone.Storage;
 import com.marsss.callerphone.tccallerphone.ChatResponse;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
@@ -37,11 +38,11 @@ public class Prefix implements ICommand {
             return ChatResponse.PREFIX_TOO_LONG.toString();
         }
 
-        final long LVL = (Callerphone.storage.getExecuted(user) + Callerphone.storage.getTransmitted(user)) / 100;
+        final long LVL = (Storage.getExecuted(user) + Storage.getTransmitted(user)) / 100;
         if (LVL < 50) {
             return ChatResponse.LEVEL_LOW.toString();
         }
-        Callerphone.storage.setPrefix(user.getId(), prefix);
+        Storage.setPrefix(user.getId(), prefix);
 
         return String.format(ChatResponse.SET_PREFIX_SUCCESS.toString(), prefix);
     }

@@ -1,6 +1,7 @@
 package com.marsss.callerphone.channelpool;
 
 import com.marsss.callerphone.Callerphone;
+import com.marsss.callerphone.Storage;
 import com.marsss.callerphone.ToolSet;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
@@ -47,11 +48,11 @@ public class ChannelPoolListener extends ListenerAdapter {
                 sendCont
         );
 
-        if ((System.currentTimeMillis() - Callerphone.storage.getUserCooldown(event.getAuthor())) > ToolSet.CREDIT_COOLDOWN) {
-            Callerphone.storage.updateUserCooldown(event.getAuthor());
+        if ((System.currentTimeMillis() - Storage.getUserCooldown(event.getAuthor())) > ToolSet.CREDIT_COOLDOWN) {
+            Storage.updateUserCooldown(event.getAuthor());
 
-            Callerphone.storage.reward(event.getAuthor(), 3);
-            Callerphone.storage.addTransmit(event.getAuthor(), 1);
+            Storage.reward(event.getAuthor(), 3);
+            Storage.addTransmit(event.getAuthor(), 1);
         }
     }
 }

@@ -54,7 +54,6 @@ public class Callerphone {
     public static JDA jda;
 
     public static Config config = new Config();
-    public static final Storage storage = new Storage();
 
     private static final EnumSet<GatewayIntent> intent = EnumSet.of(
             GatewayIntent.GUILD_MEMBERS,

@@ -3,6 +3,7 @@ package com.marsss.callerphone.listeners;
 import com.marsss.callerphone.Callerphone;
 
 import com.marsss.callerphone.Response;
+import com.marsss.callerphone.Storage;
 import com.marsss.callerphone.ToolSet;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
@@ -17,10 +18,10 @@ public class OnSlashCommand extends ListenerAdapter {
         try {
             if (Callerphone.cmdMap.containsKey(event.getName())) {
 
-                Callerphone.storage.reward(event.getUser(), 3);
-                Callerphone.storage.addExecute(event.getUser(), 1);
+                Storage.reward(event.getUser(), 3);
+                Storage.addExecute(event.getUser(), 1);
 
-                if(Callerphone.storage.getCredits(event.getUser()) == 0) {
+                if(Storage.getCredits(event.getUser()) == 0) {
                     event.replyEmbeds(
                             new EmbedBuilder()
                                     .setAuthor("Must Read", null, event.getUser().getAvatarUrl())

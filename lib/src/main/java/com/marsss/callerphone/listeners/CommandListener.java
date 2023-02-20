@@ -3,6 +3,7 @@ package com.marsss.callerphone.listeners;
 import com.marsss.callerphone.Callerphone;
 
 import com.marsss.callerphone.Response;
+import com.marsss.callerphone.Storage;
 import com.marsss.callerphone.bot.Advertisement;
 import com.marsss.callerphone.bot.Profile;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -33,7 +34,7 @@ public class CommandListener extends ListenerAdapter {
         if (MEMBER.getUser().isBot() || MEMBER.getUser().isSystem())
             return;
 
-        if(Callerphone.storage.isBlacklisted(event.getAuthor().getId())) {
+        if(Storage.isBlacklisted(event.getAuthor().getId())) {
             MESSAGE.reply("Sorry you are blacklisted, submit an appeal in our support server " + Callerphone.config.getSupportServer()).queue();
             return;
         }
@@ -52,11 +53,11 @@ public class CommandListener extends ListenerAdapter {
             if (Callerphone.cmdMap.containsKey(trigger)) {
 
                 if (!Arrays.asList(new Profile().getTriggers()).contains(trigger)) {
-                    Callerphone.storage.reward(event.getAuthor(), 1);
+                    Storage.reward(event.getAuthor(), 1);
                 }
-                Callerphone.storage.addExecute(event.getAuthor(), 1);
+                Storage.addExecute(event.getAuthor(), 1);
 
-                if(Callerphone.storage.getCredits(event.getAuthor()) == 0) {
+                if(Storage.getCredits(event.getAuthor()) == 0) {
                     event.getMessage().replyEmbeds(
                             new EmbedBuilder()
                                     .setAuthor("Must Read", null, event.getAuthor().getAvatarUrl())
