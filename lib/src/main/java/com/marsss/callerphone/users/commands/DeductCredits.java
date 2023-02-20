@@ -1,4 +1,4 @@
-package com.marsss.callerphone.credits.commands;
+package com.marsss.callerphone.users.commands;
 
 import com.marsss.ICommand;
 import com.marsss.callerphone.Callerphone;
@@ -8,7 +8,7 @@ import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
 import java.util.List;
 
-public class RewardCredits implements ICommand {
+public class DeductCredits implements ICommand {
 
     private final String CP_EMJ = Callerphone.Callerphone;
 
@@ -24,20 +24,19 @@ public class RewardCredits implements ICommand {
             final User USER = MENTIONS.size() > 0 ? MENTIONS.get(0) : e.getAuthor();
             int amount;
             amount = Integer.parseInt(ARGS[1]);
-            e.getMessage().reply(rewardCredits(USER, amount)).queue();
+            e.getMessage().reply(deductCredits(USER, amount)).queue();
         } catch (Exception ex) {
             ex.printStackTrace();
-            e.getMessage().reply(CP_EMJ + "`" + Callerphone.Prefix + "rewardcreds <amount> <@user>`").queue();
+            e.getMessage().reply(CP_EMJ+"`" + Callerphone.Prefix + "deductcreds <amount> <@user>`").queue();
         }
     }
 
     @Override
-    public void runSlash(SlashCommandEvent e) {
-    }
+    public void runSlash(SlashCommandEvent e) {}
 
-    private String rewardCredits(User user, int amount) {
-        Callerphone.reward(user, amount);
-        return CP_EMJ + "Rewarded `\u00A9 " + amount + "` to " + user.getAsMention();
+    private String deductCredits(User user, int amount) {
+        Callerphone.reward(user, (-amount));
+        return CP_EMJ + "Deducted `\u00A9 " + amount + "` from " + user.getAsMention();
     }
 
     @Override
@@ -47,6 +46,6 @@ public class RewardCredits implements ICommand {
 
     @Override
     public String[] getTriggers() {
-        return "reward,givecreds,rewardcreds".split(",");
+        return "deduct,takecreds,deductcreds".split(",");
     }
 }

@@ -1,5 +1,6 @@
 package com.marsss.callerphone.tccallerphone;
 
+import com.marsss.callerphone.Callerphone;
 import com.marsss.callerphone.ToolSet;
 import net.dv8tion.jda.api.entities.TextChannel;
 import org.slf4j.Logger;
@@ -114,7 +115,7 @@ public class TCCallerphone {
             dataString.append(m).append("\n");
 
 
-        final TextChannel REPORT_CHANNEL = ToolSet.getTextChannel("867770751440650260"/*Callerphone.reportchannel*/);
+        final TextChannel REPORT_CHANNEL = ToolSet.getTextChannel(Callerphone.reportchannel);
         if (REPORT_CHANNEL != null) {
             REPORT_CHANNEL.sendMessage("**ID:** " + ID).addFile(dataString.toString().getBytes(), ID + ".txt").queue();
         }

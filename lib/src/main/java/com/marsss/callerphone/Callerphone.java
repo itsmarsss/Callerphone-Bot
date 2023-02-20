@@ -14,8 +14,8 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import com.marsss.callerphone.channelpool.commands.*;
-import com.marsss.callerphone.credits.commands.DeductCredits;
-import com.marsss.callerphone.credits.commands.RewardCredits;
+import com.marsss.callerphone.users.commands.DeductCredits;
+import com.marsss.callerphone.users.commands.RewardCredits;
 import com.marsss.callerphone.tccallerphone.TCCallerphone;
 import com.marsss.callerphone.tccallerphone.TCCallerphoneListener;
 import com.marsss.callerphone.tccallerphone.commands.*;
@@ -312,7 +312,7 @@ public class Callerphone {
                 e.printStackTrace();
             }
 
-            final TextChannel LOG_CHANNEL = ToolSet.getTextChannel(logstatus);
+            final TextChannel LOG_CHANNEL = ToolSet.getTextChannel("123123");
             if (LOG_CHANNEL == null) {
                 System.out.println("------------------------------");
                 logger.error("Error Sending Startup Message");
