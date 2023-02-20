@@ -28,13 +28,13 @@ public class TCCallerphoneListener extends ListenerAdapter {
         if (args[0].toLowerCase().startsWith(Callerphone.config.getPrefix()))
             return;
 
+        if (!TCCallerphone.hasCall(event.getChannel().getId()))
+            return;
+
         if (Storage.isBlacklisted(event.getAuthor().getId())) {
             event.getMessage().addReaction("\u274C").queue();
             return;
         }
-
-        if (!TCCallerphone.hasCall(event.getChannel().getId()))
-            return;
 
         if (MESSAGE.getAuthor().isBot() | MESSAGE.isWebhookMessage()) {
             return;
