@@ -52,10 +52,6 @@ public class CommandListener extends ListenerAdapter {
                     return;
                 }
 
-                if (!Arrays.asList(new Profile().getTriggers()).contains(trigger)) {
-                    Storage.reward(event.getAuthor(), 1);
-                }
-                Storage.addExecute(event.getAuthor(), 1);
 
                 if(Storage.hasUser(event.getAuthor().getId())) {
                     event.getMessage().replyEmbeds(
@@ -69,6 +65,9 @@ public class CommandListener extends ListenerAdapter {
                     ).queue();
                     return;
                 }
+
+                Storage.reward(event.getAuthor(), 1);
+                Storage.addExecute(event.getAuthor(), 1);
 
                 Callerphone.cmdMap.get(trigger).runCommand(event);
 

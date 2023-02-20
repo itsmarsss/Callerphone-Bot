@@ -23,9 +23,6 @@ public class OnSlashCommand extends ListenerAdapter {
                     return;
                 }
 
-                Storage.reward(event.getUser(), 3);
-                Storage.addExecute(event.getUser(), 1);
-
                 if(!Storage.hasUser(event.getUser().getId())) {
                     event.replyEmbeds(
                             new EmbedBuilder()
@@ -38,6 +35,9 @@ public class OnSlashCommand extends ListenerAdapter {
                     ).setEphemeral(true).queue();
                     return;
                 }
+
+                Storage.reward(event.getUser(), 3);
+                Storage.addExecute(event.getUser(), 1);
 
                 Callerphone.cmdMap.get(event.getName()).runSlash(event);
                 return;
