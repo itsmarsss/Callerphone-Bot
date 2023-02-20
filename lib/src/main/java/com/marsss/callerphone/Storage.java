@@ -334,4 +334,12 @@ public class Storage {
         }
         return users.get(id).getReason();
     }
+
+    public static boolean hasUser(String id) {
+        if (!users.containsKey(id)) {
+            createUser(id);
+            return false;
+        }
+        return true;
+    }
 }

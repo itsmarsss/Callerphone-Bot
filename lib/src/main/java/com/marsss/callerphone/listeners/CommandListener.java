@@ -57,7 +57,7 @@ public class CommandListener extends ListenerAdapter {
                 }
                 Storage.addExecute(event.getAuthor(), 1);
 
-                if(Storage.getCredits(event.getAuthor()) == 0) {
+                if(Storage.hasUser(event.getAuthor().getId())) {
                     event.getMessage().replyEmbeds(
                             new EmbedBuilder()
                                     .setAuthor("Must Read", null, event.getAuthor().getAvatarUrl())

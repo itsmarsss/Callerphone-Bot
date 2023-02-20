@@ -26,7 +26,7 @@ public class OnSlashCommand extends ListenerAdapter {
                 Storage.reward(event.getUser(), 3);
                 Storage.addExecute(event.getUser(), 1);
 
-                if(Storage.getCredits(event.getUser()) == 0) {
+                if(!Storage.hasUser(event.getUser().getId())) {
                     event.replyEmbeds(
                             new EmbedBuilder()
                                     .setAuthor("Must Read", null, event.getUser().getAvatarUrl())
