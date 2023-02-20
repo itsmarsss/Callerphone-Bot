@@ -10,11 +10,11 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class ToolSet {
-    public static final String CP_EMJ = Callerphone.config.getCallerphoneNormal();
-    public static final String CP_ERR = Callerphone.config.getCallerphoneError();
-    public static final long MESSAGE_COOLDOWN = 500;
-    public static final long CREDIT_COOLDOWN = 15000;
-    public static final String CP_CALL = Callerphone.config.getCallerphoneCall();
+    public static String CP_EMJ = Callerphone.config.getCallerphoneNormal();
+    public static String CP_ERR = Callerphone.config.getCallerphoneError();
+    public static String CP_CALL = Callerphone.config.getCallerphoneCall();
+    public static long MESSAGE_COOLDOWN = 500;
+    public static long CREDIT_COOLDOWN = 15000;
 
 
     // https://programming.guide/java/formatting-byte-size-to-human-readable-format.html {
@@ -59,13 +59,13 @@ public class ToolSet {
 
     public static String messageCheck(String messageRaw) {
         if (messageRaw.contains("@here") || messageRaw.contains("@everyone"))
-            return Response.ATTEMPTED_PING.toString();
+            return ToolSet.CP_ERR + Response.ATTEMPTED_PING.toString() + ToolSet.CP_ERR;
 
         if (hasLink(messageRaw))
-            return Response.ATTEMPTED_LINK.toString();
+            return ToolSet.CP_ERR + Response.ATTEMPTED_LINK.toString() + ToolSet.CP_ERR;
 
         if (messageRaw.length() > 1500)
-            return Response.MESSAGE_TOO_LONG.toString();
+            return ToolSet.CP_ERR + Response.MESSAGE_TOO_LONG.toString() + ToolSet.CP_ERR;
 
         return messageRaw;
     }
