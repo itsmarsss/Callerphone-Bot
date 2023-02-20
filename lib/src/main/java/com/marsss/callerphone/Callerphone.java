@@ -14,6 +14,8 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import com.marsss.callerphone.channelpool.commands.*;
+import com.marsss.callerphone.users.BotUser;
+import com.marsss.callerphone.users.UserStatus;
 import com.marsss.callerphone.users.commands.DeductCredits;
 import com.marsss.callerphone.users.commands.RewardCredits;
 import com.marsss.callerphone.tccallerphone.TCCallerphone;
@@ -60,33 +62,21 @@ public class Callerphone {
 
     public static final HashMap<String, ICommand> cmdMap = new HashMap<>();
 
-    public static final String Prefix = "c?";
-
-    public static String Callerphone = "<:CallerphoneEmote:899051549173637120> ";
-    public static String CallerphoneError = "<:CallerphoneErrorEmote:1076946722049232906> ";
-    public static final String CallerphoneCall = "<:Pog:892780255452987402> ";
-    public static String logstatus = "852338750519640116";
-    public static String reportchannel = "897290511000404008";
-    public static String invite = "https://discord.com/oauth2/authorize?client_id=849713468348956692&permissions=414464724040&scope=bot%20applications.commands";
-    public static String support = "https://discord.gg/jcYKsfw48p";
-    public static String tunessupport = "https://discord.gg/TyHaxtWAmX";
-    public static String donate = "https://www.patreon.com/itsmarsss";
-    public static final String privacy = "https://github.com/itsmarsss/Callerphone-Bot/blob/main/assets/PRIVACY.md";
-    public static final String terms = "https://github.com/itsmarsss/Callerphone-Bot/blob/main/assets/TERMSOFSERVICE.md";
-    public static String owner = "841028865995964477";
-
     public static boolean isQuickStart;
 
     public static JDA jda;
 
-    public static Config config;
+    public static Config config = new Config();
 
     private static final HashMap<String, Long> userCredits = new HashMap<>();
     private static final HashMap<String, Long> userExecuted = new HashMap<>();
     private static final HashMap<String, Long> userTransmitted = new HashMap<>();
     public static final HashMap<String, Long> poolChatCoolDown = new HashMap<>();
+
+    public static final HashMap<String, BotUser> users = new HashMap<>();
+
     public static final String ERROR_MSG = "An error occurred with error: `%s`." +
-            "\nIf this is a recurring problem, please join our support server and report this issue. " + support;
+            "\nIf this is a recurring problem, please join our support server and report this issue. " + config.getSupportServer();
 
     private static final EnumSet<GatewayIntent> intent = EnumSet.of(
             GatewayIntent.GUILD_MEMBERS,
@@ -140,7 +130,7 @@ public class Callerphone {
                 logger.info("Shutting Down Bot...");
                 if (jda != null) {
                     EmbedBuilder embedBuilder = new EmbedBuilder().setTitle("Status").setColor(new Color(213, 0, 0)).setFooter("Goodbye World...").setDescription(jda.getSelfUser().getAsMention() + " is going offline;" + cmd.replaceFirst("shutdown", ""));
-                    final TextChannel LOG_CHANNEL = ToolSet.getTextChannel(logstatus);
+                    final TextChannel LOG_CHANNEL = ToolSet.getTextChannel(config.getLogStatusChannel());
                     if (LOG_CHANNEL == null) {
                         logger.error("Error Sending Shutdown Message");
                     } else {
@@ -298,7 +288,7 @@ public class Callerphone {
 
             jda.awaitReady();
 
-            jda.getPresence().setActivity(Activity.watching("for " + Prefix + "help"));
+            jda.getPresence().setActivity(Activity.watching("for " + config.getPrefix() + "help"));
             logger.info("Bot online");
 
             System.out.println("\nGuild List: ");
@@ -312,7 +302,7 @@ public class Callerphone {
                 e.printStackTrace();
             }
 
-            final TextChannel LOG_CHANNEL = ToolSet.getTextChannel(logstatus);
+            final TextChannel LOG_CHANNEL = ToolSet.getTextChannel(config.getLogStatusChannel());
             if (LOG_CHANNEL == null) {
                 System.out.println("------------------------------");
                 logger.error("Error Sending Startup Message");
@@ -422,12 +412,11 @@ public class Callerphone {
 
     private static void readData() {
         try {
-            getInfo(new File(parent + "/info.txt"));
+            importCredits(new File(parent + "/credits.txt"));
         } catch (Exception e) {
             e.printStackTrace();
             System.out.println("------------------------------");
-            logger.error("Error with info.txt");
-            logger.warn("Critical Issues May Appear (Ex: links)");
+            logger.error("Error with credits.txt");
         }
 
         try {
@@ -480,13 +469,6 @@ public class Callerphone {
             logger.error("Error with poolconfig.txt");
         }
 
-        try {
-            importCredits(new File(parent + "/credits.txt"));
-        } catch (Exception e) {
-            e.printStackTrace();
-            System.out.println("------------------------------");
-            logger.error("Error with credits.txt");
-        }
 
         try {
             importMessages(new File(parent + "/messages.txt"));
@@ -591,69 +573,6 @@ public class Callerphone {
         }
     }
 
-    private static void getInfo(File file) throws IOException, InterruptedException {
-        System.out.println("\nInfo.txt:");
-        BufferedReader br = new BufferedReader(new FileReader(file));
-        String line = br.readLine();
-
-        while (line != null) {
-            if (line.startsWith("emoji=")) {
-                Callerphone = line.substring(6).trim() + " ";
-            } else if (line.startsWith("callemoji=")) {
-                Callerphone = line.substring(10).trim() + " ";
-            } else if (line.startsWith("log=")) {
-                logstatus = line.substring(4).trim();
-            } else if (line.startsWith("report=")) {
-                reportchannel = line.substring(7).trim();
-            } else if (line.startsWith("invite=")) {
-                invite = line.substring(7).trim();
-            } else if (line.startsWith("support=")) {
-                support = line.substring(8).trim();
-            } else if (line.startsWith("tunessupport=")) {
-                tunessupport = line.substring(13).trim();
-            } else if (line.startsWith("donate=")) {
-                donate = line.substring(7).trim();
-            } else if (line.startsWith("owner=")) {
-                owner = line.substring(6).trim();
-            } else {
-                System.out.println("Unused value:");
-            }
-
-            System.out.println(line);
-
-            line = br.readLine();
-        }
-        br.close();
-
-        jda.awaitReady();
-        final TextChannel LOG_CHANNEL = ToolSet.getTextChannel(logstatus);
-        if (LOG_CHANNEL == null) {
-            System.out.println("Report Channel: [N/A NOT FOUND]");
-        } else {
-            System.out.println("Log Status Channel: " + LOG_CHANNEL.getAsMention());
-        }
-
-        final TextChannel REPORT_CHANNEL = ToolSet.getTextChannel(logstatus);
-        if (REPORT_CHANNEL == null) {
-            System.out.println("Report Channel: [N/A NOT FOUND]");
-        } else {
-            System.out.println("Report Channel: " + REPORT_CHANNEL.getAsMention());
-        }
-
-        if (isQuickStart) {
-            System.out.println("Owner: " + owner + " (unable to obtain tag because of quickstart)");
-        } else {
-            final User OWNER = jda.getUserById(owner);
-            if (OWNER == null) {
-                System.out.println("Owner: [N/A NOT FOUND]");
-            } else {
-                System.out.println("Owner: " + OWNER.getAsTag());
-            }
-        }
-
-        System.out.println();
-    }
-
     private static void importMessages(File file) throws IOException {
         try (BufferedReader br = new BufferedReader(new FileReader(file))) {
             String line = br.readLine();
@@ -665,12 +584,36 @@ public class Callerphone {
                 userExecuted.put(user, Long.valueOf(messages[0]));
                 userTransmitted.put(user, Long.valueOf(messages[1]));
 
+                users.get(user).setExecuted(Long.valueOf(messages[0]));
+                users.get(user).setTransmitted(Long.valueOf(messages[1]));
+
                 line = br.readLine();
             }
         }
     }
 
     private static void exportMessages() throws FileNotFoundException {
+        StringBuilder sb1 = new StringBuilder();
+        sb1.append("{\n\"users\": [");
+        try (PrintWriter myWriter = new PrintWriter(parent + "/users.json")) {
+            LinkedList<BotUser> valUsers = new LinkedList<>(users.values());
+            Collections.sort(valUsers);
+            for (int i = 0; i < valUsers.size(); i++) {
+                sb1.append(valUsers.get(i).toJSON());
+                if(i == valUsers.size()-1) {
+                    sb1.append("\n");
+                }else{
+                    sb1.append(",\n");
+                }
+            }
+
+            sb1.append("]\n}");
+            myWriter.print(sb1);
+        }
+
+
+
+
         StringBuilder sb = new StringBuilder();
         try (PrintWriter myWriter = new PrintWriter(parent + "/messages.txt")) {
             for (Map.Entry<String, Long> user : userExecuted.entrySet()) {
@@ -694,6 +637,12 @@ public class Callerphone {
                 String credits = split[1];
 
                 userCredits.put(user, Long.valueOf(credits));
+
+                users.put(user, new BotUser());
+
+                users.get(user).setId(user);
+
+                users.get(user).setCredits(Long.valueOf(credits));
 
                 line = br.readLine();
             }
@@ -721,6 +670,7 @@ public class Callerphone {
             while (line != null) {
                 admin.add(line);
                 line = br.readLine();
+                users.get(line).setStatus(UserStatus.MODERATOR);
             }
         }
     }
@@ -742,6 +692,8 @@ public class Callerphone {
             while (line != null) {
                 int split = line.indexOf("|");
                 prefix.put(line.substring(0, split), line.substring(split + 1));
+
+                users.get(line.substring(0, split)).setPrefix(line.substring(split + 1));
                 line = br.readLine();
             }
         }
@@ -763,6 +715,7 @@ public class Callerphone {
 
             while (line != null) {
                 blacklist.add(line);
+                users.get(line).setStatus(UserStatus.BLACKLISTED);
                 line = br.readLine();
             }
         }
