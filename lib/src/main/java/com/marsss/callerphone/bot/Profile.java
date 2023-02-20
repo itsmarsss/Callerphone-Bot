@@ -35,7 +35,7 @@ public class Profile implements ICommand {
         final long TOTAL = EXECUTED + TRANSMITTED;
         final int LVL = (int) TOTAL / 100;
         final int EXP = (int) TOTAL - 100 * LVL;
-        String tempPrefix = Storage.getPrefix(user);
+        String tempPrefix = Storage.getPrefix(user.getId());
         final String PREFIX = (tempPrefix.equals("") ? (LVL > 5 ? ":unlock: `" + Callerphone.config.getPrefix() + "prefix <prefix>`" : ":lock: `Level 50`") : tempPrefix);
 
         String general = String.format(Response.PROFILE_GENERAL.toString(), LVL, EXP, PREFIX);

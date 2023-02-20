@@ -105,7 +105,7 @@ public class TCCallerphoneListener extends ListenerAdapter {
         if (Storage.isAdmin(msg.getAuthor().getId())) {
             template = Response.MODERATOR_MESSAGE_TEMPLATE.toString();
         } else if (Storage.hasPrefix(msg.getAuthor().getId())) {
-            template = Response.PREFIX_MESSAGE_TEMPLATE.toString().replaceFirst("%s", Storage.getPrefix(msg.getAuthor()));
+            template = Response.PREFIX_MESSAGE_TEMPLATE.toString().replaceFirst("%s", Storage.getPrefix(msg.getAuthor().getId()));
         }
         if (DESTINATION_CHANNEL != null) {
             DESTINATION_CHANNEL.sendMessage(String.format(template, auth.getName(), auth.getDiscriminator(), content)).complete();
