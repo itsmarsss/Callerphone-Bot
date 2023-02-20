@@ -49,11 +49,11 @@ public class PoolPub implements ICommand {
 
         if (stat == PoolStatus.SUCCESS) {
 
-            return String.format(PoolResponse.POOL_PUB.toString(), (pub ? "public" : "private"));
+            return String.format(ToolSet.CP_EMJ + PoolResponse.POOL_PUB.toString(), (pub ? "public" : "private"));
 
         } else if (stat == PoolStatus.NOT_FOUND) {
 
-            return PoolResponse.NOT_HOSTING.toString();
+            return ToolSet.CP_EMJ + PoolResponse.NOT_HOSTING.toString();
 
         }
 

@@ -40,24 +40,24 @@ public class HostPool implements ICommand {
 
         if (stat == PoolStatus.IS_HOST) {
 
-            return PoolResponse.ALREADY_HOSTING + "\n" +
+            return ToolSet.CP_EMJ + PoolResponse.ALREADY_HOSTING + "\n" +
                     String.format(PoolResponse.POOL_ID.toString(), channel.getId()) + "\n" +
                     (ChannelPool.hasPassword(channel.getId())
                             ? String.format(PoolResponse.POOL_PWD.toString(), ChannelPool.getPassword(channel.getId()))
-                            : PoolResponse.POOL_SET_PWD) + "\n" +
-                    PoolResponse.POOL_END_WITH;
+                            : String.format(PoolResponse.POOL_SET_PWD.toString(), Callerphone.config.getPrefix())) + "\n" +
+                    String.format(PoolResponse.POOL_END_WITH.toString(), Callerphone.config.getPrefix());
 
         } else if (stat == PoolStatus.IS_CHILD) {
 
-            return PoolResponse.ALREADY_IN_POOL + "\n" +
-                    PoolResponse.POOL_LEAVE_WITH;
+            return ToolSet.CP_EMJ + PoolResponse.ALREADY_IN_POOL + "\n" +
+                    String.format(PoolResponse.POOL_LEAVE_WITH.toString(), Callerphone.config.getPrefix());
 
         } else if (stat == PoolStatus.SUCCESS) {
 
-            return String.format(PoolResponse.HOST_POOL_SUCCESS.toString(), channel.getName()) + "\n" +
+            return String.format(ToolSet.CP_EMJ + PoolResponse.HOST_POOL_SUCCESS.toString(), channel.getName()) + "\n" +
                     String.format(PoolResponse.POOL_ID.toString(), channel.getId()) + "\n" +
-                    PoolResponse.POOL_SET_PWD + "\n" +
-                    PoolResponse.POOL_END_WITH;
+                    String.format(PoolResponse.POOL_SET_PWD.toString(), Callerphone.config.getPrefix()) + "\n" +
+                    String.format(PoolResponse.POOL_END_WITH.toString(), Callerphone.config.getPrefix());
 
         }
 

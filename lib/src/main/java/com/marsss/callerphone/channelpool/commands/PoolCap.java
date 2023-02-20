@@ -49,11 +49,11 @@ public class PoolCap implements ICommand {
 
         if (stat == PoolStatus.SUCCESS) {
 
-            return String.format(PoolResponse.POOL_HAS_CAPACITY.toString(), ChannelPool.config.get(id).getCap());
+            return String.format(ToolSet.CP_EMJ + PoolResponse.POOL_HAS_CAPACITY.toString(), ChannelPool.config.get(id).getCap());
 
         } else if (stat == PoolStatus.NOT_FOUND) {
 
-            return PoolResponse.NOT_HOSTING.toString();
+            return ToolSet.CP_EMJ + PoolResponse.NOT_HOSTING.toString();
 
         }
 

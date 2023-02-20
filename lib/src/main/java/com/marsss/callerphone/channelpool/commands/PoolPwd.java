@@ -56,7 +56,7 @@ public class PoolPwd implements ICommand {
 
         } else if (stat == PoolStatus.NOT_FOUND) {
 
-            return PoolResponse.NOT_HOSTING.toString();
+            return ToolSet.CP_EMJ + PoolResponse.NOT_HOSTING.toString();
 
         }
 

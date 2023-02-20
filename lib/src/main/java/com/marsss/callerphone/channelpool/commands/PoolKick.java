@@ -50,19 +50,19 @@ public class PoolKick implements ICommand {
 
         if (stat == PoolStatus.IS_CHILD) {
 
-            return PoolResponse.NOT_HOSTING.toString();
+            return ToolSet.CP_EMJ + PoolResponse.NOT_HOSTING.toString();
 
         } else if (stat == PoolStatus.SUCCESS) {
 
             final TextChannel CHILD_CHANNEL = ToolSet.getTextChannel(kickID);
             if (CHILD_CHANNEL != null) {
-                CHILD_CHANNEL.sendMessage(PoolResponse.KICKED_FROM_POOL.toString()).queue();
+                CHILD_CHANNEL.sendMessage(ToolSet.CP_EMJ + PoolResponse.KICKED_FROM_POOL.toString()).queue();
             }
-            return String.format(PoolResponse.KICK_POOL_SUCCESS.toString(), kickID);
+            return String.format(ToolSet.CP_EMJ + PoolResponse.KICK_POOL_SUCCESS.toString(), kickID);
 
         } else if (stat == PoolStatus.NOT_FOUND) {
 
-            return PoolResponse.REQUESTED_NOT_FOUND.toString();
+            return ToolSet.CP_EMJ + PoolResponse.REQUESTED_NOT_FOUND.toString();
 
         }
 

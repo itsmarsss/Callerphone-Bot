@@ -27,7 +27,7 @@ public class PoolParticipants implements ICommand {
         final LinkedList<String> PARTICIPANTS = ChannelPool.getClients(id);
 
         if (PARTICIPANTS.size() == 0) {
-            return PoolResponse.NOT_IN_POOL.toString();
+            return ToolSet.CP_EMJ + PoolResponse.NOT_IN_POOL.toString();
         }
 
         final StringBuilder LIST = new StringBuilder();

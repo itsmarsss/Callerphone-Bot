@@ -39,20 +39,20 @@ public class LeavePool implements ICommand {
 
         if (stat == PoolStatus.IS_HOST) {
 
-            return PoolResponse.ALREADY_HOSTING +
+            return ToolSet.CP_EMJ + PoolResponse.ALREADY_HOSTING +
                     String.format(PoolResponse.POOL_ID.toString(), id) + "\n" +
                     (ChannelPool.hasPassword(id)
                             ? String.format(PoolResponse.POOL_PWD.toString(), ChannelPool.getPassword(id))
-                            : PoolResponse.POOL_SET_PWD) + "\n" +
-                    PoolResponse.POOL_END_WITH;
+                            : String.format(PoolResponse.POOL_SET_PWD.toString(), Callerphone.config.getPrefix())) + "\n" +
+                    String.format(PoolResponse.POOL_END_WITH.toString(), Callerphone.config.getPrefix());
 
         } else if (stat == PoolStatus.SUCCESS) {
 
-            return PoolResponse.LEAVE_POOL_SUCCESS.toString();
+            return ToolSet.CP_EMJ + PoolResponse.LEAVE_POOL_SUCCESS.toString();
 
         } else if (stat == PoolStatus.NOT_FOUND) {
 
-            return PoolResponse.NOT_IN_POOL.toString();
+            return ToolSet.CP_EMJ + PoolResponse.NOT_IN_POOL.toString();
 
         }
 
