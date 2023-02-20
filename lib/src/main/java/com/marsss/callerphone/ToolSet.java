@@ -10,10 +10,11 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class ToolSet {
-    public static final String CP_EMJ = Callerphone.Callerphone;
-    public static final String CP_ERR = Callerphone.CallerphoneError;
+    public static final String CP_EMJ = Callerphone.config.getCallerphoneNormal();
+    public static final String CP_ERR = Callerphone.config.getCallerphoneError();
     public static final long MESSAGE_COOLDOWN = 500;
     public static final long CREDIT_COOLDOWN = 15000;
+    public static final String CP_CALL = Callerphone.config.getCallerphoneCall();
 
 
     // https://programming.guide/java/formatting-byte-size-to-human-readable-format.html {
