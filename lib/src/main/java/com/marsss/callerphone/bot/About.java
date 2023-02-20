@@ -28,7 +28,7 @@ public class About implements ICommand {
 
     @Override
     public String getHelp() {
-        return "`" + Callerphone.Prefix + "about` - Introduces you to this bot";
+        return "`" + Callerphone.config.getPrefix() + "about` - Introduces you to this bot";
     }
 
     @Override
@@ -37,8 +37,8 @@ public class About implements ICommand {
     }
 
     private final StringBuilder DESCRIPTION = new StringBuilder()
-            .append("[Invite link](").append(Callerphone.invite).append(")")
-            .append("\n[Support server](").append(Callerphone.support).append(")")
+            .append("[Invite link](").append(Callerphone.config.getBotInviteLink()).append(")")
+            .append("\n[Support server](").append(Callerphone.config.getSupportServer()).append(")")
             .append("\n[Bot listing (top.gg)](https://top.gg/bot/849713468348956692)")
             .append("\n[Upvote bot (top.gg)](https://top.gg/bot/849713468348956692/vote)")
             .append("\n[Bot listing (dbl)](https://discordbotlist.com/bots/callerphone)")
@@ -46,13 +46,13 @@ public class About implements ICommand {
             .append("\n[Upvote support server (top.gg)](https://top.gg/servers/798428155907801089/vote)")
             .append("\n[Upvote support server (dbl)](https://discordbotlist.com/servers/legendary-bot-official-server/upvote)")
             .append("\n")
-            .append("\n[Privacy Policy](").append(Callerphone.privacy).append(")")
-            .append("\n[Terms of Service](").append(Callerphone.terms).append(")");
+            .append("\n[Privacy Policy](").append(Callerphone.config.getPrivacyPolicy()).append(")")
+            .append("\n[Terms of Service](").append(Callerphone.config.getTermsOfService()).append(")");
     private MessageEmbed about() {
         final JDA jda = Callerphone.jda;
 
         EmbedBuilder AbtEmd = new EmbedBuilder();
-        jda.retrieveUserById(Callerphone.owner).queue(u -> {
+        jda.retrieveUserById(Callerphone.config.getOwnerID()).queue(u -> {
 
             jda.getShardInfo();
             long users = 0;

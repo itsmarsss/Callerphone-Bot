@@ -106,7 +106,7 @@ public class RoleInfo implements ICommand {
 
     @Override
     public String getHelp() {
-        return "`" + Callerphone.Prefix + "roleinfo <@role/id>` - Get information about this role.";
+        return "`" + Callerphone.config.getPrefix() + "roleinfo <@role/id>` - Get information about this role.";
     }
 
     @Override

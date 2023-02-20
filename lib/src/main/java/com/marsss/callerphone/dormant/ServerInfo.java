@@ -130,7 +130,7 @@ public class ServerInfo implements ICommand {
 
     @Override
     public String getHelp() {
-        return "`" + Callerphone.Prefix + "serverinfo` - Get information about the server.";
+        return "`" + Callerphone.config.getPrefix() + "serverinfo` - Get information about the server.";
     }
 
     @Override

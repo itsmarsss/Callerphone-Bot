@@ -65,7 +65,7 @@ public class HostPool implements ICommand {
 
     @Override
     public String getHelp() {
-        return "`" + Callerphone.Prefix + "hostpool` - Host a channel pool.";
+        return "`" + Callerphone.config.getPrefix() + "hostpool` - Host a channel pool.";
     }
 
     @Override

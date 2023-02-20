@@ -112,7 +112,7 @@ public class JoinPool implements ICommand {
 
     @Override
     public String getHelp() {
-        return "`" + Callerphone.Prefix + "joinpool <ID> <password>` - Join a channel pool.";
+        return "`" + Callerphone.config.getPrefix() + "joinpool <ID> <password>` - Join a channel pool.";
     }
 
     @Override

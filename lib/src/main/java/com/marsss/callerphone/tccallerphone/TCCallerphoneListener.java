@@ -24,7 +24,7 @@ public class TCCallerphoneListener extends ListenerAdapter {
         final String[] args = messageRaw.toLowerCase().split("\\s+");
 
 
-        if (args[0].toLowerCase().startsWith(Callerphone.Prefix))
+        if (args[0].toLowerCase().startsWith(Callerphone.config.getPrefix()))
             return;
 
         if (Callerphone.blacklist.contains(event.getAuthor().getId())) {
@@ -93,7 +93,7 @@ public class TCCallerphoneListener extends ListenerAdapter {
 
         if (anon) {
             if (DESTINATION_CHANNEL != null) {
-                DESTINATION_CHANNEL.sendMessage("**DiscordUser**#0000 " + Callerphone.CallerphoneCall + content).complete();
+                DESTINATION_CHANNEL.sendMessage("**DiscordUser**#0000 " + Callerphone.config.getCallerphoneCall() + content).complete();
             } else {
                 terminate(c);
             }
@@ -149,7 +149,7 @@ public class TCCallerphoneListener extends ListenerAdapter {
 
         final String DATA = data.toString();
         if (c.getReport()) {
-            final TextChannel REPORT_CHANNEL = ToolSet.getTextChannel(Callerphone.reportchannel);
+            final TextChannel REPORT_CHANNEL = ToolSet.getTextChannel(Callerphone.config.getReportChatChannel());
             if (REPORT_CHANNEL == null) {
                 System.out.println("Invalid REPORT channel.");
             } else {

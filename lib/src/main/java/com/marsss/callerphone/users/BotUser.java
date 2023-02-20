@@ -1,8 +1,11 @@
 package com.marsss.callerphone.users;
 
 import com.marsss.callerphone.Response;
+import org.jetbrains.annotations.NotNull;
 
-public class User {
+import static com.marsss.callerphone.users.UserStatus.*;
+
+public class BotUser implements Comparable<BotUser> {
 
 /*
 "id": "1234567890",
@@ -14,18 +17,18 @@ public class User {
 "transmitted": 0
 */
 
-    private String id;
-    private UserStatus status;
-    private String reason;
-    private String prefix;
-    private long credits;
-    private long executed;
-    private long transmitted;
+    private String id = "";
+    private UserStatus status = USER;
+    private String reason = "";
+    private String prefix = "";
+    private long credits = 0;
+    private long executed = 0;
+    private long transmitted = 0;
 
-    public User() {
+    public BotUser() {
     }
 
-    public User(String id, UserStatus status, String reason, String prefix, long credits, long executed, long transmitted) {
+    public BotUser(String id, UserStatus status, String reason, String prefix, long credits, long executed, long transmitted) {
         this.id = id;
         this.status = status;
         this.reason = reason;
@@ -92,6 +95,28 @@ public class User {
     }
 
     public String toJSON() {
+        String status = "user";
+        switch(this.status){
+            case USER:
+                status = "user";
+                break;
+            case MODERATOR:
+                status = "moderator";
+                break;
+            case WARNED:
+                status = "warned";
+                break;
+            case BLACKLISTED:
+                status = "blacklisted";
+                break;
+        }
         return String.format(Response.USER_TEMPLATE.toString(), id, status, reason, prefix, credits, executed, transmitted);
+    }
+
+    @Override
+    public int compareTo(@NotNull BotUser user) {
+        if(this.credits > user.credits)
+            return -1;
+        return 1;
     }
 }

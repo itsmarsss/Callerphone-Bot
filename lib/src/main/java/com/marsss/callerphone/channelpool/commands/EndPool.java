@@ -56,7 +56,7 @@ public class EndPool implements ICommand {
 
     @Override
     public String getHelp() {
-        return "`" + Callerphone.Prefix + "endpool` - End a channel pool.";
+        return "`" + Callerphone.config.getPrefix() + "endpool` - End a channel pool.";
     }
 
     @Override

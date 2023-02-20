@@ -25,7 +25,7 @@ public class OnOtherEvent extends ListenerAdapter {
     }
 
     public void onResumed(ResumedEvent event) {
-        final TextChannel LOG_CHANNEL = ToolSet.getTextChannel(Callerphone.logstatus);
+        final TextChannel LOG_CHANNEL = ToolSet.getTextChannel(Callerphone.config.getLogStatusChannel());
         EmbedBuilder Emd = new EmbedBuilder()
                 .setColor(Color.RED)
                 .setTitle("Disconnected");

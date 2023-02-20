@@ -114,7 +114,7 @@ public class UserInfo implements ICommand {
 
 	@Override
 	public String getHelp() {
-		return "`" + Callerphone.Prefix + "userinfo <@user/id/empty>` - Get information about this member!";
+		return "`" + Callerphone.config.getPrefix() + "userinfo <@user/id/empty>` - Get information about this member!";
 	}
 
 	@Override

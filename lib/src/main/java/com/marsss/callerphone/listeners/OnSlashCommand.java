@@ -2,6 +2,7 @@ package com.marsss.callerphone.listeners;
 
 import com.marsss.callerphone.Callerphone;
 
+import com.marsss.callerphone.ToolSet;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
@@ -23,7 +24,7 @@ public class OnSlashCommand extends ListenerAdapter {
                             new EmbedBuilder()
                                     .setAuthor("Must Read", null, event.getUser().getAvatarUrl())
                                     .setTitle("User Agreement")
-                                    .setDescription("By issuing another Callerphone (**\"Bot\"**) command, it is expected that you (**\"User\"**) have read, and User has agreed to both Bot's [Privacy Policy](" + Callerphone.privacy + ") and [Terms of Service](" + Callerphone.terms + "). It is User's responsibility to regularly check for updates to these documents.")
+                                    .setDescription("By issuing another Callerphone (**\"Bot\"**) command, it is expected that you (**\"User\"**) have read, and User has agreed to both Bot's [Privacy Policy](" + Callerphone.config.getPrivacyPolicy() + ") and [Terms of Service](" + Callerphone.config.getTermsOfService() + "). It is User's responsibility to regularly check for updates to these documents.")
                                     .setFooter("This is to protect both Bot and User from unforeseen issues in the future. Please read these documents carefully.", Callerphone.jda.getSelfUser().getAvatarUrl())
                                     .setColor(new Color(114, 137, 218))
                                     .build()
@@ -35,11 +36,11 @@ public class OnSlashCommand extends ListenerAdapter {
                 return;
             }
             event.reply(
-                    Callerphone.Callerphone
+                    ToolSet.CP_EMJ
                             + "Hmmm, the slash command `"
                             + event.getName()
                             + "` shouldn't exist! Please join our support server and report this issue. "
-                            + Callerphone.support
+                            + Callerphone.config.getSupportServer()
             ).queue();
         } catch (Exception e) {
             e.printStackTrace();

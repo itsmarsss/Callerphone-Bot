@@ -23,7 +23,7 @@ public class Donate implements ICommand {
 
     @Override
     public String getHelp() {
-        return "`" + Callerphone.Prefix + "donate` - Help us out by donating.";
+        return "`" + Callerphone.config.getPrefix() + "donate` - Help us out by donating.";
     }
 
     @Override
@@ -34,7 +34,7 @@ public class Donate implements ICommand {
     private MessageEmbed donate() {
         return new EmbedBuilder().
                 setColor(new Color(114, 137, 218))
-                .setDescription("Donate at <" + Callerphone.donate + ">")
+                .setDescription("Donate at <" + Callerphone.config.getDonateLink() + ">")
                 .build();
     }
 }

@@ -2,6 +2,7 @@ package com.marsss.callerphone.users.commands;
 
 import com.marsss.ICommand;
 import com.marsss.callerphone.Callerphone;
+import com.marsss.callerphone.ToolSet;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
@@ -10,12 +11,10 @@ import java.util.List;
 
 public class RewardCredits implements ICommand {
 
-    private final String CP_EMJ = Callerphone.Callerphone;
-
     @Override
     public void runCommand(GuildMessageReceivedEvent e) {
-        if (!e.getAuthor().getId().equals(Callerphone.owner)) {
-            e.getMessage().reply(CP_EMJ + "Run this command once you own this bot...").queue();
+        if (!e.getAuthor().getId().equals(Callerphone.config.getOwnerID())) {
+            e.getMessage().reply(ToolSet.CP_EMJ + "Run this command once you own this bot...").queue();
             return;
         }
         try {
@@ -27,7 +26,7 @@ public class RewardCredits implements ICommand {
             e.getMessage().reply(rewardCredits(USER, amount)).queue();
         } catch (Exception ex) {
             ex.printStackTrace();
-            e.getMessage().reply(CP_EMJ + "`" + Callerphone.Prefix + "rewardcreds <amount> <@user>`").queue();
+            e.getMessage().reply(ToolSet.CP_EMJ + "`" + Callerphone.config.getPrefix() + "rewardcreds <amount> <@user>`").queue();
         }
     }
 
@@ -37,7 +36,7 @@ public class RewardCredits implements ICommand {
 
     private String rewardCredits(User user, int amount) {
         Callerphone.reward(user, amount);
-        return CP_EMJ + "Rewarded `\u00A9 " + amount + "` to " + user.getAsMention();
+        return ToolSet.CP_EMJ + "Rewarded `\u00A9 " + amount + "` to " + user.getAsMention();
     }
 
     @Override

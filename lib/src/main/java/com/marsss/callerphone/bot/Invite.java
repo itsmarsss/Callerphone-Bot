@@ -23,7 +23,7 @@ public class Invite implements ICommand {
 
     @Override
     public String getHelp() {
-        return "`" + Callerphone.Prefix + "invite` - Get invites and links related to this bot.";
+        return "`" + Callerphone.config.getPrefix() + "invite` - Get invites and links related to this bot.";
     }
 
     @Override
@@ -34,9 +34,9 @@ public class Invite implements ICommand {
     private MessageEmbed invite() {
         return new EmbedBuilder()
                 .setColor(Colour.randColor())
-                .addField("Add me to your server", "[Invite Link](" + Callerphone.invite + ")", true)
-                .addField("Join the Community and Support Server", "[Server Link](" + Callerphone.support + ")", true)
-                .addField("Support Us", "[Patreon Link](" + Callerphone.donate + ")", true)
+                .addField("Add me to your server", "[Invite Link](" + Callerphone.config.getBotInviteLink() + ")", true)
+                .addField("Join the Community and Support Server", "[Server Link](" + Callerphone.config.getSupportServer() + ")", true)
+                .addField("Support Us", "[Patreon Link](" + Callerphone.config.getDonateLink() + ")", true)
                 .setFooter("Have a nice day")
                 .build();
     }

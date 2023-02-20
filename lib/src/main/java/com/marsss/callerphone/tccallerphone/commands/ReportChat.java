@@ -34,7 +34,7 @@ public class ReportChat implements ICommand {
 
     @Override
     public String getHelp() {
-        return "`" + Callerphone.Prefix + "report` - Report current chat with another server.";
+        return "`" + Callerphone.config.getPrefix() + "report` - Report current chat with another server.";
     }
 
     @Override

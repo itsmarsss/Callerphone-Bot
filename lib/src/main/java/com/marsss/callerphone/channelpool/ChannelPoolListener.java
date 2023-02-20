@@ -25,7 +25,7 @@ public class ChannelPoolListener extends ListenerAdapter {
         if (MEMBER.getUser().isBot() || MEMBER.getUser().isSystem())
             return;
 
-        if (content.startsWith("\\\\") || content.startsWith(Callerphone.Prefix)) {
+        if (content.startsWith("\\\\") || content.startsWith(Callerphone.config.getPrefix())) {
             return;
         }
         if (!(ChannelPool.isHost(event.getChannel().getId()) || ChannelPool.isChild(event.getChannel().getId()))) {

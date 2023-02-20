@@ -33,8 +33,6 @@ public class LeavePool implements ICommand {
         e.reply(leavePool(e.getChannel().getId())).queue();
     }
 
-    private final String CP_EMJ = Callerphone.Callerphone;
-
     private String leavePool(String id) {
         PoolStatus stat = ChannelPool.leavePool(id);
 
@@ -62,7 +60,7 @@ public class LeavePool implements ICommand {
 
     @Override
     public String getHelp() {
-        return "`" + Callerphone.Prefix + "leavepool` - Leave a channel pool.";
+        return "`" + Callerphone.config.getPrefix() + "leavepool` - Leave a channel pool.";
     }
 
     @Override

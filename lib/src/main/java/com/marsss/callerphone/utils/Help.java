@@ -47,7 +47,7 @@ public class Help implements ICommand {
 
     @Override
     public String getHelp() {
-        return "`" + Callerphone.Prefix + "help` - help help help";
+        return "`" + Callerphone.config.getPrefix() + "help` - help help help";
     }
 
     @Override
@@ -125,7 +125,7 @@ public class Help implements ICommand {
 
             case "music":
                 TITLE = "Music Commands";
-                DESC = "Callerphone no longer can play music, however I've created a new bot called **Tunes**...\nJoin [this](" + Callerphone.tunessupport + ") server for more information!";
+                DESC = "Callerphone no longer can play music, however I've created a new bot called **Tunes**...\nJoin [this](" + Callerphone.config.getSupportServer() + ") server for more information!";
                 break;
 
 
@@ -180,14 +180,14 @@ public class Help implements ICommand {
         EmbedBuilder CateEmd = new EmbedBuilder()
                 .setColor(new Color(114, 137, 218))
                 .setTitle("Categories")
-                .addField("Bot", "all commands related to the bot will be here, do `" + Callerphone.Prefix + "help bot` for more information", false)
-                .addField("Utils", "all utility commands will be in this category, do `" + Callerphone.Prefix + "help utils` for more information", false)
-                .addField("Pooling", "all channel pooling commands will be in this category, do `" + Callerphone.Prefix + "help pooling` for more information", false)
-                .addField("TC Callerphone", "all text call callerphone commands will be in this category, do `" + Callerphone.Prefix + "help tccall` for more information", false)
+                .addField("Bot", "all commands related to the bot will be here, do `" + Callerphone.config.getPrefix() + "help bot` for more information", false)
+                .addField("Utils", "all utility commands will be in this category, do `" + Callerphone.config.getPrefix() + "help utils` for more information", false)
+                .addField("Pooling", "all channel pooling commands will be in this category, do `" + Callerphone.config.getPrefix() + "help pooling` for more information", false)
+                .addField("TC Callerphone", "all text call callerphone commands will be in this category, do `" + Callerphone.config.getPrefix() + "help tccall` for more information", false)
                 .addField("Music", "Callerphone no longer can play music, however I've created a new bot called **Tunes**... Join [this](https:discord.gg/TyHaxtWAmX) server for more information!", false)
-                .setFooter("Type `" + Callerphone.Prefix + "help <category name>` to see category commands");
+                .setFooter("Type `" + Callerphone.config.getPrefix() + "help <category name>` to see category commands");
         if (admin) {
-            CateEmd.addField("Moderator only", "all moderator commands will be in this category, do `" + Callerphone.Prefix + "help mod` in dm for more information", false);
+            CateEmd.addField("Moderator only", "all moderator commands will be in this category, do `" + Callerphone.config.getPrefix() + "help mod` in dm for more information", false);
         }
         return CateEmd.build();
     }

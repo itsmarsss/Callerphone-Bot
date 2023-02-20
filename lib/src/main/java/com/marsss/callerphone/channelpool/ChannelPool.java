@@ -1,6 +1,6 @@
 package com.marsss.callerphone.channelpool;
 
-import com.marsss.callerphone.Callerphone;
+import com.marsss.callerphone.Response;
 import com.marsss.callerphone.ToolSet;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
@@ -20,8 +20,6 @@ public class ChannelPool {
     public static final HashMap<String, PoolConfig> config = new HashMap<>();
     public static final HashMap<String, String> parent = new HashMap<>();
     public static final HashMap<String, ArrayList<String>> childr = new HashMap<>();
-    private static final String CP_EMJ = Callerphone.Callerphone;
-    private static final String NO_PERMISSION = CP_EMJ + "You need `Manage Channel` permission to run this command.";
 
     public static boolean permissionCheck(Member member, SlashCommandEvent e) {
         if (member == null) {
@@ -30,7 +28,7 @@ public class ChannelPool {
 
         final boolean PERMS = !member.hasPermission(Permission.MANAGE_CHANNEL);
         if (PERMS) {
-            e.reply(NO_PERMISSION).queue();
+            e.reply(Response.NO_PERMISSION.toString()).queue();
 
         }
         return PERMS;
@@ -43,7 +41,7 @@ public class ChannelPool {
 
         final boolean PERMS = !member.hasPermission(Permission.MANAGE_CHANNEL);
         if (PERMS) {
-            message.reply(NO_PERMISSION).queue();
+            message.reply(Response.NO_PERMISSION.toString()).queue();
 
         }
         return PERMS;
@@ -155,7 +153,7 @@ public class ChannelPool {
                         if (HOST_CHANNEL != null) {
                             HOST_CHANNEL
                                     .sendMessage(
-                                            CP_EMJ + "This pool has been ended by the host channel `ID: " + id
+                                            ToolSet.CP_EMJ + "This pool has been ended by the host channel `ID: " + id
                                                     + "` (#" + HOST_CHANNEL.getName() + ")."
                                     ).queue();
                         }
@@ -180,13 +178,13 @@ public class ChannelPool {
             if (HOST_CHANNEL != null) {
                 if (CHILD_CHANNEL != null) {
                     systemBroadCast(IDh,
-                            CP_EMJ + "Channel `ID: " + IDc
+                            ToolSet.CP_EMJ + "Channel `ID: " + IDc
                                     + "` (#" + CHILD_CHANNEL.getName() + ") has joined this pool. "
                                     + (childr.get(IDh).size() + 1) + "/" + config.get(IDh).getCap()
                     );
                 } else {
                     systemBroadCast(IDh,
-                            CP_EMJ + "Channel `ID: " + IDc
+                            ToolSet.CP_EMJ + "Channel `ID: " + IDc
                                     + "` (#[N/A NOT FOUND]) has joined this pool. "
                                     + (childr.get(IDh).size() + 1) + "/" + config.get(IDh).getCap()
                     );
@@ -214,12 +212,12 @@ public class ChannelPool {
             if (HOST_CHANNEL != null) {
                 if (CHILD_CHANNEL != null) {
                     systemBroadCast(hostID,
-                            CP_EMJ + "Channel `ID: " + clientID + "` (#" + CHILD_CHANNEL.getName() + ") has left this pool. "
+                            ToolSet.CP_EMJ + "Channel `ID: " + clientID + "` (#" + CHILD_CHANNEL.getName() + ") has left this pool. "
                                     + childr.get(hostID).size() + "/" + config.get(hostID).getCap()
                     );
                 } else {
                     systemBroadCast(hostID,
-                            CP_EMJ + "Channel `ID: " + clientID + "` (#[N/A NOT FOUND]) has left this pool. "
+                            ToolSet.CP_EMJ + "Channel `ID: " + clientID + "` (#[N/A NOT FOUND]) has left this pool. "
                                     + childr.get(hostID).size() + "/" + config.get(hostID).getCap()
                     );
                 }
@@ -312,7 +310,7 @@ public class ChannelPool {
         return ma;
     }
 
-    private static final String LEFT_POOL = CP_EMJ + "Channel `ID: %s` has left this pool.";
+    private static final String LEFT_POOL = ToolSet.CP_EMJ + "Channel `ID: %s` has left this pool.";
 
     private static void handleChannelLeft(String sender, String id) {
         if (sender.equals(id)) {

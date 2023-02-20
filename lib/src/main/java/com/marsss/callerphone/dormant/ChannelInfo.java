@@ -197,7 +197,7 @@ public class ChannelInfo implements ICommand {
 
     @Override
     public String getHelp() {
-        return "`" + Callerphone.Prefix + "channelinfo <#channel/id/empty>` - Get information about the channel.";
+        return "`" + Callerphone.config.getPrefix() + "channelinfo <#channel/id/empty>` - Get information about the channel.";
     }
 
     @Override

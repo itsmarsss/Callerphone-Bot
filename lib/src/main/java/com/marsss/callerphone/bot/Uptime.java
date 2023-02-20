@@ -24,7 +24,7 @@ public class Uptime implements ICommand {
 
     @Override
     public String getHelp() {
-        return "`" + Callerphone.Prefix + "uptime` - Gets bot uptime.";
+        return "`" + Callerphone.config.getPrefix() + "uptime` - Gets bot uptime.";
     }
 
     @Override

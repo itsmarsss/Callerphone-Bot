@@ -48,7 +48,7 @@ public class Prefix implements ICommand {
 
     @Override
     public String getHelp() {
-        return "`" + Callerphone.Prefix + "prefix <prefix>` - Set chat prefix (if more than lvl 50).";
+        return "`" + Callerphone.config.getPrefix() + "prefix <prefix>` - Set chat prefix (if more than lvl 50).";
     }
 
     @Override

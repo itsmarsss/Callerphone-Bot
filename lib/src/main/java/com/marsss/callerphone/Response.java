@@ -7,23 +7,25 @@ public enum Response {
      */
 
     ERROR(ToolSet.CP_EMJ + "An error occurred."),
-    MISSING_PARAM(ToolSet.CP_EMJ + "Missing parameters, do `" + Callerphone.Prefix + "help <command name>` for more information."),
+    MISSING_PARAM(ToolSet.CP_EMJ + "Missing parameters, do `" + Callerphone.config.getPrefix() + "help <command name>` for more information."),
 
     PING_TEMPLATE("**Reset ping:** %sms \n**WS ping:** %sms"),
 
     // Profile
-    PROFILE_GENERAL("Level: `%d`\nExperience: `%d/100`\nPrefix: %s\n\n[`" + Callerphone.Prefix + "help exp`]"),
-    PROFILE_CREDITS("Credits: `\u00A9 %d`\nRedeemed: `\u00A9 %d`\nNet: `\u00A9 %d`\n\n[`" + Callerphone.Prefix + "help creds`]"),
+    PROFILE_GENERAL("Level: `%d`\nExperience: `%d/100`\nPrefix: %s\n\n[`" + Callerphone.config.getPrefix() + "help exp`]"),
+    PROFILE_CREDITS("Credits: `\u00A9 %d`\nRedeemed: `\u00A9 %d`\nNet: `\u00A9 %d`\n\n[`" + Callerphone.config.getPrefix() + "help creds`]"),
     PROFILE_MESSAGE("Executed: `%d`\n Transmitted: `%s`\nTotal: `%s`"),
 
     CONNECTION_ERROR(ToolSet.CP_EMJ + "Connection error, call ended."),
-    DEFAULT_MESSAGE_TEMPLATE("**%s**#%s " + Callerphone.CallerphoneCall + "%s"),
-    MODERATOR_MESSAGE_TEMPLATE("***[Moderator]* %s**#%s " + Callerphone.CallerphoneCall + "%s"),
-    PREFIX_MESSAGE_TEMPLATE("***[%s]* %s**#%s " + Callerphone.CallerphoneCall + "%s"),
+    DEFAULT_MESSAGE_TEMPLATE("**%s**#%s " + ToolSet.CP_CALL + "%s"),
+    MODERATOR_MESSAGE_TEMPLATE("***[Moderator]* %s**#%s " + ToolSet.CP_CALL + "%s"),
+    PREFIX_MESSAGE_TEMPLATE("***[%s]* %s**#%s " + ToolSet.CP_CALL + "%s"),
     MESSAGE_TOO_LONG(ToolSet.CP_ERR + " I sent a message too long for Callerphone to handle " + ToolSet.CP_ERR),
     ATTEMPTED_PING(ToolSet.CP_ERR + " I tried to ping everyone " + ToolSet.CP_ERR),
     ATTEMPTED_LINK(ToolSet.CP_ERR + " I tried to send a link " + ToolSet.CP_ERR),
-    USER_TEMPLATE("{\\n\"id\": \"%s\",\\n\"status\": \"%s\",\\n\"reason\": \"%s\",\\n\"prefix\": \"%s\",\\n\"credits\": %s,\\n\"executed\": %s,\\n\"transmitted\": %s\\n}"),
+    USER_TEMPLATE("{\n\"id\": \"%s\",\n\"status\": \"%s\",\n\"reason\": \"%s\",\n\"prefix\": \"%s\",\n\"credits\": %s,\n\"executed\": %s,\n\"transmitted\": %s\n}"),
+
+    NO_PERMISSION(ToolSet.CP_EMJ + "You need `Manage Channel` permission to run this command."),
     TEMP("There is no set return message");
     public final String label;
 

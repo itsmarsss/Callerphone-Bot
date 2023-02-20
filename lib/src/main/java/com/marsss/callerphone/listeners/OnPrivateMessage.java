@@ -28,7 +28,7 @@ public class OnPrivateMessage extends ListenerAdapter {
 
         boolean isAdmin = Callerphone.admin.contains(event.getAuthor().getId());
 
-        if (CONTENT.startsWith(Callerphone.Prefix + "help mod")) {
+        if (CONTENT.startsWith(Callerphone.config.getPrefix() + "help mod")) {
             String TITLE = "Mod";
             String DESC = "You do not have permission to access this category.";
 
@@ -49,10 +49,10 @@ public class OnPrivateMessage extends ListenerAdapter {
             return;
         }
 
-        if (CONTENT.toLowerCase().startsWith(Callerphone.Prefix)) {
+        if (CONTENT.toLowerCase().startsWith(Callerphone.config.getPrefix())) {
             try {
 
-                switch (args[0].toLowerCase().replace(Callerphone.Prefix, "")) {
+                switch (args[0].toLowerCase().replace(Callerphone.config.getPrefix(), "")) {
 
                     case "blackedlist":
                         sendPrivateFile(MEMBER, new File(Callerphone.parent + "/blacklist.txt"), "Callerphone Blacklist:");
@@ -77,7 +77,7 @@ public class OnPrivateMessage extends ListenerAdapter {
                 }
 
                 String id = args[1];
-                switch (args[0].toLowerCase().replace(Callerphone.Prefix, "")) {
+                switch (args[0].toLowerCase().replace(Callerphone.config.getPrefix(), "")) {
 
                     case "blacklist":
                         if (Callerphone.blacklist.contains(id)) {
@@ -133,7 +133,7 @@ public class OnPrivateMessage extends ListenerAdapter {
                         if (!Callerphone.admin.contains(id)) {
                             MESSAGE.reply("ID is not a mod").queue();
                         } else {
-                            if (id.equals(Callerphone.owner)) {
+                            if (id.equals(Callerphone.config.getOwnerID())) {
                                 MESSAGE.reply("You cannot remove this mod").queue();
                                 break;
                             }

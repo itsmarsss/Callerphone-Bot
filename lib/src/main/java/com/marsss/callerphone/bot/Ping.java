@@ -22,7 +22,7 @@ public class Ping implements ICommand {
 
     @Override
     public String getHelp() {
-        return "`" + Callerphone.Prefix + "ping` - Gets bot ping.";
+        return "`" + Callerphone.config.getPrefix() + "ping` - Gets bot ping.";
     }
 
     @Override

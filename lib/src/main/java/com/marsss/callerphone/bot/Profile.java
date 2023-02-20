@@ -34,7 +34,7 @@ public class Profile implements ICommand {
         final long TOTAL = EXECUTED + TRANSMITTED;
         final int LVL = (int) TOTAL / 100;
         final int EXP = (int) TOTAL - 100 * LVL;
-        final String PREFIX = Callerphone.prefix.getOrDefault(user.getId(), (LVL > 5 ? ":unlock: `" + Callerphone.Prefix + "prefix <prefix>`" : ":lock: `Level 50`"));
+        final String PREFIX = Callerphone.prefix.getOrDefault(user.getId(), (LVL > 5 ? ":unlock: `" + Callerphone.config.getPrefix() + "prefix <prefix>`" : ":lock: `Level 50`"));
 
         String general = String.format(Response.PROFILE_GENERAL.toString(), LVL, EXP, PREFIX);
         String credits = String.format(Response.PROFILE_CREDITS.toString(), Callerphone.getCredits(user), 0, 0);
@@ -56,7 +56,7 @@ public class Profile implements ICommand {
 
     @Override
     public String getHelp() {
-        return "`" + Callerphone.Prefix + "profile` - View your profile with Callerphone.";
+        return "`" + Callerphone.config.getPrefix() + "profile` - View your profile with Callerphone.";
     }
 
     @Override

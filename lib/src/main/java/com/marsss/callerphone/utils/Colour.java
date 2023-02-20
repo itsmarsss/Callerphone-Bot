@@ -22,7 +22,7 @@ public class Colour implements ICommand {
         final String CONTENT = MESSAGE.getContentRaw();
         final String[] ARGS = CONTENT.split("\\s+");
 
-        switch (ARGS[0].toLowerCase().replace(Callerphone.Prefix, "")) {
+        switch (ARGS[0].toLowerCase().replace(Callerphone.config.getPrefix(), "")) {
 
 
             case "color":
@@ -90,9 +90,9 @@ public class Colour implements ICommand {
 
     @Override
     public String getHelp() {
-        return "`" + Callerphone.Prefix + "color` - Get a random color in hex and rgb value.\n" +
-                "`" + Callerphone.Prefix + "colorrgb <r> <g> <b>` - Get the hex value of rgb.\n" +
-                "`" + Callerphone.Prefix + "colorhex <hex>` - Get the rgb value of hex.";
+        return "`" + Callerphone.config.getPrefix() + "color` - Get a random color in hex and rgb value.\n" +
+                "`" + Callerphone.config.getPrefix() + "colorrgb <r> <g> <b>` - Get the hex value of rgb.\n" +
+                "`" + Callerphone.config.getPrefix() + "colorhex <hex>` - Get the rgb value of hex.";
     }
 
     @Override

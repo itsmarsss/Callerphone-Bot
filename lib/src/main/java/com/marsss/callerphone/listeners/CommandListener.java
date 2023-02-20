@@ -33,19 +33,19 @@ public class CommandListener extends ListenerAdapter {
             return;
 
         if(Callerphone.blacklist.contains(event.getAuthor().getId())) {
-            MESSAGE.reply("Sorry you are blacklisted, submit an appeal in our support server " + Callerphone.support).queue();
+            MESSAGE.reply("Sorry you are blacklisted, submit an appeal in our support server " + Callerphone.config.getSupportServer()).queue();
             return;
         }
 
         if (CONTENT.contains(Callerphone.jda.getSelfUser().getId())) {
-            MESSAGE.reply("My prefix is `" + Callerphone.Prefix + "`, do `" + Callerphone.Prefix + "help` for a list of commands!").queue();
+            MESSAGE.reply("My prefix is `" + Callerphone.config.getPrefix() + "`, do `" + Callerphone.config.getPrefix() + "help` for a list of commands!").queue();
             return;
         }
 
-        if (!ARGS[0].toLowerCase().startsWith(Callerphone.Prefix))
+        if (!ARGS[0].toLowerCase().startsWith(Callerphone.config.getPrefix()))
             return;
 
-        String trigger = ARGS[0].toLowerCase().replace(Callerphone.Prefix, "");
+        String trigger = ARGS[0].toLowerCase().replace(Callerphone.config.getPrefix(), "");
 
         try {
             if (Callerphone.cmdMap.containsKey(trigger)) {
@@ -60,7 +60,7 @@ public class CommandListener extends ListenerAdapter {
                             new EmbedBuilder()
                                     .setAuthor("Must Read", null, event.getAuthor().getAvatarUrl())
                                     .setTitle("User Agreement")
-                                    .setDescription("By issuing another Callerphone (**\"Bot\"**) command, it is expected that you (**\"User\"**) have read, and User has agreed to both Bot's [Privacy Policy](" + Callerphone.privacy + ") and [Terms of Service](" + Callerphone.terms + "). It is User's responsibility to regularly check for updates to these documents.")
+                                    .setDescription("By issuing another Callerphone (**\"Bot\"**) command, it is expected that you (**\"User\"**) have read, and User has agreed to both Bot's [Privacy Policy](" + Callerphone.config.getPrivacyPolicy() + ") and [Terms of Service](" + Callerphone.config.getTermsOfService() + "). It is User's responsibility to regularly check for updates to these documents.")
                                     .setFooter("This is to protect both Bot and User from unforeseen issues in the future. Please read these documents carefully.", Callerphone.jda.getSelfUser().getAvatarUrl())
                                     .setColor(new Color(114, 137, 218))
                                     .build()
@@ -86,26 +86,26 @@ public class CommandListener extends ListenerAdapter {
     }
 
     public static String adminHelp() {
-        return "`" + Callerphone.Prefix + "mod <id>` - Adds id to mod list.\n" +
-                "`" + Callerphone.Prefix + "rmod <id>` - Removes id from mod list.";
+        return "`" + Callerphone.config.getPrefix() + "mod <id>` - Adds id to mod list.\n" +
+                "`" + Callerphone.config.getPrefix() + "rmod <id>` - Removes id from mod list.";
     }
 
     public static String blacklistHelp() {
-        return "`" + Callerphone.Prefix + "blacklist <id>` - Adds id to blacklist.\n" +
-                "`" + Callerphone.Prefix + "rblacklist <id>` - Removes id from blacklist.";
+        return "`" + Callerphone.config.getPrefix() + "blacklist <id>` - Adds id to blacklist.\n" +
+                "`" + Callerphone.config.getPrefix() + "rblacklist <id>` - Removes id from blacklist.";
     }
 
     public static String supportHelp() {
-        return "`" + Callerphone.Prefix + "prefix <id> <prefix>` - Give user a prefix.\n" +
-                "`" + Callerphone.Prefix + "rprefix <id>` - Removes user prefix.";
+        return "`" + Callerphone.config.getPrefix() + "prefix <id> <prefix>` - Give user a prefix.\n" +
+                "`" + Callerphone.config.getPrefix() + "rprefix <id>` - Removes user prefix.";
     }
 
     public static String showItemsHelp() {
-        return "`" + Callerphone.Prefix + "blackedlist` - Shows all black listed users.\n" +
-                "`" + Callerphone.Prefix + "prefixlist` - Shows all prefixes for users.\n" +
-                "`" + Callerphone.Prefix + "infolist` - Shows all info for startup.\n" +
-                "`" + Callerphone.Prefix + "modlist` - Shows all moderators.\n" +
-                "`" + Callerphone.Prefix + "filterlist` - Shows all chat filters.";
+        return "`" + Callerphone.config.getPrefix() + "blackedlist` - Shows all black listed users.\n" +
+                "`" + Callerphone.config.getPrefix() + "prefixlist` - Shows all prefixes for users.\n" +
+                "`" + Callerphone.config.getPrefix() + "infolist` - Shows all info for startup.\n" +
+                "`" + Callerphone.config.getPrefix() + "modlist` - Shows all moderators.\n" +
+                "`" + Callerphone.config.getPrefix() + "filterlist` - Shows all chat filters.";
     }
 
 }

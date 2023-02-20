@@ -82,7 +82,7 @@ public class Chat implements ICommand {
 
     @Override
     public String getHelp() {
-        return "`" + Callerphone.Prefix + "chat` - Chat with people from other servers.";
+        return "`" + Callerphone.config.getPrefix() + "chat` - Chat with people from other servers.";
     }
 
     @Override
