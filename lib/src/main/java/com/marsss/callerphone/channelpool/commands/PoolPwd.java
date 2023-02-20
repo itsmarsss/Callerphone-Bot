@@ -65,7 +65,7 @@ public class PoolPwd implements ICommand {
 
     @Override
     public String getHelp() {
-        return "`" + Callerphone.Prefix + "poolpwd <password | \"none\" for no password>` - Set channel pool password.";
+        return "`" + Callerphone.config.getPrefix() + "poolpwd <password | \"none\" for no password>` - Set channel pool password.";
     }
 
     @Override

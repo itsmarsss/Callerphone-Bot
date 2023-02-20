@@ -22,8 +22,6 @@ public class PoolParticipants implements ICommand {
         e.reply(poolParticipants(e.getChannel().getId())).queue();
     }
 
-    private final String CP_EMJ = Callerphone.Callerphone;
-
     private String poolParticipants(String id) {
         final ArrayList<String> PARTICIPANTS = ChannelPool.getClients(id);
 
@@ -56,7 +54,7 @@ public class PoolParticipants implements ICommand {
 
     @Override
     public String getHelp() {
-        return "`" + Callerphone.Prefix + "poolparts` - Show channel pool participants.";
+        return "`" + Callerphone.config.getPrefix() + "poolparts` - Show channel pool participants.";
     }
 
     @Override

@@ -12,8 +12,6 @@ import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
 public class PoolCap implements ICommand {
 
-    private final String CP_EMJ = Callerphone.Callerphone;
-
     @Override
     public void runCommand(GuildMessageReceivedEvent e) {
         final Member MEMBER = e.getMember();
@@ -63,7 +61,7 @@ public class PoolCap implements ICommand {
 
     @Override
     public String getHelp() {
-        return "`" + Callerphone.Prefix + "poolcap <number [1-10]>` - Set channel pool capacity.";
+        return "`" + Callerphone.config.getPrefix() + "poolcap <number [1-10]>` - Set channel pool capacity.";
     }
 
     @Override

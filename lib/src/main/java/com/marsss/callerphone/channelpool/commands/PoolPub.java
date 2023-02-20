@@ -12,8 +12,6 @@ import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
 public class PoolPub implements ICommand {
 
-    private final String CP_EMJ = Callerphone.Callerphone;
-
     @Override
     public void runCommand(GuildMessageReceivedEvent e) {
         final Member MEMBER = e.getMember();
@@ -63,7 +61,7 @@ public class PoolPub implements ICommand {
 
     @Override
     public String getHelp() {
-        return "`" + Callerphone.Prefix + "poolpub <true|false>` - Set channel pool publicity.";
+        return "`" + Callerphone.config.getPrefix() + "poolpub <true|false>` - Set channel pool publicity.";
     }
 
     @Override

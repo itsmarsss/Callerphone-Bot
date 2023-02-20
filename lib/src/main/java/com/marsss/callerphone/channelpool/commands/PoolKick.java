@@ -71,7 +71,7 @@ public class PoolKick implements ICommand {
 
     @Override
     public String getHelp() {
-        return "`" + Callerphone.Prefix + "kickchan <channel ID>` - Kick channel from pool.";
+        return "`" + Callerphone.config.getPrefix() + "kickchan <channel ID>` - Kick channel from pool.";
     }
 
     @Override
