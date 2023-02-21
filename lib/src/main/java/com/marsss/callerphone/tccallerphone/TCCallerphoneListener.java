@@ -27,7 +27,7 @@ public class TCCallerphoneListener extends ListenerAdapter {
         final Member MEMBER = event.getMember();
 
         if (Storage.isBlacklisted(MEMBER.getId())) {
-            event.getMessage().addReaction("\u274C").queue();
+            //event.getMessage().addReaction("\u274C").queue();
             return;
         }
 
