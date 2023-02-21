@@ -80,7 +80,7 @@ public class ToolSet {
 
     public static boolean hasLink(String msg) {
         LinkedList<String> links = new LinkedList<>();
-        String regexString = "\\b(https://|www[.])[A-Za-z0-9+&@#/%?=~_()|!:,.;]*[-A-Za-z0-9+&@#/%=~_()|]";
+        String regexString = "((http:\\/\\/|https:\\/\\/)?(www.)?(([a-zA-Z0-9-]){2,}\\.){1,4}([a-zA-Z]){2,6}(\\/([a-zA-Z-_\\/\\.0-9#:?=&;,]*)?)?)";
         Pattern pattern = Pattern.compile(regexString, Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(msg);
         while (matcher.find()) {
