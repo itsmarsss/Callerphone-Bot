@@ -7,6 +7,7 @@ import com.marsss.callerphone.Callerphone;
 import com.marsss.callerphone.Response;
 import com.marsss.callerphone.Storage;
 import com.marsss.callerphone.ToolSet;
+import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.User;
@@ -17,28 +18,29 @@ public class TCCallerphoneListener extends ListenerAdapter {
 
     public void onGuildMessageReceived(GuildMessageReceivedEvent event) {
 
-        if (!event.getChannel().canTalk())
-            return;
-
         final Message MESSAGE = event.getMessage();
-        String messageRaw = MESSAGE.getContentDisplay();
-        final String[] args = messageRaw.toLowerCase().split("\\s+");
 
 
-        if (args[0].toLowerCase().startsWith(Callerphone.config.getPrefix()))
+        if (MESSAGE.isWebhookMessage())
             return;
 
-        if (!TCCallerphone.hasCall(event.getChannel().getId()))
-            return;
+        final Member MEMBER = event.getMember();
 
-        if (Storage.isBlacklisted(event.getAuthor().getId())) {
+        if (Storage.isBlacklisted(MEMBER.getId())) {
             event.getMessage().addReaction("\u274C").queue();
             return;
         }
 
-        if (MESSAGE.getAuthor().isBot() | MESSAGE.isWebhookMessage()) {
+        if (MESSAGE.getAuthor().isBot() || MESSAGE.getAuthor().isSystem())
             return;
-        }
+
+        String messageRaw = MESSAGE.getContentDisplay();
+
+        if (messageRaw.startsWith("\\\\") || messageRaw.toLowerCase().startsWith(Callerphone.config.getPrefix()))
+            return;
+
+        if (!TCCallerphone.hasCall(event.getChannel().getId()))
+            return;
 
         final String CHANNELID = event.getChannel().getId();
 

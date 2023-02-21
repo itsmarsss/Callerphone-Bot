@@ -13,28 +13,27 @@ public class ChannelPoolListener extends ListenerAdapter {
     public void onGuildMessageReceived(GuildMessageReceivedEvent event) {
 
         final Message MESSAGE = event.getMessage();
-        if (MESSAGE.isWebhookMessage())
-            return;
 
-        if (!event.getChannel().canTalk())
+        if (MESSAGE.isWebhookMessage())
             return;
 
         final Member MEMBER = event.getMember();
 
-        String content = MESSAGE.getContentRaw();
+        if (Storage.isBlacklisted(MEMBER.getId())) {
+            event.getMessage().addReaction("\u274C").queue();
+            return;
+        }
 
         if (MEMBER.getUser().isBot() || MEMBER.getUser().isSystem())
             return;
 
-        if (content.startsWith("\\\\") || content.startsWith(Callerphone.config.getPrefix())) {
+        String content = MESSAGE.getContentRaw();
+
+        if (content.startsWith("\\\\") || content.toLowerCase().startsWith(Callerphone.config.getPrefix()))
             return;
-        }
 
-
-
-        if (!(ChannelPool.isHost(event.getChannel().getId()) || ChannelPool.isChild(event.getChannel().getId()))) {
+        if (!(ChannelPool.isHost(event.getChannel().getId()) || ChannelPool.isChild(event.getChannel().getId())))
             return;
-        }
 
         content = ToolSet.messageCheck(content);
 
