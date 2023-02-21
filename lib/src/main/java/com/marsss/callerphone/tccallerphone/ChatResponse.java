@@ -1,4 +1,5 @@
 package com.marsss.callerphone.tccallerphone;
+import com.marsss.callerphone.Callerphone;
 import com.marsss.callerphone.ToolSet;
 
 public enum ChatResponse {
@@ -14,6 +15,7 @@ public enum ChatResponse {
     SET_PREFIX_SUCCESS(ToolSet.CP_EMJ + "Successfully set your prefix to `%s`!"),
     CHAT_REPORTED_SUCCESS(ToolSet.CP_EMJ + "Chat reported!"),
     CHAT_REPORTED_NOT_SUCCESS(ToolSet.CP_EMJ + "Something went wrong, couldn't report call."),
+    CHAT_REPORT_VIA_SERVER(ToolSet.CP_ERR + "Unable to report call, join our support server and provide images of the incident " + Callerphone.config.getSupportServer()),
     PREFIX_TOO_LONG(ToolSet.CP_EMJ + "Prefix too long (Maximum length is 15 characters)");
 
     public final String label;

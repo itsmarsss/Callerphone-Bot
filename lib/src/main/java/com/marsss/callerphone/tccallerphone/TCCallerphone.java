@@ -91,6 +91,8 @@ public class TCCallerphone {
 
             ArrayList<String> data = new ArrayList<>(convo.getMessages());
 
+            log(data, CALLER_ID, RECEIVER_ID);
+
             if (report) {
                 report(data, CALLER_ID, RECEIVER_ID);
             }
@@ -102,6 +104,24 @@ public class TCCallerphone {
         return ChatResponse.NO_CALL.toString();
     }
 
+    private static void log(ArrayList<String> data, String callerID, String receiverID) {
+        LocalDateTime now = LocalDateTime.now();
+        final String month = String.valueOf(now.getMonthValue());
+        final String day = String.valueOf(now.getDayOfMonth());
+        final String hour = String.valueOf(now.getHour());
+        final String minute = String.valueOf(now.getMinute());
+        final String ID = month + "/" + day + "/" + hour + "/" + minute + "C" + callerID + "R" + receiverID;
+
+        StringBuilder dataString = new StringBuilder();
+        for (String m : data)
+            dataString.append(m).append("\n");
+
+
+        final TextChannel TEMP_CHANNEL = ToolSet.getTextChannel(Callerphone.config.getTempChatChannel());
+        if (TEMP_CHANNEL != null) {
+            TEMP_CHANNEL.sendMessage("**ID:** " + ID).addFile(dataString.toString().getBytes(), ID + ".txt").queue();
+        }
+    }
     private static void report(ArrayList<String> data, String callerID, String receiverID) {
         LocalDateTime now = LocalDateTime.now();
         final String month = String.valueOf(now.getMonthValue());

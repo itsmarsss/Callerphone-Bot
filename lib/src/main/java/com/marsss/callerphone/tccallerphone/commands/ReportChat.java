@@ -22,7 +22,7 @@ public class ReportChat implements ICommand {
 
     private String reportChat(TextChannel channel) {
         if (!TCCallerphone.hasCall(channel.getId())) {
-            return ChatResponse.NO_CALL.toString();
+            return ChatResponse.CHAT_REPORT_VIA_SERVER.toString();
         }
         ConvoStorage call = TCCallerphone.getCall(channel.getId());
         if (call != null) {

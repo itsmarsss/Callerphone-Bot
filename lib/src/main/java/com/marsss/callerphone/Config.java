@@ -10,6 +10,7 @@ public class Config {
     private String callerphoneCall = "";
 
     private String logStatusChannel = "";
+    private String tempChatChannel = "";
     private String reportChatChannel = "";
     private String botInviteLink = "";
     private String supportServer = "";
@@ -75,6 +76,14 @@ public class Config {
         this.logStatusChannel = logStatusChannel;
     }
 
+    public String getTempChatChannel() {
+        return tempChatChannel;
+    }
+
+    public void setTempChatChannel(String tempChatChannel) {
+        this.tempChatChannel = tempChatChannel;
+    }
+
     public String getReportChatChannel() {
         return reportChatChannel;
     }
@@ -138,4 +147,5 @@ public class Config {
     public void setStartUpType(StartType startUpType) {
         this.startUpType = startUpType;
     }
+
 }
