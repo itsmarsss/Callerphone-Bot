@@ -22,6 +22,7 @@ public class Storage {
     public static final LinkedList<String> filter = new LinkedList<>();
     public static final HashMap<String, BotUser> users = new HashMap<>();
     public static final HashMap<String, Long> poolChatCoolDown = new HashMap<>();
+    public static final HashMap<String, Long> commandCoolDown = new HashMap<>();
 
     public static void readData() {
         try {
@@ -270,6 +271,16 @@ public class Storage {
 
     public static void updateUserCooldown(User user) {
         poolChatCoolDown.put(user.getId(), System.currentTimeMillis());
+    }
+
+    public static long getCmdCooldown(User user) {
+        commandCoolDown.put(user.getId(), commandCoolDown.getOrDefault(user.getId(), 0L));
+
+        return commandCoolDown.get(user.getId());
+    }
+
+    public static void updateCmdCooldown(User user) {
+        commandCoolDown.put(user.getId(), System.currentTimeMillis());
     }
 
     public static String getPrefix(String id) {

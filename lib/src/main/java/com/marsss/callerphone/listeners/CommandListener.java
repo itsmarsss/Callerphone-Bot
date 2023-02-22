@@ -56,6 +56,11 @@ public class CommandListener extends ListenerAdapter {
                     return;
                 }
 
+                if(Storage.getCmdCooldown(event.getAuthor()) > ToolSet.COMMAND_COOLDOWN){
+                    ToolSet.sendCommandCooldown(event);
+                    return;
+                }
+
                 Storage.reward(event.getAuthor(), 1);
                 Storage.addExecute(event.getAuthor(), 1);
 

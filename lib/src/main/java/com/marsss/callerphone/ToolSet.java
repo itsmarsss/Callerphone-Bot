@@ -19,6 +19,7 @@ public class ToolSet {
     public static String CP_CALL = Callerphone.config.getCallerphoneCall();
     public static long MESSAGE_COOLDOWN = 500;
     public static long CREDIT_COOLDOWN = 15000;
+    public static long COMMAND_COOLDOWN = 2000;
 
     public static void updateToolSet() {
         CP_EMJ = Callerphone.config.getCallerphoneNormal();
@@ -141,5 +142,13 @@ public class ToolSet {
                         .setColor(new Color(114, 137, 218))
                         .build()
         ).queue();
+    }
+
+    public static void sendCommandCooldown(GuildMessageReceivedEvent event) {
+        event.getMessage().reply(":warning: Command Cooldown; " + ((ToolSet.COMMAND_COOLDOWN - (System.currentTimeMillis() - Storage.getCmdCooldown(event.getAuthor()))) / 1000)).queue();
+    }
+
+    public static void sendCommandCooldown(SlashCommandEvent event) {
+        event.reply(":warning: Command Cooldown; " + ((ToolSet.COMMAND_COOLDOWN - (System.currentTimeMillis() - Storage.getCmdCooldown(event.getUser()))) / 1000)).queue();
     }
 }
