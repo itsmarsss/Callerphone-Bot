@@ -46,20 +46,22 @@ public class CommandListener extends ListenerAdapter {
         try {
             if (Callerphone.cmdMap.containsKey(trigger)) {
 
-                if(!Storage.hasUser(event.getAuthor().getId())) {
+                if (!Storage.hasUser(event.getAuthor().getId())) {
                     ToolSet.sendPPAndTOS(event);
                     return;
                 }
 
-                if(Storage.isBlacklisted(event.getAuthor().getId())) {
+                if (Storage.isBlacklisted(event.getAuthor().getId())) {
                     MESSAGE.reply("Sorry you are blacklisted, submit an appeal in our support server " + Callerphone.config.getSupportServer()).queue();
                     return;
                 }
 
-                if(Storage.getCmdCooldown(event.getAuthor()) > ToolSet.COMMAND_COOLDOWN){
+                if (System.currentTimeMillis() - Storage.getCmdCooldown(event.getAuthor()) < ToolSet.COMMAND_COOLDOWN) {
                     ToolSet.sendCommandCooldown(event);
                     return;
                 }
+
+                Storage.updateCmdCooldown(event.getAuthor());
 
                 Storage.reward(event.getAuthor(), 1);
                 Storage.addExecute(event.getAuthor(), 1);

@@ -28,10 +28,12 @@ public class OnSlashCommand extends ListenerAdapter {
                     return;
                 }
 
-                if(Storage.getCmdCooldown(event.getUser()) > ToolSet.COMMAND_COOLDOWN){
+                if(System.currentTimeMillis() - Storage.getCmdCooldown(event.getUser()) < ToolSet.COMMAND_COOLDOWN){
                     ToolSet.sendCommandCooldown(event);
                     return;
                 }
+
+                Storage.updateCmdCooldown(event.getUser());
 
                 Storage.reward(event.getUser(), 3);
                 Storage.addExecute(event.getUser(), 1);

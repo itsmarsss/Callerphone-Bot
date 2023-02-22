@@ -145,10 +145,10 @@ public class ToolSet {
     }
 
     public static void sendCommandCooldown(GuildMessageReceivedEvent event) {
-        event.getMessage().reply(":warning: Command Cooldown; " + ((ToolSet.COMMAND_COOLDOWN - (System.currentTimeMillis() - Storage.getCmdCooldown(event.getAuthor()))) / 1000)).queue();
+        event.getMessage().reply(":warning: **Command Cooldown;** " + ((ToolSet.COMMAND_COOLDOWN - (System.currentTimeMillis() - Storage.getCmdCooldown(event.getAuthor()))) / 1000) + " second(s)").queue();
     }
 
     public static void sendCommandCooldown(SlashCommandEvent event) {
-        event.reply(":warning: Command Cooldown; " + ((ToolSet.COMMAND_COOLDOWN - (System.currentTimeMillis() - Storage.getCmdCooldown(event.getUser()))) / 1000)).queue();
+        event.reply(":warning: **Command Cooldown;** " + ((ToolSet.COMMAND_COOLDOWN - (System.currentTimeMillis() - Storage.getCmdCooldown(event.getUser()))) / 1000) + " second(s)").queue();
     }
 }
