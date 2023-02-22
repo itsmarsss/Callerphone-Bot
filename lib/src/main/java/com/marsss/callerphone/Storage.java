@@ -281,7 +281,7 @@ public class Storage {
 
     public static boolean isBlacklisted(String id) {
         if (!users.containsKey(id)) {
-            createUser(id);
+            return false;
         }
         return users.get(id).getStatus() == UserStatus.BLACKLISTED;
     }

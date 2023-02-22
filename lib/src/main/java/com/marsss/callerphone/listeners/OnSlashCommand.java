@@ -19,15 +19,7 @@ public class OnSlashCommand extends ListenerAdapter {
             if (Callerphone.cmdMap.containsKey(event.getName())) {
 
                 if(!Storage.hasUser(event.getUser().getId())) {
-                    event.replyEmbeds(
-                            new EmbedBuilder()
-                                    .setAuthor("Must Read", null, event.getUser().getAvatarUrl())
-                                    .setTitle("User Agreement")
-                                    .setDescription("By issuing another Callerphone (**\"Bot\"**) command, it is expected that you (**\"User\"**) have read, and User has agreed to both Bot's [Privacy Policy](" + Callerphone.config.getPrivacyPolicy() + ") and [Terms of Service](" + Callerphone.config.getTermsOfService() + "). It is User's responsibility to regularly check for updates to these documents.")
-                                    .setFooter("This is to protect both Bot and User from unforeseen issues in the future. Please read these documents carefully.", Callerphone.jda.getSelfUser().getAvatarUrl())
-                                    .setColor(new Color(114, 137, 218))
-                                    .build()
-                    ).setEphemeral(true).queue();
+                    ToolSet.sendPPAndTOS(event);
                     return;
                 }
 
