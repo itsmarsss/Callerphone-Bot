@@ -1,4 +1,4 @@
-package com.marsss.callerphone.bot;
+package com.marsss.callerphone.users.commands;
 
 import com.marsss.ICommand;
 import com.marsss.callerphone.Callerphone;

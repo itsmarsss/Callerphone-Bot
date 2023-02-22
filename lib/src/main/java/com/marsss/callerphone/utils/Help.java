@@ -7,6 +7,7 @@ import com.marsss.callerphone.Storage;
 import com.marsss.callerphone.ToolSet;
 import com.marsss.callerphone.channelpool.commands.*;
 import com.marsss.callerphone.tccallerphone.commands.*;
+import com.marsss.callerphone.users.commands.Profile;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
