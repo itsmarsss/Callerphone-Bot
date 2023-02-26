@@ -378,4 +378,11 @@ public class Storage {
 
         return statusStr;
     }
+
+    public static BotUser getUser(String id) {
+        if (!users.containsKey(id)) {
+            createUser(id);
+        }
+        return users.get(id);
+    }
 }
