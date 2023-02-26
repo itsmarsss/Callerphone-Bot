@@ -10,6 +10,8 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.requests.ErrorResponse;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.concurrent.TimeUnit;
+
 public class OnButtonClick extends ListenerAdapter {
     public void onButtonClick(@NotNull ButtonClickEvent event) {
         String[] param = event.getButton().getId().split("-");
@@ -32,8 +34,14 @@ public class OnButtonClick extends ListenerAdapter {
 
             channel.retrieveMessageById(game.getFromMessageId()).queue((message) -> {
                 message.editMessage(game.getMessageForFrom()).queue();
+                channel.sendMessage("You've got a game!").queue((msg) -> {
+                    msg.delete().queueAfter(1, TimeUnit.SECONDS);
+                });
             }, new ErrorHandler().handle(ErrorResponse.UNKNOWN_MESSAGE, (e) -> {
                 channel.sendMessage(game.getMessageForFrom()).queue();
+                channel.sendMessage("You've got a game!").queue((msg) -> {
+                    msg.delete().queueAfter(1, TimeUnit.SECONDS);
+                });
             }));
         } else if (param[0].equals("from")) {
             game.fromMove(Integer.parseInt(param[2]), Integer.parseInt(param[3]));
@@ -42,8 +50,14 @@ public class OnButtonClick extends ListenerAdapter {
 
             channel.retrieveMessageById(game.getToMessageId()).queue((message) -> {
                 message.editMessage(game.getMessageForTo()).queue();
+                channel.sendMessage("You've got a game!").queue((msg) -> {
+                    msg.delete().queueAfter(1, TimeUnit.SECONDS);
+                });
             }, new ErrorHandler().handle(ErrorResponse.UNKNOWN_MESSAGE, (e) -> {
                 channel.sendMessage(game.getMessageForTo()).queue();
+                channel.sendMessage("You've got a game!").queue((msg) -> {
+                    msg.delete().queueAfter(1, TimeUnit.SECONDS);
+                });
             }));
         }
 
