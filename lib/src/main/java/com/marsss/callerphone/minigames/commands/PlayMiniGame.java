@@ -48,6 +48,14 @@ public class PlayMiniGame implements ICommand {
             e.getMessage().reply("Your opponent has not yet agreed to our Privacy Policy or Terms of Service. Get them to run `" + Callerphone.config.getPrefix() + "agree`").queue();
         }
 
+        if(e.getAuthor().getId().equals(opponent.getId())) {
+            e.getMessage().reply("You cannot challenge yourself to a MiniGame.").queue();
+        }
+
+        if(opponent.isBot()) {
+            e.getMessage().reply("This bot probably blocked me, I can't message them.").queue();
+        }
+
         e.getMessage().reply(playMiniGame(e.getAuthor(), opponent, game)).queue();
     }
 
