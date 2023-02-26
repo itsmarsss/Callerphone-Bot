@@ -136,7 +136,7 @@ public class BotUser implements Comparable<BotUser> {
 
 
     public boolean addGame(IMiniGame game) {
-        if(this.miniGames.size() >= 50) {
+        if(this.miniGames.size() >= 10) {
             return false;
         }
         this.miniGames.put(game.getID(), game);
