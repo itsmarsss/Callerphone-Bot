@@ -6,16 +6,13 @@ import com.marsss.callerphone.Response;
 import com.marsss.callerphone.Storage;
 import com.marsss.callerphone.ToolSet;
 import com.marsss.callerphone.minigames.MiniGame;
-import com.marsss.callerphone.minigames.MiniGameStatus;
 import com.marsss.callerphone.minigames.games.TicTacToe;
 import net.dv8tion.jda.api.MessageBuilder;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.PrivateChannel;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
-import net.dv8tion.jda.api.requests.RestAction;
 
 import java.util.List;
 
@@ -72,17 +69,20 @@ public class PlayMiniGame implements ICommand {
 
         TicTacToe ttt = new TicTacToe(null, null, from.getId(), to.getId());
 
-        Storage.getUser(from.getId()).addGame(ttt);
-        Storage.getUser(to.getId()).addGame(ttt);
+        if (!Storage.getUser(from.getId()).addGame(ttt) ||
+                !Storage.getUser(to.getId()).addGame(ttt)) {
+            Storage.getUser(from.getId()).removeGame(ttt.getID());
+            Storage.getUser(to.getId()).removeGame(ttt.getID());
 
-        message.setContent("Successfully challenged " + to.getAsMention() + " to a game of TicTacToe.");
+            message.setContent("One or both players have reached the game limit...");
+        } else {
+            message.setContent("Successfully challenged " + to.getAsMention() + " to a game of TicTacToe.");
 
-        ToolSet.sendPrivateGameMessageFrom(from, new MessageBuilder().setContent("You game of TicTacToe with @" + to.getAsTag() + " will show up here.").build(), ttt);
+            ToolSet.sendPrivateGameMessageFrom(from, new MessageBuilder().setContent("You game of TicTacToe with @" + to.getAsTag() + " will show up here.").build(), ttt);
 
 
-        ToolSet.sendPrivateGameMessageTo(to, ttt.getMessageForTo(), ttt);
-
-
+            ToolSet.sendPrivateGameMessageTo(to, ttt.getMessageForTo(), ttt);
+        }
         return message.build();
     }
 
