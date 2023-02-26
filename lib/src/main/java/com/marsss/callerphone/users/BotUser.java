@@ -1,7 +1,10 @@
 package com.marsss.callerphone.users;
 
 import com.marsss.callerphone.Response;
+import com.marsss.callerphone.minigames.IMiniGame;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.HashMap;
 
 import static com.marsss.callerphone.users.UserStatus.*;
 
@@ -24,6 +27,8 @@ public class BotUser implements Comparable<BotUser> {
     private long credits = 0;
     private long executed = 0;
     private long transmitted = 0;
+
+    private HashMap<String, IMiniGame> miniGames = new HashMap<>();
 
     public BotUser() {
     }
@@ -129,6 +134,34 @@ public class BotUser implements Comparable<BotUser> {
         this.transmitted += amount;
     }
 
+
+    public boolean addGame(IMiniGame game) {
+        if(this.miniGames.size() >= 50) {
+            return false;
+        }
+        this.miniGames.put(game.getID(), game);
+        return true;
+    }
+
+    public boolean removeGame(String id) {
+        if(!this.miniGames.containsKey(id)) {
+            return false;
+        }
+        miniGames.remove(id);
+        return true;
+    }
+
+    public IMiniGame getGame(String id) {
+        return this.miniGames.getOrDefault(id, null);
+    }
+
+    public boolean setGame(IMiniGame game) {
+        boolean status = removeGame(game.getID());
+        if(!status) {
+            return false;
+        }
+        return addGame(game);
+    }
     @Override
     public int compareTo(@NotNull BotUser user) {
         if (this.credits > user.credits)
