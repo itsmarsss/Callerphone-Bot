@@ -51,7 +51,7 @@ public class Profile implements ICommand {
                 .addField("**Credit cooldown**", ((System.currentTimeMillis() - Storage.getUserCooldown(user)) < ToolSet.CREDIT_COOLDOWN ? ":alarm_clock: " + ((ToolSet.CREDIT_COOLDOWN - (System.currentTimeMillis() - Storage.getUserCooldown(user))) / 1000) + " second(s)" : ":white_check_mark: None"), true)
                 .addField("**Command cooldown**", ((System.currentTimeMillis() - Storage.getCmdCooldown(user)) < ToolSet.COMMAND_COOLDOWN ? ":alarm_clock: " + ((ToolSet.COMMAND_COOLDOWN - (System.currentTimeMillis() - Storage.getCmdCooldown(user))) / 1000) + " second(s)" : ":white_check_mark: None"), true)
                 .addField("**Status**", Storage.getStatus(user.getId()), true)
-                .setFooter("Your Profile", Callerphone.jda.getSelfUser().getAvatarUrl())
+                .setFooter("Profile", Callerphone.jda.getSelfUser().getAvatarUrl())
                 .setTimestamp(Instant.now())
                 .setColor(new Color(114, 137, 218));
 
