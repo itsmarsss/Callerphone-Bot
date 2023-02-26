@@ -29,6 +29,7 @@ public class PlayMiniGame implements ICommand {
 
         if (pings.size() == 0) {
             e.getMessage().reply(Response.MISSING_PARAM.toString()).queue();
+            return;
         }
 
         User opponent = pings.get(0).getUser();
