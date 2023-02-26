@@ -53,7 +53,7 @@ public class UserInfo implements ICommand {
 	public MessageEmbed userinfo(Member mmbr) {
 		Color COLOR = null;
 		final String NAME = mmbr.getEffectiveName();
-		final String TAG = mmbr.getUser().getName() + "#" + mmbr.getUser().getDiscriminator();
+		final String TAG = mmbr.getUser().getAsTag();
 		final String GUILD_JOIN_DATE = mmbr.getTimeJoined().format(DateTimeFormatter.RFC_1123_DATE_TIME);
 		final String DISCORD_JOINED_DATE = mmbr.getUser().getTimeCreated().format(DateTimeFormatter.RFC_1123_DATE_TIME);
 		final String ID = mmbr.getUser().getId();
