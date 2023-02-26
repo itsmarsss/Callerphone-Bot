@@ -19,6 +19,7 @@ public class OnButtonClick extends ListenerAdapter {
 
         if(game == null) {
             event.reply("Game not found.").setEphemeral(true).queue();
+            event.getMessage().delete().queue();
             return;
         }
 
