@@ -1,12 +1,15 @@
 package com.marsss.callerphone;
 
+import com.marsss.callerphone.minigames.IMiniGame;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.api.utils.AttachmentOption;
 
 import java.awt.*;
+import java.io.File;
 import java.text.CharacterIterator;
 import java.text.StringCharacterIterator;
 import java.util.LinkedList;
@@ -150,5 +153,43 @@ public class ToolSet {
 
     public static void sendCommandCooldown(SlashCommandEvent event) {
         event.reply(":warning: **Command Cooldown;** " + ((ToolSet.COMMAND_COOLDOWN - (System.currentTimeMillis() - Storage.getCmdCooldown(event.getUser()))) / 1000) + " second(s)").queue();
+    }
+
+
+    public static void sendPrivateFile(User user, File file, String title) {
+        user.openPrivateChannel().queue((channel) ->
+                channel.sendFile(file, title + ".txt", AttachmentOption.SPOILER).queue());
+    }
+
+    public static void sendPrivateEmbed(User user, MessageEmbed embed) {
+        user.openPrivateChannel().queue((channel) ->
+                channel.sendMessageEmbeds(embed).queue()
+        );
+    }
+
+    public static void sendPrivateMessage(User user, Message message) {
+        user.openPrivateChannel().queue((channel) ->
+                channel.sendMessage(message).queue()
+        );
+    }
+
+    public static void sendPrivateGameMessageFrom(User user, Message message, IMiniGame game) {
+        user.openPrivateChannel().queue((channel) -> {
+                    game.setFromChannelId(channel.getId());
+                    channel.sendMessage(message).queue((msg) -> {
+                        game.setFromMessageId(msg.getId());
+                    });
+                }
+        );
+    }
+
+    public static void sendPrivateGameMessageTo(User user, Message message, IMiniGame game) {
+        user.openPrivateChannel().queue((channel) -> {
+                    game.setToChannelId(channel.getId());
+                    channel.sendMessage(message).queue((msg) -> {
+                        game.setToMessageId(msg.getId());
+                    });
+                }
+        );
     }
 }
