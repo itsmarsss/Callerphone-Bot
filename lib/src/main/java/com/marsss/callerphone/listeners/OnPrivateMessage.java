@@ -6,6 +6,7 @@ import java.io.File;
 import com.marsss.callerphone.Callerphone;
 
 import com.marsss.callerphone.Storage;
+import com.marsss.callerphone.ToolSet;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
@@ -46,7 +47,7 @@ public class OnPrivateMessage extends ListenerAdapter {
                     .setFooter("Hope you found this useful!", Callerphone.jda.getSelfUser().getAvatarUrl())
                     .setColor(new Color(114, 137, 218));
 
-            sendPrivateEmbed(MEMBER, HelpEmd.build());
+            ToolSet.sendPrivateEmbed(MEMBER, HelpEmd.build());
             return;
         }
 
@@ -56,15 +57,15 @@ public class OnPrivateMessage extends ListenerAdapter {
                 switch (args[0].toLowerCase().replace(Callerphone.config.getPrefix(), "")) {
 
                     case "filters":
-                        sendPrivateFile(MEMBER, new File(Callerphone.parent + "/filter.txt"), "Callerphone Filter list:");
+                        ToolSet.sendPrivateFile(MEMBER, new File(Callerphone.parent + "/filter.txt"), "Callerphone Filter list:");
                         return;
 
                     case "users":
-                        sendPrivateFile(MEMBER, new File(Callerphone.parent + "/users.json"), "Callerphone Filter list:");
+                        ToolSet.sendPrivateFile(MEMBER, new File(Callerphone.parent + "/users.json"), "Callerphone Filter list:");
                         return;
 
                     case "pools":
-                        sendPrivateFile(MEMBER, new File(Callerphone.parent + "/pools.json"), "Callerphone Filter list:");
+                        ToolSet.sendPrivateFile(MEMBER, new File(Callerphone.parent + "/pools.json"), "Callerphone Filter list:");
                         return;
 
                 }
@@ -142,16 +143,5 @@ public class OnPrivateMessage extends ListenerAdapter {
                 MESSAGE.reply("Syntax Error").queue();
             }
         }
-    }
-
-    public void sendPrivateFile(User user, File file, String title) {
-        user.openPrivateChannel().queue((channel) ->
-                channel.sendFile(file, title + ".txt", AttachmentOption.SPOILER).queue());
-    }
-
-    public void sendPrivateEmbed(User user, MessageEmbed embed) {
-        user.openPrivateChannel().queue((channel) ->
-                channel.sendMessageEmbeds(embed).queue()
-        );
     }
 }
