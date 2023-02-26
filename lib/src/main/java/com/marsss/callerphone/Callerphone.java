@@ -13,6 +13,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import com.marsss.callerphone.channelpool.commands.*;
+import com.marsss.callerphone.minigames.commands.PlayMiniGame;
 import com.marsss.callerphone.users.commands.DeductCredits;
 import com.marsss.callerphone.users.commands.Profile;
 import com.marsss.callerphone.users.commands.RewardCredits;
@@ -152,6 +153,8 @@ public class Callerphone {
             cmdLst.add(new DeductCredits());
             cmdLst.add(new RewardCredits());
 
+            cmdLst.add(new PlayMiniGame());
+
             for (ICommand cmd : cmdLst) {
                 for (String trigger : cmd.getTriggers()) {
                     cmdMap.put(trigger, cmd);
@@ -160,6 +163,7 @@ public class Callerphone {
             }
 
             jda.addEventListener(new CommandListener());
+            jda.addEventListener(new OnButtonClick());
             jda.addEventListener(new OnOtherEvent());
             jda.addEventListener(new OnSlashCommand());
             jda.addEventListener(new OnPrivateMessage());
