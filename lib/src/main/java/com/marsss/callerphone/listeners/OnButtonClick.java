@@ -2,6 +2,7 @@ package com.marsss.callerphone.listeners;
 
 import com.marsss.callerphone.Callerphone;
 import com.marsss.callerphone.Storage;
+import com.marsss.callerphone.minigames.MiniGameStatus;
 import com.marsss.callerphone.minigames.games.TicTacToe;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.events.interaction.ButtonClickEvent;
@@ -25,10 +26,13 @@ public class OnButtonClick extends ListenerAdapter {
             return;
         }
 
-        game.incrementStage();
-
         if (param[0].equals("to")) {
-            game.toMove(Integer.parseInt(param[2]), Integer.parseInt(param[3]));
+            MiniGameStatus stat = game.toMove(Integer.parseInt(param[2]), Integer.parseInt(param[3]));
+
+            if(stat == MiniGameStatus.INVALID_MOVE) {
+                event.reply("Invalid move.").setEphemeral(true).queue();
+                return;
+            }
 
             MessageChannel channel = Callerphone.jda.getPrivateChannelById(game.getFromChannelId());
 
@@ -44,7 +48,12 @@ public class OnButtonClick extends ListenerAdapter {
                 });
             }));
         } else if (param[0].equals("from")) {
-            game.fromMove(Integer.parseInt(param[2]), Integer.parseInt(param[3]));
+            MiniGameStatus stat = game.fromMove(Integer.parseInt(param[2]), Integer.parseInt(param[3]));
+
+            if(stat == MiniGameStatus.INVALID_MOVE) {
+                event.reply("Invalid move.").setEphemeral(true).queue();
+                return;
+            }
 
             MessageChannel channel = Callerphone.jda.getPrivateChannelById(game.getToChannelId());
 
@@ -85,14 +94,16 @@ public class OnButtonClick extends ListenerAdapter {
             Storage.getUser(game.getToUserId()).removeGame(game.getID());
         }
 
+        game.incrementStage();
+
         event.deferEdit().queue();
 
         if(game.getStage() == 9) {
-            event.getMessage().editMessage(game.boardWithMessage("Tie Game!")).queue();
+            event.getMessage().editMessage(game.getBoardWithMessage("Tie Game!")).queue();
             Storage.getUser(game.getFromUserId()).removeGame(game.getID());
             Storage.getUser(game.getToUserId()).removeGame(game.getID());
         }else{
-            event.getMessage().editMessage(game.boardWithMessage("Game Sent!")).queue();
+            event.getMessage().editMessage(game.getBoardWithMessage("Game Sent!")).queue();
         }
 
 
