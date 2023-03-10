@@ -25,7 +25,7 @@ public class TicTacToe implements IMiniGame {
     private String id;
     private int stage;
 
-    private int[][] tttMap = new int[][]{
+    private final int[][] tttMap = new int[][]{
             {-1, -1, -1},
             {-1, -1, -1},
             {-1, -1, -1}
@@ -33,6 +33,9 @@ public class TicTacToe implements IMiniGame {
 
     public TicTacToe(String fromChannelID, String toChannelID, String fromUserID, String toUserID) {
         initGame(fromChannelID, toChannelID, fromUserID, toUserID);
+    }
+
+    public TicTacToe() {
     }
 
     @Override
@@ -60,13 +63,7 @@ public class TicTacToe implements IMiniGame {
             return win;
         }
 
-        win = checkDiagonals();
-
-        if (win != -1) {
-            return win;
-        }
-
-        return -1;
+        return checkDiagonals();
     }
 
     @Override
@@ -122,6 +119,14 @@ public class TicTacToe implements IMiniGame {
     @Override
     public void setFromChannelId(String fromID) {
         this.fromChannelID = fromID;
+    }
+
+    public void incrementStage() {
+        this.stage++;
+    }
+
+    public int getStage() {
+        return this.stage;
     }
 
     public MiniGameStatus fromMove(int r, int c) {
@@ -189,58 +194,19 @@ public class TicTacToe implements IMiniGame {
 
         if (win != -1) {
             if (win == 0) {
-                return boardWithMessage("@" + Callerphone.jda.getUserById(fromUserID).getAsTag() + " has won this game!");
+                return getBoardWithMessage("@" + Callerphone.jda.getUserById(fromUserID).getAsTag() + " has won this game!");
             } else if (win == 1) {
-                return boardWithMessage("@" + Callerphone.jda.getUserById(toUserID).getAsTag() + " has won this game!");
+                return getBoardWithMessage("@" + Callerphone.jda.getUserById(toUserID).getAsTag() + " has won this game!");
             }
         } else {
             message.setContent("@" + Callerphone.jda.getUserById(toUserID).getAsTag() + " has challenged you to a game of TicTacToe");
         }
 
-        if(this.stage == 9) {
-            return boardWithMessage("Tie game!");
+        if (this.stage == 9) {
+            return getBoardWithMessage("Tie game!");
         }
 
-        Collection<ActionRow> collection = new ArrayList<>();
-        Collection<Button> collection1 = new ArrayList<>();
-        Collection<Button> collection2 = new ArrayList<>();
-        Collection<Button> collection3 = new ArrayList<>();
-        for (int c = 0; c < 3; c++) {
-
-            if (tttMap[0][c] == 0) {
-                collection1.add(Button.secondary("invalid1" + UUID.randomUUID(), "\u274E").asDisabled());
-            } else if (tttMap[0][c] == 1) {
-                collection1.add(Button.secondary("invalid1" + UUID.randomUUID(), "\uD83C\uDD7E").asDisabled());
-            } else {
-                collection1.add(Button.secondary("from-" + this.id + "-" + "0" + "-" + c + "-" + this.stage, "\u2B1B"));
-            }
-
-            if (tttMap[1][c] == 0) {
-                collection2.add(Button.secondary("invalid2" + UUID.randomUUID(), "\u274E").asDisabled());
-            } else if (tttMap[1][c] == 1) {
-                collection2.add(Button.secondary("invalid2" + UUID.randomUUID(), "\uD83C\uDD7E").asDisabled());
-            } else {
-                collection2.add(Button.secondary("from-" + this.id + "-" + "1" + "-" + c + "-" + this.stage, "\u2B1B"));
-            }
-
-            if (tttMap[2][c] == 0) {
-                collection3.add(Button.secondary("invalid3" + UUID.randomUUID(), "\u274E").asDisabled());
-            } else if (tttMap[2][c] == 1) {
-                collection3.add(Button.secondary("invalid3" + UUID.randomUUID(), "\uD83C\uDD7E").asDisabled());
-            } else {
-                collection3.add(Button.secondary("from-" + this.id + "-" + "2" + "-" + c + "-" + this.stage, "\u2B1B"));
-            }
-
-        }
-
-        ActionRow row1 = ActionRow.of(collection1);
-        collection.add(row1);
-        ActionRow row2 = ActionRow.of(collection2);
-        collection.add(row2);
-        ActionRow row3 = ActionRow.of(collection3);
-        collection.add(row3);
-
-        message.setActionRows(collection);
+        message.setActionRows(getBoard("from"));
 
         return message.build();
     }
@@ -252,19 +218,25 @@ public class TicTacToe implements IMiniGame {
 
         if (win != -1) {
             if (win == 0) {
-                return boardWithMessage("@" + Callerphone.jda.getUserById(fromUserID).getAsTag() + " has won this game!");
+                return getBoardWithMessage("@" + Callerphone.jda.getUserById(fromUserID).getAsTag() + " has won this game!");
 
             } else if (win == 1) {
-                return boardWithMessage("@" + Callerphone.jda.getUserById(toUserID).getAsTag() + " has won this game!");
+                return getBoardWithMessage("@" + Callerphone.jda.getUserById(toUserID).getAsTag() + " has won this game!");
             }
         } else {
             message.setContent("@" + Callerphone.jda.getUserById(fromUserID).getAsTag() + " has challenged you to a game of TicTacToe");
         }
 
-        if(this.stage == 9) {
-            return boardWithMessage("Tie game!");
+        if (this.stage == 9) {
+            return getBoardWithMessage("Tie game!");
         }
 
+        message.setActionRows(getBoard("to"));
+
+        return message.build();
+    }
+
+    public Collection<ActionRow> getBoard(String prefix) {
         Collection<ActionRow> collection = new ArrayList<>();
         Collection<Button> collection1 = new ArrayList<>();
         Collection<Button> collection2 = new ArrayList<>();
@@ -276,7 +248,7 @@ public class TicTacToe implements IMiniGame {
             } else if (tttMap[0][c] == 1) {
                 collection1.add(Button.secondary("invalid1" + UUID.randomUUID(), "\uD83C\uDD7E").asDisabled());
             } else {
-                collection1.add(Button.secondary("to-" + this.id + "-" + "0" + "-" + c + "-" + this.stage, "\u2B1B"));
+                collection1.add(Button.secondary(prefix + "-" + this.id + "-" + "0" + "-" + c + "-" + this.stage, "\u2B1B"));
             }
 
             if (tttMap[1][c] == 0) {
@@ -284,7 +256,7 @@ public class TicTacToe implements IMiniGame {
             } else if (tttMap[1][c] == 1) {
                 collection2.add(Button.secondary("invalid2" + UUID.randomUUID(), "\uD83C\uDD7E").asDisabled());
             } else {
-                collection2.add(Button.secondary("to-" + this.id + "-" + "1" + "-" + c + "-" + this.stage, "\u2B1B"));
+                collection2.add(Button.secondary(prefix + "-" + this.id + "-" + "1" + "-" + c + "-" + this.stage, "\u2B1B"));
             }
 
             if (tttMap[2][c] == 0) {
@@ -292,7 +264,7 @@ public class TicTacToe implements IMiniGame {
             } else if (tttMap[2][c] == 1) {
                 collection3.add(Button.secondary("invalid3" + UUID.randomUUID(), "\uD83C\uDD7E").asDisabled());
             } else {
-                collection3.add(Button.secondary("to-" + this.id + "-" + "2" + "-" + c + "-" + this.stage, "\u2B1B"));
+                collection3.add(Button.secondary(prefix + "-" + this.id + "-" + "2" + "-" + c + "-" + this.stage, "\u2B1B"));
             }
 
         }
@@ -304,12 +276,10 @@ public class TicTacToe implements IMiniGame {
         ActionRow row3 = ActionRow.of(collection3);
         collection.add(row3);
 
-        message.setActionRows(collection);
-
-        return message.build();
+        return collection;
     }
 
-    public Message boardWithMessage(String msg) {
+    public Message getBoardWithMessage(String msg) {
         MessageBuilder message = new MessageBuilder();
 
         message.setContent(msg);
@@ -357,29 +327,4 @@ public class TicTacToe implements IMiniGame {
 
         return message.build();
     }
-
-    public void incrementStage() {
-        this.stage++;
-    }
-
-    public int getStage() {
-        return this.stage;
-    }
-
-    // Fields
-    /* Private
-    From channel ID (String)
-    To channel ID (String)
-    From user ID (String)
-    To user ID (String)
-
-    2D array int[][]
-     */
-
-    /* Methods
-    check for win
-    add X
-    add O
-    getters and setters
-     */
 }
