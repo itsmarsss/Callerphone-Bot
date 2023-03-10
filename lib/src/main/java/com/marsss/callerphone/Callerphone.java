@@ -13,7 +13,12 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import com.marsss.callerphone.channelpool.commands.*;
+import com.marsss.callerphone.minigames.IMiniGame;
 import com.marsss.callerphone.minigames.commands.PlayMiniGame;
+import com.marsss.callerphone.minigames.games.BattleShip;
+import com.marsss.callerphone.minigames.games.Connect4;
+import com.marsss.callerphone.minigames.games.TicTacToe;
+import com.marsss.callerphone.minigames.games.WordSearch;
 import com.marsss.callerphone.users.commands.DeductCredits;
 import com.marsss.callerphone.users.commands.Profile;
 import com.marsss.callerphone.users.commands.RewardCredits;
@@ -161,6 +166,13 @@ public class Callerphone {
                     System.out.println("Put: key=" + trigger + ", value=" + cmd.getClass().getName());
                 }
             }
+
+            ArrayList<IMiniGame> gameLst = new ArrayList<>();
+
+            gameLst.add(new BattleShip());
+            gameLst.add(new TicTacToe());
+            gameLst.add(new Connect4());
+            gameLst.add(new WordSearch());
 
             jda.addEventListener(new CommandListener());
             jda.addEventListener(new OnButtonClick());
