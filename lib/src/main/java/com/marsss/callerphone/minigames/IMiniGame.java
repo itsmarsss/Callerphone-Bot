@@ -10,13 +10,15 @@ public interface IMiniGame {
 
     String getID();
 
-    String getToMessageId();
     String getFromMessageId();
-    void setToMessageId(String toID);
-    void setFromMessageId(String fromID);
+    String getToMessageId();
 
-    String getToChannelId();
+    void setFromMessageId(String fromID);
+    void setToMessageId(String toID);
+
     String getFromChannelId();
-    void setToChannelId(String toID);
+    String getToChannelId();
+
     void setFromChannelId(String fromID);
+    void setToChannelId(String toID);
 }
