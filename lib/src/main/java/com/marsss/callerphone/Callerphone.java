@@ -178,7 +178,6 @@ public class Callerphone {
             jda.addEventListener(new OnButtonClick());
             jda.addEventListener(new OnOtherEvent());
             jda.addEventListener(new OnSlashCommand());
-            jda.addEventListener(new OnPrivateMessage());
             jda.addEventListener(new TCCallerphoneListener());
             jda.addEventListener(new ChannelPoolListener());
 
