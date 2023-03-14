@@ -11,7 +11,7 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
-import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.api.events.message.guild.MessageReceivedEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 
 import java.util.List;
@@ -19,7 +19,7 @@ import java.util.List;
 public class JoinPool implements ICommand {
 
     @Override
-    public void runCommand(GuildMessageReceivedEvent e) {
+    public void runCommand(MessageReceivedEvent e) {
         final Member MEMBER = e.getMember();
 
         if (ChannelPool.permissionCheck(MEMBER, e.getMessage())) {

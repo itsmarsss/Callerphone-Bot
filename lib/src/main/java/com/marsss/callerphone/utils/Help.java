@@ -16,13 +16,13 @@ import com.marsss.ICommand;
 import com.marsss.callerphone.Callerphone;
 import com.marsss.callerphone.bot.*;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
-import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.api.events.message.guild.MessageReceivedEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 
 public class Help implements ICommand {
 
     @Override
-    public void runCommand(GuildMessageReceivedEvent e) {
+    public void runCommand(MessageReceivedEvent e) {
         final Message MESSAGE = e.getMessage();
         final String CONTENT = MESSAGE.getContentRaw();
         final String[] ARGS = CONTENT.split("\\s+");

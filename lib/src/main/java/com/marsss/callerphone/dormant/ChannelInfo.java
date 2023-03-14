@@ -11,13 +11,13 @@ import com.marsss.callerphone.ToolSet;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
-import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.api.events.message.guild.MessageReceivedEvent;
 
 @SuppressWarnings("ConstantConditions")
 public class ChannelInfo implements ICommand {
 
     @Override
-    public void runCommand(GuildMessageReceivedEvent e) {
+    public void runCommand(MessageReceivedEvent e) {
         final Message MESSAGE = e.getMessage();
         final String CONTENT = MESSAGE.getContentRaw();
         final String[] ARGS = CONTENT.split("\\s+");

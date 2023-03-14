@@ -9,7 +9,7 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
-import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.api.events.message.guild.MessageReceivedEvent;
 
 import java.awt.*;
 import java.time.Instant;
@@ -17,7 +17,7 @@ import java.util.List;
 
 public class Profile implements ICommand {
     @Override
-    public void runCommand(GuildMessageReceivedEvent e) {
+    public void runCommand(MessageReceivedEvent e) {
         final List<User> MENTIONS = e.getMessage().getMentionedUsers();
         final User USER = MENTIONS.size() > 0 ? MENTIONS.get(0) : e.getAuthor();
 

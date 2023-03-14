@@ -6,11 +6,11 @@ import com.marsss.callerphone.tccallerphone.ChatResponse;
 import com.marsss.callerphone.tccallerphone.TCCallerphone;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
-import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.api.events.message.guild.MessageReceivedEvent;
 
 public class EndChat implements ICommand {
     @Override
-    public void runCommand(GuildMessageReceivedEvent e) {
+    public void runCommand(MessageReceivedEvent e) {
         e.getMessage().reply(endChat(e.getChannel())).queue();
     }
 

@@ -6,14 +6,14 @@ import com.marsss.callerphone.Storage;
 import com.marsss.callerphone.ToolSet;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
-import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.api.events.message.guild.MessageReceivedEvent;
 
 import java.util.List;
 
 public class RewardCredits implements ICommand {
 
     @Override
-    public void runCommand(GuildMessageReceivedEvent e) {
+    public void runCommand(MessageReceivedEvent e) {
         if (!e.getAuthor().getId().equals(Callerphone.config.getOwnerID())) {
             e.getMessage().reply(ToolSet.CP_EMJ + "Run this command once you own this bot...").queue();
             return;

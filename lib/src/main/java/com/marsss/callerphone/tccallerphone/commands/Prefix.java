@@ -7,12 +7,12 @@ import com.marsss.callerphone.Storage;
 import com.marsss.callerphone.tccallerphone.ChatResponse;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
-import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.api.events.message.guild.MessageReceivedEvent;
 
 public class Prefix implements ICommand {
 
     @Override
-    public void runCommand(GuildMessageReceivedEvent e) {
+    public void runCommand(MessageReceivedEvent e) {
         final String[] ARGS = e.getMessage().getContentRaw().split("\\s+");
 
         if (ARGS.length == 1) {
