@@ -169,20 +169,20 @@ public class ToolSet {
         );
     }
 
-    public static void sendPrivateGameMessageFrom(User user, Message message, IMiniGame game) {
+    public static void sendPrivateGameMessageFrom(User user, MessageCreateData message, IMiniGame game) {
         user.openPrivateChannel().queue((channel) -> {
                     game.setFromChannelId(channel.getId());
-                    channel.sendMessage(MessageCreateData.fromMessage(message)).queue((msg) -> {
+                    channel.sendMessage(message).queue((msg) -> {
                         game.setFromMessageId(msg.getId());
                     });
                 }
         );
     }
 
-    public static void sendPrivateGameMessageTo(User user, Message message, IMiniGame game) {
+    public static void sendPrivateGameMessageTo(User user, MessageCreateData message, IMiniGame game) {
         user.openPrivateChannel().queue((channel) -> {
                     game.setToChannelId(channel.getId());
-                    channel.sendMessage(MessageCreateData.fromMessage(message)).queue((msg) -> {
+                    channel.sendMessage(message).queue((msg) -> {
                         game.setToMessageId(msg.getId());
                     });
                 }
