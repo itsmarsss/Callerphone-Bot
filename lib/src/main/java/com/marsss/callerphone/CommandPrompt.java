@@ -118,7 +118,7 @@ public class CommandPrompt {
     }
 
     private void upsert() {
-        CommandListUpdateAction commands = jda.updateCommands();
+        CommandListUpdateAction commands = Callerphone.jda.updateCommands();
 
         commands.addCommands(
                 Commands.slash("about", "About Callerphone")
@@ -137,11 +137,6 @@ public class CommandPrompt {
 
         commands.addCommands(
                 Commands.slash("ping", "Get the bot's ping")
-                        .setGuildOnly(true)
-        );
-
-        commands.addCommands(
-                Commands.slash("about", "About Callerphone")
                         .setGuildOnly(true)
         );
 
