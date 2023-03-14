@@ -1,16 +1,15 @@
 package com.marsss.callerphone.bot;
 
-import java.awt.Color;
-import java.time.format.DateTimeFormatter;
-
 import com.marsss.ICommand;
 import com.marsss.callerphone.Callerphone;
-
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.MessageEmbed;
-import net.dv8tion.jda.api.events.interaction.SlashCommandInteractionEvent;
-import net.dv8tion.jda.api.events.message.guild.MessageReceivedEvent;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+
+import java.awt.*;
+import java.time.format.DateTimeFormatter;
 
 public class BotInfo implements ICommand {
 
