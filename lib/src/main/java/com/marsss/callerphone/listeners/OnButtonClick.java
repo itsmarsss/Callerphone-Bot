@@ -15,7 +15,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.concurrent.TimeUnit;
 
 public class OnButtonClick extends ListenerAdapter {
-    public void onButtonClick(@NotNull ButtonInteractionEvent event) {
+    public void onButtonInteraction(@NotNull ButtonInteractionEvent event) {
         String[] param = event.getButton().getId().split("-");
 
 
