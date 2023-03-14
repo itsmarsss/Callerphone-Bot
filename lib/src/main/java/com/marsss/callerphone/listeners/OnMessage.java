@@ -35,8 +35,6 @@ public class OnMessage extends ListenerAdapter {
         if (!event.getChannel().canTalk())
             return;
 
-        event.getMessage().reply("We have completely migrated to slash commands, please run /help for more information.").queue();
-
         final Member MEMBER = event.getMember();
 
         final String CONTENT = MESSAGE.getContentRaw();
@@ -47,10 +45,12 @@ public class OnMessage extends ListenerAdapter {
             return;
 
         if (CONTENT.contains(Callerphone.jda.getSelfUser().getId())) {
-            MESSAGE.reply("My prefix is `" + Callerphone.config.getPrefix() + "`, do `" + Callerphone.config.getPrefix() + "help` for a list of commands!").queue();
+            MESSAGE.reply("My prefix is `" + Callerphone.config.getPrefix() + "`, do `/help` for a list of commands!").queue();
             return;
         }
 
+        event.getMessage().reply("We have completely migrated to slash commands, please run /help for more information.").queue();
+/*
         if (!ARGS[0].toLowerCase().startsWith(Callerphone.config.getPrefix()))
             return;
 
@@ -89,6 +89,7 @@ public class OnMessage extends ListenerAdapter {
             ex.printStackTrace();
             sendError(event.getMessage(), ex);
         }
+        */
     }
 
     private void fromPM(MessageReceivedEvent event) {
@@ -228,5 +229,4 @@ public class OnMessage extends ListenerAdapter {
                 "`" + Callerphone.config.getPrefix() + "modlist` - Shows all moderators.\n" +
                 "`" + Callerphone.config.getPrefix() + "filterlist` - Shows all chat filters.";
     }
-
 }

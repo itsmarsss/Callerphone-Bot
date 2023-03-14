@@ -11,7 +11,7 @@ import org.jetbrains.annotations.NotNull;
 
 public class OnSlashCommand extends ListenerAdapter {
 
-    public void onSlashCommand(@NotNull SlashCommandInteractionEvent event) {
+    public void onSlashCommandInteraction(@NotNull SlashCommandInteractionEvent event) {
         try {
             if (Callerphone.cmdMap.containsKey(event.getName())) {
 
