@@ -1,20 +1,20 @@
 package com.marsss.callerphone.listeners;
 
 import com.marsss.callerphone.Callerphone;
-
 import com.marsss.callerphone.Response;
 import com.marsss.callerphone.Storage;
 import com.marsss.callerphone.ToolSet;
 import com.marsss.callerphone.bot.Advertisement;
+import com.marsss.commandType.ITextCommand;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.events.message.guild.MessageReceivedEvent;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
 import java.util.Random;
 
-public class CommandListener extends ListenerAdapter {
-    public void onGuildMessageReceived(MessageReceivedEvent event) {
+public class OnMessage extends ListenerAdapter {
+    public void onMessageReceived(MessageReceivedEvent event) {
         final Message MESSAGE = event.getMessage();
         if (MESSAGE.isWebhookMessage())
             return;
@@ -66,7 +66,7 @@ public class CommandListener extends ListenerAdapter {
                 Storage.reward(event.getAuthor(), 1);
                 Storage.addExecute(event.getAuthor(), 1);
 
-                Callerphone.cmdMap.get(trigger).runCommand(event);
+                ((ITextCommand) Callerphone.cmdMap.get(trigger)).runCommand(event);
 
                 if (new Random().nextInt(9) == 0) {
                     event.getMessage().replyEmbeds(Advertisement.generateAd()).queue();

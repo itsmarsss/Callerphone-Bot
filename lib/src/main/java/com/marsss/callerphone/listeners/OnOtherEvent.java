@@ -1,30 +1,28 @@
 package com.marsss.callerphone.listeners;
 
-import java.awt.Color;
-import java.time.OffsetDateTime;
-
+import com.marsss.callerphone.Callerphone;
 import com.marsss.callerphone.ToolSet;
+import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
+import net.dv8tion.jda.api.events.session.SessionDisconnectEvent;
+import net.dv8tion.jda.api.events.session.SessionResumeEvent;
+import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.marsss.callerphone.Callerphone;
-
-import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.entities.TextChannel;
-import net.dv8tion.jda.api.events.DisconnectEvent;
-import net.dv8tion.jda.api.events.ResumedEvent;
-import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import java.awt.*;
+import java.time.OffsetDateTime;
 
 public class OnOtherEvent extends ListenerAdapter {
     public static final Logger logger = LoggerFactory.getLogger(OnOtherEvent.class);
     private static OffsetDateTime timeDisconnected = OffsetDateTime.now();
     private static int disconnectCount = 0;
 
-    public void onDisconnect(DisconnectEvent event) {
+    public void onSessionDisconnect(SessionDisconnectEvent event) {
         timeDisconnected = event.getTimeDisconnected();
     }
 
-    public void onResumed(ResumedEvent event) {
+    public void onSessionResumed(SessionResumeEvent event) {
         final TextChannel LOG_CHANNEL = ToolSet.getTextChannel(Callerphone.config.getLogStatusChannel());
         EmbedBuilder Emd = new EmbedBuilder()
                 .setColor(Color.RED)

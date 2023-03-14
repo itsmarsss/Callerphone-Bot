@@ -4,8 +4,8 @@ import com.marsss.callerphone.Callerphone;
 import com.marsss.callerphone.Storage;
 import com.marsss.callerphone.minigames.MiniGameStatus;
 import com.marsss.callerphone.minigames.games.TicTacToe;
-import net.dv8tion.jda.api.entities.MessageChannel;
-import net.dv8tion.jda.api.events.interaction.ButtonClickEvent;
+import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
+import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.exceptions.ErrorHandler;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.requests.ErrorResponse;
@@ -14,7 +14,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.concurrent.TimeUnit;
 
 public class OnButtonClick extends ListenerAdapter {
-    public void onButtonClick(@NotNull ButtonClickEvent event) {
+    public void onButtonClick(@NotNull ButtonInteractionEvent event) {
         String[] param = event.getButton().getId().split("-");
 
 
@@ -105,7 +105,5 @@ public class OnButtonClick extends ListenerAdapter {
         }else{
             event.getMessage().editMessage(game.getBoardWithMessage("Game Sent!")).queue();
         }
-
-
     }
 }

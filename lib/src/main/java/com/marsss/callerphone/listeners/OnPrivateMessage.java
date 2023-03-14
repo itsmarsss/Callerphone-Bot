@@ -15,6 +15,7 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.utils.AttachmentOption;
 
 // IF IT WORKS DON'T TOUCH IT
+// Too bad, I have to fix it
 public class OnPrivateMessage extends ListenerAdapter {
     public void onPrivateMessageReceived(PrivateMessageReceivedEvent event) {
         if (event.getAuthor().isBot() || event.getAuthor().isSystem())
@@ -34,10 +35,10 @@ public class OnPrivateMessage extends ListenerAdapter {
             String DESC = "You do not have permission to access this category.";
 
             if (isAdmin) {
-                DESC = CommandListener.adminHelp() + "\n"
-                        + CommandListener.blacklistHelp() + "\n"
-                        + CommandListener.supportHelp() + "\n"
-                        + CommandListener.showItemsHelp();
+                DESC = OnMessage.adminHelp() + "\n"
+                        + OnMessage.blacklistHelp() + "\n"
+                        + OnMessage.supportHelp() + "\n"
+                        + OnMessage.showItemsHelp();
             }
 
             EmbedBuilder HelpEmd = new EmbedBuilder()
