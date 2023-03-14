@@ -18,15 +18,15 @@ public class Colour implements ISlashCommand {
                 break;
 
             case "hex":
-                e.replyEmbeds(colorhex(e.getOptionsByName("hex").toString())).queue();
+                e.replyEmbeds(colorhex(e.getOption("hex").getAsString())).queue();
                 break;
 
 
             case "rgb":
                 e.replyEmbeds(colorrgb(
-                        e.getOptionsByName("r").toString(),
-                        e.getOptionsByName("g").toString(),
-                        e.getOptionsByName("b").toString())
+                        e.getOption("r").getAsString(),
+                        e.getOption("g").getAsString(),
+                        e.getOption("b").getAsString())
                 ).queue();
                 break;
 
