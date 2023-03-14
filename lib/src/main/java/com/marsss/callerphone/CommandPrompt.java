@@ -8,8 +8,10 @@ import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
+import net.dv8tion.jda.api.requests.restaction.CommandListUpdateAction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -118,11 +120,13 @@ public class CommandPrompt {
         }
     }
 
-    private void update() {
-        jda.updateCommands().queue();
-    }
-
     private void upsert() {
+        CommandListUpdateAction commands = jda.updateCommands();
+
+        commands.addCommands(
+                Commands.slash()
+        );
+
         jda.upsertCommand(new CommandData("about", "About Callerphone")).queue();
         jda.upsertCommand(new CommandData("donate", "Help us out by donating")).queue();
         jda.upsertCommand(new CommandData("invite", "Invite Callerphone")).queue();

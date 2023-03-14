@@ -4,17 +4,16 @@ import com.marsss.ICommand;
 import com.marsss.callerphone.Callerphone;
 import com.marsss.callerphone.tccallerphone.ChatResponse;
 import com.marsss.callerphone.tccallerphone.TCCallerphone;
-import net.dv8tion.jda.api.entities.TextChannel;
-import net.dv8tion.jda.api.events.interaction.SlashCommandInteractionEvent;
-import net.dv8tion.jda.api.events.message.guild.MessageReceivedEvent;
+import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 
 public class EndChat implements ICommand {
     @Override
     public void runSlash(SlashCommandInteractionEvent e) {
-        e.reply(endChat(e.getTextChannel())).queue();
+        e.reply(endChat(e.getChannel())).queue();
     }
 
-    private String endChat(TextChannel channel) {
+    private String endChat(MessageChannelUnion channel) {
         if(!TCCallerphone.hasCall(channel.getId())) {
             return ChatResponse.NO_CALL.toString();
         }

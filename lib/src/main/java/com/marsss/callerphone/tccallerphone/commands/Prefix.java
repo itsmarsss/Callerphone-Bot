@@ -2,12 +2,10 @@ package com.marsss.callerphone.tccallerphone.commands;
 
 import com.marsss.ICommand;
 import com.marsss.callerphone.Callerphone;
-import com.marsss.callerphone.Response;
 import com.marsss.callerphone.Storage;
 import com.marsss.callerphone.tccallerphone.ChatResponse;
 import net.dv8tion.jda.api.entities.User;
-import net.dv8tion.jda.api.events.interaction.SlashCommandInteractionEvent;
-import net.dv8tion.jda.api.events.message.guild.MessageReceivedEvent;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 
 public class Prefix implements ICommand {
     @Override

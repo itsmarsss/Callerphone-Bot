@@ -9,10 +9,11 @@ import com.marsss.callerphone.Storage;
 import com.marsss.callerphone.ToolSet;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import net.dv8tion.jda.api.utils.FileUpload;
 
 public class TCCallerphoneListener extends ListenerAdapter {
 
@@ -147,7 +148,7 @@ public class TCCallerphoneListener extends ListenerAdapter {
             } else {
                 REPORT_CHANNEL
                         .sendMessage("**ID:** " + ID)
-                        .addFile(DATA.getBytes(), ID + ".txt")
+                        .addFiles(FileUpload.fromData(DATA.getBytes(), ID + ".txt"))
                         .queue();
             }
         }
