@@ -3,10 +3,10 @@ package com.marsss.callerphone.minigames.games;
 import com.marsss.callerphone.Callerphone;
 import com.marsss.callerphone.minigames.IMiniGame;
 import com.marsss.callerphone.minigames.MiniGameStatus;
-import net.dv8tion.jda.api.MessageBuilder;
-import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
-import net.dv8tion.jda.api.interactions.components.Button;
+import net.dv8tion.jda.api.interactions.components.buttons.Button;
+import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder;
+import net.dv8tion.jda.api.utils.messages.MessageCreateData;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -187,8 +187,8 @@ public class TicTacToe implements IMiniGame {
         return -1;
     }
 
-    public Message getMessageForFrom() {
-        MessageBuilder message = new MessageBuilder();
+    public MessageCreateData getMessageForFrom() {
+        MessageCreateBuilder message = new MessageCreateBuilder();
 
         int win = checkForWin();
 
@@ -206,13 +206,13 @@ public class TicTacToe implements IMiniGame {
             return getBoardWithMessage("Tie game!");
         }
 
-        message.setActionRows(getBoard("from"));
+        message.setComponents(getBoard("from"));
 
         return message.build();
     }
 
-    public Message getMessageForTo() {
-        MessageBuilder message = new MessageBuilder();
+    public MessageCreateData getMessageForTo() {
+        MessageCreateBuilder message = new MessageCreateBuilder();
 
         int win = checkForWin();
 
@@ -231,7 +231,7 @@ public class TicTacToe implements IMiniGame {
             return getBoardWithMessage("Tie game!");
         }
 
-        message.setActionRows(getBoard("to"));
+        message.setComponents(getBoard("to"));
 
         return message.build();
     }
@@ -279,8 +279,8 @@ public class TicTacToe implements IMiniGame {
         return collection;
     }
 
-    public Message getBoardWithMessage(String msg) {
-        MessageBuilder message = new MessageBuilder();
+    public MessageCreateData getBoardWithMessage(String msg) {
+        MessageCreateBuilder message = new MessageCreateBuilder();
 
         message.setContent(msg);
 
@@ -323,7 +323,7 @@ public class TicTacToe implements IMiniGame {
         ActionRow row3 = ActionRow.of(collection3);
         collection.add(row3);
 
-        message.setActionRows(collection);
+        message.setComponents(collection);
 
         return message.build();
     }
