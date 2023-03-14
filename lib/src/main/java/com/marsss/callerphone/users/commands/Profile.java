@@ -1,21 +1,19 @@
 package com.marsss.callerphone.users.commands;
 
-import com.marsss.ICommand;
 import com.marsss.callerphone.Callerphone;
 import com.marsss.callerphone.Response;
 import com.marsss.callerphone.Storage;
 import com.marsss.callerphone.ToolSet;
+import com.marsss.commandType.ISlashCommand;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.User;
-import net.dv8tion.jda.api.events.interaction.SlashCommandInteractionEvent;
-import net.dv8tion.jda.api.events.message.guild.MessageReceivedEvent;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 
 import java.awt.*;
 import java.time.Instant;
-import java.util.List;
 
-public class Profile implements ICommand {
+public class Profile implements ISlashCommand {
     @Override
     public void runSlash(SlashCommandInteractionEvent e) {
         e.replyEmbeds(profile(e.getOption("target").getAsUser())).queue();

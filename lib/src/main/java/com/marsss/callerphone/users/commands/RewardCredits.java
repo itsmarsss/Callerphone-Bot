@@ -1,16 +1,15 @@
 package com.marsss.callerphone.users.commands;
 
-import com.marsss.ICommand;
 import com.marsss.callerphone.Callerphone;
 import com.marsss.callerphone.Storage;
 import com.marsss.callerphone.ToolSet;
+import com.marsss.commandType.ITextCommand;
 import net.dv8tion.jda.api.entities.User;
-import net.dv8tion.jda.api.events.interaction.SlashCommandInteractionEvent;
-import net.dv8tion.jda.api.events.message.guild.MessageReceivedEvent;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 import java.util.List;
 
-public class RewardCredits implements ICommand {
+public class RewardCredits implements ITextCommand {
 
     @Override
     public void runCommand(MessageReceivedEvent e) {
@@ -20,7 +19,7 @@ public class RewardCredits implements ICommand {
         }
         try {
             final String[] ARGS = e.getMessage().getContentRaw().split("\\s+");
-            final List<User> MENTIONS = e.getMessage().getMentionedUsers();
+            final List<User> MENTIONS = e.getMessage().getMentions().getUsers();
             final User USER = MENTIONS.size() > 0 ? MENTIONS.get(0) : e.getAuthor();
             int amount;
             amount = Integer.parseInt(ARGS[1]);
@@ -29,10 +28,6 @@ public class RewardCredits implements ICommand {
             ex.printStackTrace();
             e.getMessage().reply(ToolSet.CP_EMJ + "`" + Callerphone.config.getPrefix() + "rewardcreds <amount> <@user>`").queue();
         }
-    }
-
-    @Override
-    public void runSlash(SlashCommandInteractionEvent e) {
     }
 
     private String rewardCredits(User user, int amount) {
