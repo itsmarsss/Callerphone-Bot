@@ -1,12 +1,11 @@
 package com.marsss.callerphone.bot;
 
-import com.marsss.ICommand;
+import com.marsss.commandType.ISlashCommand;
 import com.marsss.callerphone.Callerphone;
 import com.marsss.callerphone.Response;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
-import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
-public class Ping implements ICommand {
+public class Ping implements ISlashCommand {
     @Override
     public void runSlash(SlashCommandInteractionEvent e) {
         Callerphone.jda.getRestPing().queue(

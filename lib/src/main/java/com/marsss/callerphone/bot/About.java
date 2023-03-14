@@ -3,7 +3,7 @@ package com.marsss.callerphone.bot;
 import java.awt.Color;
 import java.lang.management.ManagementFactory;
 
-import com.marsss.ICommand;
+import com.marsss.commandType.ISlashCommand;
 import com.marsss.callerphone.Callerphone;
 
 import com.marsss.callerphone.ToolSet;
@@ -12,9 +12,8 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
-import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
-public class About implements ICommand {
+public class About implements ISlashCommand {
     @Override
     public void runSlash(SlashCommandInteractionEvent e) {
         e.replyEmbeds(about()).queue();
