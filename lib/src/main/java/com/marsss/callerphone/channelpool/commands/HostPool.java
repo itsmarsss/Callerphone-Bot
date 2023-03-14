@@ -8,7 +8,7 @@ import com.marsss.callerphone.channelpool.PoolResponse;
 import com.marsss.callerphone.channelpool.PoolStatus;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.MessageChannel;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.events.interaction.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.events.message.guild.MessageReceivedEvent;
 
 public class HostPool implements ICommand {
@@ -24,7 +24,7 @@ public class HostPool implements ICommand {
     }
 
     @Override
-    public void runSlash(SlashCommandEvent e) {
+    public void runSlash(SlashCommandInteractionEvent e) {
         final Member MEMBER = e.getMember();
 
         if (ChannelPool.permissionCheck(MEMBER, e)) {

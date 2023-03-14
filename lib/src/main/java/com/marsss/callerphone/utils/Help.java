@@ -15,7 +15,7 @@ import net.dv8tion.jda.api.entities.MessageEmbed;
 import com.marsss.ICommand;
 import com.marsss.callerphone.Callerphone;
 import com.marsss.callerphone.bot.*;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.events.interaction.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.events.message.guild.MessageReceivedEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 
@@ -37,7 +37,7 @@ public class Help implements ICommand {
     }
 
     @Override
-    public void runSlash(SlashCommandEvent e) {
+    public void runSlash(SlashCommandInteractionEvent e) {
         final boolean ADMIN = Storage.isAdmin(e.getMember().getId());
         final List<OptionMapping> PARAM = e.getOptions();
         if (PARAM.size() == 0) {

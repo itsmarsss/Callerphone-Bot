@@ -10,7 +10,7 @@ import java.awt.Color;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.events.interaction.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.events.message.guild.MessageReceivedEvent;
 
 public class Colour implements ICommand {
@@ -50,7 +50,7 @@ public class Colour implements ICommand {
     }
 
     @Override
-    public void runSlash(SlashCommandEvent event) {
+    public void runSlash(SlashCommandInteractionEvent event) {
 
     }
 

@@ -6,7 +6,7 @@ import com.marsss.callerphone.Response;
 import com.marsss.callerphone.Storage;
 import com.marsss.callerphone.ToolSet;
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.events.interaction.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.jetbrains.annotations.NotNull;
 
@@ -14,7 +14,7 @@ import java.awt.*;
 
 public class OnSlashCommand extends ListenerAdapter {
 
-    public void onSlashCommand(@NotNull SlashCommandEvent event) {
+    public void onSlashCommand(@NotNull SlashCommandInteractionEvent event) {
         try {
             if (Callerphone.cmdMap.containsKey(event.getName())) {
 
@@ -54,7 +54,7 @@ public class OnSlashCommand extends ListenerAdapter {
         }
     }
 
-    public static void sendError(SlashCommandEvent event, Exception error) {
+    public static void sendError(SlashCommandInteractionEvent event, Exception error) {
         event.reply(String.format(Response.ERROR_MSG.toString(), error.toString())).queue();
     }
 }

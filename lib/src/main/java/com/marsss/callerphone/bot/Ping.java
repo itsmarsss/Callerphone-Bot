@@ -3,7 +3,7 @@ package com.marsss.callerphone.bot;
 import com.marsss.ICommand;
 import com.marsss.callerphone.Callerphone;
 import com.marsss.callerphone.Response;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.events.interaction.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.events.message.guild.MessageReceivedEvent;
 
 public class Ping implements ICommand {
@@ -15,7 +15,7 @@ public class Ping implements ICommand {
     }
 
     @Override
-    public void runSlash(SlashCommandEvent e) {
+    public void runSlash(SlashCommandInteractionEvent e) {
         Callerphone.jda.getRestPing().queue(
                 (ping) -> e.replyFormat(Response.PING_TEMPLATE.toString(), ping, Callerphone.jda.getGatewayPing()).setEphemeral(true).queue());
     }

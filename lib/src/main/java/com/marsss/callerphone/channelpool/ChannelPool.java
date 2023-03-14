@@ -6,7 +6,7 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.TextChannel;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.events.interaction.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.Button;
 import net.dv8tion.jda.api.requests.restaction.MessageAction;
@@ -22,7 +22,7 @@ public class ChannelPool {
     public static final HashMap<String, String> parent = new HashMap<>();
     //public static final HashMap<String, ArrayList<String>> childr = new HashMap<>();
 
-    public static boolean permissionCheck(Member member, SlashCommandEvent e) {
+    public static boolean permissionCheck(Member member, SlashCommandInteractionEvent e) {
         if (member == null) {
             return true;
         }

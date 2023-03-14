@@ -6,7 +6,7 @@ import java.io.IOException;
 import com.marsss.ICommand;
 import com.marsss.callerphone.utils.Colour;
 import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.events.interaction.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.events.message.guild.MessageReceivedEvent;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -38,7 +38,7 @@ public class Search implements ICommand {
     }
 
     @Override
-    public void runSlash(SlashCommandEvent e) {
+    public void runSlash(SlashCommandInteractionEvent e) {
         try {
             e.replyEmbeds(search(e.getOption("query").getAsString())).queue();
         } catch (IOException e1) {
