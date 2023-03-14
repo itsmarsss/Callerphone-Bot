@@ -10,7 +10,7 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
 public class ChannelPoolListener extends ListenerAdapter {
 
-    public void onGuildMessageReceived(MessageReceivedEvent event) {
+    public void onMessageReceived(MessageReceivedEvent event) {
 
         final Message MESSAGE = event.getMessage();
 
