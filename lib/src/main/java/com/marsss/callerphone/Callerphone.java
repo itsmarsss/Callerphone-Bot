@@ -132,13 +132,13 @@ public class Callerphone {
 
 
             cmdLst.add(new BotInfo());
-            //cmdLst.add(new ChannelInfo());
+            cmdLst.add(new ChannelInfo());
             cmdLst.add(new Colour());
             cmdLst.add(new Help());
-            //cmdLst.add(new RoleInfo());
-            //cmdLst.add(new Search());
-            //cmdLst.add(new ServerInfo());
-            //cmdLst.add(new UserInfo());
+            cmdLst.add(new RoleInfo());
+            cmdLst.add(new Search());
+            cmdLst.add(new ServerInfo());
+            cmdLst.add(new UserInfo());
 
             cmdLst.add(new Chat());
             cmdLst.add(new EndChat());
