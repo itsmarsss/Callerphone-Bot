@@ -1,16 +1,16 @@
 package com.marsss.callerphone.channelpool.commands;
 
-import com.marsss.ICommand;
+import com.marsss.commandType.ISlashCommand;
 import com.marsss.callerphone.Callerphone;
 import com.marsss.callerphone.Response;
 import com.marsss.callerphone.channelpool.ChannelPool;
 import com.marsss.callerphone.channelpool.PoolResponse;
 import com.marsss.callerphone.channelpool.PoolStatus;
 import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
-import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
-public class HostPool implements ICommand {
+public class HostPool implements ISlashCommand {
     @Override
     public void runSlash(SlashCommandInteractionEvent e) {
         final Member MEMBER = e.getMember();
@@ -22,7 +22,7 @@ public class HostPool implements ICommand {
         e.reply(hostPool(e.getChannel())).queue();
     }
 
-    private String hostPool(MessageChannel channel) {
+    private String hostPool(MessageChannelUnion channel) {
         PoolStatus stat = ChannelPool.hostPool(channel.getId());
 
         if (stat == PoolStatus.IS_HOST) {
