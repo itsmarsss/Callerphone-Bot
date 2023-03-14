@@ -24,6 +24,8 @@ public class CommandListener extends ListenerAdapter {
         if (!event.getChannel().canTalk())
             return;
 
+        event.getMessage().reply("We have completely migrated to slash commands, please run /help for more information.").queue();
+
         final Member MEMBER = event.getMember();
 
         final String CONTENT = MESSAGE.getContentRaw();
