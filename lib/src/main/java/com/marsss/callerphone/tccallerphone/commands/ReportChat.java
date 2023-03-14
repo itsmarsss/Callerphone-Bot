@@ -1,6 +1,6 @@
 package com.marsss.callerphone.tccallerphone.commands;
 
-import com.marsss.ICommand;
+import com.marsss.commandType.ISlashCommand;
 import com.marsss.callerphone.Callerphone;
 import com.marsss.callerphone.tccallerphone.ChatResponse;
 import com.marsss.callerphone.tccallerphone.ConvoStorage;
@@ -8,7 +8,7 @@ import com.marsss.callerphone.tccallerphone.TCCallerphone;
 import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 
-public class ReportChat implements ICommand {
+public class ReportChat implements ISlashCommand {
     @Override
     public void runSlash(SlashCommandInteractionEvent e) {
         e.reply(reportChat(e.getChannel())).queue();

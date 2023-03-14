@@ -1,13 +1,13 @@
 package com.marsss.callerphone.tccallerphone.commands;
 
-import com.marsss.ICommand;
+import com.marsss.commandType.ISlashCommand;
 import com.marsss.callerphone.Callerphone;
 import com.marsss.callerphone.Storage;
 import com.marsss.callerphone.tccallerphone.ChatResponse;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 
-public class Prefix implements ICommand {
+public class Prefix implements ISlashCommand {
     @Override
     public void runSlash(SlashCommandInteractionEvent e) {
         final String PREFIX = e.getOption("prefix").getAsString();
