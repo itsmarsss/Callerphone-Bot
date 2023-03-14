@@ -213,7 +213,7 @@ public class Callerphone {
             }
 
             ScheduledExecutorService ses = Executors.newSingleThreadScheduledExecutor();
-            ses.scheduleAtFixedRate(com.marsss.callerphone.Callerphone::kill, 0, 2, TimeUnit.MINUTES);
+            ses.scheduleAtFixedRate(Callerphone::kill, 0, 2, TimeUnit.MINUTES);
 
         } catch (Exception e) {
             e.printStackTrace();

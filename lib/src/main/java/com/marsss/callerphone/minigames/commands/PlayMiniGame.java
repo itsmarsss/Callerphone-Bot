@@ -56,7 +56,7 @@ public class PlayMiniGame implements ICommand {
         }
 
         if(opponent.isBot()) {
-            e.getMessage().reply("I cannot send a message to this bot.").queue();
+            e.getMessage().reply("I cannot message this player.").queue();
             return;
         }
 

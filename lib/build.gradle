@@ -31,7 +31,7 @@ jar {
 }
 
 dependencies {
-    implementation group: 'net.dv8tion', name: 'JDA', version: '4.4.0_352'
+    implementation("net.dv8tion:JDA:5.0.0-beta.5")
     implementation("ch.qos.logback:logback-classic:1.2.3")
     implementation group: 'org.yaml', name: 'snakeyaml', version: '1.8'
     implementation group: 'com.googlecode.json-simple', name: 'json-simple', version: '1.1.1'
