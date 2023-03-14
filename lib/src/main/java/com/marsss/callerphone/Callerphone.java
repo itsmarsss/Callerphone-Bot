@@ -31,7 +31,6 @@ import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.marsss.commandType.ISlashCommand;
 import com.marsss.callerphone.bot.*;
 import com.marsss.callerphone.utils.*;
 import com.marsss.callerphone.listeners.*;
@@ -175,7 +174,7 @@ public class Callerphone {
             gameLst.add(new Connect4());
             gameLst.add(new WordSearch());
 
-            jda.addEventListener(new CommandListener());
+            jda.addEventListener(new OnMessage());
             jda.addEventListener(new OnButtonClick());
             jda.addEventListener(new OnOtherEvent());
             jda.addEventListener(new OnSlashCommand());
