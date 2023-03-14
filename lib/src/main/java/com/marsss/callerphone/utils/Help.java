@@ -20,22 +20,6 @@ import net.dv8tion.jda.api.events.message.guild.MessageReceivedEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 
 public class Help implements ICommand {
-
-    @Override
-    public void runCommand(MessageReceivedEvent e) {
-        final Message MESSAGE = e.getMessage();
-        final String CONTENT = MESSAGE.getContentRaw();
-        final String[] ARGS = CONTENT.split("\\s+");
-
-        boolean admin = Storage.isAdmin(e.getAuthor().getId());
-        if (ARGS.length > 1) {
-            MESSAGE.replyEmbeds(help(ARGS[1], admin)).queue();
-            return;
-        }
-
-        MESSAGE.replyEmbeds(help("", admin)).queue();
-    }
-
     @Override
     public void runSlash(SlashCommandInteractionEvent e) {
         final boolean ADMIN = Storage.isAdmin(e.getMember().getId());

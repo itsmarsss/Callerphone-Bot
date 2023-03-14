@@ -12,17 +12,6 @@ import net.dv8tion.jda.api.events.message.guild.MessageReceivedEvent;
 
 public class LeavePool implements ICommand {
     @Override
-    public void runCommand(MessageReceivedEvent e) {
-        final Member MEMBER = e.getMember();
-
-        if (ChannelPool.permissionCheck(MEMBER, e.getMessage())) {
-            return;
-        }
-
-        e.getMessage().reply(leavePool(e.getChannel().getId())).queue();
-    }
-
-    @Override
     public void runSlash(SlashCommandInteractionEvent e) {
         final Member MEMBER = e.getMember();
 

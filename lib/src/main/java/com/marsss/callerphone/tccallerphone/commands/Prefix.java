@@ -10,21 +10,6 @@ import net.dv8tion.jda.api.events.interaction.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.events.message.guild.MessageReceivedEvent;
 
 public class Prefix implements ICommand {
-
-    @Override
-    public void runCommand(MessageReceivedEvent e) {
-        final String[] ARGS = e.getMessage().getContentRaw().split("\\s+");
-
-        if (ARGS.length == 1) {
-            e.getMessage().reply(Response.MISSING_PARAM.toString()).queue();
-            return;
-        }
-
-        final String PREFIX = ARGS[1];
-
-        e.getMessage().reply(setPrefix(e.getAuthor(), PREFIX)).queue();
-    }
-
     @Override
     public void runSlash(SlashCommandInteractionEvent e) {
         final String PREFIX = e.getOption("prefix").getAsString();

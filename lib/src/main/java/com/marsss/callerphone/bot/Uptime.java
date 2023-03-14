@@ -11,12 +11,6 @@ import java.awt.*;
 import java.lang.management.ManagementFactory;
 
 public class Uptime implements ICommand {
-
-    @Override
-    public void runCommand(MessageReceivedEvent e) {
-        e.getMessage().replyEmbeds(uptime()).queue();
-    }
-
     @Override
     public void runSlash(SlashCommandInteractionEvent e) {
         e.replyEmbeds(uptime()).setEphemeral(true).queue();

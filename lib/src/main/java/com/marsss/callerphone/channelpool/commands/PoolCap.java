@@ -11,27 +11,6 @@ import net.dv8tion.jda.api.events.interaction.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.events.message.guild.MessageReceivedEvent;
 
 public class PoolCap implements ICommand {
-
-    @Override
-    public void runCommand(MessageReceivedEvent e) {
-        final Member MEMBER = e.getMember();
-
-        if (ChannelPool.permissionCheck(MEMBER, e.getMessage())) {
-            return;
-        }
-
-        String[] args = e.getMessage().getContentRaw().split("\\s+");
-
-        if (args.length == 1) {
-            e.getMessage().reply(Response.MISSING_PARAM.toString()).queue();
-            return;
-        }
-
-        final int CAP = Integer.parseInt(args[1]);
-
-        e.getMessage().reply(poolCap(e.getChannel().getId(), CAP)).queue();
-    }
-
     @Override
     public void runSlash(SlashCommandInteractionEvent e) {
         final Member MEMBER = e.getMember();

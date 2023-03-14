@@ -17,32 +17,6 @@ import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import java.util.List;
 
 public class JoinPool implements ICommand {
-
-    @Override
-    public void runCommand(MessageReceivedEvent e) {
-        final Member MEMBER = e.getMember();
-
-        if (ChannelPool.permissionCheck(MEMBER, e.getMessage())) {
-            return;
-        }
-
-        String[] args = e.getMessage().getContentRaw().split("\\s+");
-
-        if (args.length == 1) {
-            e.getMessage().reply(Response.MISSING_PARAM.toString()).queue();
-            return;
-        }
-
-        final String host = e.getMessage().getContentRaw().split("\\s+")[1];
-
-        String pwd = "";
-
-        if (args.length >= 3)
-            pwd = args[2];
-
-        e.getMessage().reply(joinPool(e.getChannel(), host, pwd)).queue();
-    }
-
     @Override
     public void runSlash(SlashCommandInteractionEvent e) {
         final Member MEMBER = e.getMember();

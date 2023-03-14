@@ -14,12 +14,6 @@ import net.dv8tion.jda.api.events.message.guild.MessageReceivedEvent;
 
 @SuppressWarnings("ConstantConditions")
 public class ServerInfo implements ICommand {
-
-    @Override
-    public void runCommand(MessageReceivedEvent e) {
-        e.getMessage().replyEmbeds(serverInfo(e.getGuild())).queue();
-    }
-
     @Override
     public void runSlash(SlashCommandInteractionEvent e) {
         e.replyEmbeds(serverInfo(e.getGuild())).queue();

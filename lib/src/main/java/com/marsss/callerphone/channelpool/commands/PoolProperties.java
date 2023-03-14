@@ -6,11 +6,6 @@ import net.dv8tion.jda.api.events.message.guild.MessageReceivedEvent;
 
 public class PoolProperties implements ICommand {
     @Override
-    public void runCommand(MessageReceivedEvent e) {
-
-    }
-
-    @Override
     public void runSlash(SlashCommandInteractionEvent e) {
 
     }

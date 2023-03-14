@@ -16,34 +16,7 @@ import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.events.interaction.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.events.message.guild.MessageReceivedEvent;
 
-@SuppressWarnings("ConstantConditions")
 public class RoleInfo implements ICommand {
-
-    @Override
-    public void runCommand(MessageReceivedEvent e) {
-        final Message MESSAGE = e.getMessage();
-        final String CONTENT = MESSAGE.getContentRaw();
-        final String[] ARGS = CONTENT.split("\\s+");
-        final List<Role> ROLES = MESSAGE.getMentionedRoles();
-        Role role;
-
-        try {
-            role = Callerphone.jda.getRoleById(Long.parseLong(ARGS[1]));
-        }catch(Exception ex) {
-            ex.printStackTrace();
-            role = null;
-        }
-
-        if(ROLES.size() > 0) {
-            if(role == null)
-                role = ROLES.get(0);
-        }else if(role == null) {
-            MESSAGE.reply("Please specify a role").queue();
-            return;
-        }
-
-        e.getMessage().replyEmbeds(roleInfo(role)).queue();
-    }
 
     @Override
     public void runSlash(SlashCommandInteractionEvent e) {

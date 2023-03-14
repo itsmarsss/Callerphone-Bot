@@ -15,26 +15,6 @@ import net.dv8tion.jda.api.events.message.guild.MessageReceivedEvent;
 public class PoolKick implements ICommand {
 
     @Override
-    public void runCommand(MessageReceivedEvent e) {
-        final Member MEMBER = e.getMember();
-
-        if (ChannelPool.permissionCheck(MEMBER, e.getMessage())) {
-            return;
-        }
-
-        String[] args = e.getMessage().getContentRaw().split("\\s+");
-
-        if (args.length == 1) {
-            e.getMessage().reply(Response.MISSING_PARAM.toString()).queue();
-            return;
-        }
-
-        final String CHANNELID = args[1];
-
-        e.getMessage().reply(poolKick(e.getChannel().getId(), CHANNELID)).queue();
-    }
-
-    @Override
     public void runSlash(SlashCommandInteractionEvent e) {
         final Member MEMBER = e.getMember();
 

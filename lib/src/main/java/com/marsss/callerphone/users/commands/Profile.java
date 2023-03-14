@@ -17,14 +17,6 @@ import java.util.List;
 
 public class Profile implements ICommand {
     @Override
-    public void runCommand(MessageReceivedEvent e) {
-        final List<User> MENTIONS = e.getMessage().getMentionedUsers();
-        final User USER = MENTIONS.size() > 0 ? MENTIONS.get(0) : e.getAuthor();
-
-        e.getMessage().replyEmbeds(profile(USER)).queue();
-    }
-
-    @Override
     public void runSlash(SlashCommandInteractionEvent e) {
         e.replyEmbeds(profile(e.getOption("target").getAsUser())).queue();
     }

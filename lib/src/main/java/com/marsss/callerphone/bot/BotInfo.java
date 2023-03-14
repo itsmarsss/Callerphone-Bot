@@ -12,12 +12,6 @@ import java.awt.*;
 import java.time.format.DateTimeFormatter;
 
 public class BotInfo implements ICommand {
-
-    @Override
-    public void runCommand(MessageReceivedEvent e) {
-        e.getMessage().replyEmbeds(botInfo()).queue();
-    }
-
     @Override
     public void runSlash(SlashCommandInteractionEvent e) {
         e.replyEmbeds(botInfo()).setEphemeral(true).queue();

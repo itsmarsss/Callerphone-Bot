@@ -13,11 +13,6 @@ import java.util.LinkedList;
 
 public class PoolParticipants implements ICommand {
     @Override
-    public void runCommand(MessageReceivedEvent e) {
-        e.getMessage().reply(poolParticipants(e.getChannel().getId())).queue();
-    }
-
-    @Override
     public void runSlash(SlashCommandInteractionEvent e) {
         e.reply(poolParticipants(e.getChannel().getId())).queue();
     }

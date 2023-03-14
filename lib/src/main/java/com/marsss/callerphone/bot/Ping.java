@@ -7,13 +7,6 @@ import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEve
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 public class Ping implements ICommand {
-
-    @Override
-    public void runCommand(MessageReceivedEvent e) {
-        Callerphone.jda.getRestPing().queue(
-                (ping) -> e.getMessage().replyFormat(Response.PING_TEMPLATE.toString(), ping, Callerphone.jda.getGatewayPing()).queue());
-    }
-
     @Override
     public void runSlash(SlashCommandInteractionEvent e) {
         Callerphone.jda.getRestPing().queue(

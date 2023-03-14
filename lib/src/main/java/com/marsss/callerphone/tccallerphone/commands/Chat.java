@@ -11,29 +11,6 @@ import net.dv8tion.jda.api.events.interaction.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.events.message.guild.MessageReceivedEvent;
 
 public class Chat implements ICommand {
-
-    @Override
-    public void runCommand(MessageReceivedEvent e) {
-        final String MESSAGE = e.getMessage().getContentRaw();
-        boolean anon = MESSAGE.contains("anon");
-        boolean famfri = MESSAGE.contains("family");
-
-        ChatStatus stat = (famfri ? chatFamilyFriendly(e.getChannel(), anon) : chatUncensored(e.getChannel(), anon));
-
-        if (stat == ChatStatus.CONFLICT) {
-            e.getMessage().reply(ChatResponse.ALREADY_CALL.toString()).queue();
-        } else if (stat == ChatStatus.NON_EXISTENT) {
-            e.getMessage().reply(ChatResponse.NO_PORT.toString()).queue();
-        } else if (stat == ChatStatus.SUCCESS_RECEIVER) {
-            e.getMessage().reply(ChatResponse.CALLING.toString()).queue();
-            e.getChannel().sendMessage(ChatResponse.PICKED_UP.toString()).queue();
-        } else if (stat == ChatStatus.SUCCESS_CALLER) {
-            e.getMessage().reply(ChatResponse.CALLING.toString()).queue();
-        } else {
-            e.getMessage().reply(Response.ERROR.toString()).queue();
-        }
-    }
-
     @Override
     public void runSlash(SlashCommandInteractionEvent e) {
         ChatStatus stat = null;

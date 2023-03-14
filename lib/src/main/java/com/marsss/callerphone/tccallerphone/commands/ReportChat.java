@@ -11,11 +11,6 @@ import net.dv8tion.jda.api.events.message.guild.MessageReceivedEvent;
 
 public class ReportChat implements ICommand {
     @Override
-    public void runCommand(MessageReceivedEvent e) {
-        e.getMessage().reply(reportChat(e.getChannel())).queue();
-    }
-
-    @Override
     public void runSlash(SlashCommandInteractionEvent e) {
         e.reply(reportChat(e.getTextChannel())).queue();
     }

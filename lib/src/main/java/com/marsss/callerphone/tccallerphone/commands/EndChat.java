@@ -10,11 +10,6 @@ import net.dv8tion.jda.api.events.message.guild.MessageReceivedEvent;
 
 public class EndChat implements ICommand {
     @Override
-    public void runCommand(MessageReceivedEvent e) {
-        e.getMessage().reply(endChat(e.getChannel())).queue();
-    }
-
-    @Override
     public void runSlash(SlashCommandInteractionEvent e) {
         e.reply(endChat(e.getTextChannel())).queue();
     }

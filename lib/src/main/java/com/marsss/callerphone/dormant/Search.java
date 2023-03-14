@@ -19,24 +19,6 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 
 public class Search implements ICommand {
-
-    @Override
-    public void runCommand(MessageReceivedEvent e) {
-        final Message MESSAGE = e.getMessage();
-        final String CONTENT = MESSAGE.getContentRaw();
-        if (CONTENT.substring(8).equals("")) {
-            MESSAGE.reply("Please enter a search query!").queue();
-            return;
-        }
-
-        try {
-            MESSAGE.replyEmbeds(search(CONTENT.substring(8))).queue();
-        } catch (IOException e1) {
-            e1.printStackTrace();
-            MESSAGE.reply("Error getting links").queue();
-        }
-    }
-
     @Override
     public void runSlash(SlashCommandInteractionEvent e) {
         try {

@@ -13,58 +13,7 @@ import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.events.interaction.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.events.message.guild.MessageReceivedEvent;
 
-@SuppressWarnings("ConstantConditions")
 public class ChannelInfo implements ICommand {
-
-    @Override
-    public void runCommand(MessageReceivedEvent e) {
-        final Message MESSAGE = e.getMessage();
-        final String CONTENT = MESSAGE.getContentRaw();
-        final String[] ARGS = CONTENT.split("\\s+");
-
-        final List<TextChannel> CHANNELS = MESSAGE.getMentionedChannels();
-        GuildChannel CHANNEL;
-
-        try {
-            CHANNEL = Callerphone.jda.getGuildChannelById(Long.parseLong(ARGS[1]));
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            CHANNEL = null;
-        }
-
-        if (CHANNELS.size() > 0) {
-            if (CHANNEL == null)
-                CHANNEL = CHANNELS.get(0);
-        } else if (CHANNEL == null) {
-            MESSAGE.replyEmbeds(textchannelinfo(e.getChannel())).queue();
-        }
-
-        ChannelType type;
-        try {
-            type = CHANNEL.getType();
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            MESSAGE.reply("Channel not recognized").queue();
-            return;
-        }
-
-        switch (type) {
-
-            case TEXT:
-                MESSAGE.replyEmbeds(textchannelinfo(ToolSet.getTextChannel(CHANNEL.getId()))).queue();
-                break;
-            case VOICE:
-                MESSAGE.replyEmbeds(voicechannelinfo(Callerphone.jda.getVoiceChannelById(CHANNEL.getId()))).queue();
-                break;
-            case CATEGORY:
-                MESSAGE.replyEmbeds(categorychannelinfo(Callerphone.jda.getCategoryById(CHANNEL.getId()))).queue();
-                break;
-            default:
-                MESSAGE.reply("Channel not recognized").queue();
-                break;
-        }
-    }
-
     @Override
     public void runSlash(SlashCommandInteractionEvent e) {
         final GuildChannel CHANNEL = e.getOption("channel").getAsGuildChannel();

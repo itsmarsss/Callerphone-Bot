@@ -12,11 +12,6 @@ import java.awt.*;
 public class Donate implements ICommand {
 
     @Override
-    public void runCommand(MessageReceivedEvent e) {
-        e.getMessage().replyEmbeds(donate()).queue();
-    }
-
-    @Override
     public void runSlash(SlashCommandInteractionEvent e) {
         e.replyEmbeds(donate()).setEphemeral(true).queue();
     }
