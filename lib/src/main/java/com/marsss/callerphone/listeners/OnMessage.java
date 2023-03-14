@@ -49,10 +49,11 @@ public class OnMessage extends ListenerAdapter {
             return;
         }
 
-        event.getMessage().reply("We have completely migrated to slash commands, please run /help for more information.").queue();
-/*
         if (!ARGS[0].toLowerCase().startsWith(Callerphone.config.getPrefix()))
             return;
+
+        event.getMessage().reply("We have completely migrated to slash commands, please run /help for more information.").queue();
+/*
 
         String trigger = ARGS[0].toLowerCase().replace(Callerphone.config.getPrefix(), "");
 
