@@ -9,7 +9,6 @@ import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
-import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
@@ -264,6 +263,43 @@ public class CommandPrompt {
                         .addOptions(
                                 new OptionData(OptionType.CHANNEL, "channel", "Target channel")
                                         .setRequired(true)
+                        )
+                        .setGuildOnly(true)
+        );
+
+        commands.addCommands(
+                Commands.slash("game", "Play minigames")
+                        .addSubcommands(
+                                new SubcommandData("tictactoe", "Play TicTacToe with someone")
+                                        .addOptions(
+                                                new OptionData(OptionType.USER, "opponent", "Who to challenge")
+                                                        .setRequired(true)
+                                        )
+                        )
+                        .setGuildOnly(true)
+        );
+
+        commands.addCommands(
+                Commands.slash("colour", "Colour's corner [random | hex | rgb]")
+                        .addSubcommands(
+                                new SubcommandData("random", "Random colour"),
+                                new SubcommandData("hex", "Hex colour")
+                                        .addOptions(
+                                                new OptionData(OptionType.STRING, "hex", "Hex code")
+                                                        .setRequired(true)
+                                        ),
+                                new SubcommandData("rgb", "RGB colour")
+                                        .addOptions(
+                                                new OptionData(OptionType.INTEGER, "r", "Red value")
+                                                        .setRequiredRange(0, 255)
+                                                        .setRequired(true),
+                                                new OptionData(OptionType.INTEGER, "g", "Red value")
+                                                        .setRequiredRange(0, 255)
+                                                        .setRequired(true),
+                                                new OptionData(OptionType.INTEGER, "b", "Red value")
+                                                        .setRequiredRange(0, 255)
+                                                        .setRequired(true)
+                                        )
                         )
                         .setGuildOnly(true)
         );
