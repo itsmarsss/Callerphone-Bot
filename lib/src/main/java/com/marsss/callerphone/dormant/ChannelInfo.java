@@ -1,22 +1,23 @@
 package com.marsss.callerphone.dormant;
 
-import java.awt.Color;
-import java.time.format.DateTimeFormatter;
-import java.util.List;
-
-import com.marsss.ICommand;
 import com.marsss.callerphone.Callerphone;
-
-import com.marsss.callerphone.ToolSet;
+import com.marsss.commandType.ISlashCommand;
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.entities.*;
-import net.dv8tion.jda.api.events.interaction.SlashCommandInteractionEvent;
-import net.dv8tion.jda.api.events.message.guild.MessageReceivedEvent;
+import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.entities.channel.ChannelType;
+import net.dv8tion.jda.api.entities.channel.concrete.Category;
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
+import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 
-public class ChannelInfo implements ICommand {
+import java.awt.*;
+import java.time.format.DateTimeFormatter;
+
+public class ChannelInfo implements ISlashCommand {
     @Override
     public void runSlash(SlashCommandInteractionEvent e) {
-        final GuildChannel CHANNEL = e.getOption("channel").getAsGuildChannel();
+        final GuildChannel CHANNEL = e.getOption("channel").getAsChannel();
         final ChannelType TYPE = CHANNEL.getType();
 
         switch (TYPE) {
@@ -46,14 +47,13 @@ public class ChannelInfo implements ICommand {
         String PARENT;
 
         try {
-            PARENT = chnl.getParent().getAsMention();
+            PARENT = chnl.getParentCategory().getAsMention();
         } catch (NullPointerException ex) {
             ex.printStackTrace();
             PARENT = "Server";
         }
 
         final String POSITION = String.valueOf(chnl.getPosition());
-        final String ISNEWS = String.valueOf(chnl.isNews());
         final String ISNSFW = String.valueOf(chnl.isNSFW());
         final String ISSYNCED = String.valueOf(chnl.isSynced());
 
@@ -71,7 +71,6 @@ public class ChannelInfo implements ICommand {
                 .addField("Creation Date", DATE_CREATED, true)
                 .addField("Parent", PARENT, true)
                 .addField("Position", POSITION, true)
-                .addField("News", ISNEWS, true)
                 .addField("NSFW", ISNSFW, true)
                 .addField("Synced", ISSYNCED, true)
                 .setFooter("ID: " + ID);
@@ -90,7 +89,7 @@ public class ChannelInfo implements ICommand {
         String PARENT;
 
         try {
-            PARENT = chnl.getParent().getAsMention();
+            PARENT = chnl.getParentCategory().getAsMention();
         } catch (NullPointerException ex) {
             ex.printStackTrace();
             PARENT = "Server";

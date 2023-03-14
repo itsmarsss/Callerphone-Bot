@@ -1,22 +1,18 @@
 package com.marsss.callerphone.dormant;
 
-import java.awt.Color;
-import java.time.format.DateTimeFormatter;
-import java.util.List;
-
-import com.marsss.ICommand;
 import com.marsss.callerphone.Callerphone;
-
+import com.marsss.commandType.ISlashCommand;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.Role;
-import net.dv8tion.jda.api.events.interaction.SlashCommandInteractionEvent;
-import net.dv8tion.jda.api.events.message.guild.MessageReceivedEvent;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 
-public class RoleInfo implements ICommand {
+import java.awt.*;
+import java.time.format.DateTimeFormatter;
+
+public class RoleInfo implements ISlashCommand {
 
     @Override
     public void runSlash(SlashCommandInteractionEvent e) {

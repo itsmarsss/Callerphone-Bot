@@ -1,24 +1,20 @@
 package com.marsss.callerphone.dormant;
 
-import java.awt.Color;
-import java.io.IOException;
-
-import com.marsss.ICommand;
+import com.marsss.callerphone.Callerphone;
 import com.marsss.callerphone.utils.Colour;
-import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.events.interaction.SlashCommandInteractionEvent;
-import net.dv8tion.jda.api.events.message.guild.MessageReceivedEvent;
+import com.marsss.commandType.ISlashCommand;
+import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-import com.marsss.callerphone.Callerphone;
+import java.awt.*;
+import java.io.IOException;
 
-import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.entities.MessageEmbed;
-
-public class Search implements ICommand {
+public class Search implements ISlashCommand {
     @Override
     public void runSlash(SlashCommandInteractionEvent e) {
         try {
