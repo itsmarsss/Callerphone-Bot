@@ -76,7 +76,7 @@ public class Colour implements ISlashCommand {
 
     @Override
     public String[] getTriggers() {
-        return "color,colorrgb,colorhex".split(",");
+        return "color,colour".split(",");
     }
 
     public static MessageEmbed color() {
