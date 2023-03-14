@@ -4,8 +4,10 @@ import com.marsss.callerphone.channelpool.ChannelPool;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.OnlineStatus;
+import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
+import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
@@ -97,9 +99,6 @@ public class CommandPrompt {
             } else if (cmd.equals("poolnum")) {
                 System.out.println("Currently there are " + ChannelPool.config.size() + " channel pools running.");
             } else if (cmd.equals("updateCMD")) {
-                update();
-                System.out.println("Done Updating");
-            } else if (cmd.equals("upsertCMD")) {
                 upsert();
                 System.out.println("Done Upserting");
             } else if (cmd.equals("help")) {
@@ -110,9 +109,8 @@ public class CommandPrompt {
                                 "Option 4: info = To get info of the bot\n" +
                                 "Option 5: recal = To read resources again\n" +
                                 "Option 6: poolnum = To see number of running pools\n" +
-                                "Option 7: updateCMD = Remove all slash commands\n" +
-                                "Option 8: upsertCMD = Upsert all slash commands\n" +
-                                "Option 9: help = UBCL help (this)\n\n" +
+                                "Option 7: updateCMD = Update all slash commands\n" +
+                                "Option 8: help = UBCL help (this)\n\n" +
                                 "Other: quickstart <msg> = To start the bot quicker");
             } else {
                 logger.warn("Unknown Command");
@@ -124,102 +122,192 @@ public class CommandPrompt {
         CommandListUpdateAction commands = jda.updateCommands();
 
         commands.addCommands(
-                Commands.slash()
+                Commands.slash("about", "About Callerphone")
+                        .setGuildOnly(true)
         );
 
-        jda.upsertCommand(new CommandData("about", "About Callerphone")).queue();
-        jda.upsertCommand(new CommandData("donate", "Help us out by donating")).queue();
-        jda.upsertCommand(new CommandData("invite", "Invite Callerphone")).queue();
-        jda.upsertCommand(new CommandData("ping", "Get the bot's ping")).queue();
-        jda.upsertCommand(new CommandData("profile", "Get your profile")
-                .addOptions(
-                        new OptionData(OptionType.USER, "target", "Target user").setRequired(true)
-                )).queue();
-        jda.upsertCommand(new CommandData("uptime", "Get the bot's uptime")).queue();
+        commands.addCommands(
+                Commands.slash("donate", "Help us out by donating")
+                        .setGuildOnly(true)
+        );
 
-        jda.upsertCommand(new CommandData("chat", "Chat with people from other servers")
+        commands.addCommands(
+                Commands.slash("invite", "Invite Callerphone")
+                        .setGuildOnly(true)
+        );
+
+        commands.addCommands(
+                Commands.slash("ping", "Get the bot's ping")
+                        .setGuildOnly(true)
+        );
+
+        commands.addCommands(
+                Commands.slash("about", "About Callerphone")
+                        .setGuildOnly(true)
+        );
+
+        commands.addCommands(
+                Commands.slash("profile", "Get your profile").addOptions(
+                                new OptionData(OptionType.USER, "target", "Target user").setRequired(true)
+                        )
+                        .setGuildOnly(true)
+        );
+
+        commands.addCommands(
+                Commands.slash("uptime", "Get the bot's uptime")
+                        .setGuildOnly(true)
+        );
+
+        commands.addCommands(
+                Commands.slash("chat", "Chat with people from other servers")
                         .addSubcommands(
                                 new SubcommandData("default", "Chat with people from other servers"),
                                 new SubcommandData("anonymous", "Chat anonymously"),
                                 new SubcommandData("familyfriendly", "Chat with swear word censoring"),
-                                new SubcommandData("ffandanon", "Chat family friendly and anonymously")))
-                .queue();
-        jda.upsertCommand(new CommandData("endchat", "End chatting with people from another server")).queue();
-        jda.upsertCommand(new CommandData("prefix", "Set in text prefix")
-                .addOptions(
-                        new OptionData(OptionType.STRING, "prefix", "Set prefix").setRequired(true)
-                )).queue();
-        jda.upsertCommand(new CommandData("reportchat", "Report a chat with people from another server")).queue();
+                                new SubcommandData("ffandanon", "Chat family friendly and anonymously")
+                        )
+                        .setGuildOnly(true)
+        );
 
-        jda.upsertCommand(new CommandData("endpool", "End a channel pool")).queue();
-        jda.upsertCommand(new CommandData("hostpool", "Host a channel pool")).queue();
-        jda.upsertCommand(new CommandData("joinpool", "Join a channel pool")
-                .addOptions(
-                        new OptionData(OptionType.STRING, "hostid", "Host channel's ID").setRequired(true),
-                        new OptionData(OptionType.STRING, "password", "Channel pool password (if given)")
-                )
-        ).queue();
-        jda.upsertCommand(new CommandData("leavepool", "Leave a channel pool")).queue();
-        jda.upsertCommand(new CommandData("poolparticipants", "View channels in a channel pool")).queue();
-        jda.upsertCommand(new CommandData("poolcap", "Set pool capacity")
-                .addOptions(
-                        new OptionData(OptionType.INTEGER, "capacity", "Pool capacity")
-                                .setMinValue(2)
-                                .setMaxValue(10)
-                                .setRequired(true)
-                )
-        ).queue();
-        jda.upsertCommand(new CommandData("poolkick", "Kick channel from pool")
-                .addOptions(
-                        new OptionData(OptionType.STRING, "target", "Target channel").setRequired(true)
-                )
-        ).queue();
-        jda.upsertCommand(new CommandData("poolpublicity", "Change visibility of pool")
-                .addOptions(
-                        new OptionData(OptionType.BOOLEAN, "public", "Publicity of pool").setRequired(true)
-                )
-        ).queue();
-        jda.upsertCommand(new CommandData("poolpassword", "Change password of pool")
-                .addOptions(
-                        new OptionData(OptionType.STRING, "password", "Password of pool").setRequired(true)
-                )
-        ).queue();
+        commands.addCommands(
+                Commands.slash("endchat", "End chatting with people from another server")
+                        .setGuildOnly(true)
+        );
 
-        jda.upsertCommand(new CommandData("channelinfo", "Get a channel's information")
-                .addOptions(
-                        new OptionData(OptionType.CHANNEL, "channel", "Target channel")
-                                .setRequired(true)
-                )
-        ).queue();
+        commands.addCommands(
+                Commands.slash("prefix", "Set in text prefix")
+                        .addOptions(
+                                new OptionData(OptionType.STRING, "prefix", "Set prefix").setRequired(true)
+                        )
+                        .setGuildOnly(true)
+        );
 
-        jda.upsertCommand(new CommandData("help", "Get some help")
-                .addOptions(
-                        new OptionData(OptionType.STRING, "term", "Search term")
-                )
-        ).queue();
+        commands.addCommands(
+                Commands.slash("reportchat", "Report a chat with people from another server")
+                        .setGuildOnly(true)
+        );
 
-        jda.upsertCommand(new CommandData("roleinfo", "Get a role's information")
-                .addOptions(
-                        new OptionData(OptionType.ROLE, "role", "Target role")
-                                .setRequired(true)
-                )
-        ).queue();
+        commands.addCommands(
+                Commands.slash("endpool", "End a channel pool")
+                        .setGuildOnly(true)
+                        .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.MANAGE_CHANNEL))
+        );
 
-        jda.upsertCommand(new CommandData("search", "Browse the internet from Discord")
-                .addOptions(
-                        new OptionData(OptionType.STRING, "query", "Search query")
-                                .setRequired(true)
-                )
-        ).queue();
+        commands.addCommands(
+                Commands.slash("hostpool", "Host a channel pool")
+                        .setGuildOnly(true)
+                        .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.MANAGE_CHANNEL))
+        );
 
-        jda.upsertCommand(new CommandData("serverinfo", "Get this server's information")).queue();
+        commands.addCommands(
+                Commands.slash("joinpool", "Join a channel pool")
+                        .addOptions(
+                                new OptionData(OptionType.STRING, "hostid", "Host channel's ID").setRequired(true),
+                                new OptionData(OptionType.STRING, "password", "Channel pool password (if given)")
+                        )
+                        .setGuildOnly(true)
+                        .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.MANAGE_CHANNEL))
+        );
 
-        jda.upsertCommand(new CommandData("userinfo", "Get a user's information")
-                .addOptions(
-                        new OptionData(OptionType.USER, "member", "Target member")
-                                .setRequired(true)
-                )
-        ).queue();
+        commands.addCommands(
+                Commands.slash("leavepool", "Leave a channel pool")
+                        .setGuildOnly(true)
+                        .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.MANAGE_CHANNEL))
+        );
+
+        commands.addCommands(
+                Commands.slash("poolparticipants", "View channels in a channel pool")
+                        .setGuildOnly(true)
+        );
+
+        commands.addCommands(
+                Commands.slash("poolcap", "Set pool capacity")
+                        .addOptions(
+                                new OptionData(OptionType.INTEGER, "capacity", "Pool capacity")
+                                        .setMinValue(2)
+                                        .setMaxValue(10)
+                                        .setRequired(true)
+                        )
+                        .setGuildOnly(true)
+                        .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.MANAGE_CHANNEL))
+        );
+
+        commands.addCommands(
+                Commands.slash("poolkick", "Kick channel from pool")
+                        .addOptions(
+                                new OptionData(OptionType.STRING, "target", "Target channel").setRequired(true)
+                        )
+                        .setGuildOnly(true)
+                        .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.MANAGE_CHANNEL))
+        );
+
+        commands.addCommands(
+                Commands.slash("poolpublicity", "Change visibility of pool")
+                        .addOptions(
+                                new OptionData(OptionType.BOOLEAN, "public", "Publicity of pool").setRequired(true)
+                        )
+                        .setGuildOnly(true)
+                        .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.MANAGE_CHANNEL))
+        );
+
+        commands.addCommands(
+                Commands.slash("poolpassword", "Change password of pool")
+                        .addOptions(
+                                new OptionData(OptionType.STRING, "password", "Password of pool").setRequired(true)
+                        )
+                        .setGuildOnly(true)
+                        .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.MANAGE_CHANNEL))
+        );
+
+        commands.addCommands(
+                Commands.slash("channelinfo", "Get a channel's information")
+                        .addOptions(
+                                new OptionData(OptionType.CHANNEL, "channel", "Target channel")
+                                        .setRequired(true)
+                        )
+                        .setGuildOnly(true)
+        );
+
+        commands.addCommands(
+                Commands.slash("help", "Get some help")
+                        .addOptions(
+                                new OptionData(OptionType.STRING, "term", "Search term")
+                        )
+        );
+
+        commands.addCommands(
+                Commands.slash("roleinfo", "Get a role's information")
+                        .addOptions(
+                                new OptionData(OptionType.ROLE, "role", "Target role")
+                                        .setRequired(true)
+                        )
+                        .setGuildOnly(true)
+        );
+
+        commands.addCommands(
+                Commands.slash("search", "Browse the internet from Discord")
+                        .addOptions(
+                                new OptionData(OptionType.STRING, "query", "Search query")
+                                        .setRequired(true)
+                        )
+                        .setGuildOnly(true)
+        );
+
+        commands.addCommands(
+                Commands.slash("serverinfo", "Get this server's information")
+                        .setGuildOnly(true)
+        );
+
+        commands.addCommands(
+                Commands.slash("userinfo", "Get a user's information")
+                        .addOptions(
+                                new OptionData(OptionType.USER, "member", "Target member")
+                                        .setRequired(true)
+                        )
+                        .setGuildOnly(true)
+        );
+
+        commands.queue();
     }
 
     private void setActivity(Scanner sc) {
