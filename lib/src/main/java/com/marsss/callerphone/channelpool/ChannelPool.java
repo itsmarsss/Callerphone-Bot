@@ -5,11 +5,11 @@ import com.marsss.callerphone.ToolSet;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.TextChannel;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
-import net.dv8tion.jda.api.interactions.components.Button;
-import net.dv8tion.jda.api.requests.restaction.MessageAction;
+import net.dv8tion.jda.api.interactions.components.buttons.Button;
+import net.dv8tion.jda.api.requests.restaction.MessageCreateAction;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -22,7 +22,7 @@ public class ChannelPool {
     public static final HashMap<String, String> parent = new HashMap<>();
     //public static final HashMap<String, ArrayList<String>> childr = new HashMap<>();
 
-    public static boolean permissionCheck(Member member, SlashCommandEvent e) {
+    public static boolean permissionCheck(Member member, SlashCommandInteractionEvent e) {
         if (member == null) {
             return true;
         }
@@ -254,15 +254,15 @@ public class ChannelPool {
                 handleChannelLeft(sender, id);
                 return;
             }
-            final MessageAction MESSAGE_ACTION = buildMessageAction(original, msg, id);
+            final MessageCreateAction MESSAGE_ACTION = buildMessageAction(original, msg, id);
             if (MESSAGE_ACTION != null) {
                 MESSAGE_ACTION.complete();
             }
         });
     }
 
-    private static MessageAction buildMessageAction(String original, String msg, String id) {
-        MessageAction ma;
+    private static MessageCreateAction buildMessageAction(String original, String msg, String id) {
+        MessageCreateAction ma;
 
         final TextChannel TEXT_CHANNEL = ToolSet.getTextChannel(id);
 
@@ -307,7 +307,7 @@ public class ChannelPool {
 
         ActionRow row = ActionRow.of(collection);
         actionrow.add(row);
-        ma = ma.setActionRows(actionrow);
+        ma = ma.setComponents(actionrow);
         return ma;
     }
 
@@ -329,7 +329,7 @@ public class ChannelPool {
                 systemBroadCast(IDhost, String.format(PoolResponse.LEFT_POOL.toString(), id));
                 continue;
             }
-            MessageAction ma = TEXT_CHANNEL.sendMessage(msg);
+            MessageCreateAction ma = TEXT_CHANNEL.sendMessage(msg);
             ma.complete();
         }
     }

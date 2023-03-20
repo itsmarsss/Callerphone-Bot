@@ -3,13 +3,15 @@ package com.marsss.callerphone;
 import com.marsss.callerphone.minigames.IMiniGame;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.*;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
-import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
-import net.dv8tion.jda.api.utils.AttachmentOption;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.api.utils.messages.MessageCreateData;
 
 import java.awt.*;
-import java.io.File;
 import java.text.CharacterIterator;
 import java.text.StringCharacterIterator;
 import java.util.LinkedList;
@@ -66,7 +68,7 @@ public class ToolSet {
         if (CHANNEL == null)
             return null;
 
-        if (!CHANNEL.getGuild().getSelfMember().hasPermission(CHANNEL, Permission.MESSAGE_WRITE)) {
+        if (!CHANNEL.getGuild().getSelfMember().hasPermission(CHANNEL, Permission.MESSAGE_SEND)) {
             return null;
         }
 
@@ -123,7 +125,7 @@ public class ToolSet {
         System.out.println("                    Welcome to Callerphone's Control Prompt");
     }
 
-    public static void sendPPAndTOS(GuildMessageReceivedEvent event) {
+    public static void sendPPAndTOS(MessageReceivedEvent event) {
         event.getMessage().replyEmbeds(
                 new EmbedBuilder()
                         .setAuthor("Must Read", null, event.getAuthor().getAvatarUrl())
@@ -135,7 +137,7 @@ public class ToolSet {
         ).queue();
     }
 
-    public static void sendPPAndTOS(SlashCommandEvent event) {
+    public static void sendPPAndTOS(SlashCommandInteractionEvent event) {
         event.replyEmbeds(
                 new EmbedBuilder()
                         .setAuthor("Must Read", null, event.getUser().getAvatarUrl())
@@ -147,18 +149,12 @@ public class ToolSet {
         ).queue();
     }
 
-    public static void sendCommandCooldown(GuildMessageReceivedEvent event) {
+    public static void sendCommandCooldown(MessageReceivedEvent event) {
         event.getMessage().reply(":warning: **Command Cooldown;** " + ((ToolSet.COMMAND_COOLDOWN - (System.currentTimeMillis() - Storage.getCmdCooldown(event.getAuthor()))) / 1000) + " second(s)").queue();
     }
 
-    public static void sendCommandCooldown(SlashCommandEvent event) {
+    public static void sendCommandCooldown(SlashCommandInteractionEvent event) {
         event.reply(":warning: **Command Cooldown;** " + ((ToolSet.COMMAND_COOLDOWN - (System.currentTimeMillis() - Storage.getCmdCooldown(event.getUser()))) / 1000) + " second(s)").queue();
-    }
-
-
-    public static void sendPrivateFile(User user, File file, String title) {
-        user.openPrivateChannel().queue((channel) ->
-                channel.sendFile(file, title + ".txt", AttachmentOption.SPOILER).queue());
     }
 
     public static void sendPrivateEmbed(User user, MessageEmbed embed) {
@@ -169,11 +165,11 @@ public class ToolSet {
 
     public static void sendPrivateMessage(User user, Message message) {
         user.openPrivateChannel().queue((channel) ->
-                channel.sendMessage(message).queue()
+                channel.sendMessage(MessageCreateData.fromMessage(message)).queue()
         );
     }
 
-    public static void sendPrivateGameMessageFrom(User user, Message message, IMiniGame game) {
+    public static void sendPrivateGameMessageFrom(User user, MessageCreateData message, IMiniGame game) {
         user.openPrivateChannel().queue((channel) -> {
                     game.setFromChannelId(channel.getId());
                     channel.sendMessage(message).queue((msg) -> {
@@ -183,7 +179,7 @@ public class ToolSet {
         );
     }
 
-    public static void sendPrivateGameMessageTo(User user, Message message, IMiniGame game) {
+    public static void sendPrivateGameMessageTo(User user, MessageCreateData message, IMiniGame game) {
         user.openPrivateChannel().queue((channel) -> {
                     game.setToChannelId(channel.getId());
                     channel.sendMessage(message).queue((msg) -> {

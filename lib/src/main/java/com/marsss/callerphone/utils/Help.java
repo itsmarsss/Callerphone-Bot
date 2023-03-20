@@ -1,43 +1,27 @@
 package com.marsss.callerphone.utils;
 
-import java.awt.Color;
-import java.util.List;
-
+import com.marsss.callerphone.Callerphone;
 import com.marsss.callerphone.Storage;
 import com.marsss.callerphone.ToolSet;
-import com.marsss.callerphone.channelpool.commands.*;
-import com.marsss.callerphone.tccallerphone.commands.*;
-import com.marsss.callerphone.users.commands.Profile;
-import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.MessageEmbed;
-
-import com.marsss.ICommand;
-import com.marsss.callerphone.Callerphone;
 import com.marsss.callerphone.bot.*;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
-import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import com.marsss.callerphone.channelpool.commands.*;
+import com.marsss.callerphone.tccallerphone.commands.Chat;
+import com.marsss.callerphone.tccallerphone.commands.EndChat;
+import com.marsss.callerphone.tccallerphone.commands.Prefix;
+import com.marsss.callerphone.tccallerphone.commands.ReportChat;
+import com.marsss.callerphone.users.commands.Profile;
+import com.marsss.commandType.ISlashCommand;
+import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 
-public class Help implements ICommand {
+import java.awt.*;
+import java.util.List;
 
+public class Help implements ISlashCommand {
     @Override
-    public void runCommand(GuildMessageReceivedEvent e) {
-        final Message MESSAGE = e.getMessage();
-        final String CONTENT = MESSAGE.getContentRaw();
-        final String[] ARGS = CONTENT.split("\\s+");
-
-        boolean admin = Storage.isAdmin(e.getAuthor().getId());
-        if (ARGS.length > 1) {
-            MESSAGE.replyEmbeds(help(ARGS[1], admin)).queue();
-            return;
-        }
-
-        MESSAGE.replyEmbeds(help("", admin)).queue();
-    }
-
-    @Override
-    public void runSlash(SlashCommandEvent e) {
+    public void runSlash(SlashCommandInteractionEvent e) {
         final boolean ADMIN = Storage.isAdmin(e.getMember().getId());
         final List<OptionMapping> PARAM = e.getOptions();
         if (PARAM.size() == 0) {

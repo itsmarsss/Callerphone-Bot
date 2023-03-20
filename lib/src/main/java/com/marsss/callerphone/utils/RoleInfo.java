@@ -1,52 +1,21 @@
-package com.marsss.callerphone.dormant;
+package com.marsss.callerphone.utils;
 
-import java.awt.Color;
-import java.time.format.DateTimeFormatter;
-import java.util.List;
-
-import com.marsss.ICommand;
 import com.marsss.callerphone.Callerphone;
-
+import com.marsss.commandType.ISlashCommand;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.Role;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
-import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 
-@SuppressWarnings("ConstantConditions")
-public class RoleInfo implements ICommand {
+import java.awt.*;
+import java.time.format.DateTimeFormatter;
 
-    @Override
-    public void runCommand(GuildMessageReceivedEvent e) {
-        final Message MESSAGE = e.getMessage();
-        final String CONTENT = MESSAGE.getContentRaw();
-        final String[] ARGS = CONTENT.split("\\s+");
-        final List<Role> ROLES = MESSAGE.getMentionedRoles();
-        Role role;
-
-        try {
-            role = Callerphone.jda.getRoleById(Long.parseLong(ARGS[1]));
-        }catch(Exception ex) {
-            ex.printStackTrace();
-            role = null;
-        }
-
-        if(ROLES.size() > 0) {
-            if(role == null)
-                role = ROLES.get(0);
-        }else if(role == null) {
-            MESSAGE.reply("Please specify a role").queue();
-            return;
-        }
-
-        e.getMessage().replyEmbeds(roleInfo(role)).queue();
-    }
+public class RoleInfo implements ISlashCommand {
 
     @Override
-    public void runSlash(SlashCommandEvent e) {
+    public void runSlash(SlashCommandInteractionEvent e) {
         e.replyEmbeds(roleInfo(e.getOption("role").getAsRole())).queue();
     }
 

@@ -1,17 +1,12 @@
 package com.marsss.callerphone.minigames.commands;
 
-import com.marsss.ICommand;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
-import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import com.marsss.commandType.ISlashCommand;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 
-public class ShowMiniGames implements ICommand {
-    @Override
-    public void runCommand(GuildMessageReceivedEvent e) {
-
-    }
+public class ShowMiniGames implements ISlashCommand {
 
     @Override
-    public void runSlash(SlashCommandEvent e) {
+    public void runSlash(SlashCommandInteractionEvent e) {
 
     }
 

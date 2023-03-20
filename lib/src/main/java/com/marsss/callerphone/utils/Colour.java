@@ -1,57 +1,36 @@
 package com.marsss.callerphone.utils;
 
+import com.marsss.callerphone.Callerphone;
+import com.marsss.commandType.ISlashCommand;
+import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+
+import java.awt.*;
 import java.util.Random;
 
-import com.marsss.ICommand;
-import com.marsss.callerphone.Callerphone;
-
-import java.awt.Color;
-
-import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.MessageEmbed;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
-import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
-
-public class Colour implements ICommand {
-
-
+public class Colour implements ISlashCommand {
     @Override
-    public void runCommand(GuildMessageReceivedEvent e) {
-        final Message MESSAGE = e.getMessage();
-        final String CONTENT = MESSAGE.getContentRaw();
-        final String[] ARGS = CONTENT.split("\\s+");
+    public void runSlash(SlashCommandInteractionEvent e) {
+        switch (e.getSubcommandName()) {
+            case "random":
+                e.replyEmbeds(color()).queue();
+                break;
 
-        switch (ARGS[0].toLowerCase().replace(Callerphone.config.getPrefix(), "")) {
-
-
-            case "color":
-                MESSAGE.replyEmbeds(color()).queue();
+            case "hex":
+                e.replyEmbeds(colorhex(e.getOption("hex").getAsString())).queue();
                 break;
 
 
-            case "colorhex":
-                if (ARGS.length < 2) {
-                    MESSAGE.reply("Please provide hex value").queue();
-                }
-                MESSAGE.replyEmbeds(colorhex(ARGS[1])).queue();
-                break;
-
-
-            case "colorrgb":
-                if (ARGS.length < 4) {
-                    MESSAGE.reply("Please provide r g b values").queue();
-                    break;
-                }
-                MESSAGE.replyEmbeds(colorrgb(ARGS[1], ARGS[2], ARGS[3])).queue();
+            case "rgb":
+                e.replyEmbeds(colorrgb(
+                        e.getOption("r").getAsString(),
+                        e.getOption("g").getAsString(),
+                        e.getOption("b").getAsString())
+                ).queue();
                 break;
 
         }
-    }
-
-    @Override
-    public void runSlash(SlashCommandEvent event) {
-
     }
 
     public static MessageEmbed colorrgb(String r, String g, String b) {
@@ -97,7 +76,7 @@ public class Colour implements ICommand {
 
     @Override
     public String[] getTriggers() {
-        return "color,colorrgb,colorhex".split(",");
+        return "color,colour".split(",");
     }
 
     public static MessageEmbed color() {

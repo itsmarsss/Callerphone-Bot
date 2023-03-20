@@ -4,17 +4,18 @@ import com.marsss.callerphone.Callerphone;
 import com.marsss.callerphone.Storage;
 import com.marsss.callerphone.minigames.MiniGameStatus;
 import com.marsss.callerphone.minigames.games.TicTacToe;
-import net.dv8tion.jda.api.entities.MessageChannel;
-import net.dv8tion.jda.api.events.interaction.ButtonClickEvent;
+import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
+import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.exceptions.ErrorHandler;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.requests.ErrorResponse;
+import net.dv8tion.jda.api.utils.messages.MessageEditData;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.TimeUnit;
 
 public class OnButtonClick extends ListenerAdapter {
-    public void onButtonClick(@NotNull ButtonClickEvent event) {
+    public void onButtonInteraction(@NotNull ButtonInteractionEvent event) {
         String[] param = event.getButton().getId().split("-");
 
 
@@ -37,7 +38,7 @@ public class OnButtonClick extends ListenerAdapter {
             MessageChannel channel = Callerphone.jda.getPrivateChannelById(game.getFromChannelId());
 
             channel.retrieveMessageById(game.getFromMessageId()).queue((message) -> {
-                message.editMessage(game.getMessageForFrom()).queue();
+                message.editMessage(MessageEditData.fromCreateData(game.getMessageForFrom())).queue();
                 channel.sendMessage("You've got a game!").queue((msg) -> {
                     msg.delete().queueAfter(1, TimeUnit.SECONDS);
                 });
@@ -58,7 +59,7 @@ public class OnButtonClick extends ListenerAdapter {
             MessageChannel channel = Callerphone.jda.getPrivateChannelById(game.getToChannelId());
 
             channel.retrieveMessageById(game.getToMessageId()).queue((message) -> {
-                message.editMessage(game.getMessageForTo()).queue();
+                message.editMessage(MessageEditData.fromCreateData(game.getMessageForTo())).queue();
                 channel.sendMessage("You've got a game!").queue((msg) -> {
                     msg.delete().queueAfter(1, TimeUnit.SECONDS);
                 });
@@ -77,7 +78,7 @@ public class OnButtonClick extends ListenerAdapter {
                 MessageChannel channel = Callerphone.jda.getPrivateChannelById(game.getFromChannelId());
 
                 channel.retrieveMessageById(game.getFromMessageId()).queue((message) -> {
-                    message.editMessage(game.getMessageForFrom()).queue();
+                    message.editMessage(MessageEditData.fromCreateData(game.getMessageForFrom())).queue();
                 }, new ErrorHandler().handle(ErrorResponse.UNKNOWN_MESSAGE, (e) -> {
                     channel.sendMessage(game.getMessageForFrom()).queue();
                 }));
@@ -85,7 +86,7 @@ public class OnButtonClick extends ListenerAdapter {
                 MessageChannel channel = Callerphone.jda.getPrivateChannelById(game.getToChannelId());
 
                 channel.retrieveMessageById(game.getToMessageId()).queue((message) -> {
-                    message.editMessage(game.getMessageForTo()).queue();
+                    message.editMessage(MessageEditData.fromCreateData(game.getMessageForTo())).queue();
                 }, new ErrorHandler().handle(ErrorResponse.UNKNOWN_MESSAGE, (e) -> {
                     channel.sendMessage(game.getMessageForTo()).queue();
                 }));
@@ -99,13 +100,11 @@ public class OnButtonClick extends ListenerAdapter {
         event.deferEdit().queue();
 
         if(game.getStage() == 9) {
-            event.getMessage().editMessage(game.getBoardWithMessage("Tie Game!")).queue();
+            event.getMessage().editMessage(MessageEditData.fromCreateData(game.getBoardWithMessage("Tie Game!"))).queue();
             Storage.getUser(game.getFromUserId()).removeGame(game.getID());
             Storage.getUser(game.getToUserId()).removeGame(game.getID());
         }else{
-            event.getMessage().editMessage(game.getBoardWithMessage("Game Sent!")).queue();
+            event.getMessage().editMessage(MessageEditData.fromCreateData(game.getBoardWithMessage("Game Sent!"))).queue();
         }
-
-
     }
 }

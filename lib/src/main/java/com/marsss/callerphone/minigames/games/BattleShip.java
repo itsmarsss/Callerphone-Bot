@@ -1,7 +1,6 @@
 package com.marsss.callerphone.minigames.games;
 
 import com.marsss.callerphone.minigames.IMiniGame;
-import net.dv8tion.jda.api.entities.Message;
 
 public class BattleShip implements IMiniGame {
     @Override

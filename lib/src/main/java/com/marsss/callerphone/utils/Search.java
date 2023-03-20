@@ -1,44 +1,22 @@
-package com.marsss.callerphone.dormant;
+package com.marsss.callerphone.utils;
 
-import java.awt.Color;
-import java.io.IOException;
-
-import com.marsss.ICommand;
+import com.marsss.callerphone.Callerphone;
 import com.marsss.callerphone.utils.Colour;
-import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
-import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import com.marsss.commandType.ISlashCommand;
+import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-import com.marsss.callerphone.Callerphone;
+import java.awt.*;
+import java.io.IOException;
 
-import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.entities.MessageEmbed;
-
-public class Search implements ICommand {
-
+public class Search implements ISlashCommand {
     @Override
-    public void runCommand(GuildMessageReceivedEvent e) {
-        final Message MESSAGE = e.getMessage();
-        final String CONTENT = MESSAGE.getContentRaw();
-        if (CONTENT.substring(8).equals("")) {
-            MESSAGE.reply("Please enter a search query!").queue();
-            return;
-        }
-
-        try {
-            MESSAGE.replyEmbeds(search(CONTENT.substring(8))).queue();
-        } catch (IOException e1) {
-            e1.printStackTrace();
-            MESSAGE.reply("Error getting links").queue();
-        }
-    }
-
-    @Override
-    public void runSlash(SlashCommandEvent e) {
+    public void runSlash(SlashCommandInteractionEvent e) {
         try {
             e.replyEmbeds(search(e.getOption("query").getAsString())).queue();
         } catch (IOException e1) {

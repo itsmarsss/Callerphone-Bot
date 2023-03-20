@@ -1,26 +1,18 @@
 package com.marsss.callerphone.bot;
 
-import java.awt.Color;
-import java.time.format.DateTimeFormatter;
-
-import com.marsss.ICommand;
+import com.marsss.commandType.ISlashCommand;
 import com.marsss.callerphone.Callerphone;
-
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.MessageEmbed;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
-import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 
-public class BotInfo implements ICommand {
+import java.awt.*;
+import java.time.format.DateTimeFormatter;
 
+public class BotInfo implements ISlashCommand {
     @Override
-    public void runCommand(GuildMessageReceivedEvent e) {
-        e.getMessage().replyEmbeds(botInfo()).queue();
-    }
-
-    @Override
-    public void runSlash(SlashCommandEvent e) {
+    public void runSlash(SlashCommandInteractionEvent e) {
         e.replyEmbeds(botInfo()).setEphemeral(true).queue();
     }
 

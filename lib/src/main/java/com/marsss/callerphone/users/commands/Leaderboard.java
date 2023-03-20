@@ -1,17 +1,11 @@
 package com.marsss.callerphone.users.commands;
 
-import com.marsss.ICommand;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
-import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import com.marsss.commandType.ISlashCommand;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 
-public class Leaderboard implements ICommand {
+public class Leaderboard implements ISlashCommand {
     @Override
-    public void runCommand(GuildMessageReceivedEvent e) {
-
-    }
-
-    @Override
-    public void runSlash(SlashCommandEvent e) {
+    public void runSlash(SlashCommandInteractionEvent e) {
 
     }
 

@@ -1,24 +1,18 @@
 package com.marsss.callerphone.channelpool.commands;
 
-import com.marsss.ICommand;
 import com.marsss.callerphone.Callerphone;
 import com.marsss.callerphone.ToolSet;
 import com.marsss.callerphone.channelpool.ChannelPool;
 import com.marsss.callerphone.channelpool.PoolResponse;
-import net.dv8tion.jda.api.entities.TextChannel;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
-import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import com.marsss.commandType.ISlashCommand;
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 
 import java.util.LinkedList;
 
-public class PoolParticipants implements ICommand {
+public class PoolParticipants implements ISlashCommand {
     @Override
-    public void runCommand(GuildMessageReceivedEvent e) {
-        e.getMessage().reply(poolParticipants(e.getChannel().getId())).queue();
-    }
-
-    @Override
-    public void runSlash(SlashCommandEvent e) {
+    public void runSlash(SlashCommandInteractionEvent e) {
         e.reply(poolParticipants(e.getChannel().getId())).queue();
     }
 

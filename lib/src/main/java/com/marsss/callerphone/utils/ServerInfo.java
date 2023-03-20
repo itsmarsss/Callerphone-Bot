@@ -1,27 +1,18 @@
-package com.marsss.callerphone.dormant;
+package com.marsss.callerphone.utils;
 
-import java.awt.Color;
-import java.time.format.DateTimeFormatter;
-
-import com.marsss.ICommand;
 import com.marsss.callerphone.Callerphone;
-
+import com.marsss.commandType.ISlashCommand;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.MessageEmbed;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
-import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 
-@SuppressWarnings("ConstantConditions")
-public class ServerInfo implements ICommand {
+import java.awt.*;
+import java.time.format.DateTimeFormatter;
 
+public class ServerInfo implements ISlashCommand {
     @Override
-    public void runCommand(GuildMessageReceivedEvent e) {
-        e.getMessage().replyEmbeds(serverInfo(e.getGuild())).queue();
-    }
-
-    @Override
-    public void runSlash(SlashCommandEvent e) {
+    public void runSlash(SlashCommandInteractionEvent e) {
         e.replyEmbeds(serverInfo(e.getGuild())).queue();
     }
 
@@ -74,8 +65,7 @@ public class ServerInfo implements ICommand {
             ex.printStackTrace();
         }
 
-        @SuppressWarnings("deprecation")
-        final String REGION = gld.getRegionRaw();
+        final String REGION = gld.retrieveRegions().toString();
         final String DATECREATED = gld.getTimeCreated().format(DateTimeFormatter.RFC_1123_DATE_TIME);
 
         EmbedBuilder SvrInfEmd = new EmbedBuilder()

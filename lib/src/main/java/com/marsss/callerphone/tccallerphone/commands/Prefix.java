@@ -1,32 +1,15 @@
 package com.marsss.callerphone.tccallerphone.commands;
 
-import com.marsss.ICommand;
+import com.marsss.commandType.ISlashCommand;
 import com.marsss.callerphone.Callerphone;
-import com.marsss.callerphone.Response;
 import com.marsss.callerphone.Storage;
 import com.marsss.callerphone.tccallerphone.ChatResponse;
 import net.dv8tion.jda.api.entities.User;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
-import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 
-public class Prefix implements ICommand {
-
+public class Prefix implements ISlashCommand {
     @Override
-    public void runCommand(GuildMessageReceivedEvent e) {
-        final String[] ARGS = e.getMessage().getContentRaw().split("\\s+");
-
-        if (ARGS.length == 1) {
-            e.getMessage().reply(Response.MISSING_PARAM.toString()).queue();
-            return;
-        }
-
-        final String PREFIX = ARGS[1];
-
-        e.getMessage().reply(setPrefix(e.getAuthor(), PREFIX)).queue();
-    }
-
-    @Override
-    public void runSlash(SlashCommandEvent e) {
+    public void runSlash(SlashCommandInteractionEvent e) {
         final String PREFIX = e.getOption("prefix").getAsString();
 
         e.reply(setPrefix(e.getUser(), PREFIX)).queue();

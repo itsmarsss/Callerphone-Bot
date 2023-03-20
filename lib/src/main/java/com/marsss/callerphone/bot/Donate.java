@@ -1,23 +1,17 @@
 package com.marsss.callerphone.bot;
 
-import com.marsss.ICommand;
+import com.marsss.commandType.ISlashCommand;
 import com.marsss.callerphone.Callerphone;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
-import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 
 import java.awt.*;
 
-public class Donate implements ICommand {
+public class Donate implements ISlashCommand {
 
     @Override
-    public void runCommand(GuildMessageReceivedEvent e) {
-        e.getMessage().replyEmbeds(donate()).queue();
-    }
-
-    @Override
-    public void runSlash(SlashCommandEvent e) {
+    public void runSlash(SlashCommandInteractionEvent e) {
         e.replyEmbeds(donate()).setEphemeral(true).queue();
     }
 

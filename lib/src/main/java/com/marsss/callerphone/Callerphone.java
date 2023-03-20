@@ -12,6 +12,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import com.marsss.ICommand;
 import com.marsss.callerphone.channelpool.commands.*;
 import com.marsss.callerphone.minigames.IMiniGame;
 import com.marsss.callerphone.minigames.commands.PlayMiniGame;
@@ -26,11 +27,10 @@ import com.marsss.callerphone.tccallerphone.TCCallerphone;
 import com.marsss.callerphone.tccallerphone.TCCallerphoneListener;
 import com.marsss.callerphone.tccallerphone.commands.*;
 import net.dv8tion.jda.api.*;
-import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.marsss.ICommand;
 import com.marsss.callerphone.bot.*;
 import com.marsss.callerphone.utils.*;
 import com.marsss.callerphone.listeners.*;
@@ -67,7 +67,7 @@ public class Callerphone {
             GatewayIntent.GUILD_MESSAGES,
             GatewayIntent.GUILD_MESSAGE_REACTIONS,
             GatewayIntent.GUILD_VOICE_STATES,
-            GatewayIntent.GUILD_EMOJIS,
+            GatewayIntent.GUILD_EMOJIS_AND_STICKERS,
             GatewayIntent.GUILD_INVITES,
             GatewayIntent.DIRECT_MESSAGES);
 
@@ -132,13 +132,13 @@ public class Callerphone {
 
 
             cmdLst.add(new BotInfo());
-            //cmdLst.add(new ChannelInfo());
+            cmdLst.add(new ChannelInfo());
             cmdLst.add(new Colour());
             cmdLst.add(new Help());
-            //cmdLst.add(new RoleInfo());
-            //cmdLst.add(new Search());
-            //cmdLst.add(new ServerInfo());
-            //cmdLst.add(new UserInfo());
+            cmdLst.add(new RoleInfo());
+            cmdLst.add(new Search());
+            cmdLst.add(new ServerInfo());
+            cmdLst.add(new UserInfo());
 
             cmdLst.add(new Chat());
             cmdLst.add(new EndChat());
@@ -174,11 +174,10 @@ public class Callerphone {
             gameLst.add(new Connect4());
             gameLst.add(new WordSearch());
 
-            jda.addEventListener(new CommandListener());
+            jda.addEventListener(new OnMessage());
             jda.addEventListener(new OnButtonClick());
             jda.addEventListener(new OnOtherEvent());
             jda.addEventListener(new OnSlashCommand());
-            jda.addEventListener(new OnPrivateMessage());
             jda.addEventListener(new TCCallerphoneListener());
             jda.addEventListener(new ChannelPoolListener());
 

@@ -2,7 +2,9 @@ package com.marsss.callerphone.tccallerphone;
 
 import com.marsss.callerphone.Callerphone;
 import com.marsss.callerphone.ToolSet;
-import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
+import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
+import net.dv8tion.jda.api.utils.FileUpload;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -13,7 +15,7 @@ public class TCCallerphone {
 
     public static final ArrayList<ConvoStorage> convos = new ArrayList<>();
 
-    public static ChatStatus onCallCommand(TextChannel tcchannel, boolean cens, boolean anon) {
+    public static ChatStatus onCallCommand(MessageChannelUnion tcchannel, boolean cens, boolean anon) {
         final Logger logger = LoggerFactory.getLogger(TCCallerphone.class);
         final String CHANNELID = tcchannel.getId();
 
@@ -59,7 +61,7 @@ public class TCCallerphone {
         return ChatStatus.NON_EXISTENT;
     }
 
-    public static String onEndCallCommand(TextChannel channel) {
+    public static String onEndCallCommand(MessageChannelUnion channel) {
         if (!hasCall(channel.getId())) {
             return ChatResponse.NO_CALL.toString();
         }
@@ -119,7 +121,7 @@ public class TCCallerphone {
 
         final TextChannel TEMP_CHANNEL = ToolSet.getTextChannel(Callerphone.config.getTempChatChannel());
         if (TEMP_CHANNEL != null) {
-            TEMP_CHANNEL.sendMessage("**ID:** " + ID).addFile(dataString.toString().getBytes(), ID + ".txt").queue();
+            TEMP_CHANNEL.sendMessage("**ID:** " + ID).addFiles(FileUpload.fromData(dataString.toString().getBytes(), ID + ".txt")).queue();
         }
     }
     private static void report(ArrayList<String> data, String callerID, String receiverID) {
@@ -137,7 +139,7 @@ public class TCCallerphone {
 
         final TextChannel REPORT_CHANNEL = ToolSet.getTextChannel(Callerphone.config.getReportChatChannel());
         if (REPORT_CHANNEL != null) {
-            REPORT_CHANNEL.sendMessage("**ID:** " + ID).addFile(dataString.toString().getBytes(), ID + ".txt").queue();
+            REPORT_CHANNEL.sendMessage("**ID:** " + ID).addFiles(FileUpload.fromData(dataString.toString().getBytes(), ID + ".txt")).queue();
         }
     }
 

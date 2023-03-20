@@ -1,25 +1,19 @@
 package com.marsss.callerphone.tccallerphone.commands;
 
-import com.marsss.ICommand;
+import com.marsss.commandType.ISlashCommand;
 import com.marsss.callerphone.Callerphone;
 import com.marsss.callerphone.tccallerphone.ChatResponse;
 import com.marsss.callerphone.tccallerphone.TCCallerphone;
-import net.dv8tion.jda.api.entities.TextChannel;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
-import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 
-public class EndChat implements ICommand {
+public class EndChat implements ISlashCommand {
     @Override
-    public void runCommand(GuildMessageReceivedEvent e) {
-        e.getMessage().reply(endChat(e.getChannel())).queue();
+    public void runSlash(SlashCommandInteractionEvent e) {
+        e.reply(endChat(e.getChannel())).queue();
     }
 
-    @Override
-    public void runSlash(SlashCommandEvent e) {
-        e.reply(endChat(e.getTextChannel())).queue();
-    }
-
-    private String endChat(TextChannel channel) {
+    private String endChat(MessageChannelUnion channel) {
         if(!TCCallerphone.hasCall(channel.getId())) {
             return ChatResponse.NO_CALL.toString();
         }

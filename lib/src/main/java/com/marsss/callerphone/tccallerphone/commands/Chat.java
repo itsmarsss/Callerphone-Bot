@@ -1,54 +1,30 @@
 package com.marsss.callerphone.tccallerphone.commands;
 
-import com.marsss.ICommand;
+import com.marsss.commandType.ISlashCommand;
 import com.marsss.callerphone.Callerphone;
 import com.marsss.callerphone.Response;
 import com.marsss.callerphone.tccallerphone.ChatResponse;
 import com.marsss.callerphone.tccallerphone.ChatStatus;
 import com.marsss.callerphone.tccallerphone.TCCallerphone;
-import net.dv8tion.jda.api.entities.TextChannel;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
-import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 
-public class Chat implements ICommand {
-
+public class Chat implements ISlashCommand {
     @Override
-    public void runCommand(GuildMessageReceivedEvent e) {
-        final String MESSAGE = e.getMessage().getContentRaw();
-        boolean anon = MESSAGE.contains("anon");
-        boolean famfri = MESSAGE.contains("family");
-
-        ChatStatus stat = (famfri ? chatFamilyFriendly(e.getChannel(), anon) : chatUncensored(e.getChannel(), anon));
-
-        if (stat == ChatStatus.CONFLICT) {
-            e.getMessage().reply(ChatResponse.ALREADY_CALL.toString()).queue();
-        } else if (stat == ChatStatus.NON_EXISTENT) {
-            e.getMessage().reply(ChatResponse.NO_PORT.toString()).queue();
-        } else if (stat == ChatStatus.SUCCESS_RECEIVER) {
-            e.getMessage().reply(ChatResponse.CALLING.toString()).queue();
-            e.getChannel().sendMessage(ChatResponse.PICKED_UP.toString()).queue();
-        } else if (stat == ChatStatus.SUCCESS_CALLER) {
-            e.getMessage().reply(ChatResponse.CALLING.toString()).queue();
-        } else {
-            e.getMessage().reply(Response.ERROR.toString()).queue();
-        }
-    }
-
-    @Override
-    public void runSlash(SlashCommandEvent e) {
+    public void runSlash(SlashCommandInteractionEvent e) {
         ChatStatus stat = null;
         switch (e.getSubcommandName()) {
             case "default":
-                stat = chatUncensored(e.getTextChannel(), false);
+                stat = chatUncensored(e.getChannel(), false);
                 break;
             case "anonymous":
-                stat = chatUncensored(e.getTextChannel(), true);
+                stat = chatUncensored(e.getChannel(), true);
                 break;
             case "familyfriendly":
-                stat = chatFamilyFriendly(e.getTextChannel(), false);
+                stat = chatFamilyFriendly(e.getChannel(), false);
                 break;
             case "ffandanon":
-                stat = chatFamilyFriendly(e.getTextChannel(), true);
+                stat = chatFamilyFriendly(e.getChannel(), true);
                 break;
         }
 
@@ -58,7 +34,7 @@ public class Chat implements ICommand {
             e.reply(ChatResponse.NO_PORT.toString()).setEphemeral(true).queue();
         } else if (stat == ChatStatus.SUCCESS_RECEIVER) {
             e.reply(ChatResponse.CALLING.toString()).queue();
-            e.getTextChannel().sendMessage(ChatResponse.PICKED_UP.toString()).queue();
+            e.getChannel().sendMessage(ChatResponse.PICKED_UP.toString()).queue();
         } else if (stat == ChatStatus.SUCCESS_CALLER) {
             e.reply(ChatResponse.CALLING.toString()).queue();
         } else {
@@ -66,14 +42,14 @@ public class Chat implements ICommand {
         }
     }
 
-    private ChatStatus chatUncensored(TextChannel channel, boolean anon) {
+    private ChatStatus chatUncensored(MessageChannelUnion channel, boolean anon) {
         if (TCCallerphone.hasCall(channel.getId())) {
             return ChatStatus.CONFLICT;
         }
         return TCCallerphone.onCallCommand(channel, false, anon);
     }
 
-    private ChatStatus chatFamilyFriendly(TextChannel channel, boolean anon) {
+    private ChatStatus chatFamilyFriendly(MessageChannelUnion channel, boolean anon) {
         if (TCCallerphone.hasCall(channel.getId())) {
             return ChatStatus.CONFLICT;
         }
