@@ -7,11 +7,13 @@ public class MIBBottle {
     private String uuid;
     private LinkedList<String> participantID;
     private LinkedList<String> page;
+    private long timeSent;
 
     public MIBBottle(String participantID, String page) {
         uuid = UUID.randomUUID().toString();
         addParticipant(participantID);
         addPage(page);
+        timeSent = System.currentTimeMillis();
     }
 
     public void addParticipant(String participantID) {
@@ -44,5 +46,13 @@ public class MIBBottle {
 
     public void getPage(LinkedList<String> page) {
         this.page = page;
+    }
+
+    public long getTimeSent() {
+        return timeSent;
+    }
+
+    public void setTimeSent(long timeSent) {
+        this.timeSent = timeSent;
     }
 }
