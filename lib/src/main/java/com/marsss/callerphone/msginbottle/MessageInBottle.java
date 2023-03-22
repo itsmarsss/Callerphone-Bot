@@ -11,7 +11,7 @@ public class MessageInBottle {
 
     public static final HashMap<String, MIBBottle> bottles = new HashMap<>();
 
-    public MIBStatus sendBottle(String id, String page) {
+    public static MIBStatus sendBottle(String id, String page) {
         if(Storage.getMIBSendCoolDown(id)-System.currentTimeMillis() > 86400000) {
             return MIBStatus.RATE_LIMITED;
         }
@@ -23,7 +23,7 @@ public class MessageInBottle {
         return MIBStatus.SENT;
     }
 
-    public MIBBottle findBottle(String id) {
+    public static MIBBottle findBottle(String id) {
         if(Storage.getMIBFindCoolDown(id)-System.currentTimeMillis() > 43200000) {
             return null;
         }
@@ -45,7 +45,7 @@ public class MessageInBottle {
         return bottle;
     }
 
-    public MIBBottle getBottle(String uuid) {
+    public static MIBBottle getBottle(String uuid) {
         return bottles.get(uuid);
     }
 
