@@ -1,6 +1,7 @@
 package com.marsss.callerphone.channelpool.commands;
 
 import com.marsss.callerphone.channelpool.ChannelPool;
+import com.marsss.callerphone.channelpool.PoolResponse;
 import com.marsss.commandType.ISlashCommand;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
@@ -15,42 +16,44 @@ public class PoolSettings implements ISlashCommand {
     @Override
     public void runSlash(SlashCommandInteractionEvent e) {
 
-        StringSelectMenu publicity = StringSelectMenu.create("publicity")
-                .setRequiredRange(1, 1)
-                .addOption("True", "true")
-                .addOption("False", "false")
-                .setDefaultValues(ChannelPool.getPublicity(e.getChannel().getId()))
+        if (!ChannelPool.isHost(e.getChannel().getId())) {
+            e.reply(PoolResponse.NOT_HOSTING.toString()).setEphemeral(true).queue();
+            return;
+        }
+
+        TextInput publicity = TextInput.create("publicity", "Pool Publicity (True | False)", TextInputStyle.SHORT)
+                .setPlaceholder("Set pool publicity here")
+                .setMinLength(4)
+                .setMaxLength(5)
+                .setValue(ChannelPool.getPublicity(e.getChannel().getId()))
                 .build();
 
-        TextInput password = TextInput.create("password", "Pool Password", TextInputStyle.SHORT)
+        TextInput.Builder passwordBuilder = TextInput.create("password", "Pool Password", TextInputStyle.SHORT)
                 .setPlaceholder("Set pool password here")
-                .setValue(ChannelPool.getPassword(e.getChannel().getId()))
+                .setMinLength(5)
+                .setMaxLength(30)
+                .setRequired(false);
+
+        String pwd = ChannelPool.getPassword(e.getChannel().getId());
+
+        if(!pwd.isEmpty()) {
+            passwordBuilder.setValue(pwd);
+        }
+
+        TextInput password = passwordBuilder.build();
+
+        TextInput capacity = TextInput.create("capacity", "Pool Capacity (1-10)", TextInputStyle.SHORT)
+                .setPlaceholder("Set pool capacity here")
+                .setMinLength(1)
+                .setMaxLength(2)
+                .setValue(String.valueOf(ChannelPool.getCapacity(e.getChannel().getId())))
                 .build();
 
-        StringSelectMenu capacity = StringSelectMenu.create("capacity")
-                .setRequiredRange(1, 1)
-                .addOption("1", "1")
-                .addOption("2", "2")
-                .addOption("3", "3")
-                .addOption("4", "4")
-                .addOption("5", "5")
-                .addOption("6", "6")
-                .addOption("7", "7")
-                .addOption("8", "8")
-                .addOption("9", "9")
-                .addOption("10", "10")
-                .setDefaultValues(String.valueOf(ChannelPool.getCapacity(e.getChannel().getId())))
-                .build();
-
-        Modal modal = Modal.create("poolConfig", "Pool Channel Settings")
+        Modal modal = Modal.create("poolSettings", "Pool Channel Settings")
                 .addComponents(ActionRow.of(publicity), ActionRow.of(password), ActionRow.of(capacity))
                 .build();
 
         e.replyModal(modal).queue();
-    }
-
-    private String poolProperties() {
-        return "N/A";
     }
 
     @Override
@@ -60,6 +63,6 @@ public class PoolSettings implements ISlashCommand {
 
     @Override
     public String[] getTriggers() {
-        return new String[0];
+        return "poolsettings".split(",");
     }
 }
