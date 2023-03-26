@@ -27,7 +27,6 @@ public class SendBottle implements ISlashCommand {
                 .build();
 
         e.replyModal(modal).queue();
-
     }
 
 

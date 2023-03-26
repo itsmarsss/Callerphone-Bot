@@ -6,10 +6,21 @@ import com.marsss.callerphone.msginbottle.MessageInBottle;
 import com.marsss.commandType.IModalInteraction;
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
 
+import javax.tools.Tool;
+
 public class SendModal implements IModalInteraction {
     @Override
     public void runModal(ModalInteractionEvent e) {
-        MIBStatus stat = MessageInBottle.sendBottle(e.getUser().getId(), e.getValue("message").getAsString());
+        String message = e.getValue("message").getAsString();
+        message = ToolSet.messageCheck(message);
+        message = ToolSet.filter(message);
+
+        if(!message.equals(message)) {
+            e.reply(ToolSet.CP_ERR + "Your message has been flagged. Please remove any links, pings, or inappropriate words.").setEphemeral(true).queue();
+            return;
+        }
+
+        MIBStatus stat = MessageInBottle.sendBottle(e.getUser().getId(), message);
 
         switch (stat) {
             case RATE_LIMITED:

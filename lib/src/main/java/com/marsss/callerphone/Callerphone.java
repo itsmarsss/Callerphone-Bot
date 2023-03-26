@@ -23,7 +23,6 @@ import com.marsss.callerphone.minigames.games.TicTacToe;
 import com.marsss.callerphone.minigames.games.WordSearch;
 import com.marsss.callerphone.minigames.handlers.TicTacToeHandler;
 import com.marsss.callerphone.msginbottle.commands.FindBottle;
-import com.marsss.callerphone.msginbottle.commands.ReportBottle;
 import com.marsss.callerphone.msginbottle.commands.SendBottle;
 import com.marsss.callerphone.msginbottle.modals.SendModal;
 import com.marsss.callerphone.users.commands.DeductCredits;
@@ -36,7 +35,6 @@ import com.marsss.commandType.IButtonInteraction;
 import com.marsss.commandType.IModalInteraction;
 import net.dv8tion.jda.api.*;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
-import okhttp3.internal.http2.Settings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -172,7 +170,6 @@ public class Callerphone {
             cmdLst.add(new PlayMiniGame());
 
             cmdLst.add(new FindBottle());
-            cmdLst.add(new ReportBottle());
             cmdLst.add(new SendBottle());
 
             for (ICommand cmd : cmdLst) {
