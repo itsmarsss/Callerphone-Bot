@@ -42,7 +42,7 @@ public class FindBottle implements ISlashCommand {
                 .setTimestamp(Instant.now())
                 .setColor(new Color(114, 137, 218));
 
-        Button reportButton = Button.danger("report-" + bottle.getUuid(), "Report");
+        Button reportButton = Button.danger("rpt-" + bottle.getUuid(), "Report");
         //Button saveUUID = Button.secondary("save-" + e.getUser().getId() + "-" + bottle.getUuid(), bottle.getUuid());
 
         MessageCreateBuilder message = new MessageCreateBuilder()

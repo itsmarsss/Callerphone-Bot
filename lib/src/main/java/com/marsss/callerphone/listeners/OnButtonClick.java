@@ -20,14 +20,14 @@ import java.util.concurrent.TimeUnit;
 public class OnButtonClick extends ListenerAdapter {
     public void onButtonInteraction(@NotNull ButtonInteractionEvent event) {
         try {
-            if (Callerphone.btnMap.containsKey(event.getId().substring(0, 2))) {
+            if (Callerphone.btnMap.containsKey(event.getButton().getId().substring(0, 2))) {
                 Callerphone.btnMap.get(event.getId()).runClick(event);
                 return;
             }
             event.reply(
                     ToolSet.CP_EMJ
                             + "Hmmm, the button `"
-                            + event.getId()
+                            + event.getButton().getId()
                             + "` shouldn't exist! Please join our support server and report this issue. "
                             + Callerphone.config.getSupportServer()
             ).queue();
