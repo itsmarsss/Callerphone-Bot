@@ -12,6 +12,10 @@ public class ChannelPoolListener extends ListenerAdapter {
 
     public void onMessageReceived(MessageReceivedEvent event) {
 
+        if(!event.isFromGuild()) {
+            return;
+        }
+
         final Message MESSAGE = event.getMessage();
 
         if (MESSAGE.isWebhookMessage())
