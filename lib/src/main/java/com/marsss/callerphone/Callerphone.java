@@ -80,7 +80,8 @@ public class Callerphone {
             GatewayIntent.GUILD_VOICE_STATES,
             GatewayIntent.GUILD_EMOJIS_AND_STICKERS,
             GatewayIntent.GUILD_INVITES,
-            GatewayIntent.DIRECT_MESSAGES);
+            GatewayIntent.DIRECT_MESSAGES,
+            GatewayIntent.MESSAGE_CONTENT);
 
     public static void run() throws InterruptedException, URISyntaxException, UnsupportedEncodingException {
         ToolSet.printWelcome();
