@@ -1,5 +1,6 @@
 package com.marsss.callerphone.msginbottle;
 
+import java.time.Instant;
 import java.util.LinkedList;
 import java.util.UUID;
 
@@ -10,10 +11,13 @@ public class MIBBottle {
     private long timeSent;
 
     public MIBBottle(String participantID, String page) {
-        uuid = UUID.randomUUID().toString();
+        this.participantID = new LinkedList<>();
+        this.page = new LinkedList<>();
+
+        uuid = UUID.randomUUID().toString().replace("-", "");
         addParticipant(participantID);
         addPage(page);
-        timeSent = System.currentTimeMillis();
+        timeSent = Instant.now().getEpochSecond();
     }
 
     public void addParticipant(String participantID) {
