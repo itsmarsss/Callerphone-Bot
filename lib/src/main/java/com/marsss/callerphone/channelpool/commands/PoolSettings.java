@@ -1,5 +1,6 @@
 package com.marsss.callerphone.channelpool.commands;
 
+import com.marsss.callerphone.Callerphone;
 import com.marsss.callerphone.channelpool.ChannelPool;
 import com.marsss.callerphone.channelpool.PoolResponse;
 import com.marsss.commandType.ISlashCommand;
@@ -58,7 +59,7 @@ public class PoolSettings implements ISlashCommand {
 
     @Override
     public String getHelp() {
-        return null;
+        return "`" + Callerphone.config.getPrefix() + "poolsettings` - Configure channel pool settings.";
     }
 
     @Override
