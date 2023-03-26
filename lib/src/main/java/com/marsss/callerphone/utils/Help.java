@@ -93,9 +93,7 @@ public class Help implements ISlashCommand {
                         + new EndPool().getHelp() + "\n"
                         + new LeavePool().getHelp() + "\n"
                         + new PoolParticipants().getHelp() + "\n"
-                        + new PoolCap().getHelp() + "\n"
-                        + new PoolPub().getHelp() + "\n"
-                        + new PoolPwd().getHelp() + "\n"
+                        + new PoolSettings().getHelp() + "\n"
                         + new PoolKick().getHelp();
                 break;
 
