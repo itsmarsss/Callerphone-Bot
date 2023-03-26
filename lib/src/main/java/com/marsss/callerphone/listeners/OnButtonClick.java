@@ -21,7 +21,7 @@ public class OnButtonClick extends ListenerAdapter {
     public void onButtonInteraction(@NotNull ButtonInteractionEvent event) {
         try {
             if (Callerphone.btnMap.containsKey(event.getButton().getId().substring(0, 3))) {
-                Callerphone.btnMap.get(event.getId()).runClick(event);
+                Callerphone.btnMap.get(event.getButton().getId()).runClick(event);
                 return;
             }
             event.reply(
