@@ -215,6 +215,11 @@ public class CommandPrompt {
         );
 
         commands.addCommands(
+          Commands.slash("poolsettings", "Configure this pool")
+                  .setGuildOnly(true)
+        );
+
+        commands.addCommands(
                 Commands.slash("poolcap", "Set pool capacity")
                         .addOptions(
                                 new OptionData(OptionType.INTEGER, "capacity", "Pool capacity")
