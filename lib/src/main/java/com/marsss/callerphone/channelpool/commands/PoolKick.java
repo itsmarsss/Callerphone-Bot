@@ -21,7 +21,7 @@ public class PoolKick implements ISlashCommand {
             return;
         }
 
-        e.reply(poolKick(e.getChannel().getId(), e.getOption("target").getAsString())).queue();
+        e.reply(poolKick(e.getChannel().getId(), e.getOption("target").getAsString())).setEphemeral(true).queue();
     }
 
     private String poolKick(String requestID, String kickID) {

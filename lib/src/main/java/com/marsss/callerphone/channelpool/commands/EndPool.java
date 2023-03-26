@@ -18,7 +18,7 @@ public class EndPool implements ISlashCommand {
             return;
         }
 
-        e.reply(endPool(e.getChannel().getId())).queue();
+        e.reply(endPool(e.getChannel().getId())).setEphemeral(true).queue();
     }
 
     private String endPool(String id) {
