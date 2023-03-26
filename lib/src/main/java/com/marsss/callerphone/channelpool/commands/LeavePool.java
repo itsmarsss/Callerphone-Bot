@@ -18,7 +18,7 @@ public class LeavePool implements ISlashCommand {
             return;
         }
 
-        e.reply(leavePool(e.getChannel().getId())).queue();
+        e.reply(leavePool(e.getChannel().getId())).setEphemeral(true).queue();
     }
 
     private String leavePool(String id) {
@@ -30,7 +30,7 @@ public class LeavePool implements ISlashCommand {
                     String.format(PoolResponse.POOL_ID.toString(), id) + "\n" +
                     (ChannelPool.hasPassword(id)
                             ? String.format(PoolResponse.POOL_PWD.toString(), ChannelPool.getPassword(id))
-                            : PoolResponse.POOL_SET_PWD) + "\n" +
+                            : PoolResponse.POOL_SET_SETTINGS) + "\n" +
                     PoolResponse.POOL_END_WITH;
 
         } else if (stat == PoolStatus.SUCCESS) {

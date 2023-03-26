@@ -19,7 +19,7 @@ public class HostPool implements ISlashCommand {
             return;
         }
 
-        e.reply(hostPool(e.getChannel())).queue();
+        e.reply(hostPool(e.getChannel())).setEphemeral(true).queue();
     }
 
     private String hostPool(MessageChannelUnion channel) {
@@ -31,7 +31,7 @@ public class HostPool implements ISlashCommand {
                     String.format(PoolResponse.POOL_ID.toString(), channel.getId()) + "\n" +
                     (ChannelPool.hasPassword(channel.getId())
                             ? String.format(PoolResponse.POOL_PWD.toString(), ChannelPool.getPassword(channel.getId()))
-                            : PoolResponse.POOL_SET_PWD.toString()) + "\n" +
+                            : PoolResponse.POOL_SET_SETTINGS.toString()) + "\n" +
                     PoolResponse.POOL_END_WITH;
 
         } else if (stat == PoolStatus.IS_CHILD) {
@@ -42,7 +42,7 @@ public class HostPool implements ISlashCommand {
 
             return String.format(PoolResponse.HOST_POOL_SUCCESS.toString(), channel.getName()) + "\n" +
                     String.format(PoolResponse.POOL_ID.toString(), channel.getId()) + "\n" +
-                    PoolResponse.POOL_SET_PWD + "\n" +
+                    PoolResponse.POOL_SET_SETTINGS + "\n" +
                     PoolResponse.POOL_END_WITH;
 
         }

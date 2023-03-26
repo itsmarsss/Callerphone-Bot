@@ -27,11 +27,11 @@ public class JoinPool implements ISlashCommand {
         List<OptionMapping> param = e.getOptions();
 
         if (param.size() == 1) {
-            e.reply(joinPool(e.getChannel(), e.getOption("hostid").getAsString(), "")).queue();
+            e.reply(joinPool(e.getChannel(), e.getOption("hostid").getAsString(), "")).setEphemeral(true).queue();
             return;
         }
 
-        e.reply(joinPool(e.getChannel(), e.getOption("hostid").getAsString(), e.getOption("password").getAsString())).queue();
+        e.reply(joinPool(e.getChannel(), e.getOption("hostid").getAsString(), e.getOption("password").getAsString())).setEphemeral(true).queue();
     }
 
     private String joinPool(MessageChannelUnion channel, String host, String pwd) {
@@ -52,7 +52,7 @@ public class JoinPool implements ISlashCommand {
                     String.format(PoolResponse.POOL_ID.toString(), id) + "\n" +
                     (ChannelPool.hasPassword(id)
                             ? String.format(PoolResponse.POOL_PWD.toString(), ChannelPool.getPassword(id))
-                            : PoolResponse.POOL_SET_PWD) + "\n" +
+                            : PoolResponse.POOL_SET_SETTINGS) + "\n" +
                     PoolResponse.POOL_END_WITH;
 
         } else if (stat == PoolStatus.IS_CHILD) {

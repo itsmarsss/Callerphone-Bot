@@ -14,6 +14,7 @@ import java.util.concurrent.TimeUnit;
 
 import com.marsss.ICommand;
 import com.marsss.callerphone.channelpool.commands.*;
+import com.marsss.callerphone.channelpool.modals.SettingsModal;
 import com.marsss.callerphone.minigames.IMiniGame;
 import com.marsss.callerphone.minigames.commands.PlayMiniGame;
 import com.marsss.callerphone.minigames.games.BattleShip;
@@ -23,15 +24,17 @@ import com.marsss.callerphone.minigames.games.WordSearch;
 import com.marsss.callerphone.msginbottle.commands.FindBottle;
 import com.marsss.callerphone.msginbottle.commands.ReportBottle;
 import com.marsss.callerphone.msginbottle.commands.SendBottle;
-import com.marsss.callerphone.msginbottle.handlers.SendHandler;
+import com.marsss.callerphone.msginbottle.modals.SendModal;
 import com.marsss.callerphone.users.commands.DeductCredits;
 import com.marsss.callerphone.users.commands.Profile;
 import com.marsss.callerphone.users.commands.RewardCredits;
 import com.marsss.callerphone.tccallerphone.TCCallerphone;
 import com.marsss.callerphone.tccallerphone.TCCallerphoneListener;
 import com.marsss.callerphone.tccallerphone.commands.*;
+import com.marsss.commandType.IModalInteraction;
 import net.dv8tion.jda.api.*;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
+import okhttp3.internal.http2.Settings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -59,6 +62,7 @@ public class Callerphone {
 
 
     public static final HashMap<String, ICommand> cmdMap = new HashMap<>();
+    public static final HashMap<String, IModalInteraction> mdlMap = new HashMap<>();
 
     public static boolean isQuickStart;
 
@@ -126,6 +130,8 @@ public class Callerphone {
                         .build();
             }
 
+            System.out.println("Mapping Commands:");
+
             ArrayList<ICommand> cmdLst = new ArrayList<>();
             cmdLst.add(new About());
             cmdLst.add(new Donate());
@@ -154,9 +160,7 @@ public class Callerphone {
             cmdLst.add(new EndPool());
             cmdLst.add(new LeavePool());
             cmdLst.add(new PoolParticipants());
-            cmdLst.add(new PoolCap());
-            cmdLst.add(new PoolPub());
-            cmdLst.add(new PoolPwd());
+            cmdLst.add(new PoolSettings());
             cmdLst.add(new PoolKick());
 
             cmdLst.add(new DeductCredits());
@@ -174,6 +178,18 @@ public class Callerphone {
                     System.out.println("Put: key=" + trigger + ", value=" + cmd.getClass().getName());
                 }
             }
+            System.out.println();
+            System.out.println();
+            System.out.println("Mapping Modals:");
+
+            ArrayList<IModalInteraction> mdlLst = new ArrayList<>();
+            mdlLst.add(new SendModal());
+            mdlLst.add(new SettingsModal());
+
+            for (IModalInteraction mdl : mdlLst) {
+                mdlMap.put(mdl.getID(), mdl);
+                System.out.println("Put: key=" + mdl.getID() + ", value=" + mdl.getClass().getName());
+            }
 
             ArrayList<IMiniGame> gameLst = new ArrayList<>();
 
@@ -182,11 +198,11 @@ public class Callerphone {
             gameLst.add(new Connect4());
             gameLst.add(new WordSearch());
 
-            jda.addEventListener(new OnMessage());
             jda.addEventListener(new OnButtonClick());
+            jda.addEventListener(new OnMessage());
+            jda.addEventListener(new OnModalEvent());
             jda.addEventListener(new OnOtherEvent());
             jda.addEventListener(new OnSlashCommand());
-            jda.addEventListener(new SendHandler());
             jda.addEventListener(new TCCallerphoneListener());
             jda.addEventListener(new ChannelPoolListener());
 

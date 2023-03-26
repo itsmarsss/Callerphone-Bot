@@ -13,7 +13,7 @@ import java.util.LinkedList;
 public class PoolParticipants implements ISlashCommand {
     @Override
     public void runSlash(SlashCommandInteractionEvent e) {
-        e.reply(poolParticipants(e.getChannel().getId())).queue();
+        e.reply(poolParticipants(e.getChannel().getId())).setEphemeral(true).queue();
     }
 
     private String poolParticipants(String id) {
