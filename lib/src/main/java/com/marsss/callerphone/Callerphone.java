@@ -21,6 +21,7 @@ import com.marsss.callerphone.minigames.games.BattleShip;
 import com.marsss.callerphone.minigames.games.Connect4;
 import com.marsss.callerphone.minigames.games.TicTacToe;
 import com.marsss.callerphone.minigames.games.WordSearch;
+import com.marsss.callerphone.minigames.handlers.TicTacToeHandler;
 import com.marsss.callerphone.msginbottle.commands.FindBottle;
 import com.marsss.callerphone.msginbottle.commands.ReportBottle;
 import com.marsss.callerphone.msginbottle.commands.SendBottle;
@@ -31,6 +32,7 @@ import com.marsss.callerphone.users.commands.RewardCredits;
 import com.marsss.callerphone.tccallerphone.TCCallerphone;
 import com.marsss.callerphone.tccallerphone.TCCallerphoneListener;
 import com.marsss.callerphone.tccallerphone.commands.*;
+import com.marsss.commandType.IButtonInteraction;
 import com.marsss.commandType.IModalInteraction;
 import net.dv8tion.jda.api.*;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
@@ -63,6 +65,7 @@ public class Callerphone {
 
     public static final HashMap<String, ICommand> cmdMap = new HashMap<>();
     public static final HashMap<String, IModalInteraction> mdlMap = new HashMap<>();
+    public static final HashMap<String, IButtonInteraction> btnMap = new HashMap<>();
 
     public static boolean isQuickStart;
 
@@ -178,6 +181,8 @@ public class Callerphone {
                     System.out.println("Put: key=" + trigger + ", value=" + cmd.getClass().getName());
                 }
             }
+
+
             System.out.println();
             System.out.println();
             System.out.println("Mapping Modals:");
@@ -189,6 +194,19 @@ public class Callerphone {
             for (IModalInteraction mdl : mdlLst) {
                 mdlMap.put(mdl.getID(), mdl);
                 System.out.println("Put: key=" + mdl.getID() + ", value=" + mdl.getClass().getName());
+            }
+
+
+            System.out.println();
+            System.out.println();
+            System.out.println("Mapping Modals:");
+
+            ArrayList<IButtonInteraction> btnLst = new ArrayList<>();
+            btnLst.add(new TicTacToeHandler());
+
+            for (IButtonInteraction btn : btnLst) {
+                btnMap.put(btn.getID(), btn);
+                System.out.println("Put: key=" + btn.getID() + ", value=" + btn.getClass().getName());
             }
 
             ArrayList<IMiniGame> gameLst = new ArrayList<>();
