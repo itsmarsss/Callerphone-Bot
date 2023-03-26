@@ -25,11 +25,13 @@ public enum PoolResponse {
     POOL_ID("> This channel's pool ID is: `%s`"),
     POOL_LEAVE_WITH("> Leave pool with: `" + Callerphone.config.getPrefix() + "leavepool`"),
     LEFT_POOL(ToolSet.CP_EMJ + "Channel `ID: %s` has left this pool."),
-    POOL_PUB(ToolSet.CP_EMJ + "This pool is now **%s**."),
     POOL_PWD("> This channel's password is: %s"),
-    POOL_SET_PWD("> Set a password with: `" + Callerphone.config.getPrefix() + "poolpwd <password>`"),
+    POOL_SET_SETTINGS("> Set pool settings: `" + Callerphone.config.getPrefix() + "poolsettings`"),
     REQUESTED_ID_NOT_FOUND(ToolSet.CP_EMJ + "Requested pool `ID: %s` does not exist."),
-    REQUESTED_NOT_FOUND(ToolSet.CP_EMJ + "Requested pool not found.");
+    REQUESTED_NOT_FOUND(ToolSet.CP_EMJ + "Requested pool not found."),
+    INVALID_PUBLICITY(ToolSet.CP_EMJ + "Pool publicity must be `true` or `false`."),
+    INVALID_CAPACITY(ToolSet.CP_EMJ + "Pool capacity must be a number between 1 and 10."),
+    SETTINGS_SUCCESS(ToolSet.CP_EMJ + "Pool settings successfully set:\n> Publicity = %s\n> Password = %s\n> Capacity = %s");
 
     public final String label;
 
