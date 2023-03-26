@@ -1,7 +1,8 @@
 package com.marsss.callerphone.msginbottle;
 
+import com.marsss.callerphone.Callerphone;
 import com.marsss.callerphone.Storage;
-import net.dv8tion.jda.api.entities.User;
+import com.marsss.callerphone.ToolSet;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -11,8 +12,8 @@ public class MessageInBottle {
 
     public static final HashMap<String, MIBBottle> bottles = new HashMap<>();
 
-    public static MIBStatus sendBottle(String id, String page) {
-        if(Storage.getMIBSendCoolDown(id)-System.currentTimeMillis() > 86400000) {
+    public static MIBStatus sendBottle(String id, String page, boolean anonymous) {
+        if(Storage.getMIBSendCoolDown(id)-System.currentTimeMillis() > ToolSet.SENDBOTTLE_COOLDOWN) {
             return MIBStatus.RATE_LIMITED;
         }
 
@@ -24,22 +25,20 @@ public class MessageInBottle {
     }
 
     public static MIBBottle findBottle(String id) {
-        if(Storage.getMIBFindCoolDown(id)-System.currentTimeMillis() > 43200000) {
+        if(Storage.getMIBFindCoolDown(id)-System.currentTimeMillis() > ToolSet.FINDBOTTLE_COOLDOWN) {
             return null;
         }
 
-        MIBBottle bottle = null;
-        int index = 0;
+        MIBBottle bottle = new MIBBottle(Callerphone.jda.getSelfUser().getId(), "No bottle to be found " + ToolSet.CP_ERR);
 
         Iterator it = bottles.entrySet().iterator();
         while (it.hasNext()) {
             MIBBottle tempBottle = (MIBBottle) ((Map.Entry)it.next()).getValue();
-            if(!tempBottle.getParticipantID().getLast().equals(id)) {
+            //if(!tempBottle.getParticipantID().getLast().equals(id)) {
                 bottle = tempBottle;
-                bottles.remove(index);
+                it.remove();
                 break;
-            }
-            index++;
+            //}
         }
 
         return bottle;
