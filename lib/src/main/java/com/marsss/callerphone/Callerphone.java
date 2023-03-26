@@ -160,6 +160,7 @@ public class Callerphone {
             cmdLst.add(new EndPool());
             cmdLst.add(new LeavePool());
             cmdLst.add(new PoolParticipants());
+            cmdLst.add(new PoolSettings());
             cmdLst.add(new PoolCap());
             cmdLst.add(new PoolPub());
             cmdLst.add(new PoolPwd());
