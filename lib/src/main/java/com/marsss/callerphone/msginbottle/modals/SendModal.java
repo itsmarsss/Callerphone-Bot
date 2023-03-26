@@ -12,10 +12,10 @@ public class SendModal implements IModalInteraction {
     @Override
     public void runModal(ModalInteractionEvent e) {
         String message = e.getValue("message").getAsString();
-        message = ToolSet.messageCheck(message);
-        message = ToolSet.filter(message);
+        String messageFiltered = ToolSet.messageCheck(message);
+        messageFiltered = ToolSet.filter(messageFiltered);
 
-        if(!message.equals(message)) {
+        if(!message.equals(messageFiltered)) {
             e.reply(ToolSet.CP_ERR + "Your message has been flagged. Please remove any links, pings, or inappropriate words.").setEphemeral(true).queue();
             return;
         }
