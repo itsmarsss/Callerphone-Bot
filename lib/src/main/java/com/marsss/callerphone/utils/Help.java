@@ -5,6 +5,9 @@ import com.marsss.callerphone.Storage;
 import com.marsss.callerphone.ToolSet;
 import com.marsss.callerphone.bot.*;
 import com.marsss.callerphone.channelpool.commands.*;
+import com.marsss.callerphone.msginbottle.commands.FindBottle;
+import com.marsss.callerphone.msginbottle.commands.SendBottle;
+import com.marsss.callerphone.msginbottle.commands.ViewBottle;
 import com.marsss.callerphone.tccallerphone.commands.Chat;
 import com.marsss.callerphone.tccallerphone.commands.EndChat;
 import com.marsss.callerphone.tccallerphone.commands.Prefix;
@@ -71,18 +74,14 @@ public class Help implements ISlashCommand {
 
             case "utils":
                 TITLE = "Util Commands";
-//                DESC = new BotInfo().getHelp() + "\n"
-//                        + new ChannelInfo().getHelp() + "\n"
-//                        + new Colour().getHelp() + "\n"
-//                        + new Help().getHelp() + "\n"
-//                        + new RoleInfo().getHelp() + "\n"
-//                        + new Search().getHelp() + "\n"
-//                        + new ServerInfo().getHelp() + "\n"
-//                        + new UserInfo().getHelp();
-
                 DESC = new BotInfo().getHelp() + "\n"
+                        + new ChannelInfo().getHelp() + "\n"
                         + new Colour().getHelp() + "\n"
-                        + new Help().getHelp();
+                        + new Help().getHelp() + "\n"
+                        + new RoleInfo().getHelp() + "\n"
+                        + new Search().getHelp() + "\n"
+                        + new ServerInfo().getHelp() + "\n"
+                        + new UserInfo().getHelp();
                 break;
 
 
@@ -92,9 +91,9 @@ public class Help implements ISlashCommand {
                         + new JoinPool().getHelp() + "\n"
                         + new EndPool().getHelp() + "\n"
                         + new LeavePool().getHelp() + "\n"
+                        + new PoolKick().getHelp() + "\n"
                         + new PoolParticipants().getHelp() + "\n"
-                        + new PoolSettings().getHelp() + "\n"
-                        + new PoolKick().getHelp();
+                        + new PoolSettings().getHelp();
                 break;
 
 
@@ -106,6 +105,12 @@ public class Help implements ISlashCommand {
                         + new Prefix();
                 break;
 
+            case "msgbottle":
+                TITLE = "Message In Bottle";
+                DESC = new SendBottle().getHelp() + "\n"
+                        + new FindBottle().getHelp() + "\n"
+                        + new ViewBottle().getHelp();
+                break;
 
             case "music":
                 TITLE = "Music Commands";
@@ -123,7 +128,7 @@ public class Help implements ISlashCommand {
                         "\n> Channel Chat ~ `\u00A9 5`" +
                         "\n\n__Other:__" +
                         "\n> Bug Report ~ `\u00A9 5,000`" +
-                "\n\n**NOTE:** Channel Pool/Chat can be earned a maximum of once per " + (ToolSet.CREDIT_COOLDOWN/1000) + " seconds. *(Spam prevention)*";
+                        "\n\n**NOTE:** Channel Pool/Chat can be earned a maximum of once per " + (ToolSet.CREDIT_COOLDOWN / 1000) + " seconds. *(Spam prevention)*";
                 break;
 
             case "exp":
@@ -168,6 +173,7 @@ public class Help implements ISlashCommand {
                 .addField("Utils", "all utility commands will be in this category, do `" + Callerphone.config.getPrefix() + "help utils` for more information", false)
                 .addField("Pooling", "all channel pooling commands will be in this category, do `" + Callerphone.config.getPrefix() + "help pooling` for more information", false)
                 .addField("TC Callerphone", "all text call callerphone commands will be in this category, do `" + Callerphone.config.getPrefix() + "help tccall` for more information", false)
+                .addField("Msg Bottles", "all message in bottle commands will be in this category, do `" + Callerphone.config.getPrefix() + "help msgbottle` for more information", false)
                 .addField("Music", "Callerphone no longer can play music, however I've created a new bot called **Tunes**... Join [this](https:discord.gg/TyHaxtWAmX) server for more information!", false)
                 .setFooter("Type `" + Callerphone.config.getPrefix() + "help <category name>` to see category commands");
         if (admin) {

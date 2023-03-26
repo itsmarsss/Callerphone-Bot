@@ -97,8 +97,6 @@ public class TicTacToeHandler implements IButtonInteraction {
 
         game.incrementStage();
 
-        e.deferEdit().queue();
-
         if(game.getStage() == 9) {
             e.getMessage().editMessage(MessageEditData.fromCreateData(game.getBoardWithMessage("Tie Game!"))).queue();
             Storage.getUser(game.getFromUserId()).removeGame(game.getID());

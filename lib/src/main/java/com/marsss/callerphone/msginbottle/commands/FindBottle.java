@@ -43,15 +43,15 @@ public class FindBottle implements ISlashCommand {
                 .setColor(new Color(114, 137, 218));
 
         Button reportButton = Button.danger("report-" + bottle.getUuid(), "Report");
-        Button saveUUID = Button.secondary("save-" + e.getUser().getId() + "-" + bottle.getUuid(), bottle.getUuid());
+        //Button saveUUID = Button.secondary("save-" + e.getUser().getId() + "-" + bottle.getUuid(), bottle.getUuid());
 
         MessageCreateBuilder message = new MessageCreateBuilder()
                 .setEmbeds(bottleEmbed.build())
-                .setComponents(ActionRow.of(reportButton, saveUUID));
+                .setComponents(ActionRow.of(reportButton/*, saveUUID*/));
 
         e.deferReply(true);
 
-        e.reply(message.build()).setEphemeral(true).queueAfter(500, TimeUnit.MILLISECONDS);
+        e.reply(message.build()).setEphemeral(true).queueAfter(1, TimeUnit.SECONDS);
     }
 
     private MIBBottle findBottle(String id) {
