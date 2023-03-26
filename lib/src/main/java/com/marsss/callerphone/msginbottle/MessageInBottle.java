@@ -12,7 +12,7 @@ public class MessageInBottle {
 
     public static final HashMap<String, MIBBottle> bottles = new HashMap<>();
 
-    public static MIBStatus sendBottle(String id, String page, boolean anonymous) {
+    public static MIBStatus sendBottle(String id, String page) {
         if(Storage.getMIBSendCoolDown(id)-System.currentTimeMillis() > ToolSet.SENDBOTTLE_COOLDOWN) {
             return MIBStatus.RATE_LIMITED;
         }

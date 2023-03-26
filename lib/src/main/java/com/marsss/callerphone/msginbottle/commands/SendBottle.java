@@ -7,24 +7,27 @@ import com.marsss.callerphone.msginbottle.MessageInBottle;
 import com.marsss.commandType.ISlashCommand;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.interactions.components.ActionRow;
+import net.dv8tion.jda.api.interactions.components.text.TextInput;
+import net.dv8tion.jda.api.interactions.components.text.TextInputStyle;
+import net.dv8tion.jda.api.interactions.modals.Modal;
 
 public class SendBottle implements ISlashCommand {
     @Override
     public void runSlash(SlashCommandInteractionEvent e) {
-        User user = e.getUser();
-        String message = e.getOption("message").getAsString();
-        boolean anonymous = e.getOption("anonymous").getAsBoolean();
 
-        MIBStatus stat = MessageInBottle.sendBottle(user.getId(), message, anonymous);
+        TextInput message = TextInput.create("message", "Message", TextInputStyle.PARAGRAPH)
+                .setPlaceholder("Write your message in a bottle here")
+                .setMinLength(10)
+                .setMaxLength(1500)
+                .build();
 
-        switch(stat) {
-            case RATE_LIMITED:
-                e.reply(ToolSet.CP_ERR + "You have reached your max send limit.").setEphemeral(true).queue();
-                break;
-            case SENT:
-                e.reply(ToolSet.CP_EMJ + "Your bottle has been sent!").setEphemeral(true).queue();
-                break;
-        }
+        Modal modal = Modal.create("sendMIB", "Send Message In Bottle")
+                .addComponents(ActionRow.of(message))
+                .build();
+
+        e.replyModal(modal).queue();
+
     }
 
 

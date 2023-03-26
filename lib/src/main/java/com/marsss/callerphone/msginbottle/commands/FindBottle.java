@@ -36,7 +36,7 @@ public class FindBottle implements ISlashCommand {
         EmbedBuilder bottleEmbed = new EmbedBuilder()
                 .setTitle("**A message in bottle has arrived!**")
                 .setDescription("**" + sender.getName() + "**#" + sender.getDiscriminator() + ":\n\n")
-                .appendDescription("> " + bottle.getPage().get(0).replaceAll("\\n", "\n"))
+                .appendDescription(bottle.getPage().get(0))
                 .appendDescription("\n\n<t:" + bottle.getTimeSent() + ":R>")
                 .setFooter("Time found")
                 .setTimestamp(Instant.now())

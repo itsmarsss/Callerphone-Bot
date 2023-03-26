@@ -23,6 +23,7 @@ import com.marsss.callerphone.minigames.games.WordSearch;
 import com.marsss.callerphone.msginbottle.commands.FindBottle;
 import com.marsss.callerphone.msginbottle.commands.ReportBottle;
 import com.marsss.callerphone.msginbottle.commands.SendBottle;
+import com.marsss.callerphone.msginbottle.handlers.SendHandler;
 import com.marsss.callerphone.users.commands.DeductCredits;
 import com.marsss.callerphone.users.commands.Profile;
 import com.marsss.callerphone.users.commands.RewardCredits;
@@ -185,6 +186,7 @@ public class Callerphone {
             jda.addEventListener(new OnButtonClick());
             jda.addEventListener(new OnOtherEvent());
             jda.addEventListener(new OnSlashCommand());
+            jda.addEventListener(new SendHandler());
             jda.addEventListener(new TCCallerphoneListener());
             jda.addEventListener(new ChannelPoolListener());
 

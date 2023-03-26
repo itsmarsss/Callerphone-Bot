@@ -340,12 +340,6 @@ public class CommandPrompt {
 
         commands.addCommands(
                 Commands.slash("sendbottle", "Send a message in bottle")
-                        .addOptions(
-                                new OptionData(OptionType.STRING, "message", "Message to send")
-                                        .setRequired(true),
-                                new OptionData(OptionType.BOOLEAN, "anonymous", "Stay anonymous?")
-                                        .setRequired(true)
-                        )
                         .setGuildOnly(true)
         );
 
