@@ -20,6 +20,9 @@ import com.marsss.callerphone.minigames.games.BattleShip;
 import com.marsss.callerphone.minigames.games.Connect4;
 import com.marsss.callerphone.minigames.games.TicTacToe;
 import com.marsss.callerphone.minigames.games.WordSearch;
+import com.marsss.callerphone.msginbottle.commands.FindBottle;
+import com.marsss.callerphone.msginbottle.commands.ReportBottle;
+import com.marsss.callerphone.msginbottle.commands.SendBottle;
 import com.marsss.callerphone.users.commands.DeductCredits;
 import com.marsss.callerphone.users.commands.Profile;
 import com.marsss.callerphone.users.commands.RewardCredits;
@@ -159,6 +162,10 @@ public class Callerphone {
             cmdLst.add(new RewardCredits());
 
             cmdLst.add(new PlayMiniGame());
+
+            cmdLst.add(new FindBottle());
+            cmdLst.add(new ReportBottle());
+            cmdLst.add(new SendBottle());
 
             for (ICommand cmd : cmdLst) {
                 for (String trigger : cmd.getTriggers()) {
