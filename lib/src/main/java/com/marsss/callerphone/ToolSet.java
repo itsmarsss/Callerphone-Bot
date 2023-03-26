@@ -25,6 +25,8 @@ public class ToolSet {
     public static long MESSAGE_COOLDOWN = 500;
     public static long CREDIT_COOLDOWN = 15000;
     public static long COMMAND_COOLDOWN = 2000;
+    public static long FINDBOTTLE_COOLDOWN = 43200000;
+    public static long SENDBOTTLE_COOLDOWN = 86400000;
 
     public static void updateToolSet() {
         CP_EMJ = Callerphone.config.getCallerphoneNormal();
@@ -74,6 +76,28 @@ public class ToolSet {
 
         return CHANNEL;
     }
+
+
+    public static User getUser(String id) {
+        if (id.isEmpty()) {
+            return null;
+        }
+
+        long idL;
+        try {
+            idL = Long.parseLong(id);
+        } catch (Exception e) {
+            return null;
+        }
+
+        final User USER = Callerphone.jda.getUserById(idL);
+
+        if (USER == null)
+            return null;
+
+        return USER;
+    }
+
 
     public static String messageCheck(String messageRaw) {
         if (messageRaw.contains("@here") || messageRaw.contains("@everyone"))

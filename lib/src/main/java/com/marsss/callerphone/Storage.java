@@ -23,6 +23,8 @@ public class Storage {
     public static final HashMap<String, BotUser> users = new HashMap<>();
     public static final HashMap<String, Long> poolChatCoolDown = new HashMap<>();
     public static final HashMap<String, Long> commandCoolDown = new HashMap<>();
+    public static final HashMap<String, Long> MIBSendCoolDown = new HashMap<>();
+    public static final HashMap<String, Long> MIBFindCoolDown = new HashMap<>();
 
     public static void readData() {
         try {
@@ -362,7 +364,7 @@ public class Storage {
         UserStatus status = users.get(id).getStatus();
         String statusStr = "User";
 
-        switch(status) {
+        switch (status) {
             case MODERATOR:
                 statusStr = "Moderator";
                 break;
@@ -384,5 +386,25 @@ public class Storage {
             createUser(id);
         }
         return users.get(id);
+    }
+
+    public static long getMIBSendCoolDown(String id) {
+        MIBSendCoolDown.put(id, MIBSendCoolDown.getOrDefault(id, 0L));
+
+        return MIBSendCoolDown.get(id);
+    }
+
+    public static void updateMIBSendCoolDown(String id) {
+        MIBSendCoolDown.put(id, System.currentTimeMillis());
+    }
+
+    public static long getMIBFindCoolDown(String id) {
+        MIBFindCoolDown.put(id, MIBFindCoolDown.getOrDefault(id, 0L));
+
+        return MIBFindCoolDown.get(id);
+    }
+
+    public static void updateMIBFindCoolDown(String id) {
+        MIBFindCoolDown.put(id, System.currentTimeMillis());
     }
 }

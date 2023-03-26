@@ -338,6 +338,16 @@ public class CommandPrompt {
                         .setGuildOnly(true)
         );
 
+        commands.addCommands(
+                Commands.slash("sendbottle", "Send a message in bottle")
+                        .setGuildOnly(true)
+        );
+
+        commands.addCommands(
+                Commands.slash("findbottle", "Find a message in bottle")
+                        .setGuildOnly(true)
+        );
+
         commands.queue();
     }
 
