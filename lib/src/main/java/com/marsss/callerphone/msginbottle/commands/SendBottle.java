@@ -1,11 +1,7 @@
 package com.marsss.callerphone.msginbottle.commands;
 
 import com.marsss.callerphone.Callerphone;
-import com.marsss.callerphone.ToolSet;
-import com.marsss.callerphone.msginbottle.MIBStatus;
-import com.marsss.callerphone.msginbottle.MessageInBottle;
 import com.marsss.commandType.ISlashCommand;
-import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.text.TextInput;
