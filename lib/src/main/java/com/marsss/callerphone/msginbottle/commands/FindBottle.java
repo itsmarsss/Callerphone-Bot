@@ -1,17 +1,25 @@
 package com.marsss.callerphone.msginbottle.commands;
 
 import com.marsss.callerphone.Callerphone;
+import com.marsss.callerphone.ToolSet;
 import com.marsss.callerphone.msginbottle.MIBBottle;
-import com.marsss.callerphone.msginbottle.MIBResponse;
 import com.marsss.callerphone.msginbottle.MessageInBottle;
 import com.marsss.commandType.ISlashCommand;
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.interactions.components.ActionRow;
+import net.dv8tion.jda.api.interactions.components.buttons.Button;
+import net.dv8tion.jda.api.interactions.components.text.TextInput;
+import net.dv8tion.jda.api.interactions.components.text.TextInputStyle;
+import net.dv8tion.jda.api.interactions.modals.Modal;
 import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder;
-import net.dv8tion.jda.api.utils.messages.MessageCreateData;
+import org.jetbrains.annotations.NotNull;
 
+import java.awt.*;
 import java.time.Instant;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.concurrent.TimeUnit;
 
 public class FindBottle implements ISlashCommand {
@@ -20,19 +28,30 @@ public class FindBottle implements ISlashCommand {
         MIBBottle bottle = findBottle(e.getUser().getId());
 
         EmbedBuilder lookingBottleEmbed = new EmbedBuilder()
-                .setTitle("**Searching for a message bottle...**");
+                .setTitle("**Searching for a message bottle...**")
+                .setColor(new Color(114, 137, 218));
+
+        User sender = ToolSet.getUser(bottle.getParticipantID().get(0));
 
         EmbedBuilder bottleEmbed = new EmbedBuilder()
                 .setTitle("**A message in bottle has arrived!**")
-                .setDescription("**" + bottle.getParticipantID() + ":**")
-                .appendDescription(bottle.getPage().get(0))
-                .appendDescription("<t:" + bottle.getTimeSent() + ":R>")
-                .setFooter("Picked Up:")
-                .setTimestamp(Instant.now());
+                .setDescription("**" + sender.getName() + "**#" + sender.getDiscriminator() + ":\n\n")
+                .appendDescription("> " + bottle.getPage().get(0).replaceAll("\\n", "\n"))
+                .appendDescription("\n\n<t:" + bottle.getTimeSent() + ":R>")
+                .setFooter("Time found")
+                .setTimestamp(Instant.now())
+                .setColor(new Color(114, 137, 218));
 
-        e.replyEmbeds(lookingBottleEmbed.build()).queue((msg) -> {
-            ((Message) msg).editMessageEmbeds(bottleEmbed.build()).queueAfter(1, TimeUnit.SECONDS);
-        });
+        Button reportButton = Button.danger("report-" + bottle.getUuid(), "Report");
+        Button saveUUID = Button.secondary("save-" + e.getUser().getId() + "-" + bottle.getUuid(), bottle.getUuid());
+
+        MessageCreateBuilder message = new MessageCreateBuilder()
+                .setEmbeds(bottleEmbed.build())
+                .setComponents(ActionRow.of(reportButton, saveUUID));
+
+        e.deferReply(true);
+
+        e.reply(message.build()).setEphemeral(true).queueAfter(500, TimeUnit.MILLISECONDS);
     }
 
     private MIBBottle findBottle(String id) {
@@ -42,7 +61,7 @@ public class FindBottle implements ISlashCommand {
 
     @Override
     public String getHelp() {
-        return "`" + Callerphone.config.getPrefix() + "findbottle` - Find a random bottle floating in the sea and read its message.";
+        return "`" + Callerphone.config.getPrefix() + "findbottle` - Find a random message in bottle floating in the sea and read its message.";
     }
 
     @Override
