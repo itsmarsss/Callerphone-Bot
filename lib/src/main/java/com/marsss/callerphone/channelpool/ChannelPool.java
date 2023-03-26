@@ -145,6 +145,23 @@ public class ChannelPool {
         return "";
     }
 
+    public static String getPublicity(String id) {
+        if (config.containsKey(id)) {
+            if(config.get(id).isPub()) {
+                return "true";
+            }
+            return "false";
+        }
+        return "false";
+    }
+
+    public static int getCapacity(String id) {
+        if (config.containsKey(id)) {
+            return config.get(id).getCap();
+        }
+        return 0;
+    }
+
     public static PoolStatus clearChildren(String ID) {
         if (isHost(ID)) {
             LinkedList<String> pool = config.get(ID).children;
