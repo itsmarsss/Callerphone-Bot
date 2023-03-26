@@ -43,11 +43,11 @@ public class FindBottle implements ISlashCommand {
                 .setColor(new Color(114, 137, 218));
 
         Button reportButton = Button.danger("rpt-" + bottle.getUuid(), "Report");
-        //Button saveUUID = Button.secondary("save-" + e.getUser().getId() + "-" + bottle.getUuid(), bottle.getUuid());
+        Button saveACopy = Button.secondary("sve", "Save");
 
         MessageCreateBuilder message = new MessageCreateBuilder()
                 .setEmbeds(bottleEmbed.build())
-                .setComponents(ActionRow.of(reportButton/*, saveUUID*/));
+                .setComponents(ActionRow.of(reportButton, saveACopy));
 
         e.deferReply(true);
 
