@@ -71,6 +71,7 @@ jobs:
     #     ./location_of_script_within_repo/buildscript.sh
 
     - name: Gradle Build Action
+      uses: gradle/gradle-build-action@v2.4.2
       with:
           gradle-version: 7.3
           
