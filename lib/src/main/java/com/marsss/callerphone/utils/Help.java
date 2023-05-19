@@ -25,7 +25,7 @@ import java.util.List;
 public class Help implements ISlashCommand {
     @Override
     public void runSlash(SlashCommandInteractionEvent e) {
-        final boolean ADMIN = Storage.isAdmin(e.getMember().getId());
+        final boolean ADMIN = Storage.isAdmin(e.getUser().getId());
         final List<OptionMapping> PARAM = e.getOptions();
         if (PARAM.size() == 0) {
             e.replyEmbeds(help("", ADMIN)).queue();
