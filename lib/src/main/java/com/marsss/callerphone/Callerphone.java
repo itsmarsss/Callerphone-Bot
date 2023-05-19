@@ -37,6 +37,8 @@ import com.marsss.commandType.IButtonInteraction;
 import com.marsss.commandType.IModalInteraction;
 import net.dv8tion.jda.api.*;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
+import net.dv8tion.jda.api.sharding.DefaultShardManagerBuilder;
+import net.dv8tion.jda.api.sharding.ShardManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -133,6 +135,15 @@ public class Callerphone {
                         .setMemberCachePolicy(MemberCachePolicy.ALL)
                         .build();
             }
+
+            DefaultShardManagerBuilder builder = DefaultShardManagerBuilder.createDefault(token);
+            builder.setShardsTotal(-1);
+            //builder.setShards(shardId, shardTotal); // Set the shard ID and total number of shards for this instance
+            //builder.addEventListeners(/* Add event listeners */);
+
+            ShardManager shardManager = builder.build();
+
+            System.out.println("i dont fucking know what im doing here: " + shardManager.getShardsTotal());
 
             System.out.println("Mapping Commands:");
 
