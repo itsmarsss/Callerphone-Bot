@@ -3,6 +3,7 @@ package com.marsss.callerphone.msginbottle.commands;
 import com.marsss.callerphone.Callerphone;
 import com.marsss.callerphone.ToolSet;
 import com.marsss.callerphone.msginbottle.MIBBottle;
+import com.marsss.callerphone.msginbottle.MIBResponse;
 import com.marsss.callerphone.msginbottle.MessageInBottle;
 import com.marsss.commandType.ISlashCommand;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -27,6 +28,13 @@ public class FindBottle implements ISlashCommand {
     public void runSlash(SlashCommandInteractionEvent e) {
         MIBBottle bottle = findBottle(e.getUser().getId());
 
+        e.deferReply(true);
+
+        if(bottle == null) {
+            e.reply(MIBResponse.FIND_MAX.toString()).queue();
+            return;
+        }
+
         User sender = ToolSet.getUser(bottle.getParticipantID().get(0));
 
         EmbedBuilder bottleEmbed = new EmbedBuilder()
@@ -44,8 +52,6 @@ public class FindBottle implements ISlashCommand {
         MessageCreateBuilder message = new MessageCreateBuilder()
                 .setEmbeds(bottleEmbed.build())
                 .setComponents(ActionRow.of(reportButton, saveACopy));
-
-        e.deferReply(true);
 
         e.reply(message.build()).setEphemeral(true).queueAfter(1, TimeUnit.SECONDS);
     }
