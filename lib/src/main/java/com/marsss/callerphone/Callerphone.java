@@ -143,7 +143,7 @@ public class Callerphone {
 
             ShardManager shardManager = builder.build();
 
-            System.out.println("i dont fucking know what im doing here: " + shardManager.getShardsTotal());
+            System.out.println("Shard Count: " + shardManager.getShardsTotal());
 
             System.out.println("Mapping Commands:");
 
