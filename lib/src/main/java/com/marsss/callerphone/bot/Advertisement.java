@@ -9,9 +9,9 @@ public class Advertisement {
     public static MessageEmbed generateAd(){
         EmbedBuilder advEmd = new EmbedBuilder()
                 .setColor(Colour.randColor())
-                .setTitle("**UPCOMING ECONOMY BOT!!!**")
-                .setDescription("You can earn credits that can be converted to currency by interacting with **Callerphone**. See `" + Callerphone.config.getPrefix() + "profile` and `" + Callerphone.config.getPrefix() + "help creds`...")
-                .appendDescription("\n\nJoin " + Callerphone.config.getSupportServer() + " and view <#1055259828135657482> for more information!");
+                .setTitle("**Send a message into the vast sea!**")
+                .setDescription("You can now send and find random message floating around in the sea! </findbottle:1089656103391985668> and </sendbottle:1089656103391985667>")
+                .appendDescription("");
 
         return advEmd.build();
     }

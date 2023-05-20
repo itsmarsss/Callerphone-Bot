@@ -27,10 +27,6 @@ public class FindBottle implements ISlashCommand {
     public void runSlash(SlashCommandInteractionEvent e) {
         MIBBottle bottle = findBottle(e.getUser().getId());
 
-        EmbedBuilder lookingBottleEmbed = new EmbedBuilder()
-                .setTitle("**Searching for a message bottle...**")
-                .setColor(new Color(114, 137, 218));
-
         User sender = ToolSet.getUser(bottle.getParticipantID().get(0));
 
         EmbedBuilder bottleEmbed = new EmbedBuilder()

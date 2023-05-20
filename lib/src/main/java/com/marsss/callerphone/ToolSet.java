@@ -26,7 +26,7 @@ public class ToolSet {
     public static long CREDIT_COOLDOWN = 15000;
     public static long COMMAND_COOLDOWN = 2000;
     public static long FINDBOTTLE_COOLDOWN = 43200000;
-    public static long SENDBOTTLE_COOLDOWN = 86400000;
+    public static long SENDBOTTLE_COOLDOWN = 17280000; // 86400000
 
     public static void updateToolSet() {
         CP_EMJ = Callerphone.config.getCallerphoneNormal();

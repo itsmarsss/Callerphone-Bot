@@ -13,7 +13,7 @@ public class MessageInBottle {
     public static final HashMap<String, MIBBottle> bottles = new HashMap<>();
 
     public static MIBStatus sendBottle(String id, String page) {
-        if(Storage.getMIBSendCoolDown(id)-System.currentTimeMillis() > ToolSet.SENDBOTTLE_COOLDOWN) {
+        if(System.currentTimeMillis()-Storage.getMIBSendCoolDown(id) < ToolSet.SENDBOTTLE_COOLDOWN) {
             return MIBStatus.RATE_LIMITED;
         }
 
@@ -21,11 +21,13 @@ public class MessageInBottle {
 
         bottles.put(newBottle.getUuid(), newBottle);
 
+        Storage.updateMIBSendCoolDown(id);
+
         return MIBStatus.SENT;
     }
 
     public static MIBBottle findBottle(String id) {
-        if(Storage.getMIBFindCoolDown(id)-System.currentTimeMillis() > ToolSet.FINDBOTTLE_COOLDOWN) {
+        if(System.currentTimeMillis()-Storage.getMIBFindCoolDown(id) < ToolSet.FINDBOTTLE_COOLDOWN) {
             return null;
         }
 
@@ -40,6 +42,8 @@ public class MessageInBottle {
                 break;
             //}
         }
+
+        Storage.updateMIBFindCoolDown(id);
 
         return bottle;
     }
