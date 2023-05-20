@@ -85,6 +85,8 @@ public class Callerphone {
             GatewayIntent.DIRECT_MESSAGES,
             GatewayIntent.MESSAGE_CONTENT);
 
+    public final String version = "5.0.0";
+
     public static void run() throws InterruptedException, URISyntaxException, UnsupportedEncodingException {
         ToolSet.printWelcome();
 
