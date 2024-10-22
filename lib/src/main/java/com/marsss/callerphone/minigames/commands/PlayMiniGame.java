@@ -2,7 +2,7 @@ package com.marsss.callerphone.minigames.commands;
 
 import com.marsss.callerphone.Callerphone;
 import com.marsss.callerphone.Response;
-import com.marsss.callerphone.Storage;
+import com.marsss.database.Storage;
 import com.marsss.callerphone.ToolSet;
 import com.marsss.callerphone.minigames.MiniGame;
 import com.marsss.callerphone.minigames.games.TicTacToe;

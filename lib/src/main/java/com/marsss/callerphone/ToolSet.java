@@ -1,6 +1,7 @@
 package com.marsss.callerphone;
 
 import com.marsss.callerphone.minigames.IMiniGame;
+import com.marsss.database.Storage;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Message;
@@ -24,7 +25,7 @@ public class ToolSet {
     public static String CP_CALL = Callerphone.config.getCallerphoneCall();
     public static long MESSAGE_COOLDOWN = 500;
     public static long CREDIT_COOLDOWN = 15000;
-    public static long COMMAND_COOLDOWN = 2000;
+    public static long COMMAND_COOLDOWN = 3000;
     public static long FINDBOTTLE_COOLDOWN = 43200000;
     public static long SENDBOTTLE_COOLDOWN = 17280000; // 86400000
 
@@ -174,11 +175,11 @@ public class ToolSet {
     }
 
     public static void sendCommandCooldown(MessageReceivedEvent event) {
-        event.getMessage().reply(":warning: **Command Cooldown;** " + ((ToolSet.COMMAND_COOLDOWN - (System.currentTimeMillis() - Storage.getCmdCooldown(event.getAuthor()))) / 1000) + " second(s)").queue();
+        event.getMessage().reply(":warning: **Command Cooldown;** " + ((ToolSet.COMMAND_COOLDOWN - (System.currentTimeMillis() - Storage.getCmdCooldown(event.getAuthor().getId()))) / 1000) + " second(s)").queue();
     }
 
     public static void sendCommandCooldown(SlashCommandInteractionEvent event) {
-        event.reply(":warning: **Command Cooldown;** " + ((ToolSet.COMMAND_COOLDOWN - (System.currentTimeMillis() - Storage.getCmdCooldown(event.getUser()))) / 1000) + " second(s)").queue();
+        event.reply(":warning: **Command Cooldown;** " + ((ToolSet.COMMAND_COOLDOWN - (System.currentTimeMillis() - Storage.getCmdCooldown(event.getUser().getId()))) / 1000) + " second(s)").queue();
     }
 
     public static void sendPrivateEmbed(User user, MessageEmbed embed) {

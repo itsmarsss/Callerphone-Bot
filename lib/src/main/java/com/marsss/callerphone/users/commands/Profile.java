@@ -2,7 +2,7 @@ package com.marsss.callerphone.users.commands;
 
 import com.marsss.callerphone.Callerphone;
 import com.marsss.callerphone.Response;
-import com.marsss.callerphone.Storage;
+import com.marsss.database.Storage;
 import com.marsss.callerphone.ToolSet;
 import com.marsss.commandType.ISlashCommand;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -20,8 +20,8 @@ public class Profile implements ISlashCommand {
     }
 
     private MessageEmbed profile(User user) {
-        final long EXECUTED = Storage.getExecuted(user);
-        final long TRANSMITTED = Storage.getTransmitted(user);
+        final long EXECUTED = Storage.getExecuted(user.getId());
+        final long TRANSMITTED = Storage.getTransmitted(user.getId());
         final long TOTAL = EXECUTED + TRANSMITTED;
         final int LVL = (int) TOTAL / 100;
         final int EXP = (int) TOTAL - 100 * LVL;
@@ -29,7 +29,7 @@ public class Profile implements ISlashCommand {
         final String PREFIX = (tempPrefix.equals("") ? (LVL > 5 ? ":unlock: `" + Callerphone.config.getPrefix() + "prefix <prefix>`" : ":lock: `Level 50`") : tempPrefix);
 
         String general = String.format(Response.PROFILE_GENERAL.toString(), LVL, EXP, PREFIX);
-        String credits = String.format(Response.PROFILE_CREDITS.toString(), Storage.getCredits(user), 0, 0);
+        String credits = String.format(Response.PROFILE_CREDITS.toString(), Storage.getCredits(user.getId()), 0, 0);
         String message = String.format(Response.PROFILE_MESSAGE.toString(), EXECUTED, TRANSMITTED, TOTAL);
 
         EmbedBuilder proEmd = new EmbedBuilder()
@@ -38,9 +38,9 @@ public class Profile implements ISlashCommand {
                 .addField("**General**", general, true)
                 .addField("**Credits**", credits, true)
                 .addField("**Messages**", message, true)
-                .addField("**Credit cooldown**", ((System.currentTimeMillis() - Storage.getUserCooldown(user)) < ToolSet.CREDIT_COOLDOWN ? ":alarm_clock: " + ((ToolSet.CREDIT_COOLDOWN - (System.currentTimeMillis() - Storage.getUserCooldown(user))) / 1000) + " second(s)" : ":white_check_mark: None"), true)
-                .addField("**Command cooldown**", ((System.currentTimeMillis() - Storage.getCmdCooldown(user)) < ToolSet.COMMAND_COOLDOWN ? ":alarm_clock: " + ((ToolSet.COMMAND_COOLDOWN - (System.currentTimeMillis() - Storage.getCmdCooldown(user))) / 1000) + " second(s)" : ":white_check_mark: None"), true)
-                .addField("**Status**", Storage.getStatus(user.getId()), true)
+                .addField("**Credit cooldown**", ((System.currentTimeMillis() - Storage.queryUserCooldown(user.getId())) < ToolSet.CREDIT_COOLDOWN ? ":alarm_clock: " + ((ToolSet.CREDIT_COOLDOWN - (System.currentTimeMillis() - Storage.queryUserCooldown(user.getId()))) / 1000) + " second(s)" : ":white_check_mark: None"), true)
+                .addField("**Command cooldown**", ((System.currentTimeMillis() - Storage.getCmdCooldown(user.getId())) < ToolSet.COMMAND_COOLDOWN ? ":alarm_clock: " + ((ToolSet.COMMAND_COOLDOWN - (System.currentTimeMillis() - Storage.getCmdCooldown(user.getId()))) / 1000) + " second(s)" : ":white_check_mark: None"), true)
+                .addField("**Status**", Storage.getUserStatus(user.getId()), true)
                 .setFooter("Profile", Callerphone.jda.getSelfUser().getAvatarUrl())
                 .setTimestamp(Instant.now())
                 .setColor(new Color(114, 137, 218));

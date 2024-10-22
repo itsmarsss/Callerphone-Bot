@@ -5,7 +5,7 @@ import java.time.LocalDateTime;
 import com.marsss.callerphone.Callerphone;
 
 import com.marsss.callerphone.Response;
-import com.marsss.callerphone.Storage;
+import com.marsss.database.Storage;
 import com.marsss.callerphone.ToolSet;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
@@ -87,11 +87,11 @@ public class TCCallerphoneListener extends ListenerAdapter {
             }
         }
 
-        if ((System.currentTimeMillis() - Storage.getUserCooldown(event.getAuthor())) > ToolSet.CREDIT_COOLDOWN) {
-            Storage.updateUserCooldown(event.getAuthor());
+        if ((System.currentTimeMillis() - Storage.queryUserCooldown(event.getAuthor().getId())) > ToolSet.CREDIT_COOLDOWN) {
+            Storage.updateUserCooldown(event.getAuthor().getId());
 
-            Storage.reward(event.getAuthor(), 5);
-            Storage.addTransmit(event.getAuthor(), 1);
+            Storage.reward(event.getAuthor().getId(), 5);
+            Storage.addTransmit(event.getAuthor().getId(), 1);
         }
 
     }
@@ -109,7 +109,7 @@ public class TCCallerphoneListener extends ListenerAdapter {
         }
         User auth = msg.getAuthor();
         String template = Response.DEFAULT_MESSAGE_TEMPLATE.toString();
-        if (Storage.isAdmin(msg.getAuthor().getId())) {
+        if (Storage.isModerator(msg.getAuthor().getId())) {
             template = Response.MODERATOR_MESSAGE_TEMPLATE.toString();
         } else if (Storage.hasPrefix(msg.getAuthor().getId())) {
             template = Response.PREFIX_MESSAGE_TEMPLATE.toString().replaceFirst("%s", Storage.getPrefix(msg.getAuthor().getId()));

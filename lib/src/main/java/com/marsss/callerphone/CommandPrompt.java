@@ -1,6 +1,7 @@
 package com.marsss.callerphone;
 
 import com.marsss.callerphone.channelpool.ChannelPool;
+import com.marsss.database.Storage;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.OnlineStatus;
@@ -88,13 +89,13 @@ public class CommandPrompt {
                 }
                 logger.info("Bot Is Offline");
             } else if (cmd.equals("recal")) {
-                logger.info("Recalibrating...");
-                try {
-                    Storage.readData();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                logger.info("Done recalibration!");
+//                logger.info("Recalibrating...");
+//                try {
+//                    Storage.readData();
+//                } catch (Exception e) {
+//                    e.printStackTrace();
+//                }
+//                logger.info("Done recalibration!");
             } else if (cmd.equals("poolnum")) {
                 System.out.println("Currently there are " + ChannelPool.config.size() + " channel pools running.");
             } else if (cmd.equals("updateCMD")) {
@@ -109,7 +110,7 @@ public class CommandPrompt {
                                 "Option 5: recal = To read resources again\n" +
                                 "Option 6: poolnum = To see number of running pools\n" +
                                 "Option 7: updateCMD = Update all slash commands\n" +
-                                "Option 8: help = UBCL help (this)\n\n" +
+                                "Option 8: help = CBCL help (this)\n\n" +
                                 "Other: quickstart <msg> = To start the bot quicker");
             } else {
                 logger.warn("Unknown Command");

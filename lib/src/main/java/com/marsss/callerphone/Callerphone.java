@@ -35,6 +35,8 @@ import com.marsss.callerphone.tccallerphone.TCCallerphoneListener;
 import com.marsss.callerphone.tccallerphone.commands.*;
 import com.marsss.commandType.IButtonInteraction;
 import com.marsss.commandType.IModalInteraction;
+import com.marsss.database.MongoConnector;
+import com.marsss.database.Storage;
 import net.dv8tion.jda.api.*;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.sharding.DefaultShardManagerBuilder;
@@ -74,6 +76,7 @@ public class Callerphone {
     public static JDA jda;
 
     public static Config config = new Config();
+    public static MongoConnector dbConnector = new MongoConnector();
 
     private static final EnumSet<GatewayIntent> intent = EnumSet.of(
             GatewayIntent.GUILD_MEMBERS,
@@ -99,6 +102,14 @@ public class Callerphone {
             System.out.println("There was an error with config.yml");
             System.out.println("\t1. Make sure config.yml template exists");
             System.out.println("\t2. Make sure config.yml values are correctly inputted");
+            System.exit(0);
+        }
+
+        if(!dbConnector.init()) {
+            System.out.println("______________________________________________________");
+            System.out.println("Cannot connect to MongoDB via URL");
+            System.out.println("\t1. Make sure databaseURL exists in config.yml");
+            System.out.println("\t2. Make sure databaseURL follows the format: \"mongodb://ip:port\"");
             System.exit(0);
         }
 
@@ -254,11 +265,11 @@ public class Callerphone {
                 System.out.println("- " + g.getName());
             }
 
-            try {
-                Storage.readData();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+//            try {
+//                Storage.readData();
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//            }
 
             final TextChannel LOG_CHANNEL = ToolSet.getTextChannel(config.getLogStatusChannel());
             if (LOG_CHANNEL == null) {
@@ -280,7 +291,7 @@ public class Callerphone {
     }
 
     private static void kill() {
-        Storage.writeData();
+//        Storage.writeData();
         logger.info("All data exported.");
 //        for (ConvoStorage c : TCCallerphone.convos) {
 //

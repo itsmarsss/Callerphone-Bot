@@ -1,7 +1,7 @@
 package com.marsss.callerphone.users.commands;
 
 import com.marsss.callerphone.Callerphone;
-import com.marsss.callerphone.Storage;
+import com.marsss.database.Storage;
 import com.marsss.callerphone.ToolSet;
 import com.marsss.commandType.ITextCommand;
 import net.dv8tion.jda.api.entities.User;
@@ -31,7 +31,7 @@ public class RewardCredits implements ITextCommand {
     }
 
     private String rewardCredits(User user, int amount) {
-        Storage.reward(user, amount);
+        Storage.reward(user.getId(), amount);
         return ToolSet.CP_EMJ + "Rewarded `\u00A9 " + amount + "` to " + user.getAsMention();
     }
 

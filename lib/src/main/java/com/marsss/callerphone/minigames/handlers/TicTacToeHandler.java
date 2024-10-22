@@ -1,7 +1,7 @@
 package com.marsss.callerphone.minigames.handlers;
 
 import com.marsss.callerphone.Callerphone;
-import com.marsss.callerphone.Storage;
+import com.marsss.database.Storage;
 import com.marsss.callerphone.minigames.MiniGameStatus;
 import com.marsss.callerphone.minigames.games.TicTacToe;
 import com.marsss.commandType.IButtonInteraction;

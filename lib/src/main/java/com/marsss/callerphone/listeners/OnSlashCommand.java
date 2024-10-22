@@ -2,7 +2,7 @@ package com.marsss.callerphone.listeners;
 
 import com.marsss.callerphone.Callerphone;
 import com.marsss.callerphone.Response;
-import com.marsss.callerphone.Storage;
+import com.marsss.database.Storage;
 import com.marsss.callerphone.ToolSet;
 import com.marsss.commandType.ISlashCommand;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
@@ -25,15 +25,15 @@ public class OnSlashCommand extends ListenerAdapter {
                     return;
                 }
 
-                if (System.currentTimeMillis() - Storage.getCmdCooldown(event.getUser()) < ToolSet.COMMAND_COOLDOWN) {
+                if (System.currentTimeMillis() - Storage.getCmdCooldown(event.getUser().getId()) < ToolSet.COMMAND_COOLDOWN) {
                     ToolSet.sendCommandCooldown(event);
                     return;
                 }
 
-                Storage.updateCmdCooldown(event.getUser());
+                Storage.updateCmdCooldown(event.getUser().getId());
 
-                Storage.reward(event.getUser(), 3);
-                Storage.addExecute(event.getUser(), 1);
+                Storage.reward(event.getUser().getId(), 3);
+                Storage.addExecute(event.getUser().getId(), 1);
 
                 ((ISlashCommand) Callerphone.cmdMap.get(event.getName())).runSlash(event);
                 return;

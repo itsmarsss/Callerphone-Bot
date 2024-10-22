@@ -2,7 +2,7 @@ package com.marsss.callerphone.tccallerphone.commands;
 
 import com.marsss.commandType.ISlashCommand;
 import com.marsss.callerphone.Callerphone;
-import com.marsss.callerphone.Storage;
+import com.marsss.database.Storage;
 import com.marsss.callerphone.tccallerphone.ChatResponse;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
@@ -21,7 +21,7 @@ public class Prefix implements ISlashCommand {
             return ChatResponse.PREFIX_TOO_LONG.toString();
         }
 
-        final long LVL = (Storage.getExecuted(user) + Storage.getTransmitted(user)) / 100;
+        final long LVL = (Storage.getExecuted(user.getId()) + Storage.getTransmitted(user.getId())) / 100;
         if (LVL < 50) {
             return ChatResponse.LEVEL_LOW.toString();
         }

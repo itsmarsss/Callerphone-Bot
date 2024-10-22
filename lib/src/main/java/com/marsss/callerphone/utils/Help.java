@@ -1,7 +1,7 @@
 package com.marsss.callerphone.utils;
 
 import com.marsss.callerphone.Callerphone;
-import com.marsss.callerphone.Storage;
+import com.marsss.database.Storage;
 import com.marsss.callerphone.ToolSet;
 import com.marsss.callerphone.bot.*;
 import com.marsss.callerphone.channelpool.commands.*;
@@ -25,7 +25,7 @@ import java.util.List;
 public class Help implements ISlashCommand {
     @Override
     public void runSlash(SlashCommandInteractionEvent e) {
-        final boolean ADMIN = Storage.isAdmin(e.getUser().getId());
+        final boolean ADMIN = Storage.isModerator(e.getUser().getId());
         final List<OptionMapping> PARAM = e.getOptions();
         if (PARAM.size() == 0) {
             e.replyEmbeds(help("", ADMIN)).queue();

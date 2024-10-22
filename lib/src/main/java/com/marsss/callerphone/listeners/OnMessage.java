@@ -2,7 +2,7 @@ package com.marsss.callerphone.listeners;
 
 import com.marsss.callerphone.Callerphone;
 import com.marsss.callerphone.Response;
-import com.marsss.callerphone.Storage;
+import com.marsss.database.Storage;
 import com.marsss.callerphone.ToolSet;
 import com.marsss.callerphone.bot.Advertisement;
 import com.marsss.commandType.ITextCommand;
@@ -14,7 +14,6 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
 import java.awt.*;
-import java.io.File;
 import java.util.Random;
 
 public class OnMessage extends ListenerAdapter {
@@ -54,11 +53,6 @@ public class OnMessage extends ListenerAdapter {
 
         String trigger = ARGS[0].toLowerCase().replace(Callerphone.config.getPrefix(), "");
 
-        event.getMessage().reply("We have completely migrated to slash commands (try running `/" + trigger + "`), please run /help for more information.").queue();
-/*
-
-        String trigger = ARGS[0].toLowerCase().replace(Callerphone.config.getPrefix(), "");
-
         try {
             if (Callerphone.cmdMap.containsKey(trigger)) {
 
@@ -72,15 +66,15 @@ public class OnMessage extends ListenerAdapter {
                     return;
                 }
 
-                if (System.currentTimeMillis() - Storage.getCmdCooldown(event.getAuthor()) < ToolSet.COMMAND_COOLDOWN) {
+                if (System.currentTimeMillis() - Storage.getCmdCooldown(event.getAuthor().getId()) < ToolSet.COMMAND_COOLDOWN) {
                     ToolSet.sendCommandCooldown(event);
                     return;
                 }
 
-                Storage.updateCmdCooldown(event.getAuthor());
+                Storage.updateCmdCooldown(event.getAuthor().getId());
 
-                Storage.reward(event.getAuthor(), 1);
-                Storage.addExecute(event.getAuthor(), 1);
+                Storage.reward(event.getAuthor().getId(), 1);
+                Storage.addExecute(event.getAuthor().getId(), 1);
 
                 ((ITextCommand) Callerphone.cmdMap.get(trigger)).runCommand(event);
 
@@ -92,7 +86,6 @@ public class OnMessage extends ListenerAdapter {
             ex.printStackTrace();
             sendError(event.getMessage(), ex);
         }
-        */
     }
 
     private void fromPM(MessageReceivedEvent event) {
@@ -106,7 +99,7 @@ public class OnMessage extends ListenerAdapter {
 
         final String[] args = CONTENT.split("\\s+");
 
-        boolean isAdmin = Storage.isAdmin(event.getAuthor().getId());
+        boolean isAdmin = Storage.isModerator(event.getAuthor().getId());
 
         if (CONTENT.startsWith(Callerphone.config.getPrefix() + "help mod")) {
             String TITLE = "Mod";
@@ -152,13 +145,13 @@ public class OnMessage extends ListenerAdapter {
                                 MESSAGE.reply("Prefix too long (max. length is 15 chars)").queue();
                                 break;
                             }
-                            Storage.setPrefix(id, prefix);
+                            Storage.setPrefix(MEMBER.getId(), prefix);
                             MESSAGE.reply("ID: `" + id + "` now has prefix `" + prefix + "`").queue();
                         }
                         break;
 
                     case "mod":
-                        if (Storage.isAdmin(id)) {
+                        if (Storage.isModerator(id)) {
                             MESSAGE.reply("ID is mod already").queue();
                         } else {
                             Storage.addAdmin(id);
@@ -186,7 +179,7 @@ public class OnMessage extends ListenerAdapter {
                         break;
 
                     case "rmod":
-                        if (!Storage.isAdmin(id)) {
+                        if (!Storage.isModerator(id)) {
                             MESSAGE.reply("ID is not a mod").queue();
                         } else {
                             if (id.equals(Callerphone.config.getOwnerID())) {

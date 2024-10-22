@@ -1,7 +1,7 @@
 package com.marsss.callerphone.msginbottle;
 
 import com.marsss.callerphone.Callerphone;
-import com.marsss.callerphone.Storage;
+import com.marsss.database.Storage;
 import com.marsss.callerphone.ToolSet;
 
 import java.util.HashMap;

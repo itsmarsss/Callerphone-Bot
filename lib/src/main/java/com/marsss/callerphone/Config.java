@@ -19,10 +19,11 @@ public class Config {
     private String termsOfService = "";
     private String ownerID = "";
 
+    private String databaseURL = "";
+
     private StartType startUpType;
 
-    public Config() {
-    }
+    public Config() {}
 
     public String getBotToken() {
         return botToken;
@@ -140,6 +141,14 @@ public class Config {
         this.ownerID = ownerID;
     }
 
+    public String getDatabaseURL() {
+        return databaseURL;
+    }
+
+    public void setDatabaseURL(String databaseURL) {
+        this.databaseURL = databaseURL;
+    }
+
     public StartType getStartUpType() {
         return startUpType;
     }
@@ -147,5 +156,4 @@ public class Config {
     public void setStartUpType(StartType startUpType) {
         this.startUpType = startUpType;
     }
-
 }
