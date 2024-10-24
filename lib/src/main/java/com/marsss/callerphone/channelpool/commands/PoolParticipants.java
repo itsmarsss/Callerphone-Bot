@@ -7,6 +7,8 @@ import com.marsss.callerphone.channelpool.PoolResponse;
 import com.marsss.commandType.ISlashCommand;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.interactions.commands.build.Commands;
+import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 
 import java.util.LinkedList;
 
@@ -54,6 +56,12 @@ public class PoolParticipants implements ISlashCommand {
 
     @Override
     public String[] getTriggers() {
-        return "poolparticipants,participants,parts,poolparts".split(",");
+        return "poolparts,poolparticipants,participants,parts".split(",");
+    }
+
+    @Override
+    public SlashCommandData getCommandData() {
+        return Commands.slash(getTriggers()[0], getHelp().split(" - ")[1])
+                .setGuildOnly(true);
     }
 }

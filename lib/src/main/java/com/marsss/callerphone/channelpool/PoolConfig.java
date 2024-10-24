@@ -5,15 +5,15 @@ import com.marsss.callerphone.Response;
 import java.util.LinkedList;
 
 public class PoolConfig {
-    private String hostID;
+    private String hostId;
     private String pwd;
     private int cap;
     private boolean pub;
 
     public final LinkedList<String> children = new LinkedList<>();
 
-    public PoolConfig(String hostID, String pwd, int cap, boolean pub) {
-        this.hostID = hostID;
+    public PoolConfig(String hostId, String pwd, int cap, boolean pub) {
+        this.hostId = hostId;
         this.pwd = pwd;
         this.cap = cap;
         this.pub = pub;
@@ -52,6 +52,6 @@ public class PoolConfig {
             }
         }
 
-        return String.format(Response.POOL_TEMPLATE.toString(), hostID, pwd, cap, pub, childrenList.toString());
+        return String.format(Response.POOL_TEMPLATE.toString(), hostId, pwd, cap, pub, childrenList.toString());
     }
 }

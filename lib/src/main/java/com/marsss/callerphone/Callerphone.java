@@ -184,7 +184,7 @@ public class Callerphone {
             cmdLst.add(new LeavePool());
             cmdLst.add(new PoolParticipants());
             cmdLst.add(new PoolSettings());
-            cmdLst.add(new PoolKick());
+            cmdLst.add(new KickPool());
 
             cmdLst.add(new DeductCredits());
             cmdLst.add(new RewardCredits());

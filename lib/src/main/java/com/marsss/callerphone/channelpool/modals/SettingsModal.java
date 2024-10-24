@@ -11,14 +11,13 @@ import java.nio.channels.Channel;
 public class SettingsModal implements IModalInteraction {
     @Override
     public void runModal(ModalInteractionEvent e) {
-
         if (!ChannelPool.isHost(e.getChannel().getId())) {
             e.reply(PoolResponse.NOT_HOSTING.toString()).setEphemeral(true).queue();
             return;
         }
 
         String publicityStr = e.getValue("publicity").getAsString().toLowerCase();
-        boolean publicity = false;
+        boolean publicity;
 
         if (publicityStr.equals("true")) {
             publicity = true;
@@ -30,27 +29,27 @@ public class SettingsModal implements IModalInteraction {
         }
 
         String capacityStr = e.getValue("capacity").getAsString().toLowerCase();
-        int capacity = 10;
+        int capacity;
 
-        try{
+        try {
             capacity = Integer.parseInt(capacityStr);
 
-            if(capacity < 2 || capacity > 10) {
+            if (capacity < 2 || capacity > 10) {
                 e.reply(PoolResponse.INVALID_CAPACITY.toString()).setEphemeral(true).queue();
                 return;
             }
-        }catch (Exception ex) {
+        } catch (Exception ex) {
             e.reply(PoolResponse.INVALID_CAPACITY.toString()).setEphemeral(true).queue();
             return;
         }
 
-        String ID = e.getChannel().getId();
+        String id = e.getChannel().getId();
 
         String password = e.getValue("password").getAsString();
 
-        ChannelPool.setPublicity(ID, publicity);
-        ChannelPool.setPassword(ID, password);
-        ChannelPool.setCap(ID, capacity);
+        ChannelPool.setPublicity(id, publicity);
+        ChannelPool.setPassword(id, password);
+        ChannelPool.setCap(id, capacity);
 
         e.reply(String.format(PoolResponse.SETTINGS_SUCCESS.toString(), publicity, "||" + password + "||", capacity)).setEphemeral(true).queue();
     }

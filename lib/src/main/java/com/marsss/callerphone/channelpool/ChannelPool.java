@@ -35,60 +35,47 @@ public class ChannelPool {
         return PERMS;
     }
 
-    public static boolean permissionCheck(Member member, Message message) {
-        if (member == null) {
-            return true;
-        }
-
-        final boolean PERMS = !member.hasPermission(Permission.MANAGE_CHANNEL);
-        if (PERMS) {
-            message.reply(Response.NO_PERMISSION.toString()).queue();
-
-        }
-        return PERMS;
-    }
-
-    public static PoolStatus endPool(String ID) {
-        if (isHost(ID)) {
-            return clearChildren(ID); // Success/Error
-        } else if (isChild(ID)) {
+    public static PoolStatus endPool(String id) {
+        if (isHost(id)) {
+            return clearChildren(id); // Success/Error
+        } else if (isChild(id)) {
             return PoolStatus.IS_CHILD;
         }
         return PoolStatus.NOT_FOUND;
     }
 
-    public static PoolStatus hostPool(String ID) {
-        if (isHost(ID)) {
+    public static PoolStatus hostPool(String id) {
+        if (isHost(id)) {
             return PoolStatus.IS_HOST;
-        } else if (isChild(ID)) {
+        } else if (isChild(id)) {
             return PoolStatus.IS_CHILD;
         }
-        config.put(ID, new PoolConfig(ID, "", 10, true));
-        config.get(ID).children.add(ID);
+        config.put(id, new PoolConfig(id, "", 10, true));
+        config.get(id).children.add(id);
         return PoolStatus.SUCCESS;
     }
 
-    public static PoolStatus joinPool(String hostID, String clientID, String pwd) {
-        if (!config.containsKey(hostID)) {
+    public static PoolStatus joinPool(String hostId, String clientId, String pwd) {
+        if (!config.containsKey(hostId)) {
             return PoolStatus.NOT_FOUND;
-        } else if (isHost(clientID)) {
+        } else if (isHost(clientId)) {
             return PoolStatus.IS_HOST;
-        } else if (isChild(clientID)) {
+        } else if (isChild(clientId)) {
             return PoolStatus.IS_CHILD;
-        } else if (!config.get(hostID).getPwd().equals(pwd)) {
-            if (!config.get(hostID).isPub()) {
+        } else if (!config.get(hostId).getPwd().equals(pwd)) {
+            if (!config.get(hostId).isPub()) {
                 return PoolStatus.NOT_FOUND;
             }
             return PoolStatus.INCORRECT_PASS;
         }
-        return addChildren(hostID, clientID); // Success/Full/Error
+        return addChildren(hostId, clientId); // Success/Full/Error
     }
 
-    public static PoolStatus leavePool(String ID) {
-        if (isHost(ID)) {
+    public static PoolStatus leavePool(String id) {
+        if (isHost(id)) {
             return PoolStatus.IS_HOST;
-        } else if (isChild(ID)) {
-            return removeChild(parent.get(ID), ID); // Success/Error
+        } else if (isChild(id)) {
+            return removeChild(parent.get(id), id); // Success/Error
         }
         return PoolStatus.NOT_FOUND;
     }
@@ -102,15 +89,15 @@ public class ChannelPool {
     }
 
 
-    public static LinkedList<String> getClients(String ID) {
-        if (!parent.containsKey(ID) && !config.containsKey(ID)) {
+    public static LinkedList<String> getClients(String id) {
+        if (!parent.containsKey(id) && !config.containsKey(id)) {
             return new LinkedList<>();
         }
 
-        if (parent.containsKey(ID)) {
-            return config.get(parent.get(ID)).children;
+        if (parent.containsKey(id)) {
+            return config.get(parent.get(id)).children;
         }
-        return config.get(ID).children;
+        return config.get(id).children;
     }
 
     public static PoolStatus setPublicity(String id, boolean pub) {
@@ -162,55 +149,55 @@ public class ChannelPool {
         return 0;
     }
 
-    public static PoolStatus clearChildren(String ID) {
-        if (isHost(ID)) {
-            LinkedList<String> pool = config.get(ID).children;
+    public static PoolStatus clearChildren(String id) {
+        if (isHost(id)) {
+            LinkedList<String> pool = config.get(id).children;
             pool.stream()
-                    .filter(cur -> !cur.equals(ID))
-                    .forEach(id -> {
-                        final TextChannel HOST_CHANNEL = ToolSet.getTextChannel(id);
+                    .filter(cur -> !cur.equals(id))
+                    .forEach(iId -> {
+                        final TextChannel HOST_CHANNEL = ToolSet.getTextChannel(iId);
                         if (HOST_CHANNEL != null) {
                             HOST_CHANNEL
                                     .sendMessage(
-                                            ToolSet.CP_EMJ + "This pool has been ended by the host channel `ID: " + id
+                                            ToolSet.CP_EMJ + "This pool has been ended by the host channel `ID: " + iId
                                                     + "` (#" + HOST_CHANNEL.getName() + ")."
                                     ).queue();
                         }
-                        parent.remove(id);
+                        parent.remove(iId);
                     });
 
-            config.remove(ID);
+            config.remove(id);
             return PoolStatus.SUCCESS;
         }
         return PoolStatus.ERROR;
     }
 
-    public static PoolStatus addChildren(String IDh, String IDc) {
-        if (isHost(IDh)) {
-            if (config.get(IDh).children.size() >= config.get(IDh).getCap()) {
+    public static PoolStatus addChildren(String hostId, String childId) {
+        if (isHost(hostId)) {
+            if (config.get(hostId).children.size() >= config.get(hostId).getCap()) {
                 return PoolStatus.FULL;
             }
 
-            final TextChannel HOST_CHANNEL = ToolSet.getTextChannel(IDh);
-            final TextChannel CHILD_CHANNEL = ToolSet.getTextChannel(IDc);
+            final TextChannel HOST_CHANNEL = ToolSet.getTextChannel(hostId);
+            final TextChannel CHILD_CHANNEL = ToolSet.getTextChannel(childId);
             if (HOST_CHANNEL != null) {
                 if (CHILD_CHANNEL != null) {
-                    systemBroadCast(IDh,
-                            ToolSet.CP_EMJ + "Channel `ID: " + IDc
+                    systemBroadCast(hostId,
+                            ToolSet.CP_EMJ + "Channel `ID: " + childId
                                     + "` (#" + CHILD_CHANNEL.getName() + ") has joined this pool. "
-                                    + (config.get(IDh).children.size() + 1) + "/" + config.get(IDh).getCap()
+                                    + (config.get(hostId).children.size() + 1) + "/" + config.get(hostId).getCap()
                     );
                 } else {
-                    systemBroadCast(IDh,
-                            ToolSet.CP_EMJ + "Channel `ID: " + IDc
+                    systemBroadCast(hostId,
+                            ToolSet.CP_EMJ + "Channel `ID: " + childId
                                     + "` (#[N/A NOT FOUND]) has joined this pool. "
-                                    + (config.get(IDh).children.size() + 1) + "/" + config.get(IDh).getCap()
+                                    + (config.get(hostId).children.size() + 1) + "/" + config.get(hostId).getCap()
                     );
                 }
             }
 
-            config.get(IDh).children.add(IDc);
-            parent.put(IDc, IDh);
+            config.get(hostId).children.add(childId);
+            parent.put(childId, hostId);
             return PoolStatus.SUCCESS;
         }
         return PoolStatus.ERROR;
@@ -247,12 +234,12 @@ public class ChannelPool {
         }
     }
 
-    public static boolean isHost(String ID) {
-        return !parent.containsKey(ID) && config.containsKey(ID);
+    public static boolean isHost(String id) {
+        return !parent.containsKey(id) && config.containsKey(id);
     }
 
-    public static boolean isChild(String ID) {
-        return parent.containsKey(ID) && !config.containsKey(ID);
+    public static boolean isChild(String id) {
+        return parent.containsKey(id) && !config.containsKey(id);
     }
 
     public static void broadCast(String sender, String original, String msg) {
@@ -338,12 +325,12 @@ public class ChannelPool {
     }
 
 
-    public static void systemBroadCast(String IDhost, String msg) {
-        LinkedList<String> pool = config.get(IDhost).children;
+    public static void systemBroadCast(String hostId, String msg) {
+        LinkedList<String> pool = config.get(hostId).children;
         for (String id : pool) {
             final TextChannel TEXT_CHANNEL = ToolSet.getTextChannel(id);
             if (TEXT_CHANNEL == null) {
-                systemBroadCast(IDhost, String.format(PoolResponse.LEFT_POOL.toString(), id));
+                systemBroadCast(hostId, String.format(PoolResponse.LEFT_POOL.toString(), id));
                 continue;
             }
             MessageCreateAction ma = TEXT_CHANNEL.sendMessage(msg);

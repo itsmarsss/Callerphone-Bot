@@ -145,74 +145,6 @@ public class CommandPrompt {
         );
 
         commands.addCommands(
-                Commands.slash("endpool", "End a channel pool")
-                        .setGuildOnly(true)
-                        .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.MANAGE_CHANNEL))
-        );
-
-        commands.addCommands(
-                Commands.slash("hostpool", "Host a channel pool")
-                        .setGuildOnly(true)
-                        .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.MANAGE_CHANNEL))
-        );
-
-        commands.addCommands(
-                Commands.slash("joinpool", "Join a channel pool")
-                        .addOptions(
-                                new OptionData(OptionType.STRING, "hostid", "Host channel's ID").setRequired(true),
-                                new OptionData(OptionType.STRING, "password", "Channel pool password (if given)")
-                        )
-                        .setGuildOnly(true)
-                        .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.MANAGE_CHANNEL))
-        );
-
-        commands.addCommands(
-                Commands.slash("leavepool", "Leave a channel pool")
-                        .setGuildOnly(true)
-                        .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.MANAGE_CHANNEL))
-        );
-
-        commands.addCommands(
-                Commands.slash("poolparticipants", "View channels in a channel pool")
-                        .setGuildOnly(true)
-        );
-
-        commands.addCommands(
-          Commands.slash("poolsettings", "Configure this pool")
-                  .setGuildOnly(true)
-        );
-
-        commands.addCommands(
-                Commands.slash("poolcap", "Set pool capacity")
-                        .addOptions(
-                                new OptionData(OptionType.INTEGER, "capacity", "Pool capacity")
-                                        .setMinValue(2)
-                                        .setMaxValue(10)
-                                        .setRequired(true)
-                        )
-                        .setGuildOnly(true)
-                        .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.MANAGE_CHANNEL))
-        );
-
-        commands.addCommands(
-                Commands.slash("poolkick", "Kick channel from pool")
-                        .addOptions(
-                                new OptionData(OptionType.STRING, "target", "Target channel").setRequired(true)
-                        )
-                        .setGuildOnly(true)
-                        .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.MANAGE_CHANNEL))
-        );
-
-        commands.addCommands(
-                Commands.slash("poolpublicity", "Change visibility of pool")
-                        .addOptions(
-                                new OptionData(OptionType.BOOLEAN, "public", "Publicity of pool").setRequired(true)
-                        )
-                        .setGuildOnly(true)
-                        .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.MANAGE_CHANNEL))
-        );
-
-        commands.addCommands(
                 Commands.slash("poolpassword", "Change password of pool")
                         .addOptions(
                                 new OptionData(OptionType.STRING, "password", "Password of pool").setRequired(true)
@@ -231,14 +163,6 @@ public class CommandPrompt {
                                         )
                         )
                         .setGuildOnly(true)
-        );
-
-        commands.addCommands(
-
-        );
-
-        commands.addCommands(
-
         );
 
         commands.addCommands(

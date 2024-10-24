@@ -165,7 +165,7 @@ public class ChannelInfo implements IFullCommand {
 
     @Override
     public String getHelp() {
-        return "`</channelinfo:1075169169877770290> <#channel/empty>` - Get information about the channel.";
+        return "</channelinfo:1075169169877770290> <#channel/empty> - Get information about the channel.";
     }
 
     @Override

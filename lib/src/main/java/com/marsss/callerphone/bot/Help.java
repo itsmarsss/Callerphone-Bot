@@ -75,12 +75,12 @@ public class Help implements IFullCommand {
             case "utils":
                 TITLE = "Util Commands";
                 DESC = new BotInfo().getHelp() + "\n"
-                        + new ChannelInfo().getHelp() + "\n"
-                        + new Colour().getHelp() + "\n"
-                        + new RoleInfo().getHelp() + "\n"
-                        + new Search().getHelp() + "\n"
                         + new ServerInfo().getHelp() + "\n"
-                        + new UserInfo().getHelp();
+                        + new ChannelInfo().getHelp() + "\n"
+                        + new RoleInfo().getHelp() + "\n"
+                        + new UserInfo().getHelp() + "\n"
+                        + new Colour().getHelp() + "\n"
+                        + new Search().getHelp();
                 break;
 
 
@@ -90,7 +90,7 @@ public class Help implements IFullCommand {
                         + new JoinPool().getHelp() + "\n"
                         + new EndPool().getHelp() + "\n"
                         + new LeavePool().getHelp() + "\n"
-                        + new PoolKick().getHelp() + "\n"
+                        + new KickPool().getHelp() + "\n"
                         + new PoolParticipants().getHelp() + "\n"
                         + new PoolSettings().getHelp();
                 break;
