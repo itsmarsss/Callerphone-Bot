@@ -1,6 +1,5 @@
 package com.marsss.callerphone.msginbottle.commands;
 
-import com.marsss.callerphone.Callerphone;
 import com.marsss.callerphone.ToolSet;
 import com.marsss.callerphone.msginbottle.MIBBottle;
 import com.marsss.callerphone.msginbottle.MIBResponse;
@@ -13,11 +12,7 @@ import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
-import net.dv8tion.jda.api.interactions.components.text.TextInput;
-import net.dv8tion.jda.api.interactions.components.text.TextInputStyle;
-import net.dv8tion.jda.api.interactions.modals.Modal;
 import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder;
-import org.jetbrains.annotations.NotNull;
 
 import java.awt.*;
 import java.time.Instant;
@@ -29,8 +24,6 @@ public class FindBottle implements ISlashCommand {
     @Override
     public void runSlash(SlashCommandInteractionEvent e) {
         MIBBottle bottle = findBottle(e.getUser().getId());
-
-        e.deferReply(true);
 
         if(bottle == null) {
             e.reply(MIBResponse.FIND_MAX.toString()).queue();

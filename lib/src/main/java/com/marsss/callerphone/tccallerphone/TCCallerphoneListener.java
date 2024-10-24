@@ -56,7 +56,7 @@ public class TCCallerphoneListener extends ListenerAdapter {
             return;
         }
 
-        if (c.getCallerTCId().equals("empty") || c.getReceiverTCId().equals("")) {
+        if (c.getCallerTCId().equals("empty") || c.getReceiverTCId().isEmpty()) {
             return;
         }
         c.addMessage(

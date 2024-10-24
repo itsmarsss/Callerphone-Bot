@@ -20,7 +20,7 @@ public class TCCallerphone {
         final String CHANNELID = tcchannel.getId();
 
         for (ConvoStorage convo : convos) {
-            if (!convo.getCallerTCId().equals("empty") && convo.getReceiverTCId().equals("")) {
+            if (!convo.getCallerTCId().equals("empty") && convo.getReceiverTCId().isEmpty()) {
                 convo.setReceiverFamilyFriendly(cens);
                 convo.setReceiverAnonymous(anon);
                 convo.setReceiverTCId(CHANNELID);
@@ -82,7 +82,7 @@ public class TCCallerphone {
                     }
                 }
             } else {
-                if (!convo.getReceiverTCId().equals("")) {
+                if (!convo.getReceiverTCId().isEmpty()) {
                     if (RECEIVER_CHANNEL != null) {
                         RECEIVER_CHANNEL.sendMessage(ChatResponse.OTHER_PARTY_HUNG_UP.toString()).queue();
                     }

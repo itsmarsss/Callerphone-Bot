@@ -1,7 +1,6 @@
 package com.marsss.callerphone.bot;
 
 import com.marsss.callerphone.Callerphone;
-import com.marsss.callerphone.Response;
 import com.marsss.callerphone.ToolSet;
 import com.marsss.commandType.IFullCommand;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -52,7 +51,7 @@ public class BotInfo implements IFullCommand {
 
                     future.complete(null);
                 },
-                (failure) -> future.completeExceptionally(failure)
+                future::completeExceptionally
         );
 
         try {

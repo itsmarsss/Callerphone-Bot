@@ -1,6 +1,5 @@
 package com.marsss.callerphone.channelpool.commands;
 
-import com.marsss.callerphone.Callerphone;
 import com.marsss.callerphone.Response;
 import com.marsss.callerphone.ToolSet;
 import com.marsss.callerphone.channelpool.ChannelPool;

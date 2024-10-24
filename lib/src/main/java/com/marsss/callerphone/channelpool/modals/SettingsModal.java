@@ -2,11 +2,8 @@ package com.marsss.callerphone.channelpool.modals;
 
 import com.marsss.callerphone.channelpool.ChannelPool;
 import com.marsss.callerphone.channelpool.PoolResponse;
-import com.marsss.callerphone.channelpool.PoolStatus;
 import com.marsss.commandType.IModalInteraction;
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
-
-import java.nio.channels.Channel;
 
 public class SettingsModal implements IModalInteraction {
     @Override

@@ -1,6 +1,5 @@
 package com.marsss.callerphone.channelpool.commands;
 
-import com.marsss.callerphone.Callerphone;
 import com.marsss.callerphone.ToolSet;
 import com.marsss.callerphone.channelpool.ChannelPool;
 import com.marsss.callerphone.channelpool.PoolResponse;
@@ -21,7 +20,7 @@ public class PoolParticipants implements ISlashCommand {
     private String poolParticipants(String id) {
         final LinkedList<String> PARTICIPANTS = ChannelPool.getClients(id);
 
-        if (PARTICIPANTS.size() == 0) {
+        if (PARTICIPANTS.isEmpty()) {
             return PoolResponse.NOT_IN_POOL.toString();
         }
 

@@ -1,7 +1,6 @@
 package com.marsss.callerphone.tccallerphone.commands;
 
 import com.marsss.commandType.ISlashCommand;
-import com.marsss.callerphone.Callerphone;
 import com.marsss.callerphone.tccallerphone.ChatResponse;
 import com.marsss.database.categories.Users;
 import net.dv8tion.jda.api.entities.User;

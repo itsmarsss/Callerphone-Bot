@@ -46,7 +46,7 @@ public class Help implements IFullCommand {
     }
 
     public MessageEmbed help(String name, boolean admin) {
-        if (name.equals("")) {
+        if (name.isEmpty()) {
             return helpCategories(admin);
         }
 

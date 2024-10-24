@@ -20,7 +20,7 @@ public class DeductCredits implements ITextCommand {
         try {
             final String[] ARGS = e.getMessage().getContentRaw().split("\\s+");
             final List<User> MENTIONS = e.getMessage().getMentions().getUsers();
-            final User USER = MENTIONS.size() > 0 ? MENTIONS.get(0) : e.getAuthor();
+            final User USER = !MENTIONS.isEmpty() ? MENTIONS.get(0) : e.getAuthor();
             int amount;
             amount = Integer.parseInt(ARGS[1]);
             e.getMessage().reply(deductCredits(USER, amount)).queue();

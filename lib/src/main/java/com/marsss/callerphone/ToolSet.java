@@ -12,20 +12,9 @@ import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.utils.messages.MessageCreateData;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.yaml.snakeyaml.Yaml;
-import org.yaml.snakeyaml.constructor.Constructor;
 
 import java.awt.*;
-import java.io.*;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.text.CharacterIterator;
-import java.text.StringCharacterIterator;
-import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -85,9 +74,6 @@ public class ToolSet {
         }
 
         final User USER = Callerphone.jda.getUserById(idL);
-
-        if (USER == null)
-            return null;
 
         return USER;
     }
@@ -190,9 +176,7 @@ public class ToolSet {
     public static void sendPrivateGameMessageFrom(User user, MessageCreateData message, IMiniGame game) {
         user.openPrivateChannel().queue((channel) -> {
                     game.setFromChannelId(channel.getId());
-                    channel.sendMessage(message).queue((msg) -> {
-                        game.setFromMessageId(msg.getId());
-                    });
+                    channel.sendMessage(message).queue((msg) -> game.setFromMessageId(msg.getId()));
                 }
         );
     }
@@ -200,9 +184,7 @@ public class ToolSet {
     public static void sendPrivateGameMessageTo(User user, MessageCreateData message, IMiniGame game) {
         user.openPrivateChannel().queue((channel) -> {
                     game.setToChannelId(channel.getId());
-                    channel.sendMessage(message).queue((msg) -> {
-                        game.setToMessageId(msg.getId());
-                    });
+                    channel.sendMessage(message).queue((msg) -> game.setToMessageId(msg.getId()));
                 }
         );
     }

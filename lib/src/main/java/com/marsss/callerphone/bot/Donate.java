@@ -10,8 +10,6 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 
-import java.awt.*;
-
 public class Donate implements IFullCommand {
 
     @Override

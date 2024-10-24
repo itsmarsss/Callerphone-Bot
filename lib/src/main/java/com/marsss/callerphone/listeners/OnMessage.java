@@ -14,7 +14,6 @@ import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
-import java.awt.*;
 import java.util.Random;
 
 public class OnMessage extends ListenerAdapter {
@@ -77,7 +76,7 @@ public class OnMessage extends ListenerAdapter {
                 Users.reward(event.getAuthor().getId(), 1);
                 Users.addExecute(event.getAuthor().getId(), 1);
 
-                if (!ITextCommand.class.isInstance(Callerphone.cmdMap.get(trigger))) {
+                if (!(Callerphone.cmdMap.get(trigger) instanceof ITextCommand)) {
                     event.getMessage().reply("We have completely migrated to slash commands (try running `/" + trigger + "`), please run /help for more information.").queue();
                     return;
                 }

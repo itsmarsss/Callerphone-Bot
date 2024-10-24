@@ -1,7 +1,6 @@
 package com.marsss.callerphone.tccallerphone.commands;
 
 import com.marsss.commandType.ISlashCommand;
-import com.marsss.callerphone.Callerphone;
 import com.marsss.callerphone.Response;
 import com.marsss.callerphone.tccallerphone.ChatResponse;
 import com.marsss.callerphone.tccallerphone.ChatStatus;

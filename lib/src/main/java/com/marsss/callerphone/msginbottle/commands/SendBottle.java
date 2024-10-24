@@ -1,6 +1,5 @@
 package com.marsss.callerphone.msginbottle.commands;
 
-import com.marsss.callerphone.Callerphone;
 import com.marsss.commandType.ISlashCommand;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
