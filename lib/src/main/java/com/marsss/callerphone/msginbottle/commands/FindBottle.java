@@ -44,7 +44,7 @@ public class FindBottle implements ISlashCommand {
                 .appendDescription("\n\n<t:" + bottle.getTimeSent() + ":R>")
                 .setFooter("Time found")
                 .setTimestamp(Instant.now())
-                .setColor(new Color(114, 137, 218));
+                .setColor(ToolSet.COLOR);
 
         Button reportButton = Button.danger("rpt-" + bottle.getUuid(), "Report");
         Button saveACopy = Button.secondary("sve", "Save");
@@ -63,7 +63,7 @@ public class FindBottle implements ISlashCommand {
 
     @Override
     public String getHelp() {
-        return "`" + Callerphone.config.getPrefix() + "findbottle` - Find a random message in bottle floating in the sea and read its message.";
+        return "`/findbottle` - Find a random message in bottle floating in the sea and read its message.";
     }
 
     @Override

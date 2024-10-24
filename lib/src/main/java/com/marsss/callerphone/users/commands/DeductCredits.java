@@ -26,7 +26,7 @@ public class DeductCredits implements ITextCommand {
             e.getMessage().reply(deductCredits(USER, amount)).queue();
         } catch (Exception ex) {
             ex.printStackTrace();
-            e.getMessage().reply(ToolSet.CP_EMJ + "`" + Callerphone.config.getPrefix() + "deductcreds <amount> <@user>`").queue();
+            e.getMessage().reply(ToolSet.CP_EMJ + "`/deductcreds <amount> <@user>`").queue();
         }
     }
 

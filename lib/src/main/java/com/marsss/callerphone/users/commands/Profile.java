@@ -44,7 +44,7 @@ public class Profile implements ISlashCommand {
                 .addField("**Status**", Users.getUserStatus(user.getId()), true)
                 .setFooter("Profile", Callerphone.jda.getSelfUser().getAvatarUrl())
                 .setTimestamp(Instant.now())
-                .setColor(new Color(114, 137, 218));
+                .setColor(ToolSet.COLOR);
 
         return proEmd.build();
     }
@@ -63,7 +63,7 @@ public class Profile implements ISlashCommand {
 
     @Override
     public String getHelp() {
-        return "`" + Callerphone.config.getPrefix() + "profile` - View your profile with Callerphone.";
+        return "`/profile` - View your profile with Callerphone.";
     }
 
     @Override

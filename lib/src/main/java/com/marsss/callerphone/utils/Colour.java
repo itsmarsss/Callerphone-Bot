@@ -1,6 +1,7 @@
 package com.marsss.callerphone.utils;
 
 import com.marsss.callerphone.Callerphone;
+import com.marsss.callerphone.ToolSet;
 import com.marsss.commandType.ISlashCommand;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
@@ -38,7 +39,7 @@ public class Colour implements ISlashCommand {
         EmbedBuilder ColorEmd = new EmbedBuilder()
                 .setTitle("Error")
                 .setDescription("Please provide a valid r g b value")
-                .setColor(new Color(114, 137, 218));
+                .setColor(ToolSet.COLOR);
 
         try {
             if (Integer.parseInt(r) > 255 || Integer.parseInt(g) > 255 || Integer.parseInt(b) > 255)
@@ -69,9 +70,9 @@ public class Colour implements ISlashCommand {
 
     @Override
     public String getHelp() {
-        return "`" + Callerphone.config.getPrefix() + "color` - Get a random color in hex and rgb value.\n" +
-                "`" + Callerphone.config.getPrefix() + "colorrgb <r> <g> <b>` - Get the hex value of rgb.\n" +
-                "`" + Callerphone.config.getPrefix() + "colorhex <hex>` - Get the rgb value of hex.";
+        return "`/color` - Get a random color in hex and rgb value.\n" +
+                "`/colorrgb <r> <g> <b>` - Get the hex value of rgb.\n" +
+                "`/colorhex <hex>` - Get the rgb value of hex.";
     }
 
     @Override
@@ -96,7 +97,7 @@ public class Colour implements ISlashCommand {
         EmbedBuilder ColorEmd = new EmbedBuilder()
                 .setTitle("Error")
                 .setDescription("Please provide a valid hex value")
-                .setColor(new Color(114, 137, 218));
+                .setColor(ToolSet.COLOR);
 
         try {
             hex = hex.replaceFirst("#", "");

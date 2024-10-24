@@ -52,7 +52,7 @@ public class HostPool implements ISlashCommand {
 
     @Override
     public String getHelp() {
-        return "`" + Callerphone.config.getPrefix() + "hostpool` - Host a channel pool.";
+        return "`/hostpool` - Host a channel pool.";
     }
 
     @Override

@@ -49,7 +49,7 @@ public class PoolParticipants implements ISlashCommand {
 
     @Override
     public String getHelp() {
-        return "`" + Callerphone.config.getPrefix() + "poolparts` - Show channel pool participants.";
+        return "`/poolparts` - Show channel pool participants.";
     }
 
     @Override

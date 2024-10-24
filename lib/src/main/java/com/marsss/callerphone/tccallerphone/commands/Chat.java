@@ -58,7 +58,7 @@ public class Chat implements ISlashCommand {
 
     @Override
     public String getHelp() {
-        return "`" + Callerphone.config.getPrefix() + "chat` - Chat with people from other servers.";
+        return "`/chat` - Chat with people from other servers.";
     }
 
     @Override

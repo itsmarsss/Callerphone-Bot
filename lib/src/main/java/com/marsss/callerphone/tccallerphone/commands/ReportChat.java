@@ -28,7 +28,7 @@ public class ReportChat implements ISlashCommand {
 
     @Override
     public String getHelp() {
-        return "`" + Callerphone.config.getPrefix() + "report` - Report current chat with another server.";
+        return "`/report` - Report current chat with another server.";
     }
 
     @Override

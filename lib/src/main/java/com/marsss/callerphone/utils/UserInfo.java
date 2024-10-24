@@ -83,7 +83,7 @@ public class UserInfo implements ISlashCommand {
 
 	@Override
 	public String getHelp() {
-		return "`" + Callerphone.config.getPrefix() + "userinfo <@user/id/empty>` - Get information about this member!";
+		return "`/userinfo <@user/id/empty>` - Get information about this member!";
 	}
 
 	@Override

@@ -7,17 +7,21 @@ import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
+import net.dv8tion.jda.api.interactions.DiscordLocale;
+import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
-import net.dv8tion.jda.api.interactions.commands.build.Commands;
-import net.dv8tion.jda.api.interactions.commands.build.OptionData;
-import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
+import net.dv8tion.jda.api.interactions.commands.build.*;
+import net.dv8tion.jda.api.interactions.commands.localization.LocalizationFunction;
+import net.dv8tion.jda.api.interactions.commands.localization.LocalizationMap;
 import net.dv8tion.jda.api.requests.restaction.CommandListUpdateAction;
+import net.dv8tion.jda.api.utils.data.DataObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.awt.*;
 import java.time.OffsetDateTime;
+import java.util.Map;
 import java.util.Scanner;
 
 public class CommandPrompt {
@@ -103,40 +107,11 @@ public class CommandPrompt {
     private void upsert() {
         CommandListUpdateAction commands = Callerphone.jda.updateCommands();
 
-        commands.addCommands(
-                Commands.slash("about", "About Callerphone")
-                        .setGuildOnly(true)
-        );
-
-        commands.addCommands(
-                Commands.slash("botinfo", "Callerphone info")
-                        .setGuildOnly(true)
-        );
-
-        commands.addCommands(
-                Commands.slash("donate", "Help us out by donating")
-                        .setGuildOnly(true)
-        );
-
-        commands.addCommands(
-                Commands.slash("invite", "Invite Callerphone")
-                        .setGuildOnly(true)
-        );
-
-        commands.addCommands(
-                Commands.slash("ping", "Get the bot's ping")
-                        .setGuildOnly(true)
-        );
 
         commands.addCommands(
                 Commands.slash("profile", "Get your profile").addOptions(
                                 new OptionData(OptionType.USER, "target", "Target user").setRequired(true)
                         )
-                        .setGuildOnly(true)
-        );
-
-        commands.addCommands(
-                Commands.slash("uptime", "Get the bot's uptime")
                         .setGuildOnly(true)
         );
 

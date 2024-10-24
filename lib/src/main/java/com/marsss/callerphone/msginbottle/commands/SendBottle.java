@@ -28,7 +28,7 @@ public class SendBottle implements ISlashCommand {
 
     @Override
     public String getHelp() {
-        return "`" + Callerphone.config.getPrefix() + "sendbottle` - Send a message in bottle into the seas for someone to read.";
+        return "`/sendbottle` - Send a message in bottle into the seas for someone to read.";
     }
 
     @Override

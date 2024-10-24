@@ -62,6 +62,8 @@ public class Callerphone {
     public static String parent;
 
 
+    public static HashMap<String, String> replyMap = new HashMap<>();
+
     public static final HashMap<String, ICommand> cmdMap = new HashMap<>();
     public static final HashMap<String, IModalInteraction> mdlMap = new HashMap<>();
     public static final HashMap<String, IButtonInteraction> btnMap = new HashMap<>();
@@ -159,9 +161,7 @@ public class Callerphone {
             cmdLst.add(new BotInfo());
             cmdLst.add(new Donate());
             cmdLst.add(new Invite());
-            cmdLst.add(new Ping());
             cmdLst.add(new Profile());
-            cmdLst.add(new Uptime());
 
 
             cmdLst.add(new BotInfo());

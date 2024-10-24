@@ -1,6 +1,7 @@
 package com.marsss.callerphone.utils;
 
 import com.marsss.callerphone.Callerphone;
+import com.marsss.callerphone.ToolSet;
 import com.marsss.commandType.ISlashCommand;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Guild;
@@ -69,7 +70,7 @@ public class ServerInfo implements ISlashCommand {
         final String DATECREATED = gld.getTimeCreated().format(DateTimeFormatter.RFC_1123_DATE_TIME);
 
         EmbedBuilder SvrInfEmd = new EmbedBuilder()
-                .setColor(new Color(114, 137, 218))
+                .setColor(ToolSet.COLOR)
                 .setDescription(":minidisc: **Server information for " + NAME + ":**")
                 .addField("General Information",
                         "Name: " + NAME +
@@ -120,7 +121,7 @@ public class ServerInfo implements ISlashCommand {
 
     @Override
     public String getHelp() {
-        return "`" + Callerphone.config.getPrefix() + "serverinfo` - Get information about the server.";
+        return "`/serverinfo` - Get information about the server.";
     }
 
     @Override

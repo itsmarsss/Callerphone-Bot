@@ -50,7 +50,7 @@ public class PoolKick implements ISlashCommand {
 
     @Override
     public String getHelp() {
-        return "`" + Callerphone.config.getPrefix() + "kickchan <channel ID>` - Kick channel from pool.";
+        return "`/kickchan <channel ID>` - Kick channel from pool.";
     }
 
     @Override

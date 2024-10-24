@@ -9,6 +9,13 @@ public class Config {
     private String callerphoneError = "";
     private String callerphoneCall = "";
 
+    private String botListingTopGG = "";
+    private String upvoteBotTopGG = "";
+    private String botListingDBL = "";
+    private String upvoteBotDBL = "";
+    private String upvoteSupportServerTopGG = "";
+    private String upvoteSupportServerDBL = "";
+
     private String logStatusChannel = "";
     private String tempChatChannel = "";
     private String reportChatChannel = "";
@@ -67,6 +74,62 @@ public class Config {
 
     public void setCallerphoneCall(String callerphoneCall) {
         this.callerphoneCall = callerphoneCall;
+    }
+
+    public StartType getStartUpType() {
+        return startUpType;
+    }
+
+    public void setStartUpType(StartType startUpType) {
+        this.startUpType = startUpType;
+    }
+
+    public String getBotListingTopGG() {
+        return botListingTopGG;
+    }
+
+    public void setBotListingTopGG(String botListingTopGG) {
+        this.botListingTopGG = botListingTopGG;
+    }
+
+    public String getUpvoteBotTopGG() {
+        return upvoteBotTopGG;
+    }
+
+    public void setUpvoteBotTopGG(String upvoteBotTopGG) {
+        this.upvoteBotTopGG = upvoteBotTopGG;
+    }
+
+    public String getBotListingDBL() {
+        return botListingDBL;
+    }
+
+    public void setBotListingDBL(String botListingDBL) {
+        this.botListingDBL = botListingDBL;
+    }
+
+    public String getUpvoteBotDBL() {
+        return upvoteBotDBL;
+    }
+
+    public void setUpvoteBotDBL(String upvoteBotDBL) {
+        this.upvoteBotDBL = upvoteBotDBL;
+    }
+
+    public String getUpvoteSupportServerTopGG() {
+        return upvoteSupportServerTopGG;
+    }
+
+    public void setUpvoteSupportServerTopGG(String upvoteSupportServerTopGG) {
+        this.upvoteSupportServerTopGG = upvoteSupportServerTopGG;
+    }
+
+    public String getUpvoteSupportServerDBL() {
+        return upvoteSupportServerDBL;
+    }
+
+    public void setUpvoteSupportServerDBL(String upvoteSupportServerDBL) {
+        this.upvoteSupportServerDBL = upvoteSupportServerDBL;
     }
 
     public String getLogStatusChannel() {
@@ -147,13 +210,5 @@ public class Config {
 
     public void setDatabaseURL(String databaseURL) {
         this.databaseURL = databaseURL;
-    }
-
-    public StartType getStartUpType() {
-        return startUpType;
-    }
-
-    public void setStartUpType(StartType startUpType) {
-        this.startUpType = startUpType;
     }
 }

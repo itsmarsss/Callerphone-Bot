@@ -75,7 +75,7 @@ public class RoleInfo implements ISlashCommand {
 
     @Override
     public String getHelp() {
-        return "`" + Callerphone.config.getPrefix() + "roleinfo <@role/id>` - Get information about this role.";
+        return "`/roleinfo <@role/id>` - Get information about this role.";
     }
 
     @Override

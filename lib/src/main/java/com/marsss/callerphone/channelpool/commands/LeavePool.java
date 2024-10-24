@@ -48,7 +48,7 @@ public class LeavePool implements ISlashCommand {
 
     @Override
     public String getHelp() {
-        return "`" + Callerphone.config.getPrefix() + "leavepool` - Leave a channel pool.";
+        return "`/leavepool` - Leave a channel pool.";
     }
 
     @Override

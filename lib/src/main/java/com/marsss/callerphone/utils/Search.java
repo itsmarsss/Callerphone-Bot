@@ -71,7 +71,7 @@ public class Search implements ISlashCommand {
 
     @Override
     public String getHelp() {
-        return "`" + Callerphone.config.getPrefix() + "search <query>` - Search for something quickly on the web with title, snippet, and link!";
+        return "`/search <query>` - Search for something quickly on the web with title, snippet, and link!";
     }
 
     @Override

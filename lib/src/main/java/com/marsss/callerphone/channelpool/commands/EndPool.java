@@ -43,7 +43,7 @@ public class EndPool implements ISlashCommand {
 
     @Override
     public String getHelp() {
-        return "`" + Callerphone.config.getPrefix() + "endpool` - End a channel pool.";
+        return "`/endpool` - End a channel pool.";
     }
 
     @Override

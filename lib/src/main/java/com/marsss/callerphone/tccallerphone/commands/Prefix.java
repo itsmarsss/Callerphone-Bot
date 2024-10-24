@@ -32,7 +32,7 @@ public class Prefix implements ISlashCommand {
 
     @Override
     public String getHelp() {
-        return "`" + Callerphone.config.getPrefix() + "prefix <prefix>` - Set chat prefix (if more than lvl 50).";
+        return "`/prefix <prefix>` - Set chat prefix (if more than lvl 50).";
     }
 
     @Override

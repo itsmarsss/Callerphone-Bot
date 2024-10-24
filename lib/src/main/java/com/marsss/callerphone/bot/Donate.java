@@ -1,11 +1,14 @@
 package com.marsss.callerphone.bot;
 
+import com.marsss.callerphone.ToolSet;
 import com.marsss.commandType.IFullCommand;
 import com.marsss.callerphone.Callerphone;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.api.interactions.commands.build.Commands;
+import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 
 import java.awt.*;
 
@@ -21,9 +24,16 @@ public class Donate implements IFullCommand {
         e.getMessage().replyEmbeds(donate()).queue();
     }
 
+    private MessageEmbed donate() {
+        return new EmbedBuilder()
+                .setColor(ToolSet.COLOR)
+                .setDescription("Donate at <" + Callerphone.config.getDonateLink() + ">")
+                .build();
+    }
+
     @Override
     public String getHelp() {
-        return "`" + Callerphone.config.getPrefix() + "donate` - Help us out by donating.";
+        return "</donate:1075168879443185745> - Help us out by donating.";
     }
 
     @Override
@@ -31,10 +41,9 @@ public class Donate implements IFullCommand {
         return "donate,don".split(",");
     }
 
-    private MessageEmbed donate() {
-        return new EmbedBuilder()
-                .setColor(new Color(114, 137, 218))
-                .setDescription("Donate at <" + Callerphone.config.getDonateLink() + ">")
-                .build();
+    @Override
+    public SlashCommandData getCommandData() {
+        return Commands.slash(getTriggers()[0], getHelp().split(" - ")[1])
+                .setGuildOnly(true);
     }
 }

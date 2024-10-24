@@ -22,7 +22,7 @@ public class EndChat implements ISlashCommand {
 
     @Override
     public String getHelp() {
-        return "`" + Callerphone.config.getPrefix() + "endchat` - End chatting with people from another server.";
+        return "`/endchat` - End chatting with people from another server.";
     }
 
     @Override

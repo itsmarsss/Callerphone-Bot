@@ -1,10 +1,10 @@
 package com.marsss.callerphone.bot;
 
-import java.awt.Color;
 import java.lang.management.ManagementFactory;
 import java.text.CharacterIterator;
 import java.text.StringCharacterIterator;
 
+import com.marsss.callerphone.ToolSet;
 import com.marsss.commandType.IFullCommand;
 import com.marsss.callerphone.Callerphone;
 
@@ -14,6 +14,8 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.api.interactions.commands.build.Commands;
+import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 
 public class About implements IFullCommand {
     @Override
@@ -26,47 +28,37 @@ public class About implements IFullCommand {
         e.getMessage().replyEmbeds(about()).queue();
     }
 
-    @Override
-    public String getHelp() {
-        return "`" + Callerphone.config.getPrefix() + "about` - Introduces you to this bot";
-    }
-
-    @Override
-    public String[] getTriggers() {
-        return "about,abt".split(",");
-    }
-
-    private final StringBuilder DESCRIPTION = new StringBuilder()
+    private StringBuilder description = new StringBuilder()
             .append("[Invite link](").append(Callerphone.config.getBotInviteLink()).append(")")
             .append("\n[Support server](").append(Callerphone.config.getSupportServer()).append(")")
-            .append("\n[Bot listing (top.gg)](https://top.gg/bot/849713468348956692)")
-            .append("\n[Upvote bot (top.gg)](https://top.gg/bot/849713468348956692/vote)")
-            .append("\n[Bot listing (dbl)](https://discordbotlist.com/bots/callerphone)")
-            .append("\n[Upvote bot (dbl)](https://discordbotlist.com/bots/callerphone/upvote)")
-            .append("\n[Upvote support server (top.gg)](https://top.gg/servers/798428155907801089/vote)")
-            .append("\n[Upvote support server (dbl)](https://discordbotlist.com/servers/legendary-bot-official-server/upvote)")
+            .append("\n[Bot listing (top.gg)](").append(Callerphone.config.getBotListingTopGG()).append(")")
+            .append("\n[Upvote bot (top.gg)](").append(Callerphone.config.getUpvoteBotTopGG()).append(")")
+            .append("\n[Bot listing (dbl)](").append(Callerphone.config.getBotListingDBL()).append(")")
+            .append("\n[Upvote bot (dbl)](").append(Callerphone.config.getUpvoteBotDBL()).append(")")
+            .append("\n[Upvote support server (top.gg)](").append(Callerphone.config.getUpvoteSupportServerTopGG()).append(")")
+            .append("\n[Upvote support server (dbl)](").append(Callerphone.config.getUpvoteSupportServerDBL()).append(")")
             .append("\n")
             .append("\n[Privacy Policy](").append(Callerphone.config.getPrivacyPolicy()).append(")")
             .append("\n[Terms of Service](").append(Callerphone.config.getTermsOfService()).append(")");
 
     private MessageEmbed about() {
-        final JDA jda = Callerphone.jda;
+        JDA jda = Callerphone.jda;
 
-        EmbedBuilder AbtEmd = new EmbedBuilder();
+        EmbedBuilder aboutEmbed = new EmbedBuilder();
+
         jda.retrieveUserById(Callerphone.config.getOwnerID()).queue(u -> {
-
             jda.getShardInfo();
             long users = 0;
             for (Guild g : jda.getGuilds()) {
                 users += g.getMemberCount();
             }
 
-            final String UNIQUE_USERS = Callerphone.isQuickStart ? "N/A (QuickStart)" : jda.getUsers().size() + " unique user(s)";
+            String UNIQUE_USERS = Callerphone.isQuickStart ? "N/A (QuickStart)" : jda.getUsers().size() + " unique user(s)";
 
-            AbtEmd.setAuthor("Made by " + u.getName(), null, u.getAvatarUrl())
-                    .setColor(new Color(114, 137, 218))
+            aboutEmbed.setAuthor("Made by " + u.getName(), null, u.getAvatarUrl())
+                    .setColor(ToolSet.COLOR)
                     .setTitle("**About:**")
-                    .setDescription(DESCRIPTION)
+                    .setDescription(description)
                     .addField("Servers",
                             jda.getGuilds().size() + " server(s)\n" +
                                     jda.getShardInfo().getShardTotal() + " shard(s)\n", true)
@@ -89,13 +81,31 @@ public class About implements IFullCommand {
                                     convert(Runtime.getRuntime().maxMemory()) + " max\n", true)
 
                     .addField("Uptime",
-                            Uptime.upTimeAbt(), true);
+                            upTimeAbt(), true);
 
-            AbtEmd.addField("Info",
+            aboutEmbed.addField("Info",
                     (Callerphone.isQuickStart ? "QuickStarted Bot\n" : "") +
                             "Made in Java <:Java:899050421572739072> with Java Discord Api <:JDA:899083802989695037>", false);
         });
-        return AbtEmd.build();
+
+        return aboutEmbed.build();
+    }
+
+
+    @Override
+    public String getHelp() {
+        return "</about:1075168876930797618> - Introduces you to this bot";
+    }
+
+    @Override
+    public String[] getTriggers() {
+        return "about,abt".split(",");
+    }
+
+    @Override
+    public SlashCommandData getCommandData() {
+        return Commands.slash(getTriggers()[0], getHelp().split(" - ")[1])
+                .setGuildOnly(true);
     }
 
     // https://programming.guide/java/formatting-byte-size-to-human-readable-format.html {
@@ -114,4 +124,36 @@ public class About implements IFullCommand {
 
     // }
 
+
+    // https://github.com/DV8FromTheWorld/Yui/blob/master/src/main/java/net/dv8tion/discord/commands/UptimeCommand.java {
+
+    public static String upTimeAbt() {
+
+        final long DURATION = ManagementFactory.getRuntimeMXBean().getUptime();
+
+        final long YEARS = DURATION / 31104000000L;
+        final long MONTHS = DURATION / 2592000000L % 12;
+        final long DAYS = DURATION / 86400000L % 30;
+        final long HOURS = DURATION / 3600000L % 24;
+        final long MINUTES = DURATION / 60000L % 60;
+        final long SECONDS = DURATION / 1000L % 60;
+
+        String UPTIME = (YEARS == 0 ? "" : YEARS + "y ") +
+                (MONTHS == 0 ? "" : MONTHS + "M ") +
+                (DAYS == 0 ? "" : DAYS + "d ") +
+                (HOURS == 0 ? "" : HOURS + "h ") +
+                (MINUTES == 0 ? "" : MINUTES + "m ") +
+                (SECONDS == 0 ? "" : SECONDS + "s ");
+
+        UPTIME = replaceLast(UPTIME, ", ", "");
+        UPTIME = replaceLast(UPTIME, ",", " and");
+
+        return UPTIME;
+    }
+
+    private static String replaceLast(final String text, final String regex, final String replacement) {
+        return text.replaceFirst("(?s)(.*)" + regex, "$1" + replacement);
+    }
+
+    // }
 }

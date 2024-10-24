@@ -84,7 +84,7 @@ public class JoinPool implements ISlashCommand {
 
     @Override
     public String getHelp() {
-        return "`" + Callerphone.config.getPrefix() + "joinpool <ID> <password>` - Join a channel pool.";
+        return "`/joinpool <ID> <password>` - Join a channel pool.";
     }
 
     @Override

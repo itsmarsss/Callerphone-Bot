@@ -26,7 +26,7 @@ public class RewardCredits implements ITextCommand {
             e.getMessage().reply(rewardCredits(USER, amount)).queue();
         } catch (Exception ex) {
             ex.printStackTrace();
-            e.getMessage().reply(ToolSet.CP_EMJ + "`" + Callerphone.config.getPrefix() + "rewardcreds <amount> <@user>`").queue();
+            e.getMessage().reply(ToolSet.CP_EMJ + "`/rewardcreds <amount> <@user>`").queue();
         }
     }
 

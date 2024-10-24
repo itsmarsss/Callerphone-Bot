@@ -59,7 +59,7 @@ public class PoolSettings implements ISlashCommand {
 
     @Override
     public String getHelp() {
-        return "`" + Callerphone.config.getPrefix() + "poolsettings` - Configure channel pool settings.";
+        return "`/poolsettings` - Configure channel pool settings.";
     }
 
     @Override

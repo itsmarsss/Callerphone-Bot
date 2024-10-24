@@ -12,11 +12,20 @@ import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.utils.messages.MessageCreateData;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.yaml.snakeyaml.Yaml;
+import org.yaml.snakeyaml.constructor.Constructor;
 
 import java.awt.*;
+import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.text.CharacterIterator;
 import java.text.StringCharacterIterator;
+import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -29,6 +38,7 @@ public class ToolSet {
     public static long COMMAND_COOLDOWN = 3000;
     public static long FINDBOTTLE_COOLDOWN = 43200000;
     public static long SENDBOTTLE_COOLDOWN = 17280000; // 86400000
+    public static Color COLOR = new Color(114, 137, 218);
 
     public static void updateToolSet() {
         CP_EMJ = Callerphone.config.getCallerphoneNormal();
@@ -140,7 +150,7 @@ public class ToolSet {
                         .setTitle("User Agreement")
                         .setDescription("By issuing another Callerphone (**\"Bot\"**) command, it is expected that you (**\"User\"**) have read, and User has agreed to both Bot's [Privacy Policy](" + Callerphone.config.getPrivacyPolicy() + ") and [Terms of Service](" + Callerphone.config.getTermsOfService() + "). It is User's responsibility to regularly check for updates to these documents.")
                         .setFooter("This is to protect both Bot and User from unforeseen issues in the future. Please read these documents carefully.", Callerphone.jda.getSelfUser().getAvatarUrl())
-                        .setColor(new Color(114, 137, 218))
+                        .setColor(ToolSet.COLOR)
                         .build()
         ).queue();
     }
@@ -152,7 +162,7 @@ public class ToolSet {
                         .setTitle("User Agreement")
                         .setDescription("By issuing another Callerphone (**\"Bot\"**) command, it is expected that you (**\"User\"**) have read, and User has agreed to both Bot's [Privacy Policy](" + Callerphone.config.getPrivacyPolicy() + ") and [Terms of Service](" + Callerphone.config.getTermsOfService() + "). It is User's responsibility to regularly check for updates to these documents.")
                         .setFooter("This is to protect both Bot and User from unforeseen issues in the future. Please read these documents carefully.", Callerphone.jda.getSelfUser().getAvatarUrl())
-                        .setColor(new Color(114, 137, 218))
+                        .setColor(ToolSet.COLOR)
                         .build()
         ).queue();
     }

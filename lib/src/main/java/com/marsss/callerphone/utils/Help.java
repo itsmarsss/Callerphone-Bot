@@ -36,7 +36,7 @@ public class Help implements ISlashCommand {
 
     @Override
     public String getHelp() {
-        return "`" + Callerphone.config.getPrefix() + "help` - help help help";
+        return "`/help` - help help help";
     }
 
     @Override
@@ -66,9 +66,7 @@ public class Help implements ISlashCommand {
                         + new BotInfo().getHelp() + "\n"
                         + new Donate().getHelp() + "\n"
                         + new Invite().getHelp() + "\n"
-                        + new Ping().getHelp() + "\n"
-                        + new Profile().getHelp() + "\n"
-                        + new Uptime().getHelp();
+                        + new Profile().getHelp();
                 break;
 
 
@@ -160,14 +158,14 @@ public class Help implements ISlashCommand {
                 .setTitle(TITLE)
                 .setDescription(DESC)
                 .setFooter("Hope you found this useful!", Callerphone.jda.getSelfUser().getAvatarUrl())
-                .setColor(new Color(114, 137, 218));
+                .setColor(ToolSet.COLOR);
 
         return HelpEmd.build();
     }
 
     private MessageEmbed helpCategories(boolean admin) {
         EmbedBuilder CateEmd = new EmbedBuilder()
-                .setColor(new Color(114, 137, 218))
+                .setColor(ToolSet.COLOR)
                 .setTitle("Categories")
                 .addField("Bot", "all commands related to the bot will be here, do `" + Callerphone.config.getPrefix() + "help bot` for more information", false)
                 .addField("Utils", "all utility commands will be in this category, do `" + Callerphone.config.getPrefix() + "help utils` for more information", false)

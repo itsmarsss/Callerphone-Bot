@@ -122,7 +122,7 @@ public class OnMessage extends ListenerAdapter {
                     .setTitle(TITLE)
                     .setDescription(DESC)
                     .setFooter("Hope you found this useful!", Callerphone.jda.getSelfUser().getAvatarUrl())
-                    .setColor(new Color(114, 137, 218));
+                    .setColor(ToolSet.COLOR);
 
             ToolSet.sendPrivateEmbed(MEMBER, HelpEmd.build());
             return;
@@ -210,25 +210,25 @@ public class OnMessage extends ListenerAdapter {
     }
 
     public static String adminHelp() {
-        return "`" + Callerphone.config.getPrefix() + "mod <id>` - Adds id to mod list.\n" +
-                "`" + Callerphone.config.getPrefix() + "rmod <id>` - Removes id from mod list.";
+        return "`/mod <id>` - Adds id to mod list.\n" +
+                "`/rmod <id>` - Removes id from mod list.";
     }
 
     public static String blacklistHelp() {
-        return "`" + Callerphone.config.getPrefix() + "blacklist <id>` - Adds id to blacklist.\n" +
-                "`" + Callerphone.config.getPrefix() + "rblacklist <id>` - Removes id from blacklist.";
+        return "`/blacklist <id>` - Adds id to blacklist.\n" +
+                "`/rblacklist <id>` - Removes id from blacklist.";
     }
 
     public static String supportHelp() {
-        return "`" + Callerphone.config.getPrefix() + "prefix <id> <prefix>` - Give user a prefix.\n" +
-                "`" + Callerphone.config.getPrefix() + "rprefix <id>` - Removes user prefix.";
+        return "`/prefix <id> <prefix>` - Give user a prefix.\n" +
+                "`/rprefix <id>` - Removes user prefix.";
     }
 
     public static String showItemsHelp() {
-        return "`" + Callerphone.config.getPrefix() + "blackedlist` - Shows all black listed users.\n" +
-                "`" + Callerphone.config.getPrefix() + "prefixlist` - Shows all prefixes for users.\n" +
-                "`" + Callerphone.config.getPrefix() + "infolist` - Shows all info for startup.\n" +
-                "`" + Callerphone.config.getPrefix() + "modlist` - Shows all moderators.\n" +
-                "`" + Callerphone.config.getPrefix() + "filterlist` - Shows all chat filters.";
+        return "`/blackedlist` - Shows all black listed users.\n" +
+                "`/prefixlist` - Shows all prefixes for users.\n" +
+                "`/infolist` - Shows all info for startup.\n" +
+                "`/modlist` - Shows all moderators.\n" +
+                "`/filterlist` - Shows all chat filters.";
     }
 }

@@ -1,6 +1,7 @@
 package com.marsss.callerphone.utils;
 
 import com.marsss.callerphone.Callerphone;
+import com.marsss.callerphone.ToolSet;
 import com.marsss.commandType.ISlashCommand;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
@@ -62,7 +63,7 @@ public class ChannelInfo implements ISlashCommand {
         }
 
         EmbedBuilder ChnlInfEmd = new EmbedBuilder()
-                .setColor(new Color(114, 137, 218))
+                .setColor(ToolSet.COLOR)
                 .setDescription(":speech_left: **Channel information for " + chnl.getAsMention() + ":**")
                 .addField("Name", NAME, false)
                 .addField("Topic", TOPIC, true)
@@ -104,7 +105,7 @@ public class ChannelInfo implements ISlashCommand {
         }
 
         EmbedBuilder ChnlInfEmd = new EmbedBuilder()
-                .setColor(new Color(114, 137, 218))
+                .setColor(ToolSet.COLOR)
                 .setDescription(":radio: **Channel information for " + chnl.getAsMention() + ":**")
                 .addField("Name", NAME, false)
                 .addField("Type", TYPE, false)
@@ -130,7 +131,7 @@ public class ChannelInfo implements ISlashCommand {
         final String POSITION = String.valueOf(chnl.getPosition());
 
         EmbedBuilder ChnlInfEmd = new EmbedBuilder()
-                .setColor(new Color(114, 137, 218))
+                .setColor(ToolSet.COLOR)
                 .setDescription(":file_folder: **Category information for " + chnl.getAsMention() + ":**")
                 .addField("Name", NAME, false)
                 .addField("Type", TYPE, true)
@@ -145,7 +146,7 @@ public class ChannelInfo implements ISlashCommand {
 
     @Override
     public String getHelp() {
-        return "`" + Callerphone.config.getPrefix() + "channelinfo <#channel/id/empty>` - Get information about the channel.";
+        return "`/channelinfo <#channel/id/empty>` - Get information about the channel.";
     }
 
     @Override
