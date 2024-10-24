@@ -16,16 +16,17 @@ import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEve
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
+import net.dv8tion.jda.api.sharding.ShardManager;
 
 public class About implements IFullCommand {
     @Override
     public void runSlash(SlashCommandInteractionEvent e) {
-        e.replyEmbeds(about()).queue();
+        e.replyEmbeds(about(e.getJDA())).queue();
     }
 
     @Override
     public void runCommand(MessageReceivedEvent e) {
-        e.getMessage().replyEmbeds(about()).queue();
+        e.getMessage().replyEmbeds(about(e.getJDA())).queue();
     }
 
     private StringBuilder description = new StringBuilder()
@@ -41,9 +42,7 @@ public class About implements IFullCommand {
             .append("\n[Privacy Policy](").append(Callerphone.config.getPrivacyPolicy()).append(")")
             .append("\n[Terms of Service](").append(Callerphone.config.getTermsOfService()).append(")");
 
-    private MessageEmbed about() {
-        JDA jda = Callerphone.jda;
-
+    private MessageEmbed about(JDA jda) {
         EmbedBuilder aboutEmbed = new EmbedBuilder();
 
         jda.retrieveUserById(Callerphone.config.getOwnerID()).queue(u -> {

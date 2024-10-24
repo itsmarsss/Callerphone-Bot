@@ -31,7 +31,7 @@ public class MessageInBottle {
             return null;
         }
 
-        MIBBottle bottle = new MIBBottle(Callerphone.jda.getSelfUser().getId(), "No bottle to be found " + ToolSet.CP_ERR);
+        MIBBottle bottle = new MIBBottle(Callerphone.selfUser.getId(), "No bottle to be found " + ToolSet.CP_ERR);
 
         Iterator it = bottles.entrySet().iterator();
         while (it.hasNext()) {

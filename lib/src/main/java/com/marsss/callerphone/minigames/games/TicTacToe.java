@@ -194,12 +194,12 @@ public class TicTacToe implements IMiniGame {
 
         if (win != -1) {
             if (win == 0) {
-                return getBoardWithMessage("@" + Callerphone.jda.getUserById(fromUserID).getAsTag() + " has won this game!");
+                return getBoardWithMessage("@" + Callerphone.sdMgr.getUserById(fromUserID).getAsTag() + " has won this game!");
             } else if (win == 1) {
-                return getBoardWithMessage("@" + Callerphone.jda.getUserById(toUserID).getAsTag() + " has won this game!");
+                return getBoardWithMessage("@" + Callerphone.sdMgr.getUserById(toUserID).getAsTag() + " has won this game!");
             }
         } else {
-            message.setContent("@" + Callerphone.jda.getUserById(toUserID).getAsTag() + " has challenged you to a game of TicTacToe");
+            message.setContent("@" + Callerphone.sdMgr.getUserById(toUserID).getAsTag() + " has challenged you to a game of TicTacToe");
         }
 
         if (this.stage == 9) {
@@ -218,13 +218,13 @@ public class TicTacToe implements IMiniGame {
 
         if (win != -1) {
             if (win == 0) {
-                return getBoardWithMessage("@" + Callerphone.jda.getUserById(fromUserID).getAsTag() + " has won this game!");
+                return getBoardWithMessage("@" + Callerphone.sdMgr.getUserById(fromUserID).getAsTag() + " has won this game!");
 
             } else if (win == 1) {
-                return getBoardWithMessage("@" + Callerphone.jda.getUserById(toUserID).getAsTag() + " has won this game!");
+                return getBoardWithMessage("@" + Callerphone.sdMgr.getUserById(toUserID).getAsTag() + " has won this game!");
             }
         } else {
-            message.setContent("@" + Callerphone.jda.getUserById(fromUserID).getAsTag() + " has challenged you to a game of TicTacToe");
+            message.setContent("@" + Callerphone.sdMgr.getUserById(fromUserID).getAsTag() + " has challenged you to a game of TicTacToe");
         }
 
         if (this.stage == 9) {

@@ -18,17 +18,15 @@ import java.util.concurrent.CompletableFuture;
 public class BotInfo implements IFullCommand {
     @Override
     public void runSlash(SlashCommandInteractionEvent e) {
-        e.replyEmbeds(botInfo()).setEphemeral(true).queue();
+        e.replyEmbeds(botInfo(e.getJDA())).setEphemeral(true).queue();
     }
 
     @Override
     public void runCommand(MessageReceivedEvent e) {
-        e.getMessage().replyEmbeds(botInfo()).queue();
+        e.getMessage().replyEmbeds(botInfo(e.getJDA())).queue();
     }
 
-    private MessageEmbed botInfo() {
-        JDA jda = Callerphone.jda;
-
+    private MessageEmbed botInfo(JDA jda) {
         StringBuilder description = new StringBuilder()
                 .append("**Tag of the bot:** ").append(jda.getSelfUser().getAsTag())
                 .append("\n**Avatar url:** [link](").append(jda.getSelfUser().getAvatarUrl()).append(")")
@@ -43,11 +41,11 @@ public class BotInfo implements IFullCommand {
 
         CompletableFuture<Void> future = new CompletableFuture<>();
 
-        Callerphone.jda.getRestPing().queue(
+        jda.getRestPing().queue(
                 (ping) -> {
                     botInfo.setDescription(description
                             .append("\n**Reset ping:** ").append(ping).append("ms")
-                            .append("\n**WS ping:** ").append(Callerphone.jda.getGatewayPing()).append("ms"));
+                            .append("\n**WS ping:** ").append(jda.getGatewayPing()).append("ms"));
 
                     future.complete(null);
                 },
@@ -59,7 +57,7 @@ public class BotInfo implements IFullCommand {
         } catch (Exception e) {
             botInfo.setDescription(description
                     .append("\n**Reset ping:** ").append("*Unable to obtain*")
-                    .append("\n**WS ping:** ").append(Callerphone.jda.getGatewayPing()));
+                    .append("\n**WS ping:** ").append(jda.getGatewayPing()));
         }
 
         return botInfo.build();

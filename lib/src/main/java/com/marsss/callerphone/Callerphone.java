@@ -33,6 +33,7 @@ import com.marsss.commandType.IButtonInteraction;
 import com.marsss.commandType.IModalInteraction;
 import com.marsss.database.MongoConnector;
 import net.dv8tion.jda.api.*;
+import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.sharding.DefaultShardManagerBuilder;
 import net.dv8tion.jda.api.sharding.ShardManager;
@@ -71,7 +72,8 @@ public class Callerphone {
 
     public static boolean isQuickStart;
 
-    public static JDA jda;
+    public static ShardManager sdMgr;
+    public static User selfUser;
 
     public static Config config = new Config();
     public static MongoConnector dbConnector = new MongoConnector();
@@ -132,28 +134,27 @@ public class Callerphone {
     public static void botInit(String token, String startupmsg) {
         try {
             if (isQuickStart) {
-                jda = JDABuilder.createDefault(token, intent)
+                sdMgr = DefaultShardManagerBuilder.createDefault(token, intent)
                         .enableCache(CacheFlag.VOICE_STATE)
                         .enableCache(CacheFlag.ROLE_TAGS)
                         .setMemberCachePolicy(MemberCachePolicy.ALL)
                         .build();
             } else {
-                jda = JDABuilder.createDefault(token, intent)
+                sdMgr = DefaultShardManagerBuilder.createDefault(token, intent)
                         .enableCache(CacheFlag.VOICE_STATE)
                         .enableCache(CacheFlag.ROLE_TAGS)
                         .setChunkingFilter(ChunkingFilter.ALL)
                         .setMemberCachePolicy(MemberCachePolicy.ALL)
+                        .setShardsTotal(-1)
                         .build();
             }
-
-            DefaultShardManagerBuilder builder = DefaultShardManagerBuilder.createDefault(token);
-            builder.setShardsTotal(-1);
             //builder.setShards(shardId, shardTotal); // Set the shard ID and total number of shards for this instance
             //builder.addEventListeners(/* Add event listeners */);
 
-            ShardManager shardManager = builder.build();
+            selfUser = sdMgr.getShards().get(0).getSelfUser();
 
-            System.out.println("Shard Count: " + shardManager.getShardsTotal());
+
+            System.out.println("Shard Count: " + sdMgr.getShardsTotal());
 
             System.out.println("Mapping Commands:");
 
@@ -235,26 +236,24 @@ public class Callerphone {
             gameLst.add(new TicTacToe());
             gameLst.add(new Connect4());
 
-            jda.addEventListener(new OnButtonClick());
-            jda.addEventListener(new OnMessage());
-            jda.addEventListener(new OnModalEvent());
-            jda.addEventListener(new OnOtherEvent());
-            jda.addEventListener(new OnSlashCommand());
-            jda.addEventListener(new TCCallerphoneListener());
-            jda.addEventListener(new ChannelPoolListener());
+            sdMgr.addEventListener(new OnButtonClick());
+            sdMgr.addEventListener(new OnMessage());
+            sdMgr.addEventListener(new OnModalEvent());
+            sdMgr.addEventListener(new OnOtherEvent());
+            sdMgr.addEventListener(new OnSlashCommand());
+            sdMgr.addEventListener(new TCCallerphoneListener());
+            sdMgr.addEventListener(new ChannelPoolListener());
 
 
             for (int i = 0; i < 10000; i++) {
                 TCCallerphone.convos.add(new ConvoStorage(new ConcurrentLinkedQueue<>(), "empty", "", 0, 0, true, true, false, false, false));
             }
 
-            jda.awaitReady();
-
-            jda.getPresence().setActivity(Activity.watching("for " + config.getPrefix() + "help"));
+            sdMgr.setActivity(Activity.watching("for " + config.getPrefix() + "help"));
             logger.info("Bot online");
 
             System.out.println("\nGuild List: ");
-            for (Guild g : jda.getGuilds()) {
+            for (Guild g : sdMgr.getGuilds()) {
                 System.out.println("- " + g.getName());
             }
 
@@ -266,7 +265,7 @@ public class Callerphone {
                 EmbedBuilder embedBuilder = new EmbedBuilder().setTitle("Status")
                         .setColor(new Color(24, 116, 52))
                         .setFooter("Hello World!")
-                        .setDescription(jda.getSelfUser().getAsMention() + " is now online;" + startupmsg);
+                        .setDescription(sdMgr.getShards().get(0).getSelfUser().getAsMention() + " is now online;" + startupmsg);
                 LOG_CHANNEL.sendMessageEmbeds(embedBuilder.build()).queue();
             }
         } catch (Exception e) {

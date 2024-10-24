@@ -35,7 +35,7 @@ public class TicTacToeHandler implements IButtonInteraction {
                 return;
             }
 
-            MessageChannel channel = Callerphone.jda.getPrivateChannelById(game.getFromChannelId());
+            MessageChannel channel = Callerphone.sdMgr.getPrivateChannelById(game.getFromChannelId());
 
             channel.retrieveMessageById(game.getFromMessageId()).queue((message) -> {
                 message.editMessage(MessageEditData.fromCreateData(game.getMessageForFrom())).queue();
@@ -56,7 +56,7 @@ public class TicTacToeHandler implements IButtonInteraction {
                 return;
             }
 
-            MessageChannel channel = Callerphone.jda.getPrivateChannelById(game.getToChannelId());
+            MessageChannel channel = Callerphone.sdMgr.getPrivateChannelById(game.getToChannelId());
 
             channel.retrieveMessageById(game.getToMessageId()).queue((message) -> {
                 message.editMessage(MessageEditData.fromCreateData(game.getMessageForTo())).queue();
@@ -75,7 +75,7 @@ public class TicTacToeHandler implements IButtonInteraction {
 
         if (win != -1) {
             if (win == 0) {
-                MessageChannel channel = Callerphone.jda.getPrivateChannelById(game.getFromChannelId());
+                MessageChannel channel = Callerphone.sdMgr.getPrivateChannelById(game.getFromChannelId());
 
                 channel.retrieveMessageById(game.getFromMessageId()).queue((message) -> {
                     message.editMessage(MessageEditData.fromCreateData(game.getMessageForFrom())).queue();
@@ -83,7 +83,7 @@ public class TicTacToeHandler implements IButtonInteraction {
                     channel.sendMessage(game.getMessageForFrom()).queue();
                 }));
             } else if (win == 1) {
-                MessageChannel channel = Callerphone.jda.getPrivateChannelById(game.getToChannelId());
+                MessageChannel channel = Callerphone.sdMgr.getPrivateChannelById(game.getToChannelId());
 
                 channel.retrieveMessageById(game.getToMessageId()).queue((message) -> {
                     message.editMessage(MessageEditData.fromCreateData(game.getMessageForTo())).queue();

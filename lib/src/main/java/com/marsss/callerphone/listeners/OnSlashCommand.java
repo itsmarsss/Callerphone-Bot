@@ -17,7 +17,7 @@ public class OnSlashCommand extends ListenerAdapter {
             if (Callerphone.cmdMap.containsKey(event.getName())) {
 
                 if (!Users.hasUser(event.getUser().getId())) {
-                    ToolSet.sendPPAndTOS(event);
+                    ToolSet.sendPPAndTOS(event, event.getJDA());
                     return;
                 }
 

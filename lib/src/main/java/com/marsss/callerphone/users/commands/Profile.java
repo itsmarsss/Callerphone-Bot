@@ -51,7 +51,7 @@ public class Profile implements ISlashCommand {
                 .addField("**Credit cooldown**", (getCreditCooldown(user)), true)
                 .addField("**Command cooldown**", (getCommandCooldown(user)), true)
                 .addField("**Status**", Users.getUserStatus(user.getId()), true)
-                .setFooter("Profile", Callerphone.jda.getSelfUser().getAvatarUrl())
+                .setFooter("Profile", Callerphone.selfUser.getAvatarUrl())
                 .setTimestamp(Instant.now())
                 .setColor(ToolSet.COLOR);
 

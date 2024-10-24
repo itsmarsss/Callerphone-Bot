@@ -15,6 +15,7 @@ import com.marsss.callerphone.utils.*;
 import com.marsss.commandType.IFullCommand;
 import com.marsss.database.categories.Users;
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
@@ -158,7 +159,7 @@ public class Help implements IFullCommand {
         EmbedBuilder helpEmbed = new EmbedBuilder()
                 .setTitle(TITLE)
                 .setDescription(DESC)
-                .setFooter("Hope you found this useful!", Callerphone.jda.getSelfUser().getAvatarUrl())
+                .setFooter("Hope you found this useful!", Callerphone.selfUser.getAvatarUrl())
                 .setColor(ToolSet.COLOR);
 
         return helpEmbed.build();

@@ -4,22 +4,24 @@ import com.marsss.ICommand;
 import com.marsss.commandType.ISlashCommand;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.interactions.commands.build.*;
 import net.dv8tion.jda.api.requests.restaction.CommandListUpdateAction;
+import net.dv8tion.jda.api.sharding.ShardManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.awt.*;
 import java.time.OffsetDateTime;
-import java.util.Map;
 import java.util.Scanner;
 
 public class CommandPrompt {
 
     public static final Logger logger = LoggerFactory.getLogger(CommandPrompt.class);
 
-    private JDA jda = Callerphone.jda;
+    private ShardManager sdMgr = Callerphone.sdMgr;
+    private User selfUser = Callerphone.selfUser;
 
     public void startPrompting() throws InterruptedException {
         Scanner sc = new Scanner(System.in);
@@ -29,7 +31,7 @@ public class CommandPrompt {
             String cmd = sc.nextLine();
             if (cmd.startsWith("start")) {
                 logger.info("Starting Bot...");
-                if (jda != null) {
+                if (sdMgr != null) {
                     logger.info("Bot Is Already Online.");
                 } else {
                     Callerphone.isQuickStart = false;
@@ -37,7 +39,7 @@ public class CommandPrompt {
                 }
             } else if (cmd.startsWith("quickstart")) {
                 logger.info("Quick Starting Bot...");
-                if (jda != null) {
+                if (sdMgr != null) {
                     logger.info("Bot Is Already Online.");
                 } else {
                     Callerphone.isQuickStart = true;
@@ -45,36 +47,44 @@ public class CommandPrompt {
                 }
             } else if (cmd.equals("shutdown")) {
                 logger.info("Shutting Down Bot...");
-                if (jda != null) {
+                if (sdMgr != null) {
                     EmbedBuilder embedBuilder = new EmbedBuilder().setTitle("Status")
                             .setColor(new Color(213, 0, 0))
                             .setFooter("Goodbye World...")
-                            .setDescription(jda.getSelfUser().getAsMention() + " is going offline;" + cmd.replaceFirst("shutdown", ""));
+                            .setDescription(selfUser.getAsMention() + " is going offline;" + cmd.replaceFirst("shutdown", ""));
                     final TextChannel LOG_CHANNEL = ToolSet.getTextChannel(Callerphone.config.getLogStatusChannel());
                     if (LOG_CHANNEL == null) {
                         logger.error("Error Sending Shutdown Message");
                     } else {
                         LOG_CHANNEL.sendMessageEmbeds(embedBuilder.build()).complete();
                     }
-                    jda.awaitReady();
-                    jda.shutdown();
-                    jda = null;
+                    sdMgr.shutdown();
+                    sdMgr = null;
                 }
                 logger.info("Bot Offline");
                 sc.close();
                 System.exit(0);
             } else if (cmd.equals("info")) {
-                if (jda != null) {
-                    String tag = jda.getSelfUser().getAsTag();
-                    String avatarUrl = jda.getSelfUser().getAvatarUrl();
-                    OffsetDateTime timeCreated = jda.getSelfUser().getTimeCreated();
-                    String id = jda.getSelfUser().getId();
+                if (sdMgr != null) {
+                    String tag = selfUser.getAsTag();
+                    String avatarUrl = selfUser.getAvatarUrl();
+                    OffsetDateTime timeCreated = selfUser.getTimeCreated();
+                    String id = selfUser.getId();
                     System.out.println("Tag of the bot: " + tag);
                     System.out.println("Avatar url: " + avatarUrl);
                     System.out.println("Time created: " + timeCreated);
                     System.out.println("Id: " + id);
-                    System.out.println("Shard info: " + jda.getShardInfo().getShardString());
-                    System.out.println("Guilds: " + jda.getGuilds().size());
+                    System.out.println("Shard Info:");
+
+                    int i = 0;
+                    for(JDA jda : sdMgr.getShards()) {
+                        System.out.println(i);
+                        System.out.println("\tShard info: " + jda.getShardInfo().getShardString());
+                        System.out.println("\tGuilds: " + jda.getGuilds().size());
+                        i++;
+                    }
+
+                    System.out.println("Total Guilds: " + sdMgr.getGuilds().size());
                     continue;
                 }
                 logger.info("Bot Is Offline");
@@ -96,21 +106,23 @@ public class CommandPrompt {
     }
 
     private void upsert() {
-        CommandListUpdateAction commands = Callerphone.jda.updateCommands();
+        for(JDA jda : sdMgr.getShards()) {
+            CommandListUpdateAction commands = jda.updateCommands();
 
-        for (ICommand command : Callerphone.cmdLst) {
-            if (!ISlashCommand.class.isAssignableFrom(command.getClass())) {
-                continue;
+            for (ICommand command : Callerphone.cmdLst) {
+                if (!ISlashCommand.class.isAssignableFrom(command.getClass())) {
+                    continue;
+                }
+
+                SlashCommandData commandData = ((ISlashCommand) (command)).getCommandData();
+                if (commandData == null) {
+                    continue;
+                }
+
+                commands.addCommands(commandData);
             }
 
-            SlashCommandData commandData = ((ISlashCommand) (command)).getCommandData();
-            if (commandData == null) {
-                continue;
-            }
-
-            commands.addCommands(commandData);
+            commands.queue();
         }
-
-        commands.queue();
     }
 }

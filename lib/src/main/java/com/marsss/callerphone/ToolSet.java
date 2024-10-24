@@ -4,6 +4,7 @@ import com.marsss.callerphone.minigames.IMiniGame;
 import com.marsss.database.categories.Cooldown;
 import com.marsss.database.categories.Filter;
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
@@ -48,7 +49,7 @@ public class ToolSet {
             return null;
         }
 
-        final TextChannel CHANNEL = Callerphone.jda.getTextChannelById(idL);
+        final TextChannel CHANNEL = Callerphone.sdMgr.getTextChannelById(idL);
 
         if (CHANNEL == null)
             return null;
@@ -73,7 +74,7 @@ public class ToolSet {
             return null;
         }
 
-        final User USER = Callerphone.jda.getUserById(idL);
+        final User USER = Callerphone.sdMgr.getUserById(idL);
 
         return USER;
     }
@@ -129,25 +130,25 @@ public class ToolSet {
         System.out.println("                    Welcome to Callerphone's Control Prompt");
     }
 
-    public static void sendPPAndTOS(MessageReceivedEvent event) {
+    public static void sendPPAndTOS(MessageReceivedEvent event, JDA jda) {
         event.getMessage().replyEmbeds(
                 new EmbedBuilder()
                         .setAuthor("Must Read", null, event.getAuthor().getAvatarUrl())
                         .setTitle("User Agreement")
                         .setDescription("By issuing another Callerphone (**\"Bot\"**) command, it is expected that you (**\"User\"**) have read, and User has agreed to both Bot's [Privacy Policy](" + Callerphone.config.getPrivacyPolicy() + ") and [Terms of Service](" + Callerphone.config.getTermsOfService() + "). It is User's responsibility to regularly check for updates to these documents.")
-                        .setFooter("This is to protect both Bot and User from unforeseen issues in the future. Please read these documents carefully.", Callerphone.jda.getSelfUser().getAvatarUrl())
+                        .setFooter("This is to protect both Bot and User from unforeseen issues in the future. Please read these documents carefully.", jda.getSelfUser().getAvatarUrl())
                         .setColor(ToolSet.COLOR)
                         .build()
         ).queue();
     }
 
-    public static void sendPPAndTOS(SlashCommandInteractionEvent event) {
+    public static void sendPPAndTOS(SlashCommandInteractionEvent event, JDA jda) {
         event.replyEmbeds(
                 new EmbedBuilder()
                         .setAuthor("Must Read", null, event.getUser().getAvatarUrl())
                         .setTitle("User Agreement")
                         .setDescription("By issuing another Callerphone (**\"Bot\"**) command, it is expected that you (**\"User\"**) have read, and User has agreed to both Bot's [Privacy Policy](" + Callerphone.config.getPrivacyPolicy() + ") and [Terms of Service](" + Callerphone.config.getTermsOfService() + "). It is User's responsibility to regularly check for updates to these documents.")
-                        .setFooter("This is to protect both Bot and User from unforeseen issues in the future. Please read these documents carefully.", Callerphone.jda.getSelfUser().getAvatarUrl())
+                        .setFooter("This is to protect both Bot and User from unforeseen issues in the future. Please read these documents carefully.", jda.getSelfUser().getAvatarUrl())
                         .setColor(ToolSet.COLOR)
                         .build()
         ).queue();

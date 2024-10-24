@@ -43,7 +43,7 @@ public class OnMessage extends ListenerAdapter {
         if (MEMBER.getUser().isBot() || MEMBER.getUser().isSystem())
             return;
 
-        if (CONTENT.contains(Callerphone.jda.getSelfUser().getId())) {
+        if (CONTENT.contains(Callerphone.selfUser.getId())) {
             MESSAGE.reply("My prefix is `" + Callerphone.config.getPrefix() + "`, do `/help` for a list of commands!").queue();
             return;
         }
@@ -57,7 +57,7 @@ public class OnMessage extends ListenerAdapter {
             if (Callerphone.cmdMap.containsKey(trigger)) {
 
                 if (!Users.hasUser(event.getAuthor().getId())) {
-                    ToolSet.sendPPAndTOS(event);
+                    ToolSet.sendPPAndTOS(event, event.getJDA());
                     return;
                 }
 
@@ -120,7 +120,7 @@ public class OnMessage extends ListenerAdapter {
             EmbedBuilder HelpEmd = new EmbedBuilder()
                     .setTitle(TITLE)
                     .setDescription(DESC)
-                    .setFooter("Hope you found this useful!", Callerphone.jda.getSelfUser().getAvatarUrl())
+                    .setFooter("Hope you found this useful!", Callerphone.selfUser.getAvatarUrl())
                     .setColor(ToolSet.COLOR);
 
             ToolSet.sendPrivateEmbed(MEMBER, HelpEmd.build());
