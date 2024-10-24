@@ -1,8 +1,7 @@
 package com.marsss.callerphone.utils;
 
-import com.marsss.callerphone.Callerphone;
 import com.marsss.callerphone.ToolSet;
-import com.marsss.commandType.ISlashCommand;
+import com.marsss.commandType.IFullCommand;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
@@ -11,60 +10,81 @@ import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
+import net.dv8tion.jda.api.interactions.commands.build.Commands;
+import net.dv8tion.jda.api.interactions.commands.build.OptionData;
+import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 
-import java.awt.*;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
-public class ChannelInfo implements ISlashCommand {
+public class ChannelInfo implements IFullCommand {
     @Override
     public void runSlash(SlashCommandInteractionEvent e) {
-        final GuildChannel CHANNEL = e.getOption("channel").getAsChannel();
-        final ChannelType TYPE = CHANNEL.getType();
+        GuildChannel channel = e.getChannel().asGuildMessageChannel();
 
-        switch (TYPE) {
+        if(!e.getOptions().isEmpty()) {
+            channel = e.getOptions().get(0).getAsChannel();
+        }
 
+        e.replyEmbeds(sortChannelType(channel)).queue();
+    }
+
+    @Override
+    public void runCommand(MessageReceivedEvent e) {
+        List<GuildChannel> channels = e.getMessage().getMentions().getChannels();
+
+        GuildChannel channel = e.getChannel().asGuildMessageChannel();
+
+        if (!channels.isEmpty()) {
+            channel = channels.get(0);
+        }
+
+        e.getMessage().replyEmbeds(sortChannelType(channel)).queue();
+    }
+
+    public MessageEmbed sortChannelType(GuildChannel channel) {
+        ChannelType channelType = channel.getType();
+
+        switch (channelType) {
             case TEXT:
-                e.replyEmbeds(textchannelinfo((TextChannel) CHANNEL)).queue();
-                break;
+                return textChannelInfo((TextChannel) channel);
             case VOICE:
-                e.replyEmbeds(voicechannelinfo((VoiceChannel) CHANNEL)).queue();
-                break;
+                return voiceChannelInfo((VoiceChannel) channel);
             case CATEGORY:
-                e.replyEmbeds(categorychannelinfo((Category) CHANNEL)).queue();
-                break;
+                return categoryChannelInfo((Category) channel);
             default:
-                e.reply("Channel not recognized").queue();
-                break;
+                return new EmbedBuilder().setDescription("Channel type not yet implemented.").build();
         }
     }
 
-    public MessageEmbed textchannelinfo(TextChannel chnl) {
-        final String NAME = chnl.getName();
-        String TOPIC = chnl.getTopic();
-        final String TYPE = chnl.getType().name();
-        final String SLOWMODE = String.valueOf(chnl.getSlowmode());
-        final String ID = chnl.getId();
-        final String DATE_CREATED = chnl.getTimeCreated().format(DateTimeFormatter.RFC_1123_DATE_TIME);
+    public MessageEmbed textChannelInfo(TextChannel channel) {
+        final String NAME = channel.getName();
+        String TOPIC = channel.getTopic();
+        final String TYPE = channel.getType().name();
+        final String SLOWMODE = String.valueOf(channel.getSlowmode());
+        final String ID = channel.getId();
+        final String DATE_CREATED = channel.getTimeCreated().format(DateTimeFormatter.RFC_1123_DATE_TIME);
         String PARENT;
 
         try {
-            PARENT = chnl.getParentCategory().getAsMention();
+            PARENT = channel.getParentCategory().getAsMention();
         } catch (NullPointerException ex) {
-            ex.printStackTrace();
             PARENT = "Server";
         }
 
-        final String POSITION = String.valueOf(chnl.getPosition());
-        final String ISNSFW = String.valueOf(chnl.isNSFW());
-        final String ISSYNCED = String.valueOf(chnl.isSynced());
+        final String POSITION = String.valueOf(channel.getPosition());
+        final String ISNSFW = String.valueOf(channel.isNSFW());
+        final String ISSYNCED = String.valueOf(channel.isSynced());
 
         if (TOPIC == null) {
             TOPIC = "No Topic";
         }
 
-        EmbedBuilder ChnlInfEmd = new EmbedBuilder()
+        EmbedBuilder channelInfoEmbed = new EmbedBuilder()
                 .setColor(ToolSet.COLOR)
-                .setDescription(":speech_left: **Channel information for " + chnl.getAsMention() + ":**")
+                .setDescription(":speech_left: **Channel information for " + channel.getAsMention() + ":**")
                 .addField("Name", NAME, false)
                 .addField("Topic", TOPIC, true)
                 .addField("Type", TYPE, true)
@@ -76,37 +96,36 @@ public class ChannelInfo implements ISlashCommand {
                 .addField("Synced", ISSYNCED, true)
                 .setFooter("ID: " + ID);
 
-        return ChnlInfEmd.build();
+        return channelInfoEmbed.build();
     }
 
-    public MessageEmbed voicechannelinfo(VoiceChannel chnl) {
-        final String NAME = chnl.getName();
-        final String TYPE = String.valueOf(chnl.getType());
-        final String BITRATE = String.valueOf(chnl.getBitrate());
-        final String REGION = String.valueOf(chnl.getRegion());
-        String USERLIMIT = String.valueOf(chnl.getUserLimit());
-        final String ID = chnl.getId();
-        final String DATE_CREATED = chnl.getTimeCreated().format(DateTimeFormatter.RFC_1123_DATE_TIME);
+    public MessageEmbed voiceChannelInfo(VoiceChannel channel) {
+        final String NAME = channel.getName();
+        final String TYPE = String.valueOf(channel.getType());
+        final String BITRATE = String.valueOf(channel.getBitrate());
+        final String REGION = String.valueOf(channel.getRegion());
+        String USERLIMIT = String.valueOf(channel.getUserLimit());
+        final String ID = channel.getId();
+        final String DATE_CREATED = channel.getTimeCreated().format(DateTimeFormatter.RFC_1123_DATE_TIME);
         String PARENT;
 
         try {
-            PARENT = chnl.getParentCategory().getAsMention();
+            PARENT = channel.getParentCategory().getAsMention();
         } catch (NullPointerException ex) {
-            ex.printStackTrace();
             PARENT = "Server";
         }
 
-        final String POSITION = String.valueOf(chnl.getPosition());
-        final String ISSYNCED = String.valueOf(chnl.isSynced());
+        final String POSITION = String.valueOf(channel.getPosition());
+        final String ISSYNCED = String.valueOf(channel.isSynced());
 
 
         if (USERLIMIT.equals("0")) {
             USERLIMIT = "Unlimited";
         }
 
-        EmbedBuilder ChnlInfEmd = new EmbedBuilder()
+        EmbedBuilder channelInfoEmbed = new EmbedBuilder()
                 .setColor(ToolSet.COLOR)
-                .setDescription(":radio: **Channel information for " + chnl.getAsMention() + ":**")
+                .setDescription(":radio: **Channel information for " + channel.getAsMention() + ":**")
                 .addField("Name", NAME, false)
                 .addField("Type", TYPE, false)
                 .addField("Bitrate", BITRATE + "kbps", true)
@@ -118,21 +137,21 @@ public class ChannelInfo implements ISlashCommand {
                 .addField("Synced", ISSYNCED, true)
                 .setFooter("ID: " + ID);
 
-        return ChnlInfEmd.build();
+        return channelInfoEmbed.build();
     }
 
-    public MessageEmbed categorychannelinfo(Category chnl) {
-        final String NAME = chnl.getName();
-        final String TYPE = String.valueOf(chnl.getType());
-        final String TEXTCHANNELS = String.valueOf(chnl.getTextChannels().size());
-        final String VOICECHANNELS = String.valueOf(chnl.getVoiceChannels().size());
-        final String ID = chnl.getId();
-        final String DATE_CREATED = chnl.getTimeCreated().format(DateTimeFormatter.RFC_1123_DATE_TIME);
-        final String POSITION = String.valueOf(chnl.getPosition());
+    public MessageEmbed categoryChannelInfo(Category channel) {
+        final String NAME = channel.getName();
+        final String TYPE = String.valueOf(channel.getType());
+        final String TEXTCHANNELS = String.valueOf(channel.getTextChannels().size());
+        final String VOICECHANNELS = String.valueOf(channel.getVoiceChannels().size());
+        final String ID = channel.getId();
+        final String DATE_CREATED = channel.getTimeCreated().format(DateTimeFormatter.RFC_1123_DATE_TIME);
+        final String POSITION = String.valueOf(channel.getPosition());
 
-        EmbedBuilder ChnlInfEmd = new EmbedBuilder()
+        EmbedBuilder channelInfoEmbed = new EmbedBuilder()
                 .setColor(ToolSet.COLOR)
-                .setDescription(":file_folder: **Category information for " + chnl.getAsMention() + ":**")
+                .setDescription(":file_folder: **Category information for " + channel.getAsMention() + ":**")
                 .addField("Name", NAME, false)
                 .addField("Type", TYPE, true)
                 .addField("TextChannels", TEXTCHANNELS, true)
@@ -141,16 +160,25 @@ public class ChannelInfo implements ISlashCommand {
                 .addField("Position", POSITION, false)
                 .setFooter("ID: " + ID);
 
-        return ChnlInfEmd.build();
+        return channelInfoEmbed.build();
     }
 
     @Override
     public String getHelp() {
-        return "`/channelinfo <#channel/id/empty>` - Get information about the channel.";
+        return "`</channelinfo:1075169169877770290> <#channel/empty>` - Get information about the channel.";
     }
 
     @Override
     public String[] getTriggers() {
         return "channelinfo,chaninfo,channelinf,chaninf".split(",");
+    }
+
+    @Override
+    public SlashCommandData getCommandData() {
+        return Commands.slash(getTriggers()[0], getHelp().split(" - ")[1])
+                .addOptions(
+                        new OptionData(OptionType.CHANNEL, "channel", "Target channel")
+                )
+                .setGuildOnly(true);
     }
 }

@@ -6,6 +6,10 @@ import com.marsss.commandType.ISlashCommand;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
+import net.dv8tion.jda.api.interactions.commands.build.Commands;
+import net.dv8tion.jda.api.interactions.commands.build.OptionData;
+import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -28,7 +32,7 @@ public class Search implements ISlashCommand {
     public MessageEmbed search(String query) throws IOException {
         query = query.substring(1);
 
-        final String URL = "https://www.duckduckgo.com/html" + "?q=" + query;
+        final String URL = "https://www.duckduckgo.com/html?q=" + query;
 
         final Document DOC = Jsoup.connect(URL).get();
 
@@ -77,6 +81,16 @@ public class Search implements ISlashCommand {
     @Override
     public String[] getTriggers() {
         return "search,ddg,query".split(",");
+    }
+
+    @Override
+    public SlashCommandData getCommandData() {
+        return Commands.slash(getTriggers()[0], getHelp().split(" - ")[1])
+                .addOptions(
+                        new OptionData(OptionType.STRING, "query", "Search query")
+                                .setRequired(true)
+                )
+                .setGuildOnly(true);
     }
 
 }

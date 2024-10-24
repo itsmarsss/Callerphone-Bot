@@ -1,8 +1,7 @@
-package com.marsss.callerphone.utils;
+package com.marsss.callerphone.bot;
 
 import com.marsss.callerphone.Callerphone;
 import com.marsss.callerphone.ToolSet;
-import com.marsss.callerphone.bot.*;
 import com.marsss.callerphone.channelpool.commands.*;
 import com.marsss.callerphone.msginbottle.commands.FindBottle;
 import com.marsss.callerphone.msginbottle.commands.SendBottle;
@@ -12,22 +11,27 @@ import com.marsss.callerphone.tccallerphone.commands.EndChat;
 import com.marsss.callerphone.tccallerphone.commands.Prefix;
 import com.marsss.callerphone.tccallerphone.commands.ReportChat;
 import com.marsss.callerphone.users.commands.Profile;
-import com.marsss.commandType.ISlashCommand;
+import com.marsss.callerphone.utils.*;
+import com.marsss.commandType.IFullCommand;
 import com.marsss.database.categories.Users;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
+import net.dv8tion.jda.api.interactions.commands.build.Commands;
+import net.dv8tion.jda.api.interactions.commands.build.OptionData;
+import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 
-import java.awt.*;
 import java.util.List;
 
-public class Help implements ISlashCommand {
+public class Help implements IFullCommand {
     @Override
     public void runSlash(SlashCommandInteractionEvent e) {
         final boolean ADMIN = Users.isModerator(e.getUser().getId());
         final List<OptionMapping> PARAM = e.getOptions();
-        if (PARAM.size() == 0) {
+        if (PARAM.isEmpty()) {
             e.replyEmbeds(help("", ADMIN)).queue();
             return;
         }
@@ -35,13 +39,10 @@ public class Help implements ISlashCommand {
     }
 
     @Override
-    public String getHelp() {
-        return "`/help` - help help help";
-    }
+    public void runCommand(MessageReceivedEvent e) {
+        final boolean ADMIN = Users.isModerator(e.getAuthor().getId());
 
-    @Override
-    public String[] getTriggers() {
-        return "help,gethelp,helpmeahhh".split(",");
+        e.getMessage().replyEmbeds(help((e.getMessage().getContentRaw() + " buffer").split(" ")[1], ADMIN)).queue();
     }
 
     public MessageEmbed help(String name, boolean admin) {
@@ -65,6 +66,7 @@ public class Help implements ISlashCommand {
                 DESC = new About().getHelp() + "\n"
                         + new BotInfo().getHelp() + "\n"
                         + new Donate().getHelp() + "\n"
+                        + new Help().getHelp() + "\n"
                         + new Invite().getHelp() + "\n"
                         + new Profile().getHelp();
                 break;
@@ -75,7 +77,6 @@ public class Help implements ISlashCommand {
                 DESC = new BotInfo().getHelp() + "\n"
                         + new ChannelInfo().getHelp() + "\n"
                         + new Colour().getHelp() + "\n"
-                        + new Help().getHelp() + "\n"
                         + new RoleInfo().getHelp() + "\n"
                         + new Search().getHelp() + "\n"
                         + new ServerInfo().getHelp() + "\n"
@@ -154,30 +155,47 @@ public class Help implements ISlashCommand {
             }
         }
 
-        EmbedBuilder HelpEmd = new EmbedBuilder()
+        EmbedBuilder helpEmbed = new EmbedBuilder()
                 .setTitle(TITLE)
                 .setDescription(DESC)
                 .setFooter("Hope you found this useful!", Callerphone.jda.getSelfUser().getAvatarUrl())
                 .setColor(ToolSet.COLOR);
 
-        return HelpEmd.build();
+        return helpEmbed.build();
     }
 
     private MessageEmbed helpCategories(boolean admin) {
-        EmbedBuilder CateEmd = new EmbedBuilder()
+        EmbedBuilder categoryEmbed = new EmbedBuilder()
                 .setColor(ToolSet.COLOR)
                 .setTitle("Categories")
-                .addField("Bot", "all commands related to the bot will be here, do `" + Callerphone.config.getPrefix() + "help bot` for more information", false)
-                .addField("Utils", "all utility commands will be in this category, do `" + Callerphone.config.getPrefix() + "help utils` for more information", false)
-                .addField("Pooling", "all channel pooling commands will be in this category, do `" + Callerphone.config.getPrefix() + "help pooling` for more information", false)
-                .addField("TC Callerphone", "all text call callerphone commands will be in this category, do `" + Callerphone.config.getPrefix() + "help tccall` for more information", false)
-                .addField("Msg Bottles", "all message in bottle commands will be in this category, do `" + Callerphone.config.getPrefix() + "help msgbottle` for more information", false)
-                .addField("Music", "Callerphone no longer can play music, however I've created a new bot called **Tunes**... Join [this](https:discord.gg/TyHaxtWAmX) server for more information!", false)
+                .addField("Bot", "all commands related to the bot will be here, do `/help bot` for more information", false)
+                .addField("Utils", "all utility commands will be in this category, do `/help utils` for more information", false)
+                .addField("Pooling", "all channel pooling commands will be in this category, do `/help pooling` for more information", false)
+                .addField("TC Callerphone", "all text call commands will be in this category, do `/help tccall` for more information", false)
+                .addField("Msg Bottles", "all message in bottle commands will be in this category, do `/help msgbottle` for more information", false)
+                .addField("Music", "Callerphone no longer can play music", false)
                 .setFooter("Type `" + Callerphone.config.getPrefix() + "help <category name>` to see category commands");
         if (admin) {
-            CateEmd.addField("Moderator only", "all moderator commands will be in this category, do `" + Callerphone.config.getPrefix() + "help mod` in dm for more information", false);
+            categoryEmbed.addField("Moderator only", "all moderator commands will be in this category, do `" + Callerphone.config.getPrefix() + "help mod` in dm for more information", false);
         }
-        return CateEmd.build();
+        return categoryEmbed.build();
     }
 
+    @Override
+    public String getHelp() {
+        return "</help:1075169172423720970> - help help help";
+    }
+
+    @Override
+    public String[] getTriggers() {
+        return "help,gethelp,helpmeahhh".split(",");
+    }
+
+    @Override
+    public SlashCommandData getCommandData() {
+        return Commands.slash(getTriggers()[0], getHelp().split(" - ")[1])
+                .addOptions(
+                        new OptionData(OptionType.STRING, "term", "Search term")
+                );
+    }
 }

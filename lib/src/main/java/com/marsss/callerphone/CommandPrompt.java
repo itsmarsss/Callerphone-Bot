@@ -222,15 +222,6 @@ public class CommandPrompt {
         );
 
         commands.addCommands(
-                Commands.slash("channelinfo", "Get a channel's information")
-                        .addOptions(
-                                new OptionData(OptionType.CHANNEL, "channel", "Target channel")
-                                        .setRequired(true)
-                        )
-                        .setGuildOnly(true)
-        );
-
-        commands.addCommands(
                 Commands.slash("game", "Play minigames")
                         .addSubcommands(
                                 new SubcommandData("tictactoe", "Play TicTacToe with someone")
@@ -243,67 +234,11 @@ public class CommandPrompt {
         );
 
         commands.addCommands(
-                Commands.slash("colour", "Colour's corner [random | hex | rgb]")
-                        .addSubcommands(
-                                new SubcommandData("random", "Random colour"),
-                                new SubcommandData("hex", "Hex colour")
-                                        .addOptions(
-                                                new OptionData(OptionType.STRING, "hex", "Hex code")
-                                                        .setRequired(true)
-                                        ),
-                                new SubcommandData("rgb", "RGB colour")
-                                        .addOptions(
-                                                new OptionData(OptionType.INTEGER, "r", "Red value")
-                                                        .setRequiredRange(0, 255)
-                                                        .setRequired(true),
-                                                new OptionData(OptionType.INTEGER, "g", "Red value")
-                                                        .setRequiredRange(0, 255)
-                                                        .setRequired(true),
-                                                new OptionData(OptionType.INTEGER, "b", "Red value")
-                                                        .setRequiredRange(0, 255)
-                                                        .setRequired(true)
-                                        )
-                        )
-                        .setGuildOnly(true)
+
         );
 
         commands.addCommands(
-                Commands.slash("help", "Get some help")
-                        .addOptions(
-                                new OptionData(OptionType.STRING, "term", "Search term")
-                        )
-        );
 
-        commands.addCommands(
-                Commands.slash("roleinfo", "Get a role's information")
-                        .addOptions(
-                                new OptionData(OptionType.ROLE, "role", "Target role")
-                                        .setRequired(true)
-                        )
-                        .setGuildOnly(true)
-        );
-
-        commands.addCommands(
-                Commands.slash("search", "Browse the internet from Discord")
-                        .addOptions(
-                                new OptionData(OptionType.STRING, "query", "Search query")
-                                        .setRequired(true)
-                        )
-                        .setGuildOnly(true)
-        );
-
-        commands.addCommands(
-                Commands.slash("serverinfo", "Get this server's information")
-                        .setGuildOnly(true)
-        );
-
-        commands.addCommands(
-                Commands.slash("userinfo", "Get a user's information")
-                        .addOptions(
-                                new OptionData(OptionType.USER, "member", "Target member")
-                                        .setRequired(true)
-                        )
-                        .setGuildOnly(true)
         );
 
         commands.addCommands(

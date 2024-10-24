@@ -1,20 +1,26 @@
 package com.marsss.callerphone.utils;
 
-import com.marsss.callerphone.Callerphone;
 import com.marsss.callerphone.ToolSet;
-import com.marsss.commandType.ISlashCommand;
+import com.marsss.commandType.IFullCommand;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.api.interactions.commands.build.Commands;
+import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 
-import java.awt.*;
 import java.time.format.DateTimeFormatter;
 
-public class ServerInfo implements ISlashCommand {
+public class ServerInfo implements IFullCommand {
     @Override
     public void runSlash(SlashCommandInteractionEvent e) {
         e.replyEmbeds(serverInfo(e.getGuild())).queue();
+    }
+
+    @Override
+    public void runCommand(MessageReceivedEvent e) {
+        e.getMessage().replyEmbeds(serverInfo(e.getGuild())).queue();
     }
 
     private MessageEmbed serverInfo(Guild gld) {
@@ -69,7 +75,7 @@ public class ServerInfo implements ISlashCommand {
         final String REGION = gld.retrieveRegions().toString();
         final String DATECREATED = gld.getTimeCreated().format(DateTimeFormatter.RFC_1123_DATE_TIME);
 
-        EmbedBuilder SvrInfEmd = new EmbedBuilder()
+        EmbedBuilder serverInfoEmbed = new EmbedBuilder()
                 .setColor(ToolSet.COLOR)
                 .setDescription(":minidisc: **Server information for " + NAME + ":**")
                 .addField("General Information",
@@ -116,12 +122,12 @@ public class ServerInfo implements ISlashCommand {
                 .setFooter("ID: " + gld.getId())
                 .setThumbnail(ICONURL);
 
-        return SvrInfEmd.build();
+        return serverInfoEmbed.build();
     }
 
     @Override
     public String getHelp() {
-        return "`/serverinfo` - Get information about the server.";
+        return "</serverinfo:1075169253948399688> - Get information about the server.";
     }
 
     @Override
@@ -129,4 +135,9 @@ public class ServerInfo implements ISlashCommand {
         return "serverinfo,servinfo,serverinf,servinf".split(",");
     }
 
+    @Override
+    public SlashCommandData getCommandData() {
+        return Commands.slash(getTriggers()[0], getHelp().split(" - ")[1])
+                .setGuildOnly(true);
+    }
 }

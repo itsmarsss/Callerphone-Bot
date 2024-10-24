@@ -1,22 +1,49 @@
 package com.marsss.callerphone.utils;
 
 import com.marsss.callerphone.Callerphone;
+import com.marsss.commandType.IFullCommand;
 import com.marsss.commandType.ISlashCommand;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
+import net.dv8tion.jda.api.interactions.commands.build.Commands;
+import net.dv8tion.jda.api.interactions.commands.build.OptionData;
+import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 
 import java.awt.*;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
-public class RoleInfo implements ISlashCommand {
+public class RoleInfo implements IFullCommand {
 
     @Override
     public void runSlash(SlashCommandInteractionEvent e) {
-        e.replyEmbeds(roleInfo(e.getOption("role").getAsRole())).queue();
+        Role role = e.getMember().getRoles().get(0);
+
+        if(!e.getOptions().isEmpty()) {
+            role = e.getOptions().get(0).getAsRole();
+        }
+
+        e.replyEmbeds(roleInfo(role)).queue();
+    }
+
+    @Override
+    public void runCommand(MessageReceivedEvent e) {
+        List<Role> roles = e.getMessage().getMentions().getRoles();
+
+        Role role = e.getMember().getRoles().get(0);
+
+        if (!roles.isEmpty()) {
+            role = roles.get(0);
+        }
+
+        e.getMessage().replyEmbeds(roleInfo(role)).queue();
     }
 
     private MessageEmbed roleInfo(Role role) {
@@ -54,7 +81,7 @@ public class RoleInfo implements ISlashCommand {
         } else
             MEMBERS_WITH_ROLE = new StringBuilder("No member has this Role.");
 
-        EmbedBuilder RleInfEmd = new EmbedBuilder()
+        EmbedBuilder roleInfoEmbed = new EmbedBuilder()
                 .setColor(COLOR)
                 .setDescription(":pencil: **Role information for " + role.getAsMention() + ":**")
                 .addField("Name", NAME, false)
@@ -70,16 +97,25 @@ public class RoleInfo implements ISlashCommand {
                 .addField(" ", " ", true)
                 .setFooter("ID: " + ID);
 
-        return RleInfEmd.build();
+        return roleInfoEmbed.build();
     }
 
     @Override
     public String getHelp() {
-        return "`/roleinfo <@role/id>` - Get information about this role.";
+        return "</roleinfo:1075169248630034512> <@role> - Get information about this role.";
     }
 
     @Override
     public String[] getTriggers() {
         return "roleinfo,rolinfo,roleinf,rolinf".split(",");
+    }
+
+    @Override
+    public SlashCommandData getCommandData() {
+        return Commands.slash(getTriggers()[0], getHelp().split(" - ")[1])
+                .addOptions(
+                        new OptionData(OptionType.ROLE, "role", "Target role")
+                )
+                .setGuildOnly(true);
     }
 }

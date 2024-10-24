@@ -5,7 +5,7 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 
 public class Advertisement {
-    public static MessageEmbed generateAd(){
+    public static MessageEmbed generateAd() {
         return new EmbedBuilder()
                 .setColor(Colour.randColor())
                 .setTitle("**Send a message into the vast sea!**")
