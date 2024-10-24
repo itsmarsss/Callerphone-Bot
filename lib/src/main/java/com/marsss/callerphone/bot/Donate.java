@@ -1,25 +1,19 @@
 package com.marsss.callerphone.bot;
 
 import com.marsss.callerphone.ToolSet;
-import com.marsss.commandType.IFullCommand;
 import com.marsss.callerphone.Callerphone;
+import com.marsss.commandType.ISlashCommand;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
-import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 
-public class Donate implements IFullCommand {
+public class Donate implements ISlashCommand {
 
     @Override
     public void runSlash(SlashCommandInteractionEvent e) {
         e.replyEmbeds(donate()).setEphemeral(true).queue();
-    }
-
-    @Override
-    public void runCommand(MessageReceivedEvent e) {
-        e.getMessage().replyEmbeds(donate()).queue();
     }
 
     private MessageEmbed donate() {

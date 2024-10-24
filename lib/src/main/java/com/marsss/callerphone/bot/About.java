@@ -3,11 +3,12 @@ package com.marsss.callerphone.bot;
 import java.lang.management.ManagementFactory;
 import java.text.CharacterIterator;
 import java.text.StringCharacterIterator;
+import java.util.concurrent.CompletableFuture;
 
 import com.marsss.callerphone.ToolSet;
-import com.marsss.commandType.IFullCommand;
 import com.marsss.callerphone.Callerphone;
 
+import com.marsss.commandType.ISlashCommand;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
@@ -16,17 +17,11 @@ import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEve
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
-import net.dv8tion.jda.api.sharding.ShardManager;
 
-public class About implements IFullCommand {
+public class About implements ISlashCommand {
     @Override
     public void runSlash(SlashCommandInteractionEvent e) {
         e.replyEmbeds(about(e.getJDA())).queue();
-    }
-
-    @Override
-    public void runCommand(MessageReceivedEvent e) {
-        e.getMessage().replyEmbeds(about(e.getJDA())).queue();
     }
 
     private StringBuilder description = new StringBuilder()
@@ -45,47 +40,65 @@ public class About implements IFullCommand {
     private MessageEmbed about(JDA jda) {
         EmbedBuilder aboutEmbed = new EmbedBuilder();
 
+        CompletableFuture<Void> future = new CompletableFuture<>();
+
         jda.retrieveUserById(Callerphone.config.getOwnerID()).queue(u -> {
-            jda.getShardInfo();
-            long users = 0;
-            for (Guild g : jda.getGuilds()) {
-                users += g.getMemberCount();
-            }
+                    long totalServers = 0;
+                    long totalUsers = 0;
+                    long users = 0;
 
-            String UNIQUE_USERS = Callerphone.isQuickStart ? "N/A (QuickStart)" : jda.getUsers().size() + " unique user(s)";
+                    for (JDA shard : Callerphone.sdMgr.getShards()) {
+                        totalServers += shard.getGuilds().size();
+                        totalUsers += shard.getUsers().size();
 
-            aboutEmbed.setAuthor("Made by " + u.getName(), null, u.getAvatarUrl())
-                    .setColor(ToolSet.COLOR)
-                    .setTitle("**About:**")
-                    .setDescription(description)
-                    .addField("Servers",
-                            jda.getGuilds().size() + " server(s)\n" +
-                                    jda.getShardInfo().getShardTotal() + " shard(s)\n", true)
+                        for (Guild g : jda.getGuilds()) {
+                            users += g.getMemberCount();
+                        }
+                    }
 
-                    .addField("Channels",
-                            jda.getTextChannels().size() + jda.getVoiceChannels().size() + " total\n" +
-                                    jda.getTextChannels().size() + " text channel(s)\n" +
-                                    jda.getVoiceChannels().size() + " voice channel(s)", true)
+                    String UNIQUE_USERS = Callerphone.isQuickStart ? "N/A (QuickStart)" : totalUsers + " unique user(s)";
 
-                    .addField("Users",
-                            users + " user(s)\n" +
-                                    UNIQUE_USERS, true)
+                    aboutEmbed.setAuthor("Made by " + u.getName(), null, u.getAvatarUrl())
+                            .setColor(ToolSet.COLOR)
+                            .setTitle("**About:**")
+                            .setDescription(description)
+                            .addField("Servers",
+                                    totalServers + " server(s)\n" +
+                                            jda.getShardInfo().getShardTotal() + " shard(s)\n", true)
 
-                    .addField("CPU Usage",
-                            (String.valueOf(ManagementFactory.getOperatingSystemMXBean().getSystemLoadAverage()).startsWith("-")) ? ("Unavailable") : (ManagementFactory.getOperatingSystemMXBean().getSystemLoadAverage() + "%") + "\n" +
-                                    ManagementFactory.getOperatingSystemMXBean().getAvailableProcessors() + " processor(s)", true)
+                            .addField("Channels",
+                                    jda.getTextChannels().size() + jda.getVoiceChannels().size() + " total\n" +
+                                            jda.getTextChannels().size() + " text channel(s)\n" +
+                                            jda.getVoiceChannels().size() + " voice channel(s)", true)
 
-                    .addField("Memory Usage",
-                            convert(Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) + "\n" +
-                                    convert(Runtime.getRuntime().maxMemory()) + " max\n", true)
+                            .addField("Users",
+                                    users + " user(s)\n" +
+                                            UNIQUE_USERS, true)
 
-                    .addField("Uptime",
-                            upTimeAbt(), true);
+                            .addField("CPU Usage",
+                                    (String.valueOf(ManagementFactory.getOperatingSystemMXBean().getSystemLoadAverage()).startsWith("-")) ? ("Unavailable") : (ManagementFactory.getOperatingSystemMXBean().getSystemLoadAverage() + "%") + "\n" +
+                                            ManagementFactory.getOperatingSystemMXBean().getAvailableProcessors() + " processor(s)", true)
 
-            aboutEmbed.addField("Info",
-                    (Callerphone.isQuickStart ? "QuickStarted Bot\n" : "") +
-                            "Made in Java <:Java:899050421572739072> with Java Discord Api <:JDA:899083802989695037>", false);
-        });
+                            .addField("Memory Usage",
+                                    convert(Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) + "\n" +
+                                            convert(Runtime.getRuntime().maxMemory()) + " max\n", true)
+
+                            .addField("Uptime",
+                                    upTimeAbt(), true);
+
+                    aboutEmbed.addField("Info",
+                            (Callerphone.isQuickStart ? "QuickStarted Bot\n" : "") +
+                                    "Made in Java <:Java:899050421572739072> with Java Discord Api <:JDA:899083802989695037>", false);
+
+                    future.complete(null);
+                },
+                future::completeExceptionally
+        );
+
+        try {
+            future.get();
+        } catch (Exception e) {
+        }
 
         return aboutEmbed.build();
     }

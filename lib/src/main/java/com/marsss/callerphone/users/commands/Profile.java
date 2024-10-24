@@ -59,8 +59,8 @@ public class Profile implements ISlashCommand {
     }
 
     private String getCreditCooldown(User user) {
-        return (System.currentTimeMillis() - Cooldown.queryUserCooldown(user.getId())) < ToolSet.CREDIT_COOLDOWN ?
-                ":alarm_clock: " + ((ToolSet.CREDIT_COOLDOWN - (System.currentTimeMillis() - Cooldown.queryUserCooldown(user.getId()))) / 1000) + " second(s)" :
+        return (System.currentTimeMillis() - Cooldown.getPoolCooldown(user.getId())) < ToolSet.CREDIT_COOLDOWN ?
+                ":alarm_clock: " + ((ToolSet.CREDIT_COOLDOWN - (System.currentTimeMillis() - Cooldown.getPoolCooldown(user.getId()))) / 1000) + " second(s)" :
                 ":white_check_mark: None";
     }
 

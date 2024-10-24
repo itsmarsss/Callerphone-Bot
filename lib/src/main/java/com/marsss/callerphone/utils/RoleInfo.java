@@ -1,6 +1,6 @@
 package com.marsss.callerphone.utils;
 
-import com.marsss.commandType.IFullCommand;
+import com.marsss.commandType.ISlashCommand;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
@@ -17,7 +17,7 @@ import java.awt.*;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
-public class RoleInfo implements IFullCommand {
+public class RoleInfo implements ISlashCommand {
 
     @Override
     public void runSlash(SlashCommandInteractionEvent e) {
@@ -28,19 +28,6 @@ public class RoleInfo implements IFullCommand {
         }
 
         e.replyEmbeds(roleInfo(role)).queue();
-    }
-
-    @Override
-    public void runCommand(MessageReceivedEvent e) {
-        List<Role> roles = e.getMessage().getMentions().getRoles();
-
-        Role role = e.getMember().getRoles().get(0);
-
-        if (!roles.isEmpty()) {
-            role = roles.get(0);
-        }
-
-        e.getMessage().replyEmbeds(roleInfo(role)).queue();
     }
 
     private MessageEmbed roleInfo(Role role) {

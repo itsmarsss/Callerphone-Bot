@@ -3,97 +3,21 @@ package com.marsss.callerphone.listeners;
 import com.marsss.callerphone.Callerphone;
 import com.marsss.callerphone.Response;
 import com.marsss.callerphone.ToolSet;
-import com.marsss.callerphone.bot.Advertisement;
-import com.marsss.commandType.ITextCommand;
-import com.marsss.database.categories.Cooldown;
 import com.marsss.database.categories.Users;
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
-import java.util.Random;
-
-public class OnMessage extends ListenerAdapter {
+public class OnMessageEvent extends ListenerAdapter {
     public void onMessageReceived(MessageReceivedEvent event) {
-        if (event.isFromGuild()) {
-            fromGD(event);
-        } else {
-            fromPM(event);
-        }
-    }
-
-    private void fromGD(MessageReceivedEvent event) {
-
-        final Message MESSAGE = event.getMessage();
-        if (MESSAGE.isWebhookMessage())
+        if (event.isFromGuild())
             return;
 
-        if (!event.getChannel().canTalk())
+        if (!Users.isModerator(event.getAuthor().getId()))
             return;
 
-        final Member MEMBER = event.getMember();
-
-        final String CONTENT = MESSAGE.getContentRaw();
-
-        final String[] ARGS = CONTENT.split("\\s+");
-
-        if (MEMBER.getUser().isBot() || MEMBER.getUser().isSystem())
-            return;
-
-        if (CONTENT.contains(Callerphone.selfUser.getId())) {
-            MESSAGE.reply("My prefix is `" + Callerphone.config.getPrefix() + "`, do `/help` for a list of commands!").queue();
-            return;
-        }
-
-        if (!ARGS[0].toLowerCase().startsWith(Callerphone.config.getPrefix()))
-            return;
-
-        String trigger = ARGS[0].toLowerCase().replace(Callerphone.config.getPrefix(), "");
-
-        try {
-            if (Callerphone.cmdMap.containsKey(trigger)) {
-
-                if (!Users.hasUser(event.getAuthor().getId())) {
-                    ToolSet.sendPPAndTOS(event, event.getJDA());
-                    return;
-                }
-
-                if (Users.isBlacklisted(event.getAuthor().getId())) {
-                    MESSAGE.reply("Sorry you are blacklisted, submit an appeal in our support server " + Callerphone.config.getSupportServer()).queue();
-                    return;
-                }
-
-                if (System.currentTimeMillis() - Cooldown.getCmdCooldown(event.getAuthor().getId()) < ToolSet.COMMAND_COOLDOWN) {
-                    ToolSet.sendCommandCooldown(event);
-                    return;
-                }
-
-                Cooldown.updateCmdCooldown(event.getAuthor().getId());
-
-                Users.reward(event.getAuthor().getId(), 1);
-                Users.addExecute(event.getAuthor().getId(), 1);
-
-                if (!(Callerphone.cmdMap.get(trigger) instanceof ITextCommand)) {
-                    event.getMessage().reply("We have completely migrated to slash commands (try running `/" + trigger + "`), please run /help for more information.").queue();
-                    return;
-                }
-
-                ((ITextCommand) Callerphone.cmdMap.get(trigger)).runCommand(event);
-
-                if (new Random().nextInt(9) == 0) {
-                    event.getMessage().replyEmbeds(Advertisement.generateAd()).queue();
-                }
-            }
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            sendError(event.getMessage(), ex);
-        }
-    }
-
-    private void fromPM(MessageReceivedEvent event) {
         if (event.getAuthor().isBot() || event.getAuthor().isSystem())
             return;
 
@@ -104,18 +28,12 @@ public class OnMessage extends ListenerAdapter {
 
         final String[] args = CONTENT.split("\\s+");
 
-        boolean isAdmin = Users.isModerator(event.getAuthor().getId());
-
         if (CONTENT.startsWith(Callerphone.config.getPrefix() + "help mod")) {
             String TITLE = "Mod";
-            String DESC = "You do not have permission to access this category.";
-
-            if (isAdmin) {
-                DESC = OnMessage.adminHelp() + "\n"
-                        + OnMessage.blacklistHelp() + "\n"
-                        + OnMessage.supportHelp() + "\n"
-                        + OnMessage.showItemsHelp();
-            }
+            String DESC = OnMessageEvent.adminHelp() + "\n"
+                    + OnMessageEvent.blacklistHelp() + "\n"
+                    + OnMessageEvent.supportHelp() + "\n"
+                    + OnMessageEvent.showItemsHelp();
 
             EmbedBuilder HelpEmd = new EmbedBuilder()
                     .setTitle(TITLE)
@@ -159,7 +77,7 @@ public class OnMessage extends ListenerAdapter {
                         if (Users.isModerator(id)) {
                             MESSAGE.reply("ID is mod already").queue();
                         } else {
-                            Users.addAdmin(id);
+                            Users.addModerator(id);
                             MESSAGE.reply("ID: `" + id + "` added to mod list").queue();
                         }
                         break;
@@ -199,35 +117,36 @@ public class OnMessage extends ListenerAdapter {
                 }
             } catch (Exception e) {
                 e.printStackTrace();
-                MESSAGE.reply("Syntax Error").queue();
+                sendError(MESSAGE, e);
             }
         }
     }
+
 
     public static void sendError(Message message, Exception error) {
         message.reply(String.format(Response.ERROR_MSG.toString(), error.toString())).queue();
     }
 
     public static String adminHelp() {
-        return "`/mod <id>` - Adds id to mod list.\n" +
-                "`/rmod <id>` - Removes id from mod list.";
+        return "`" + Callerphone.config.getPrefix() + "mod <id>` - Adds id to mod list.\n" +
+                "`" + Callerphone.config.getPrefix() + "rmod <id>` - Removes id from mod list.";
     }
 
     public static String blacklistHelp() {
-        return "`/blacklist <id>` - Adds id to blacklist.\n" +
-                "`/rblacklist <id>` - Removes id from blacklist.";
+        return "`" + Callerphone.config.getPrefix() + "blacklist <id>` - Adds id to blacklist.\n" +
+                "`" + Callerphone.config.getPrefix() + "rblacklist <id>` - Removes id from blacklist.";
     }
 
     public static String supportHelp() {
-        return "`/prefix <id> <prefix>` - Give user a prefix.\n" +
-                "`/rprefix <id>` - Removes user prefix.";
+        return "`" + Callerphone.config.getPrefix() + "prefix <id> <prefix>` - Give user a prefix.\n" +
+                "`" + Callerphone.config.getPrefix() + "rprefix <id>` - Removes user prefix.";
     }
 
     public static String showItemsHelp() {
-        return "`/blackedlist` - Shows all black listed users.\n" +
-                "`/prefixlist` - Shows all prefixes for users.\n" +
-                "`/infolist` - Shows all info for startup.\n" +
-                "`/modlist` - Shows all moderators.\n" +
-                "`/filterlist` - Shows all chat filters.";
+        return "`" + Callerphone.config.getPrefix() + "blackedlist` - Shows all black listed users.\n" +
+                "`" + Callerphone.config.getPrefix() + "prefixlist` - Shows all prefixes for users.\n" +
+                "`" + Callerphone.config.getPrefix() + "infolist` - Shows all info for startup.\n" +
+                "`" + Callerphone.config.getPrefix() + "modlist` - Shows all moderators.\n" +
+                "`" + Callerphone.config.getPrefix() + "filterlist` - Shows all chat filters.";
     }
 }

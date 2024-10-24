@@ -17,7 +17,7 @@ public class OnSlashCommand extends ListenerAdapter {
             if (Callerphone.cmdMap.containsKey(event.getName())) {
 
                 if (!Users.hasUser(event.getUser().getId())) {
-                    ToolSet.sendPPAndTOS(event, event.getJDA());
+                    ToolSet.sendPPAndTOS(event);
                     return;
                 }
 
@@ -31,7 +31,7 @@ public class OnSlashCommand extends ListenerAdapter {
                     return;
                 }
 
-                Cooldown.updateCmdCooldown(event.getUser().getId());
+                Cooldown.setCmdCooldown(event.getUser().getId());
 
                 Users.reward(event.getUser().getId(), 3);
                 Users.addExecute(event.getUser().getId(), 1);

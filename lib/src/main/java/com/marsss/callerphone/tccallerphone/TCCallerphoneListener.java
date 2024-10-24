@@ -19,7 +19,6 @@ import net.dv8tion.jda.api.utils.FileUpload;
 public class TCCallerphoneListener extends ListenerAdapter {
 
     public void onMessageReceived(MessageReceivedEvent event) {
-
         if(!event.isFromGuild()) {
             return;
         }
@@ -30,7 +29,15 @@ public class TCCallerphoneListener extends ListenerAdapter {
         if (MESSAGE.isWebhookMessage())
             return;
 
+        if (!TCCallerphone.hasCall(event.getChannel().getId()))
+            return;
+
         final Member MEMBER = event.getMember();
+
+        if(!Users.hasUser(MEMBER.getId())) {
+            ToolSet.sendPPAndTOS(event);
+            return;
+        }
 
         if (Users.isBlacklisted(MEMBER.getId())) {
             //event.getMessage().addReaction("\u274C").queue();
@@ -43,9 +50,6 @@ public class TCCallerphoneListener extends ListenerAdapter {
         String messageRaw = MESSAGE.getContentDisplay();
 
         if (messageRaw.startsWith("\\\\") || messageRaw.toLowerCase().startsWith(Callerphone.config.getPrefix()))
-            return;
-
-        if (!TCCallerphone.hasCall(event.getChannel().getId()))
             return;
 
         final String CHANNELID = event.getChannel().getId();
@@ -88,8 +92,8 @@ public class TCCallerphoneListener extends ListenerAdapter {
             }
         }
 
-        if ((System.currentTimeMillis() - Cooldown.queryUserCooldown(event.getAuthor().getId())) > ToolSet.CREDIT_COOLDOWN) {
-            Cooldown.updateUserCooldown(event.getAuthor().getId());
+        if ((System.currentTimeMillis() - Cooldown.getPoolCooldown(event.getAuthor().getId())) > ToolSet.CREDIT_COOLDOWN) {
+            Cooldown.setUserCooldown(event.getAuthor().getId());
 
             Users.reward(event.getAuthor().getId(), 5);
             Users.addTransmit(event.getAuthor().getId(), 1);

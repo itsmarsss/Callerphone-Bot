@@ -1,7 +1,7 @@
 package com.marsss.callerphone.utils;
 
 import com.marsss.callerphone.ToolSet;
-import com.marsss.commandType.IFullCommand;
+import com.marsss.commandType.ISlashCommand;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
@@ -19,7 +19,7 @@ import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
-public class ChannelInfo implements IFullCommand {
+public class ChannelInfo implements ISlashCommand {
     @Override
     public void runSlash(SlashCommandInteractionEvent e) {
         GuildChannel channel = e.getChannel().asGuildMessageChannel();
@@ -29,19 +29,6 @@ public class ChannelInfo implements IFullCommand {
         }
 
         e.replyEmbeds(sortChannelType(channel)).queue();
-    }
-
-    @Override
-    public void runCommand(MessageReceivedEvent e) {
-        List<GuildChannel> channels = e.getMessage().getMentions().getChannels();
-
-        GuildChannel channel = e.getChannel().asGuildMessageChannel();
-
-        if (!channels.isEmpty()) {
-            channel = channels.get(0);
-        }
-
-        e.getMessage().replyEmbeds(sortChannelType(channel)).queue();
     }
 
     public MessageEmbed sortChannelType(GuildChannel channel) {

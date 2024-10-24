@@ -52,7 +52,6 @@ public class Users {
             );
 
             if (result.getMatchedCount() == 0) {
-                createUser(id);
                 usersCollection.updateOne(
                         new Document("id", id),
                         new Document("$inc", new Document(field, amount))
@@ -75,7 +74,6 @@ public class Users {
             );
 
             if (result.getMatchedCount() == 0) {
-                createUser(id);
                 usersCollection.updateOne(
                         new Document("id", id),
                         new Document("$set", new Document(field, value))
@@ -95,7 +93,6 @@ public class Users {
             Document userDocument = usersCollection.find(new Document("id", id)).first();
 
             if (userDocument == null) {
-                createUser(id);
                 return 0;
             }
 
@@ -114,7 +111,6 @@ public class Users {
             Document userDocument = usersCollection.find(new Document("id", id)).first();
 
             if (userDocument == null) {
-                createUser(id);
                 return "";
             }
 
@@ -173,7 +169,7 @@ public class Users {
         updateUserFieldString(id, "status", "blacklisted");
     }
 
-    public static void addAdmin(String id) {
+    public static void addModerator(String id) {
         updateUserFieldString(id, "status", "moderator");
     }
 
@@ -206,10 +202,6 @@ public class Users {
             Document userDocument = usersCollection.find(new Document("id", id)).first();
             boolean exists = userDocument != null;
 
-            if (!exists) {
-                createUser(id);
-            }
-
             logger.info("User existence check for {}: {}", id, exists);
             return exists;
         } catch (MongoException me) {
@@ -221,9 +213,6 @@ public class Users {
     ////////////////////////////
     public static final HashMap<String, BotUser> users = new HashMap<>();
     public static BotUser getUser(String id) {
-        if (!users.containsKey(id)) {
-            createUser(id);
-        }
         return users.get(id);
     }
 }

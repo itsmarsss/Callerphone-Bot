@@ -1,7 +1,7 @@
 package com.marsss.callerphone.utils;
 
 import com.marsss.callerphone.ToolSet;
-import com.marsss.commandType.IFullCommand;
+import com.marsss.commandType.ISlashCommand;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.MessageEmbed;
@@ -12,15 +12,10 @@ import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 
 import java.time.format.DateTimeFormatter;
 
-public class ServerInfo implements IFullCommand {
+public class ServerInfo implements ISlashCommand {
     @Override
     public void runSlash(SlashCommandInteractionEvent e) {
         e.replyEmbeds(serverInfo(e.getGuild())).queue();
-    }
-
-    @Override
-    public void runCommand(MessageReceivedEvent e) {
-        e.getMessage().replyEmbeds(serverInfo(e.getGuild())).queue();
     }
 
     private MessageEmbed serverInfo(Guild gld) {

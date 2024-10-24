@@ -1,8 +1,7 @@
 package com.marsss.callerphone.bot;
 
-import com.marsss.callerphone.Callerphone;
 import com.marsss.callerphone.ToolSet;
-import com.marsss.commandType.IFullCommand;
+import com.marsss.commandType.ISlashCommand;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.MessageEmbed;
@@ -15,15 +14,10 @@ import java.time.format.DateTimeFormatter;
 import java.util.concurrent.CompletableFuture;
 
 
-public class BotInfo implements IFullCommand {
+public class BotInfo implements ISlashCommand {
     @Override
     public void runSlash(SlashCommandInteractionEvent e) {
         e.replyEmbeds(botInfo(e.getJDA())).setEphemeral(true).queue();
-    }
-
-    @Override
-    public void runCommand(MessageReceivedEvent e) {
-        e.getMessage().replyEmbeds(botInfo(e.getJDA())).queue();
     }
 
     private MessageEmbed botInfo(JDA jda) {

@@ -20,6 +20,9 @@ public class ChannelPoolListener extends ListenerAdapter {
         if (MESSAGE.isWebhookMessage())
             return;
 
+        if (!(ChannelPool.isHost(event.getChannel().getId()) || ChannelPool.isChild(event.getChannel().getId())))
+            return;
+
         final Member MEMBER = event.getMember();
 
         if (Users.isBlacklisted(MEMBER.getUser().getId())) {
@@ -33,9 +36,6 @@ public class ChannelPoolListener extends ListenerAdapter {
         String content = MESSAGE.getContentRaw();
 
         if (content.startsWith("\\\\") || content.toLowerCase().startsWith(Callerphone.config.getPrefix()))
-            return;
-
-        if (!(ChannelPool.isHost(event.getChannel().getId()) || ChannelPool.isChild(event.getChannel().getId())))
             return;
 
         content = ToolSet.messageCheck(content);
@@ -53,8 +53,8 @@ public class ChannelPoolListener extends ListenerAdapter {
                 sendCont
         );
 
-        if ((System.currentTimeMillis() - Cooldown.queryUserCooldown(event.getAuthor().getId())) > ToolSet.CREDIT_COOLDOWN) {
-            Cooldown.updateUserCooldown(event.getAuthor().getId());
+        if ((System.currentTimeMillis() - Cooldown.getPoolCooldown(event.getAuthor().getId())) > ToolSet.CREDIT_COOLDOWN) {
+            Cooldown.setUserCooldown(event.getAuthor().getId());
 
             Users.reward(event.getAuthor().getId(), 3);
             Users.addTransmit(event.getAuthor().getId(), 1);

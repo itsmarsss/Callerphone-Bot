@@ -18,7 +18,6 @@ public class Cooldown {
             if (userDocument != null) {
                 return userDocument.getLong("cooldowns_" + cooldownType);
             } else {
-                Users.createUser(id);
                 return 0;
             }
         } catch (MongoException me) {
@@ -41,11 +40,11 @@ public class Cooldown {
         }
     }
 
-    public static long queryUserCooldown(String id) {
+    public static long getPoolCooldown(String id) {
         return queryUserCooldown(id, "poolChat");
     }
 
-    public static void updateUserCooldown(String id) {
+    public static void setUserCooldown(String id) {
         updateUserCooldown(id, "poolChat");
     }
 
@@ -53,7 +52,7 @@ public class Cooldown {
         return queryUserCooldown(id, "command");
     }
 
-    public static void updateCmdCooldown(String id) {
+    public static void setCmdCooldown(String id) {
         updateUserCooldown(id, "command");
     }
 
@@ -61,7 +60,7 @@ public class Cooldown {
         return queryUserCooldown(id, "MIBSend");
     }
 
-    public static void updateMIBSendCoolDown(String id) {
+    public static void setMIBSendCoolDown(String id) {
         updateUserCooldown(id, "MIBSend");
     }
 
@@ -69,7 +68,7 @@ public class Cooldown {
         return queryUserCooldown(id, "MIBFind");
     }
 
-    public static void updateMIBFindCoolDown(String id) {
+    public static void setMIBFindCoolDown(String id) {
         updateUserCooldown(id, "MIBFind");
     }
 }

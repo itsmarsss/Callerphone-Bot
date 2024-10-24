@@ -137,14 +137,14 @@ public class Callerphone {
                 sdMgr = DefaultShardManagerBuilder.createDefault(token, intent)
                         .enableCache(CacheFlag.VOICE_STATE)
                         .enableCache(CacheFlag.ROLE_TAGS)
-                        .setMemberCachePolicy(MemberCachePolicy.ALL)
+                        //.setMemberCachePolicy(MemberCachePolicy.ALL)
                         .build();
             } else {
                 sdMgr = DefaultShardManagerBuilder.createDefault(token, intent)
                         .enableCache(CacheFlag.VOICE_STATE)
                         .enableCache(CacheFlag.ROLE_TAGS)
-                        .setChunkingFilter(ChunkingFilter.ALL)
-                        .setMemberCachePolicy(MemberCachePolicy.ALL)
+                        //.setChunkingFilter(ChunkingFilter.ALL)
+                        //.setMemberCachePolicy(MemberCachePolicy.ALL)
                         .setShardsTotal(-1)
                         .build();
             }
@@ -237,7 +237,7 @@ public class Callerphone {
             gameLst.add(new Connect4());
 
             sdMgr.addEventListener(new OnButtonClick());
-            sdMgr.addEventListener(new OnMessage());
+            sdMgr.addEventListener(new OnMessageEvent());
             sdMgr.addEventListener(new OnModalEvent());
             sdMgr.addEventListener(new OnOtherEvent());
             sdMgr.addEventListener(new OnSlashCommand());

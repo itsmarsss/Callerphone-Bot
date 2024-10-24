@@ -21,7 +21,7 @@ public class MessageInBottle {
 
         bottles.put(newBottle.getUuid(), newBottle);
 
-        Cooldown.updateMIBSendCoolDown(id);
+        Cooldown.setMIBSendCoolDown(id);
 
         return MIBStatus.SENT;
     }
@@ -43,7 +43,7 @@ public class MessageInBottle {
             //}
         }
 
-        Cooldown.updateMIBFindCoolDown(id);
+        Cooldown.setMIBFindCoolDown(id);
 
         return bottle;
     }

@@ -12,10 +12,9 @@ import com.marsss.callerphone.tccallerphone.commands.Prefix;
 import com.marsss.callerphone.tccallerphone.commands.ReportChat;
 import com.marsss.callerphone.users.commands.Profile;
 import com.marsss.callerphone.utils.*;
-import com.marsss.commandType.IFullCommand;
+import com.marsss.commandType.ISlashCommand;
 import com.marsss.database.categories.Users;
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
@@ -27,7 +26,7 @@ import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 
 import java.util.List;
 
-public class Help implements IFullCommand {
+public class Help implements ISlashCommand {
     @Override
     public void runSlash(SlashCommandInteractionEvent e) {
         final boolean ADMIN = Users.isModerator(e.getUser().getId());
@@ -37,13 +36,6 @@ public class Help implements IFullCommand {
             return;
         }
         e.replyEmbeds(help(PARAM.get(0).getAsString(), ADMIN)).queue();
-    }
-
-    @Override
-    public void runCommand(MessageReceivedEvent e) {
-        final boolean ADMIN = Users.isModerator(e.getAuthor().getId());
-
-        e.getMessage().replyEmbeds(help((e.getMessage().getContentRaw() + " buffer").split(" ")[1], ADMIN)).queue();
     }
 
     public MessageEmbed help(String name, boolean admin) {
