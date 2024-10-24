@@ -6,6 +6,4 @@ public interface ICommand {
     String getHelp();
 
     String[] getTriggers();
-
-    SlashCommandData getCommandData();
 }

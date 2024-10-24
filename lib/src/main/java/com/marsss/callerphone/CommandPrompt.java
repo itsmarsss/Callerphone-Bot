@@ -1,6 +1,8 @@
 package com.marsss.callerphone;
 
+import com.marsss.ICommand;
 import com.marsss.callerphone.channelpool.ChannelPool;
+import com.marsss.commandType.ISlashCommand;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.OnlineStatus;
@@ -107,73 +109,18 @@ public class CommandPrompt {
     private void upsert() {
         CommandListUpdateAction commands = Callerphone.jda.updateCommands();
 
+        for (ICommand command : Callerphone.cmdLst) {
+            if (!ISlashCommand.class.isAssignableFrom(command.getClass())) {
+                continue;
+            }
 
-        commands.addCommands(
-                Commands.slash("profile", "Get your profile").addOptions(
-                                new OptionData(OptionType.USER, "target", "Target user").setRequired(true)
-                        )
-                        .setGuildOnly(true)
-        );
+            SlashCommandData commandData = ((ISlashCommand) (command)).getCommandData();
+            if (commandData == null) {
+                continue;
+            }
 
-        commands.addCommands(
-                Commands.slash("chat", "Chat with people from other servers")
-                        .addSubcommands(
-                                new SubcommandData("default", "Chat with people from other servers"),
-                                new SubcommandData("anonymous", "Chat anonymously"),
-                                new SubcommandData("familyfriendly", "Chat with swear word censoring"),
-                                new SubcommandData("ffandanon", "Chat family friendly and anonymously")
-                        )
-                        .setGuildOnly(true)
-        );
-
-        commands.addCommands(
-                Commands.slash("endchat", "End chatting with people from another server")
-                        .setGuildOnly(true)
-        );
-
-        commands.addCommands(
-                Commands.slash("prefix", "Set in text prefix")
-                        .addOptions(
-                                new OptionData(OptionType.STRING, "prefix", "Set prefix").setRequired(true)
-                        )
-                        .setGuildOnly(true)
-        );
-
-        commands.addCommands(
-                Commands.slash("reportchat", "Report a chat with people from another server")
-                        .setGuildOnly(true)
-        );
-
-        commands.addCommands(
-                Commands.slash("poolpassword", "Change password of pool")
-                        .addOptions(
-                                new OptionData(OptionType.STRING, "password", "Password of pool").setRequired(true)
-                        )
-                        .setGuildOnly(true)
-                        .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.MANAGE_CHANNEL))
-        );
-
-        commands.addCommands(
-                Commands.slash("game", "Play minigames")
-                        .addSubcommands(
-                                new SubcommandData("tictactoe", "Play TicTacToe with someone")
-                                        .addOptions(
-                                                new OptionData(OptionType.USER, "opponent", "Who to challenge")
-                                                        .setRequired(true)
-                                        )
-                        )
-                        .setGuildOnly(true)
-        );
-
-        commands.addCommands(
-                Commands.slash("sendbottle", "Send a message in bottle")
-                        .setGuildOnly(true)
-        );
-
-        commands.addCommands(
-                Commands.slash("findbottle", "Find a message in bottle")
-                        .setGuildOnly(true)
-        );
+            commands.addCommands(commandData);
+        }
 
         commands.queue();
     }

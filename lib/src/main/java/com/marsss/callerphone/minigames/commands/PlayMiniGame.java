@@ -9,6 +9,11 @@ import com.marsss.commandType.ISlashCommand;
 import com.marsss.database.categories.Users;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
+import net.dv8tion.jda.api.interactions.commands.build.Commands;
+import net.dv8tion.jda.api.interactions.commands.build.OptionData;
+import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
+import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder;
 import net.dv8tion.jda.api.utils.messages.MessageCreateData;
 
@@ -33,12 +38,12 @@ public class PlayMiniGame implements ISlashCommand {
             return;
         }
 
-        if(e.getUser().getId().equals(opponent.getId())) {
+        if (e.getUser().getId().equals(opponent.getId())) {
             e.reply("You cannot challenge yourself to a MiniGame.").queue();
             return;
         }
 
-        if(opponent.isBot()) {
+        if (opponent.isBot()) {
             e.reply("You cannot challenge this player.").queue();
             return;
         }
@@ -78,11 +83,24 @@ public class PlayMiniGame implements ISlashCommand {
 
     @Override
     public String getHelp() {
-        return null;
+        return "</game tictactoe:1089656103391985665> - Play TicTacToe minigame.";
     }
 
     @Override
     public String[] getTriggers() {
         return "game,play,minigame,playmini,playgame".split(",");
+    }
+
+    @Override
+    public SlashCommandData getCommandData() {
+        return Commands.slash(getTriggers()[0], getHelp().split(" - ")[1])
+                .addSubcommands(
+                        new SubcommandData("tictactoe", "Play TicTacToe with someone")
+                                .addOptions(
+                                        new OptionData(OptionType.USER, "opponent", "Who to challenge")
+                                                .setRequired(true)
+                                )
+                )
+                .setGuildOnly(true);
     }
 }

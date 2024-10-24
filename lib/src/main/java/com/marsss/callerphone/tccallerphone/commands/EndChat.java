@@ -6,6 +6,8 @@ import com.marsss.callerphone.tccallerphone.ChatResponse;
 import com.marsss.callerphone.tccallerphone.TCCallerphone;
 import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.interactions.commands.build.Commands;
+import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 
 public class EndChat implements ISlashCommand {
     @Override
@@ -22,11 +24,17 @@ public class EndChat implements ISlashCommand {
 
     @Override
     public String getHelp() {
-        return "`/endchat` - End chatting with people from another server.";
+        return "</endchat:1075168971977916467> - End chatting with people from another server.";
     }
 
     @Override
     public String[] getTriggers() {
-        return "end,hangup,endcall,endchat,enduserphone,endcallerphone,endphone,endphonecall".split(",");
+        return "endchat,hangup,endcall,endchat,enduserphone,endcallerphone,endphone,endphonecall".split(",");
+    }
+
+    @Override
+    public SlashCommandData getCommandData() {
+        return Commands.slash(getTriggers()[0], getHelp().split(" - ")[1])
+                .setGuildOnly(true);
     }
 }

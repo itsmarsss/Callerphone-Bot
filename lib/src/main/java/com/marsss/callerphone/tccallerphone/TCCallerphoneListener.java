@@ -56,11 +56,11 @@ public class TCCallerphoneListener extends ListenerAdapter {
             return;
         }
 
-        if (c.getCallerTCID().equals("empty") || c.getReceiverTCID().equals("")) {
+        if (c.getCallerTCId().equals("empty") || c.getReceiverTCId().equals("")) {
             return;
         }
         c.addMessage(
-                (c.getCallerTCID().equals(CHANNELID) ? "Caller " : "Receiver ")
+                (c.getCallerTCId().equals(CHANNELID) ? "Caller " : "Receiver ")
                         + MESSAGE.getAuthor().getAsTag()
                         + "(" + MESSAGE.getAuthor().getId() + ")"
                         + ": " + messageRaw
@@ -68,23 +68,23 @@ public class TCCallerphoneListener extends ListenerAdapter {
 
         messageRaw = ToolSet.messageCheck(messageRaw);
 
-        if (c.getCallerTCID().equals(CHANNELID)) {
+        if (c.getCallerTCId().equals(CHANNELID)) {
             if (System.currentTimeMillis() - c.getCallerLastMessage() > ToolSet.MESSAGE_COOLDOWN) {
                 if (c.getReceiverFamilyFriendly()) {
                     messageRaw = ToolSet.filter(messageRaw);
                 }
 
                 c.setCallerLastMessage(System.currentTimeMillis());
-                sendMessage(c, c.getCallerAnonymous(), c.getReceiverTCID(), messageRaw, MESSAGE);
+                sendMessage(c, c.getCallerAnonymous(), c.getReceiverTCId(), messageRaw, MESSAGE);
             }
-        } else if (c.getReceiverTCID().equals(CHANNELID)) {
+        } else if (c.getReceiverTCId().equals(CHANNELID)) {
             if (System.currentTimeMillis() - c.getReceiverLastMessage() > ToolSet.MESSAGE_COOLDOWN) {
                 if (c.getCallerFamilyFriendly()) {
                     messageRaw = ToolSet.filter(messageRaw);
                 }
 
                 c.setReceiverLastMessage(System.currentTimeMillis());
-                sendMessage(c, c.getReceiverAnonymous(), c.getCallerTCID(), messageRaw, MESSAGE);
+                sendMessage(c, c.getReceiverAnonymous(), c.getCallerTCId(), messageRaw, MESSAGE);
             }
         }
 
@@ -127,8 +127,8 @@ public class TCCallerphoneListener extends ListenerAdapter {
         for (String m : c.getMessages())
             data.append(m).append("\n");
 
-        final TextChannel CALLER_CHANNEL = ToolSet.getTextChannel(c.getCallerTCID());
-        final TextChannel RECEIVER_CHANNEL = ToolSet.getTextChannel(c.getReceiverTCID());
+        final TextChannel CALLER_CHANNEL = ToolSet.getTextChannel(c.getCallerTCId());
+        final TextChannel RECEIVER_CHANNEL = ToolSet.getTextChannel(c.getReceiverTCId());
         if (CALLER_CHANNEL != null) {
             CALLER_CHANNEL.sendMessage(Response.CONNECTION_ERROR.toString()).queue();
         }
@@ -143,7 +143,7 @@ public class TCCallerphoneListener extends ListenerAdapter {
         String day = String.valueOf(now.getDayOfMonth());
         String hour = String.valueOf(now.getHour());
         String minute = String.valueOf(now.getMinute());
-        String ID = month + day + hour + minute + c.getCallerTCID() + c.getReceiverTCID();
+        String ID = month + day + hour + minute + c.getCallerTCId() + c.getReceiverTCId();
 
         final String DATA = data.toString();
         if (c.getReport()) {

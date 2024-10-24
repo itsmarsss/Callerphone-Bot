@@ -6,6 +6,10 @@ import com.marsss.callerphone.tccallerphone.ChatResponse;
 import com.marsss.database.categories.Users;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
+import net.dv8tion.jda.api.interactions.commands.build.Commands;
+import net.dv8tion.jda.api.interactions.commands.build.OptionData;
+import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 
 public class Prefix implements ISlashCommand {
     @Override
@@ -32,11 +36,20 @@ public class Prefix implements ISlashCommand {
 
     @Override
     public String getHelp() {
-        return "`/prefix <prefix>` - Set chat prefix (if more than lvl 50).";
+        return "</prefix:1075168974934900806> - Set chat prefix (if you have more than 50 levels </profile:1075168888263815199>).";
     }
 
     @Override
     public String[] getTriggers() {
         return "prefix,myprefix,setprefix".split(",");
+    }
+
+    @Override
+    public SlashCommandData getCommandData() {
+        return Commands.slash(getTriggers()[0], getHelp().split(" - ")[1])
+                .addOptions(
+                        new OptionData(OptionType.STRING, "prefix", "Set prefix").setRequired(true)
+                )
+                .setGuildOnly(true);
     }
 }

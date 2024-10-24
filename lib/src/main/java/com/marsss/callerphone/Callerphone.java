@@ -64,6 +64,7 @@ public class Callerphone {
 
     public static HashMap<String, String> replyMap = new HashMap<>();
 
+    public static final ArrayList<ICommand> cmdLst = new ArrayList<>();
     public static final HashMap<String, ICommand> cmdMap = new HashMap<>();
     public static final HashMap<String, IModalInteraction> mdlMap = new HashMap<>();
     public static final HashMap<String, IButtonInteraction> btnMap = new HashMap<>();
@@ -156,7 +157,6 @@ public class Callerphone {
 
             System.out.println("Mapping Commands:");
 
-            ArrayList<ICommand> cmdLst = new ArrayList<>();
             cmdLst.add(new About());
             cmdLst.add(new BotInfo());
             cmdLst.add(new Donate());
@@ -164,7 +164,6 @@ public class Callerphone {
             cmdLst.add(new Profile());
 
 
-            cmdLst.add(new BotInfo());
             cmdLst.add(new ChannelInfo());
             cmdLst.add(new Colour());
             cmdLst.add(new Help());

@@ -8,8 +8,13 @@ import com.marsss.database.categories.Cooldown;
 import com.marsss.database.categories.Users;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
+import net.dv8tion.jda.api.interactions.commands.build.Commands;
+import net.dv8tion.jda.api.interactions.commands.build.OptionData;
+import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 
 import java.awt.*;
 import java.time.Instant;
@@ -17,7 +22,13 @@ import java.time.Instant;
 public class Profile implements ISlashCommand {
     @Override
     public void runSlash(SlashCommandInteractionEvent e) {
-        e.replyEmbeds(profile(e.getOption("target").getAsUser())).queue();
+        User user = e.getUser();
+
+        if(!e.getOptions().isEmpty()) {
+            user = e.getOptions().get(0).getAsUser();
+        }
+
+        e.replyEmbeds(profile(user)).queue();
     }
 
     private MessageEmbed profile(User user) {
@@ -33,7 +44,7 @@ public class Profile implements ISlashCommand {
         String credits = String.format(Response.PROFILE_CREDITS.toString(), Users.getCredits(user.getId()), 0, 0);
         String message = String.format(Response.PROFILE_MESSAGE.toString(), EXECUTED, TRANSMITTED, TOTAL);
 
-        EmbedBuilder proEmd = new EmbedBuilder()
+        EmbedBuilder profileEmbed = new EmbedBuilder()
                 .setTitle("**" + user.getName() + "'s Profile**")
                 .setThumbnail(user.getAvatarUrl())
                 .addField("**General**", general, true)
@@ -46,7 +57,7 @@ public class Profile implements ISlashCommand {
                 .setTimestamp(Instant.now())
                 .setColor(ToolSet.COLOR);
 
-        return proEmd.build();
+        return profileEmbed.build();
     }
 
     private String getCreditCooldown(User user) {
@@ -63,11 +74,19 @@ public class Profile implements ISlashCommand {
 
     @Override
     public String getHelp() {
-        return "`/profile` - View your profile with Callerphone.";
+        return "</profile:1075168888263815199> - View your profile with Callerphone.";
     }
 
     @Override
     public String[] getTriggers() {
         return "profile,me,myself,aboutme,myprofile,stats".split(",");
+    }
+
+    @Override
+    public SlashCommandData getCommandData() {
+        return Commands.slash(getTriggers()[0], getHelp().split(" - ")[1]).addOptions(
+                        new OptionData(OptionType.USER, "target", "Target user")
+                )
+                .setGuildOnly(true);
     }
 }

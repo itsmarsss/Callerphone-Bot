@@ -9,6 +9,8 @@ import com.marsss.commandType.ISlashCommand;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.interactions.commands.build.Commands;
+import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.interactions.components.text.TextInput;
@@ -63,11 +65,17 @@ public class FindBottle implements ISlashCommand {
 
     @Override
     public String getHelp() {
-        return "`/findbottle` - Find a random message in bottle floating in the sea and read its message.";
+        return "</findbottle:1089656103391985668> - Find a random message in bottle floating in the sea and read its message.";
     }
 
     @Override
     public String[] getTriggers() {
         return "findbottle,mibfind".split(",");
+    }
+
+    @Override
+    public SlashCommandData getCommandData() {
+        return Commands.slash(getTriggers()[0], getHelp().split(" - ")[1])
+                .setGuildOnly(true);
     }
 }

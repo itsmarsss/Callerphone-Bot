@@ -4,9 +4,9 @@ import java.util.Queue;
 
 public class ConvoStorage {
     private final Queue<String> messages;
-    private String callerTCID;
+    private String callerTCId;
 
-    private String receiverTCID;
+    private String receiverTCId;
 
     private long callerLastMessage;
     private long receiverLastMessage;
@@ -19,10 +19,10 @@ public class ConvoStorage {
 
     private boolean report;
 
-    public ConvoStorage(Queue<String> messages, String callerTCID, String receiverTCID, long callerLastMessage, long receiverLastMessage, boolean callerFamilyFriendly, boolean receiverFamilyFriendly, boolean callerAnonymous, boolean receiverAnonymous, boolean report) {
+    public ConvoStorage(Queue<String> messages, String callerTCId, String receiverTCId, long callerLastMessage, long receiverLastMessage, boolean callerFamilyFriendly, boolean receiverFamilyFriendly, boolean callerAnonymous, boolean receiverAnonymous, boolean report) {
         this.messages = messages;
-        this.callerTCID = callerTCID;
-        this.receiverTCID = receiverTCID;
+        this.callerTCId = callerTCId;
+        this.receiverTCId = receiverTCId;
         this.callerLastMessage = callerLastMessage;
         this.receiverLastMessage = receiverLastMessage;
         this.callerFamilyFriendly = callerFamilyFriendly;
@@ -38,17 +38,18 @@ public class ConvoStorage {
         return messages;
     }
 
-    public String getCallerTCID() {
-        return callerTCID;
+    public String getCallerTCId() {
+        return callerTCId;
     }
 
-    public String getReceiverTCID() {
-        return receiverTCID;
+    public String getReceiverTCId() {
+        return receiverTCId;
     }
 
     public long getCallerLastMessage() {
         return callerLastMessage;
     }
+
     public long getReceiverLastMessage() {
         return receiverLastMessage;
     }
@@ -79,17 +80,18 @@ public class ConvoStorage {
         messages.add(message);
     }
 
-    public void setCallerTCID(String ID) {
-        callerTCID = ID;
+    public void setCallerTCId(String id) {
+        callerTCId = id;
     }
 
-    public void setReceiverTCID(String ID) {
-        receiverTCID = ID;
+    public void setReceiverTCId(String id) {
+        receiverTCId = id;
     }
 
     public void setCallerLastMessage(long time) {
         callerLastMessage = time;
     }
+
     public void setReceiverLastMessage(long time) {
         receiverLastMessage = time;
     }
@@ -116,8 +118,8 @@ public class ConvoStorage {
 
     public void resetMessage() {
         messages.clear();
-        callerTCID = "empty";
-        receiverTCID = "";
+        callerTCId = "empty";
+        receiverTCId = "";
         callerLastMessage = 0;
         receiverLastMessage = 0;
         callerFamilyFriendly = true;

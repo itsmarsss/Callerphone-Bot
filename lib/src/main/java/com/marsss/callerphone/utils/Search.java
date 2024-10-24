@@ -75,7 +75,7 @@ public class Search implements ISlashCommand {
 
     @Override
     public String getHelp() {
-        return "`/search <query>` - Search for something quickly on the web with title, snippet, and link!";
+        return "</search:1075169251431809134>` - Search for something quickly on the web with title, snippet, and link!";
     }
 
     @Override

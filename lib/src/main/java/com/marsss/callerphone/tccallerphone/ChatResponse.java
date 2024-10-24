@@ -1,4 +1,5 @@
 package com.marsss.callerphone.tccallerphone;
+
 import com.marsss.callerphone.Callerphone;
 import com.marsss.callerphone.ToolSet;
 
@@ -23,6 +24,7 @@ public enum ChatResponse {
     ChatResponse(String label) {
         this.label = label;
     }
+
     public String toString() {
         return label;
     }

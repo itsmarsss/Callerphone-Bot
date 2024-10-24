@@ -7,6 +7,8 @@ import com.marsss.callerphone.tccallerphone.ConvoStorage;
 import com.marsss.callerphone.tccallerphone.TCCallerphone;
 import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.interactions.commands.build.Commands;
+import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 
 public class ReportChat implements ISlashCommand {
     @Override
@@ -28,11 +30,17 @@ public class ReportChat implements ISlashCommand {
 
     @Override
     public String getHelp() {
-        return "`/report` - Report current chat with another server.";
+        return "</reportchat:1075168978189692948> - Report current chat with another server.";
     }
 
     @Override
     public String[] getTriggers() {
-        return "report,reportchat,reportcall,reportphone,reportcallerphone,reportuserphone,reportphonecall".split(",");
+        return "reportchat,reportcall,reportphone,reportcallerphone,reportuserphone,reportphonecall".split(",");
+    }
+
+    @Override
+    public SlashCommandData getCommandData() {
+        return Commands.slash(getTriggers()[0], getHelp().split(" - ")[1])
+                .setGuildOnly(true);
     }
 }

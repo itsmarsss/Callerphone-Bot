@@ -68,7 +68,7 @@ public class PoolSettings implements ISlashCommand {
 
     @Override
     public String getHelp() {
-        return "`/poolsettings` - Configure channel pool settings.";
+        return "</poolsettings:1089656103391985664> - Configure channel pool settings.";
     }
 
     @Override
