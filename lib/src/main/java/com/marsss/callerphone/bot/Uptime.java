@@ -1,18 +1,24 @@
 package com.marsss.callerphone.bot;
 
-import com.marsss.commandType.ISlashCommand;
+import com.marsss.commandType.IFullCommand;
 import com.marsss.callerphone.Callerphone;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 import java.awt.*;
 import java.lang.management.ManagementFactory;
 
-public class Uptime implements ISlashCommand {
+public class Uptime implements IFullCommand {
     @Override
     public void runSlash(SlashCommandInteractionEvent e) {
         e.replyEmbeds(uptime()).setEphemeral(true).queue();
+    }
+
+    @Override
+    public void runCommand(MessageReceivedEvent e) {
+        e.getMessage().replyEmbeds(uptime()).queue();
     }
 
     @Override

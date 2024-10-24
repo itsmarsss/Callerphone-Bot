@@ -2,11 +2,11 @@ package com.marsss.callerphone.minigames.commands;
 
 import com.marsss.callerphone.Callerphone;
 import com.marsss.callerphone.Response;
-import com.marsss.database.Storage;
 import com.marsss.callerphone.ToolSet;
 import com.marsss.callerphone.minigames.MiniGame;
 import com.marsss.callerphone.minigames.games.TicTacToe;
 import com.marsss.commandType.ISlashCommand;
+import com.marsss.database.categories.Users;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder;
@@ -28,7 +28,7 @@ public class PlayMiniGame implements ISlashCommand {
                 return;
         }
 
-        if (!Storage.hasUser(opponent.getId())) {
+        if (!Users.hasUser(opponent.getId())) {
             e.reply("Your opponent has not yet agreed to our Privacy Policy or Terms of Service. Get them to run `" + Callerphone.config.getPrefix() + "agree`").queue();
             return;
         }
@@ -59,10 +59,10 @@ public class PlayMiniGame implements ISlashCommand {
 
         TicTacToe ttt = new TicTacToe(null, null, from.getId(), to.getId());
 
-        if (!Storage.getUser(from.getId()).addGame(ttt) ||
-                !Storage.getUser(to.getId()).addGame(ttt)) {
-            Storage.getUser(from.getId()).removeGame(ttt.getID());
-            Storage.getUser(to.getId()).removeGame(ttt.getID());
+        if (!Users.getUser(from.getId()).addGame(ttt) ||
+                !Users.getUser(to.getId()).addGame(ttt)) {
+            Users.getUser(from.getId()).removeGame(ttt.getID());
+            Users.getUser(to.getId()).removeGame(ttt.getID());
 
             message.setContent("One or both players have reached the game limit...");
         } else {

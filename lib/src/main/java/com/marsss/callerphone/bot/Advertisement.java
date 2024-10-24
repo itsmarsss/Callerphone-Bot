@@ -1,6 +1,5 @@
 package com.marsss.callerphone.bot;
 
-import com.marsss.callerphone.Callerphone;
 import com.marsss.callerphone.utils.Colour;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;

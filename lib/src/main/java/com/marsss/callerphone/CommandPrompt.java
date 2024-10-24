@@ -1,7 +1,6 @@
 package com.marsss.callerphone;
 
 import com.marsss.callerphone.channelpool.ChannelPool;
-import com.marsss.database.Storage;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.OnlineStatus;
@@ -31,27 +30,31 @@ public class CommandPrompt {
         Scanner sc = new Scanner(System.in);
 
         while (true) {
+            System.out.print("> ");
             String cmd = sc.nextLine();
             if (cmd.startsWith("start")) {
                 logger.info("Starting Bot...");
                 if (jda != null) {
-                    logger.info("Bot Is Online Right Now");
+                    logger.info("Bot Is Already Online.");
                 } else {
                     Callerphone.isQuickStart = false;
-                    Callerphone.BotInit(Callerphone.config.getBotToken(), cmd.replaceFirst("start", ""), false);
+                    Callerphone.botInit(Callerphone.config.getBotToken(), cmd.replaceFirst("start", ""));
                 }
             } else if (cmd.startsWith("quickstart")) {
-                logger.info("Starting Bot...");
+                logger.info("Quick Starting Bot...");
                 if (jda != null) {
-                    logger.info("Bot Is Online Right Now");
+                    logger.info("Bot Is Already Online.");
                 } else {
                     Callerphone.isQuickStart = true;
-                    Callerphone.BotInit(Callerphone.config.getBotToken(), cmd.replaceFirst("quickstart", ""), true);
+                    Callerphone.botInit(Callerphone.config.getBotToken(), cmd.replaceFirst("quickstart", ""));
                 }
             } else if (cmd.equals("shutdown")) {
                 logger.info("Shutting Down Bot...");
                 if (jda != null) {
-                    EmbedBuilder embedBuilder = new EmbedBuilder().setTitle("Status").setColor(new Color(213, 0, 0)).setFooter("Goodbye World...").setDescription(jda.getSelfUser().getAsMention() + " is going offline;" + cmd.replaceFirst("shutdown", ""));
+                    EmbedBuilder embedBuilder = new EmbedBuilder().setTitle("Status")
+                            .setColor(new Color(213, 0, 0))
+                            .setFooter("Goodbye World...")
+                            .setDescription(jda.getSelfUser().getAsMention() + " is going offline;" + cmd.replaceFirst("shutdown", ""));
                     final TextChannel LOG_CHANNEL = ToolSet.getTextChannel(Callerphone.config.getLogStatusChannel());
                     if (LOG_CHANNEL == null) {
                         logger.error("Error Sending Shutdown Message");
@@ -65,14 +68,6 @@ public class CommandPrompt {
                 logger.info("Bot Offline");
                 sc.close();
                 System.exit(0);
-            } else if (cmd.equals("presence")) {
-                if (jda == null) {
-                    logger.info("Bot Is Offline");
-                    continue;
-                }
-                setActivity(sc);
-                logger.info("Bot Is Offline");
-
             } else if (cmd.equals("info")) {
                 if (jda != null) {
                     String tag = jda.getSelfUser().getAsTag();
@@ -88,30 +83,17 @@ public class CommandPrompt {
                     continue;
                 }
                 logger.info("Bot Is Offline");
-            } else if (cmd.equals("recal")) {
-//                logger.info("Recalibrating...");
-//                try {
-//                    Storage.readData();
-//                } catch (Exception e) {
-//                    e.printStackTrace();
-//                }
-//                logger.info("Done recalibration!");
-            } else if (cmd.equals("poolnum")) {
-                System.out.println("Currently there are " + ChannelPool.config.size() + " channel pools running.");
             } else if (cmd.equals("updateCMD")) {
                 upsert();
                 System.out.println("Done Upserting");
             } else if (cmd.equals("help")) {
                 System.out.println(
                         "Option 1: start <msg> = To start the bot\n" +
-                                "Option 2: shutdown = To shutdown the bot\n" +
-                                "Option 3: presence = To set presence\n" +
+                                "Option 2: quickstart <msg> = To start the bot quicker" +
+                                "Option 3: shutdown <msg> = To shutdown the bot\n" +
                                 "Option 4: info = To get info of the bot\n" +
-                                "Option 5: recal = To read resources again\n" +
-                                "Option 6: poolnum = To see number of running pools\n" +
-                                "Option 7: updateCMD = Update all slash commands\n" +
-                                "Option 8: help = CBCL help (this)\n\n" +
-                                "Other: quickstart <msg> = To start the bot quicker");
+                                "Option 5: updateCMD = Update all slash commands\n" +
+                                "Option 6: help = CBCL help (this)\n\n");
             } else {
                 logger.warn("Unknown Command");
             }
@@ -123,6 +105,11 @@ public class CommandPrompt {
 
         commands.addCommands(
                 Commands.slash("about", "About Callerphone")
+                        .setGuildOnly(true)
+        );
+
+        commands.addCommands(
+                Commands.slash("botinfo", "Callerphone info")
                         .setGuildOnly(true)
         );
 
@@ -356,94 +343,4 @@ public class CommandPrompt {
 
         commands.queue();
     }
-
-    private void setActivity(Scanner sc) {
-        Activity act;
-        logger.info("Change Presence...");
-        try {
-            label:
-            while (true) {
-
-                System.out.println("Activity: ");
-                String msg = sc.next().toLowerCase();
-
-                switch (msg) {
-                    case "<rs>":
-                        act = null;
-                        break label;
-                    case "competing":
-                        System.out.println("Status Message: ");
-                        sc.nextLine();
-                        String comp = sc.nextLine();
-                        System.out.println("Competing: " + comp);
-                        act = Activity.competing(comp);
-                        break label;
-
-                    case "listening":
-                        System.out.println("Status Message: ");
-                        sc.nextLine();
-                        String song = sc.nextLine();
-                        System.out.println("Listening: " + song);
-                        act = Activity.listening(song);
-                        break label;
-
-                    case "playing":
-                        System.out.println("Status Message: ");
-                        sc.nextLine();
-                        String game = sc.nextLine();
-                        System.out.println("Playing: " + game);
-                        act = Activity.playing(game);
-                        break label;
-
-                    case "streaming":
-                        System.out.println("Title Message: ");
-                        sc.nextLine();
-                        String title = sc.nextLine();
-                        System.out.println("Stream Link: ");
-                        String link = sc.nextLine();
-                        System.out.println("Title: " + title + "\n" + "Link: " + link);
-                        act = Activity.streaming(title, link);
-                        break label;
-
-                    case "watching":
-                        System.out.println("Status Message: ");
-                        sc.nextLine();
-                        String watch = sc.nextLine();
-                        System.out.println("Watching: " + watch);
-                        act = Activity.watching(watch);
-                        break label;
-                }
-            }
-
-            OnlineStatus s;
-
-            while (true) {
-                System.out.println("Online Status: ");
-                String msg = sc.next().toLowerCase();
-
-                if (msg.toLowerCase().startsWith("onl")) {
-                    s = OnlineStatus.ONLINE;
-                    break;
-
-                } else if (msg.toLowerCase().startsWith("idl")) {
-                    s = OnlineStatus.IDLE;
-                    break;
-
-                } else if (msg.toLowerCase().startsWith("dnd")) {
-                    s = OnlineStatus.DO_NOT_DISTURB;
-                    break;
-
-                } else if (msg.toLowerCase().startsWith("inv")) {
-                    s = OnlineStatus.INVISIBLE;
-                    break;
-
-                }
-            }
-            jda.getPresence().setPresence(s, act);
-        } catch (Exception e) {
-            e.printStackTrace();
-            logger.error("Input error, please try again");
-        }
-    }
-
 }

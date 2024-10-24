@@ -1,10 +1,10 @@
 package com.marsss.callerphone.minigames.handlers;
 
 import com.marsss.callerphone.Callerphone;
-import com.marsss.database.Storage;
 import com.marsss.callerphone.minigames.MiniGameStatus;
 import com.marsss.callerphone.minigames.games.TicTacToe;
 import com.marsss.commandType.IButtonInteraction;
+import com.marsss.database.categories.Users;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.exceptions.ErrorHandler;
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonInteraction;
@@ -19,7 +19,7 @@ public class TicTacToeHandler implements IButtonInteraction {
         String[] param = e.getButton().getId().replaceFirst("ttt-", "").split("-");
 
 
-        TicTacToe game = (TicTacToe) Storage.getUser(e.getUser().getId()).getGame(param[1]);
+        TicTacToe game = (TicTacToe) Users.getUser(e.getUser().getId()).getGame(param[1]);
 
         if(game == null) {
             e.reply("Game not found.").setEphemeral(true).queue();
@@ -91,16 +91,16 @@ public class TicTacToeHandler implements IButtonInteraction {
                     channel.sendMessage(game.getMessageForTo()).queue();
                 }));
             }
-            Storage.getUser(game.getFromUserId()).removeGame(game.getID());
-            Storage.getUser(game.getToUserId()).removeGame(game.getID());
+            Users.getUser(game.getFromUserId()).removeGame(game.getID());
+            Users.getUser(game.getToUserId()).removeGame(game.getID());
         }
 
         game.incrementStage();
 
         if(game.getStage() == 9) {
             e.getMessage().editMessage(MessageEditData.fromCreateData(game.getBoardWithMessage("Tie Game!"))).queue();
-            Storage.getUser(game.getFromUserId()).removeGame(game.getID());
-            Storage.getUser(game.getToUserId()).removeGame(game.getID());
+            Users.getUser(game.getFromUserId()).removeGame(game.getID());
+            Users.getUser(game.getToUserId()).removeGame(game.getID());
         }else{
             e.getMessage().editMessage(MessageEditData.fromCreateData(game.getBoardWithMessage("Game Sent!"))).queue();
         }

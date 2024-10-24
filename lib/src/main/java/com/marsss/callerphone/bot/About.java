@@ -2,21 +2,28 @@ package com.marsss.callerphone.bot;
 
 import java.awt.Color;
 import java.lang.management.ManagementFactory;
+import java.text.CharacterIterator;
+import java.text.StringCharacterIterator;
 
-import com.marsss.commandType.ISlashCommand;
+import com.marsss.commandType.IFullCommand;
 import com.marsss.callerphone.Callerphone;
 
-import com.marsss.callerphone.ToolSet;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
-public class About implements ISlashCommand {
+public class About implements IFullCommand {
     @Override
     public void runSlash(SlashCommandInteractionEvent e) {
         e.replyEmbeds(about()).queue();
+    }
+
+    @Override
+    public void runCommand(MessageReceivedEvent e) {
+        e.getMessage().replyEmbeds(about()).queue();
     }
 
     @Override
@@ -41,6 +48,7 @@ public class About implements ISlashCommand {
             .append("\n")
             .append("\n[Privacy Policy](").append(Callerphone.config.getPrivacyPolicy()).append(")")
             .append("\n[Terms of Service](").append(Callerphone.config.getTermsOfService()).append(")");
+
     private MessageEmbed about() {
         final JDA jda = Callerphone.jda;
 
@@ -55,7 +63,7 @@ public class About implements ISlashCommand {
 
             final String UNIQUE_USERS = Callerphone.isQuickStart ? "N/A (QuickStart)" : jda.getUsers().size() + " unique user(s)";
 
-            AbtEmd.setAuthor("Made by " + u.getAsTag(), null, u.getAvatarUrl())
+            AbtEmd.setAuthor("Made by " + u.getName(), null, u.getAvatarUrl())
                     .setColor(new Color(114, 137, 218))
                     .setTitle("**About:**")
                     .setDescription(DESCRIPTION)
@@ -77,13 +85,11 @@ public class About implements ISlashCommand {
                                     ManagementFactory.getOperatingSystemMXBean().getAvailableProcessors() + " processor(s)", true)
 
                     .addField("Memory Usage",
-                            ToolSet.convert(Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) + "\n" +
-                                    ToolSet.convert(Runtime.getRuntime().maxMemory()) + " max\n", true)
+                            convert(Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) + "\n" +
+                                    convert(Runtime.getRuntime().maxMemory()) + " max\n", true)
 
                     .addField("Uptime",
-                            Uptime.upTimeAbt(), true)
-
-                    .setFooter("One of the many bots in the sequel...");
+                            Uptime.upTimeAbt(), true);
 
             AbtEmd.addField("Info",
                     (Callerphone.isQuickStart ? "QuickStarted Bot\n" : "") +
@@ -91,5 +97,21 @@ public class About implements ISlashCommand {
         });
         return AbtEmd.build();
     }
+
+    // https://programming.guide/java/formatting-byte-size-to-human-readable-format.html {
+
+    private String convert(long bytes) {
+        if (-1000 < bytes && bytes < 1000) {
+            return bytes + " B";
+        }
+        final CharacterIterator ci = new StringCharacterIterator("kMGTPE");
+        while (bytes <= -999_950 || bytes >= 999_950) {
+            bytes /= 1000;
+            ci.next();
+        }
+        return String.format("%.1f %cB", bytes / 1000.0, ci.current());
+    }
+
+    // }
 
 }

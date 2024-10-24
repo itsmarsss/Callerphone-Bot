@@ -1,8 +1,9 @@
 package com.marsss.callerphone.channelpool;
 
 import com.marsss.callerphone.Callerphone;
-import com.marsss.database.Storage;
 import com.marsss.callerphone.ToolSet;
+import com.marsss.database.categories.Cooldown;
+import com.marsss.database.categories.Users;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
@@ -23,7 +24,7 @@ public class ChannelPoolListener extends ListenerAdapter {
 
         final Member MEMBER = event.getMember();
 
-        if (Storage.isBlacklisted(MEMBER.getUser().getId())) {
+        if (Users.isBlacklisted(MEMBER.getUser().getId())) {
             //event.getMessage().addReaction("\u274C").queue();
             return;
         }
@@ -54,11 +55,11 @@ public class ChannelPoolListener extends ListenerAdapter {
                 sendCont
         );
 
-        if ((System.currentTimeMillis() - Storage.queryUserCooldown(event.getAuthor().getId())) > ToolSet.CREDIT_COOLDOWN) {
-            Storage.updateUserCooldown(event.getAuthor().getId());
+        if ((System.currentTimeMillis() - Cooldown.queryUserCooldown(event.getAuthor().getId())) > ToolSet.CREDIT_COOLDOWN) {
+            Cooldown.updateUserCooldown(event.getAuthor().getId());
 
-            Storage.reward(event.getAuthor().getId(), 3);
-            Storage.addTransmit(event.getAuthor().getId(), 1);
+            Users.reward(event.getAuthor().getId(), 3);
+            Users.addTransmit(event.getAuthor().getId(), 1);
         }
     }
 }

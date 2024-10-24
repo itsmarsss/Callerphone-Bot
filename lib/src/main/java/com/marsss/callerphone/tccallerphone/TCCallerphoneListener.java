@@ -5,8 +5,9 @@ import java.time.LocalDateTime;
 import com.marsss.callerphone.Callerphone;
 
 import com.marsss.callerphone.Response;
-import com.marsss.database.Storage;
 import com.marsss.callerphone.ToolSet;
+import com.marsss.database.categories.Cooldown;
+import com.marsss.database.categories.Users;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.User;
@@ -31,7 +32,7 @@ public class TCCallerphoneListener extends ListenerAdapter {
 
         final Member MEMBER = event.getMember();
 
-        if (Storage.isBlacklisted(MEMBER.getId())) {
+        if (Users.isBlacklisted(MEMBER.getId())) {
             //event.getMessage().addReaction("\u274C").queue();
             return;
         }
@@ -87,11 +88,11 @@ public class TCCallerphoneListener extends ListenerAdapter {
             }
         }
 
-        if ((System.currentTimeMillis() - Storage.queryUserCooldown(event.getAuthor().getId())) > ToolSet.CREDIT_COOLDOWN) {
-            Storage.updateUserCooldown(event.getAuthor().getId());
+        if ((System.currentTimeMillis() - Cooldown.queryUserCooldown(event.getAuthor().getId())) > ToolSet.CREDIT_COOLDOWN) {
+            Cooldown.updateUserCooldown(event.getAuthor().getId());
 
-            Storage.reward(event.getAuthor().getId(), 5);
-            Storage.addTransmit(event.getAuthor().getId(), 1);
+            Users.reward(event.getAuthor().getId(), 5);
+            Users.addTransmit(event.getAuthor().getId(), 1);
         }
 
     }
@@ -101,7 +102,7 @@ public class TCCallerphoneListener extends ListenerAdapter {
 
         if (anon) {
             if (DESTINATION_CHANNEL != null) {
-                DESTINATION_CHANNEL.sendMessage("**DiscordUser**#0000 " + Callerphone.config.getCallerphoneCall() + content).complete();
+                DESTINATION_CHANNEL.sendMessage("**DiscordUser** " + Callerphone.config.getCallerphoneCall() + content).complete();
             } else {
                 terminate(c);
             }
@@ -109,10 +110,10 @@ public class TCCallerphoneListener extends ListenerAdapter {
         }
         User auth = msg.getAuthor();
         String template = Response.DEFAULT_MESSAGE_TEMPLATE.toString();
-        if (Storage.isModerator(msg.getAuthor().getId())) {
+        if (Users.isModerator(msg.getAuthor().getId())) {
             template = Response.MODERATOR_MESSAGE_TEMPLATE.toString();
-        } else if (Storage.hasPrefix(msg.getAuthor().getId())) {
-            template = Response.PREFIX_MESSAGE_TEMPLATE.toString().replaceFirst("%s", Storage.getPrefix(msg.getAuthor().getId()));
+        } else if (Users.hasPrefix(msg.getAuthor().getId())) {
+            template = Response.PREFIX_MESSAGE_TEMPLATE.toString().replaceFirst("%s", Users.getPrefix(msg.getAuthor().getId()));
         }
         if (DESTINATION_CHANNEL != null) {
             DESTINATION_CHANNEL.sendMessage(String.format(template, auth.getName(), auth.getDiscriminator(), content)).complete();

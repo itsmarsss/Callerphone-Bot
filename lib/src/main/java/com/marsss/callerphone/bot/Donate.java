@@ -1,18 +1,24 @@
 package com.marsss.callerphone.bot;
 
-import com.marsss.commandType.ISlashCommand;
+import com.marsss.commandType.IFullCommand;
 import com.marsss.callerphone.Callerphone;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 import java.awt.*;
 
-public class Donate implements ISlashCommand {
+public class Donate implements IFullCommand {
 
     @Override
     public void runSlash(SlashCommandInteractionEvent e) {
         e.replyEmbeds(donate()).setEphemeral(true).queue();
+    }
+
+    @Override
+    public void runCommand(MessageReceivedEvent e) {
+        e.getMessage().replyEmbeds(donate()).queue();
     }
 
     @Override
@@ -26,8 +32,8 @@ public class Donate implements ISlashCommand {
     }
 
     private MessageEmbed donate() {
-        return new EmbedBuilder().
-                setColor(new Color(114, 137, 218))
+        return new EmbedBuilder()
+                .setColor(new Color(114, 137, 218))
                 .setDescription("Donate at <" + Callerphone.config.getDonateLink() + ">")
                 .build();
     }

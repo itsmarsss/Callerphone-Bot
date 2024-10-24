@@ -2,10 +2,11 @@ package com.marsss.callerphone.listeners;
 
 import com.marsss.callerphone.Callerphone;
 import com.marsss.callerphone.Response;
-import com.marsss.database.Storage;
 import com.marsss.callerphone.ToolSet;
 import com.marsss.callerphone.bot.Advertisement;
 import com.marsss.commandType.ITextCommand;
+import com.marsss.database.categories.Cooldown;
+import com.marsss.database.categories.Users;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
@@ -56,25 +57,30 @@ public class OnMessage extends ListenerAdapter {
         try {
             if (Callerphone.cmdMap.containsKey(trigger)) {
 
-                if (!Storage.hasUser(event.getAuthor().getId())) {
+                if (!Users.hasUser(event.getAuthor().getId())) {
                     ToolSet.sendPPAndTOS(event);
                     return;
                 }
 
-                if (Storage.isBlacklisted(event.getAuthor().getId())) {
+                if (Users.isBlacklisted(event.getAuthor().getId())) {
                     MESSAGE.reply("Sorry you are blacklisted, submit an appeal in our support server " + Callerphone.config.getSupportServer()).queue();
                     return;
                 }
 
-                if (System.currentTimeMillis() - Storage.getCmdCooldown(event.getAuthor().getId()) < ToolSet.COMMAND_COOLDOWN) {
+                if (System.currentTimeMillis() - Cooldown.getCmdCooldown(event.getAuthor().getId()) < ToolSet.COMMAND_COOLDOWN) {
                     ToolSet.sendCommandCooldown(event);
                     return;
                 }
 
-                Storage.updateCmdCooldown(event.getAuthor().getId());
+                Cooldown.updateCmdCooldown(event.getAuthor().getId());
 
-                Storage.reward(event.getAuthor().getId(), 1);
-                Storage.addExecute(event.getAuthor().getId(), 1);
+                Users.reward(event.getAuthor().getId(), 1);
+                Users.addExecute(event.getAuthor().getId(), 1);
+
+                if (!ITextCommand.class.isInstance(Callerphone.cmdMap.get(trigger))) {
+                    event.getMessage().reply("We have completely migrated to slash commands (try running `/" + trigger + "`), please run /help for more information.").queue();
+                    return;
+                }
 
                 ((ITextCommand) Callerphone.cmdMap.get(trigger)).runCommand(event);
 
@@ -99,7 +105,7 @@ public class OnMessage extends ListenerAdapter {
 
         final String[] args = CONTENT.split("\\s+");
 
-        boolean isAdmin = Storage.isModerator(event.getAuthor().getId());
+        boolean isAdmin = Users.isModerator(event.getAuthor().getId());
 
         if (CONTENT.startsWith(Callerphone.config.getPrefix() + "help mod")) {
             String TITLE = "Mod";
@@ -128,65 +134,65 @@ public class OnMessage extends ListenerAdapter {
                 switch (args[0].toLowerCase().replace(Callerphone.config.getPrefix(), "")) {
 
                     case "blacklist":
-                        if (Storage.isBlacklisted(id)) {
+                        if (Users.isBlacklisted(id)) {
                             MESSAGE.reply("ID blacklisted already").queue();
                         } else {
-                            Storage.addBlacklist(id);
+                            Users.addBlacklist(id);
                             MESSAGE.reply("ID: `" + id + "` added to blacklist").queue();
                         }
                         break;
 
                     case "prefix":
-                        if (Storage.hasPrefix(id)) {
-                            MESSAGE.reply("ID has prefix already (" + Storage.getPrefix(id) + ")").queue();
+                        if (Users.hasPrefix(id)) {
+                            MESSAGE.reply("ID has prefix already (" + Users.getPrefix(id) + ")").queue();
                         } else {
                             String prefix = args[2];
                             if (prefix.length() > 15) {
                                 MESSAGE.reply("Prefix too long (max. length is 15 chars)").queue();
                                 break;
                             }
-                            Storage.setPrefix(MEMBER.getId(), prefix);
+                            Users.setPrefix(MEMBER.getId(), prefix);
                             MESSAGE.reply("ID: `" + id + "` now has prefix `" + prefix + "`").queue();
                         }
                         break;
 
                     case "mod":
-                        if (Storage.isModerator(id)) {
+                        if (Users.isModerator(id)) {
                             MESSAGE.reply("ID is mod already").queue();
                         } else {
-                            Storage.addAdmin(id);
+                            Users.addAdmin(id);
                             MESSAGE.reply("ID: `" + id + "` added to mod list").queue();
                         }
                         break;
 
 
                     case "rblacklist":
-                        if (!Storage.isBlacklisted(id)) {
+                        if (!Users.isBlacklisted(id)) {
                             MESSAGE.reply("ID not blacklisted").queue();
                         } else {
-                            Storage.addUser(id);
+                            Users.addUser(id);
                             MESSAGE.reply("ID: `" + id + "` removed from blacklist").queue();
                         }
                         break;
 
                     case "rprefix":
-                        if (!Storage.hasPrefix(id)) {
+                        if (!Users.hasPrefix(id)) {
                             MESSAGE.reply("ID does not have a prefix").queue();
                         } else {
-                            Storage.setPrefix(id, "");
+                            Users.setPrefix(id, "");
                             MESSAGE.reply("ID: `" + id + "` no longer has a prefix").queue();
                         }
                         break;
 
                     case "rmod":
-                        if (!Storage.isModerator(id)) {
+                        if (!Users.isModerator(id)) {
                             MESSAGE.reply("ID is not a mod").queue();
                         } else {
                             if (id.equals(Callerphone.config.getOwnerID())) {
                                 MESSAGE.reply("You cannot remove this mod").queue();
                                 break;
                             }
-                            Storage.addUser(id);
+                            Users.addUser(id);
                             MESSAGE.reply("ID: `" + id + "` removed from mod list").queue();
                         }
                         break;

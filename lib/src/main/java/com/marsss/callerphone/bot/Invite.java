@@ -1,16 +1,22 @@
 package com.marsss.callerphone.bot;
 
-import com.marsss.commandType.ISlashCommand;
+import com.marsss.commandType.IFullCommand;
 import com.marsss.callerphone.Callerphone;
 import com.marsss.callerphone.utils.Colour;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
-public class Invite implements ISlashCommand {
+public class Invite implements IFullCommand {
     @Override
     public void runSlash(SlashCommandInteractionEvent e) {
         e.replyEmbeds(invite()).queue();
+    }
+
+    @Override
+    public void runCommand(MessageReceivedEvent e) {
+        e.getMessage().replyEmbeds(invite()).queue();
     }
 
     @Override

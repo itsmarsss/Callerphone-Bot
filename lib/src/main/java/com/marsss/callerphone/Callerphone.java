@@ -8,9 +8,6 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 
 import com.marsss.ICommand;
 import com.marsss.callerphone.channelpool.commands.*;
@@ -20,7 +17,6 @@ import com.marsss.callerphone.minigames.commands.PlayMiniGame;
 import com.marsss.callerphone.minigames.games.BattleShip;
 import com.marsss.callerphone.minigames.games.Connect4;
 import com.marsss.callerphone.minigames.games.TicTacToe;
-import com.marsss.callerphone.minigames.games.WordSearch;
 import com.marsss.callerphone.minigames.handlers.TicTacToeHandler;
 import com.marsss.callerphone.msginbottle.commands.FindBottle;
 import com.marsss.callerphone.msginbottle.commands.SendBottle;
@@ -36,7 +32,6 @@ import com.marsss.callerphone.tccallerphone.commands.*;
 import com.marsss.commandType.IButtonInteraction;
 import com.marsss.commandType.IModalInteraction;
 import com.marsss.database.MongoConnector;
-import com.marsss.database.Storage;
 import net.dv8tion.jda.api.*;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.sharding.DefaultShardManagerBuilder;
@@ -105,7 +100,7 @@ public class Callerphone {
             System.exit(0);
         }
 
-        if(!dbConnector.init()) {
+        if (!dbConnector.init()) {
             System.out.println("______________________________________________________");
             System.out.println("Cannot connect to MongoDB via URL");
             System.out.println("\t1. Make sure databaseURL exists in config.yml");
@@ -131,10 +126,9 @@ public class Callerphone {
         }
     }
 
-    public static void BotInit(String token, String startupmsg, boolean quickStart) {
-
+    public static void botInit(String token, String startupmsg) {
         try {
-            if (quickStart) {
+            if (isQuickStart) {
                 jda = JDABuilder.createDefault(token, intent)
                         .enableCache(CacheFlag.VOICE_STATE)
                         .enableCache(CacheFlag.ROLE_TAGS)
@@ -162,6 +156,7 @@ public class Callerphone {
 
             ArrayList<ICommand> cmdLst = new ArrayList<>();
             cmdLst.add(new About());
+            cmdLst.add(new BotInfo());
             cmdLst.add(new Donate());
             cmdLst.add(new Invite());
             cmdLst.add(new Ping());
@@ -240,7 +235,6 @@ public class Callerphone {
             gameLst.add(new BattleShip());
             gameLst.add(new TicTacToe());
             gameLst.add(new Connect4());
-            gameLst.add(new WordSearch());
 
             jda.addEventListener(new OnButtonClick());
             jda.addEventListener(new OnMessage());
@@ -265,76 +259,20 @@ public class Callerphone {
                 System.out.println("- " + g.getName());
             }
 
-//            try {
-//                Storage.readData();
-//            } catch (Exception e) {
-//                e.printStackTrace();
-//            }
-
             final TextChannel LOG_CHANNEL = ToolSet.getTextChannel(config.getLogStatusChannel());
             if (LOG_CHANNEL == null) {
                 System.out.println("------------------------------");
                 logger.error("Error Sending Startup Message");
             } else {
-                EmbedBuilder embedBuilder = new EmbedBuilder().setTitle("Status").setColor(new Color(24, 116, 52)).setFooter("Hello World!").setDescription(jda.getSelfUser().getAsMention() + " is now online;" + startupmsg);
+                EmbedBuilder embedBuilder = new EmbedBuilder().setTitle("Status")
+                        .setColor(new Color(24, 116, 52))
+                        .setFooter("Hello World!")
+                        .setDescription(jda.getSelfUser().getAsMention() + " is now online;" + startupmsg);
                 LOG_CHANNEL.sendMessageEmbeds(embedBuilder.build()).queue();
             }
-
-            ScheduledExecutorService ses = Executors.newSingleThreadScheduledExecutor();
-            ses.scheduleAtFixedRate(Callerphone::kill, 0, 2, TimeUnit.MINUTES);
-
         } catch (Exception e) {
             e.printStackTrace();
             logger.error(e.toString());
         }
-
-    }
-
-    private static void kill() {
-//        Storage.writeData();
-        logger.info("All data exported.");
-//        for (ConvoStorage c : TCCallerphone.convos) {
-//
-//            if (System.currentTimeMillis() - c.getLastMessage() >= 250000) {
-//                final String callerID = c.getCallerTCID();
-//                try {
-//                    jda.getTextChannelById(callerID).sendMessage(Callerphone + "Took too long for someone to pick up :(").queue();
-//                    c.resetMessage();
-//                    continue;
-//                } catch (Exception ex) {
-//                }
-//
-//                final String receiverID = c.getReceiverTCID();
-//
-//                ArrayList<String> DATA = new ArrayList<>(c.getMessages());
-//
-//                c.resetMessage();
-//                try {
-//                    jda.getTextChannelById(callerID).sendMessage(Callerphone + "Call ended due to inactivity.").queue();
-//                } catch (Exception ex) {
-//                }
-//                try {
-//                    jda.getTextChannelById(receiverID).sendMessage(Callerphone + "Call ended due to inactivity.").queue();
-//                } catch (Exception ex) {
-//                }
-//
-//                if (c.getReport()) {
-//
-//                    LocalDateTime now = LocalDateTime.now();
-//                    final String month = String.valueOf(now.getMonthValue());
-//                    final String day = String.valueOf(now.getDayOfMonth());
-//                    final String hour = String.valueOf(now.getHour());
-//                    final String minute = String.valueOf(now.getMinute());
-//                    final String ID = month + "/" + day + "/" + hour + "/" + minute + "C" + callerID + "R" + receiverID;
-//
-//                    StringBuilder data = new StringBuilder();
-//                    for (String m : DATA)
-//                        data.append(m).append("\n");
-//                    jda.getTextChannelById(reportchannel).sendMessage("**ID:** " + ID).addFile(data.toString().getBytes(), ID + ".txt").queue();
-//
-//                }
-//
-//            }
-//        }
     }
 }

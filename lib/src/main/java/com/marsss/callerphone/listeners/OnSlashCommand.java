@@ -2,9 +2,10 @@ package com.marsss.callerphone.listeners;
 
 import com.marsss.callerphone.Callerphone;
 import com.marsss.callerphone.Response;
-import com.marsss.database.Storage;
 import com.marsss.callerphone.ToolSet;
 import com.marsss.commandType.ISlashCommand;
+import com.marsss.database.categories.Cooldown;
+import com.marsss.database.categories.Users;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.jetbrains.annotations.NotNull;
@@ -15,25 +16,25 @@ public class OnSlashCommand extends ListenerAdapter {
         try {
             if (Callerphone.cmdMap.containsKey(event.getName())) {
 
-                if (!Storage.hasUser(event.getUser().getId())) {
+                if (!Users.hasUser(event.getUser().getId())) {
                     ToolSet.sendPPAndTOS(event);
                     return;
                 }
 
-                if (Storage.isBlacklisted(event.getUser().getId())) {
-                    event.reply(String.format(Response.BLACKLISTED.toString(), Storage.getReason(event.getUser().getId()))).setEphemeral(true).queue();
+                if (Users.isBlacklisted(event.getUser().getId())) {
+                    event.reply(String.format(Response.BLACKLISTED.toString(), Users.getReason(event.getUser().getId()))).setEphemeral(true).queue();
                     return;
                 }
 
-                if (System.currentTimeMillis() - Storage.getCmdCooldown(event.getUser().getId()) < ToolSet.COMMAND_COOLDOWN) {
+                if (System.currentTimeMillis() - Cooldown.getCmdCooldown(event.getUser().getId()) < ToolSet.COMMAND_COOLDOWN) {
                     ToolSet.sendCommandCooldown(event);
                     return;
                 }
 
-                Storage.updateCmdCooldown(event.getUser().getId());
+                Cooldown.updateCmdCooldown(event.getUser().getId());
 
-                Storage.reward(event.getUser().getId(), 3);
-                Storage.addExecute(event.getUser().getId(), 1);
+                Users.reward(event.getUser().getId(), 3);
+                Users.addExecute(event.getUser().getId(), 1);
 
                 ((ISlashCommand) Callerphone.cmdMap.get(event.getName())).runSlash(event);
                 return;

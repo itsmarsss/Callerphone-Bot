@@ -1,9 +1,9 @@
 package com.marsss.callerphone.users.commands;
 
 import com.marsss.callerphone.Callerphone;
-import com.marsss.database.Storage;
 import com.marsss.callerphone.ToolSet;
 import com.marsss.commandType.ITextCommand;
+import com.marsss.database.categories.Users;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
@@ -31,7 +31,7 @@ public class DeductCredits implements ITextCommand {
     }
 
     private String deductCredits(User user, int amount) {
-        Storage.reward(user.getId(), (-amount));
+        Users.reward(user.getId(), (-amount));
         return ToolSet.CP_EMJ + "Deducted `\u00A9 " + amount + "` from " + user.getAsMention();
     }
 

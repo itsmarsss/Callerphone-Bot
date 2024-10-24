@@ -6,18 +6,17 @@ import com.mongodb.MongoClientSettings;
 import com.mongodb.client.*;
 import org.bson.Document;
 
-import static com.mongodb.client.model.Filters.eq;
-
 public class MongoConnector {
 
     private MongoDatabase mongoDatabase;
     private MongoCollection<Document> usersCollection;
     private MongoCollection<Document> poolsCollection;
 
-    public MongoConnector() {}
+    public MongoConnector() {
+    }
 
     public boolean init() {
-        try{
+        try {
             ConnectionString connectionString = new ConnectionString(Callerphone.config.getDatabaseURL());
 
             MongoClientSettings settings = MongoClientSettings.builder().applyConnectionString(connectionString).build();

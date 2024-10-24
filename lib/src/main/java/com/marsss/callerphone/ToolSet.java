@@ -1,7 +1,8 @@
 package com.marsss.callerphone;
 
 import com.marsss.callerphone.minigames.IMiniGame;
-import com.marsss.database.Storage;
+import com.marsss.database.categories.Cooldown;
+import com.marsss.database.categories.Filter;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Message;
@@ -33,26 +34,8 @@ public class ToolSet {
         CP_EMJ = Callerphone.config.getCallerphoneNormal();
         CP_ERR = Callerphone.config.getCallerphoneError();
         CP_CALL = Callerphone.config.getCallerphoneCall();
-        MESSAGE_COOLDOWN = 500;
-        CREDIT_COOLDOWN = 15000;
     }
 
-
-    // https://programming.guide/java/formatting-byte-size-to-human-readable-format.html {
-
-    public static String convert(long bytes) {
-        if (-1000 < bytes && bytes < 1000) {
-            return bytes + " B";
-        }
-        final CharacterIterator ci = new StringCharacterIterator("kMGTPE");
-        while (bytes <= -999_950 || bytes >= 999_950) {
-            bytes /= 1000;
-            ci.next();
-        }
-        return String.format("%.1f %cB", bytes / 1000.0, ci.current());
-    }
-
-    // }
 
     public static TextChannel getTextChannel(String id) {
         if (id.isEmpty()) {
@@ -126,7 +109,7 @@ public class ToolSet {
     }
 
     public static String filter(String messageraw) {
-        for (String ftr : Storage.filter) {
+        for (String ftr : Filter.filter) {
             StringBuilder rep = new StringBuilder();
             for (int i = 0; i < ftr.length(); i++) {
                 rep.append("#");
@@ -175,11 +158,11 @@ public class ToolSet {
     }
 
     public static void sendCommandCooldown(MessageReceivedEvent event) {
-        event.getMessage().reply(":warning: **Command Cooldown;** " + ((ToolSet.COMMAND_COOLDOWN - (System.currentTimeMillis() - Storage.getCmdCooldown(event.getAuthor().getId()))) / 1000) + " second(s)").queue();
+        event.getMessage().reply(":warning: **Command Cooldown;** " + ((ToolSet.COMMAND_COOLDOWN - (System.currentTimeMillis() - Cooldown.getCmdCooldown(event.getAuthor().getId()))) / 1000) + " second(s)").queue();
     }
 
     public static void sendCommandCooldown(SlashCommandInteractionEvent event) {
-        event.reply(":warning: **Command Cooldown;** " + ((ToolSet.COMMAND_COOLDOWN - (System.currentTimeMillis() - Storage.getCmdCooldown(event.getUser().getId()))) / 1000) + " second(s)").queue();
+        event.reply(":warning: **Command Cooldown;** " + ((ToolSet.COMMAND_COOLDOWN - (System.currentTimeMillis() - Cooldown.getCmdCooldown(event.getUser().getId()))) / 1000) + " second(s)").queue();
     }
 
     public static void sendPrivateEmbed(User user, MessageEmbed embed) {
