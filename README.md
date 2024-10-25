@@ -1,5 +1,5 @@
 <h1 align="center">
-  <img src="/assets/icon.png" alt="Icon" width="100" height="100">
+  <img src="/assets/icon.png" alt="Icon" width="128" height="128">
   <br>
   Callerphone-Bot
   <br>

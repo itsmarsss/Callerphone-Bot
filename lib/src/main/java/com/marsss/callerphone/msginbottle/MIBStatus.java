@@ -5,6 +5,6 @@ public enum MIBStatus {
     SENT,
     DELETED,
     RATE_LIMITED,
-    NOT_FOUND;
+    NOT_FOUND
 
 }

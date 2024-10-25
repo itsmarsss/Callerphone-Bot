@@ -52,9 +52,6 @@ import org.yaml.snakeyaml.constructor.Constructor;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.requests.GatewayIntent;
-import net.dv8tion.jda.api.utils.ChunkingFilter;
-import net.dv8tion.jda.api.utils.MemberCachePolicy;
-import net.dv8tion.jda.api.utils.cache.CacheFlag;
 
 public class Callerphone {
 
@@ -135,14 +132,14 @@ public class Callerphone {
         try {
             if (isQuickStart) {
                 sdMgr = DefaultShardManagerBuilder.createDefault(token, intent)
-                        .enableCache(CacheFlag.VOICE_STATE)
-                        .enableCache(CacheFlag.ROLE_TAGS)
+                        //.enableCache(CacheFlag.VOICE_STATE)
+                        //.enableCache(CacheFlag.ROLE_TAGS)
                         //.setMemberCachePolicy(MemberCachePolicy.ALL)
                         .build();
             } else {
                 sdMgr = DefaultShardManagerBuilder.createDefault(token, intent)
-                        .enableCache(CacheFlag.VOICE_STATE)
-                        .enableCache(CacheFlag.ROLE_TAGS)
+                        //.enableCache(CacheFlag.VOICE_STATE)
+                        //.enableCache(CacheFlag.ROLE_TAGS)
                         //.setChunkingFilter(ChunkingFilter.ALL)
                         //.setMemberCachePolicy(MemberCachePolicy.ALL)
                         .setShardsTotal(-1)

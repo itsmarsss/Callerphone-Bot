@@ -7,8 +7,6 @@ import com.marsss.callerphone.msginbottle.MessageInBottle;
 import com.marsss.commandType.IModalInteraction;
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
 
-import javax.tools.Tool;
-
 public class SendModal implements IModalInteraction {
     @Override
     public void runModal(ModalInteractionEvent e) {
