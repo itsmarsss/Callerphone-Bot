@@ -21,8 +21,10 @@ import java.util.concurrent.CompletableFuture;
 public class MessageInBottle {
     public static final Logger logger = LoggerFactory.getLogger(MessageInBottle.class);
 
-    public static MIBStatus sendBottle(String id, String message, boolean anon) {
-        if (MIB.createMIB(id, message, anon)) {
+    public static MIBStatus sendBottle(String id, String message, boolean anon, String uuid) {
+        boolean stat = uuid == null ? MIB.createMIB(id, message, anon) : MIB.addMIBPage(id, message, anon, uuid);
+
+        if (stat) {
             Cooldown.setMIBSendCoolDown(id);
             return MIBStatus.SENT;
         }
@@ -55,18 +57,19 @@ public class MessageInBottle {
                             .setTitle("<:MessageInBottle:1089648266284638339> **A message in bottle has arrived!**")
                             .setDescription(page.getMessage())
                             .appendDescription("\n\n\u3000**\\- " + lastUser.getName() + "** from  <t:" + page.getReleased() + ":R>")
-                            .setFooter("Pages" + page.getPageNum() + "/" + bottle.getPages().size())
+                            .setFooter("Pages " + (page.getPageNum() + 1) + "/" + bottle.getPages().size())
                             .setTimestamp(Instant.now())
                             .setColor(ToolSet.COLOR);
 
+                    Button addPage = Button.success("adp-" + bottle.getUuid(), "Add Page");
                     Button previousPage = Button.secondary("pvp-" + bottle.getUuid() + "-" + Math.max(page.getPageNum() - 1, 0), "\u2B05");
-                    Button nextPage = Button.secondary("nxp-" + bottle.getUuid() + "-" + Math.min(page.getPageNum() + 1, bottle.getPages().size()-1), "\u2B95");
-                    Button reportButton = Button.danger("rpt-" + bottle.getUuid(), "Report");
+                    Button nextPage = Button.secondary("nxp-" + bottle.getUuid() + "-" + Math.min(page.getPageNum() + 1, bottle.getPages().size() - 1), "\u2B95");
+                    Button reportButton = Button.danger("rpt-" + bottle.getUuid() + "-" + page.getPageNum(), "Report");
                     Button saveACopy = Button.secondary("sve", "Save");
 
                     MessageCreateData message = new MessageCreateBuilder()
                             .setEmbeds(bottleEmbed.build())
-                            .setComponents(ActionRow.of(previousPage, nextPage, reportButton, saveACopy)).build();
+                            .setComponents(ActionRow.of(addPage, previousPage, nextPage, reportButton, saveACopy)).build();
 
                     future.complete(message);
                 },

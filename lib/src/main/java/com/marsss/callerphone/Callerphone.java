@@ -20,10 +20,7 @@ import com.marsss.callerphone.minigames.games.TicTacToe;
 import com.marsss.callerphone.minigames.handlers.TicTacToeHandler;
 import com.marsss.callerphone.msginbottle.commands.FindBottle;
 import com.marsss.callerphone.msginbottle.commands.SendBottle;
-import com.marsss.callerphone.msginbottle.handlers.NextHandler;
-import com.marsss.callerphone.msginbottle.handlers.PreviousHandler;
-import com.marsss.callerphone.msginbottle.handlers.ReportHandler;
-import com.marsss.callerphone.msginbottle.handlers.SaveHandler;
+import com.marsss.callerphone.msginbottle.handlers.*;
 import com.marsss.callerphone.msginbottle.modals.SendModal;
 import com.marsss.callerphone.users.commands.DeductCredits;
 import com.marsss.callerphone.users.commands.Profile;
@@ -222,6 +219,7 @@ public class Callerphone {
 
             ArrayList<IButtonInteraction> btnLst = new ArrayList<>();
             btnLst.add(new TicTacToeHandler());
+            btnLst.add(new AddPageHandler());
             btnLst.add(new NextHandler());
             btnLst.add(new PreviousHandler());
             btnLst.add(new ReportHandler());

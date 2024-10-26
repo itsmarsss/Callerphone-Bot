@@ -17,7 +17,7 @@ public class FindBottle implements ISlashCommand {
     @Override
     public void runSlash(SlashCommandInteractionEvent e) {
         if (System.currentTimeMillis() - Cooldown.getMIBSendCoolDown(e.getMember().getId()) < ToolSet.FINDBOTTLE_COOLDOWN) {
-            e.reply(MIBResponse.FIND_MAX.toString()).setEphemeral(true).queue();
+            e.reply(":warning: **Find MIB Cooldown;** " + ((ToolSet.FINDBOTTLE_COOLDOWN - (System.currentTimeMillis() - Cooldown.getMIBFindCoolDown(e.getMember().getId()))) / 60000) + " minute(s)").setEphemeral(true).queue();
             return;
         }
 

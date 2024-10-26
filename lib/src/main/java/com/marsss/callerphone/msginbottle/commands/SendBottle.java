@@ -1,7 +1,10 @@
 package com.marsss.callerphone.msginbottle.commands;
 
+import com.marsss.callerphone.ToolSet;
 import com.marsss.callerphone.channelpool.ChannelPool;
+import com.marsss.callerphone.msginbottle.MIBResponse;
 import com.marsss.commandType.ISlashCommand;
+import com.marsss.database.categories.Cooldown;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
@@ -14,6 +17,10 @@ import net.dv8tion.jda.api.interactions.modals.Modal;
 public class SendBottle implements ISlashCommand {
     @Override
     public void runSlash(SlashCommandInteractionEvent e) {
+        if (System.currentTimeMillis() - Cooldown.getMIBSendCoolDown(e.getMember().getId()) < ToolSet.SENDBOTTLE_COOLDOWN) {
+            e.reply(":warning: **Send MIB Cooldown;** " + ((ToolSet.SENDBOTTLE_COOLDOWN - (System.currentTimeMillis() - Cooldown.getMIBSendCoolDown(e.getMember().getId()))) / 60000) + " minute(s)").setEphemeral(true).queue();
+            return;
+        }
         TextInput message = TextInput.create("message", "Message (10 - 1500 characters)", TextInputStyle.PARAGRAPH)
                 .setPlaceholder("Write your message in a bottle here")
                 .setMinLength(10)

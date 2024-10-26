@@ -28,8 +28,8 @@ public class ToolSet {
     public static long MESSAGE_COOLDOWN = 500;
     public static long CREDIT_COOLDOWN = 15000;
     public static long COMMAND_COOLDOWN = 3000;
-    public static long FINDBOTTLE_COOLDOWN = 43200000;
-    public static long SENDBOTTLE_COOLDOWN = 17280000; // 86400000
+    public static long FINDBOTTLE_COOLDOWN = 600000;
+    public static long SENDBOTTLE_COOLDOWN = 600000; // 86400000
     public static Color COLOR = new Color(114, 137, 218);
 
     public static void updateToolSet() {

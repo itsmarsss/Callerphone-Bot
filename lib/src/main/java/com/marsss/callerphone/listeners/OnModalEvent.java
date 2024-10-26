@@ -11,8 +11,9 @@ public class OnModalEvent extends ListenerAdapter {
     @Override
     public void onModalInteraction(@NotNull ModalInteractionEvent event) {
         try {
-            if (Callerphone.mdlMap.containsKey(event.getModalId())) {
-                Callerphone.mdlMap.get(event.getModalId()).runModal(event);
+            String id = event.getModalId().split("-")[0];
+            if (Callerphone.mdlMap.containsKey(id)) {
+                Callerphone.mdlMap.get(id).runModal(event);
                 return;
             }
             event.reply(

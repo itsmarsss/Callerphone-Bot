@@ -3,6 +3,7 @@ package com.marsss.callerphone.listeners;
 import com.marsss.callerphone.Callerphone;
 import com.marsss.callerphone.Response;
 import com.marsss.callerphone.ToolSet;
+import com.marsss.callerphone.bot.Advertisement;
 import com.marsss.commandType.ISlashCommand;
 import com.marsss.database.categories.Cooldown;
 import com.marsss.database.categories.Users;
@@ -10,12 +11,13 @@ import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEve
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Random;
+
 public class OnSlashCommand extends ListenerAdapter {
 
     public void onSlashCommandInteraction(@NotNull SlashCommandInteractionEvent event) {
         try {
             if (Callerphone.cmdMap.containsKey(event.getName())) {
-
                 if (!Users.hasUser(event.getUser().getId())) {
                     ToolSet.sendPPAndTOS(event);
                     return;
@@ -37,6 +39,13 @@ public class OnSlashCommand extends ListenerAdapter {
                 Users.addExecute(event.getUser().getId(), 1);
 
                 ((ISlashCommand) Callerphone.cmdMap.get(event.getName())).runSlash(event);
+
+                Random random = new Random();
+                int randomNumber = random.nextInt(7) + 1;
+
+                if(randomNumber == 1) {
+                    event.getChannel().sendMessageEmbeds(Advertisement.generateAd()).queue();
+                }
                 return;
             }
             event.reply(

@@ -10,8 +10,9 @@ import org.jetbrains.annotations.NotNull;
 public class OnButtonClick extends ListenerAdapter {
     public void onButtonInteraction(@NotNull ButtonInteractionEvent event) {
         try {
-            if (Callerphone.btnMap.containsKey(event.getButton().getId().substring(0, 3))) {
-                Callerphone.btnMap.get(event.getButton().getId().substring(0, 3)).runClick(event);
+            String id = event.getButton().getId().split("-")[0];
+            if (Callerphone.btnMap.containsKey(id)) {
+                Callerphone.btnMap.get(id).runClick(event);
                 return;
             }
             event.reply(

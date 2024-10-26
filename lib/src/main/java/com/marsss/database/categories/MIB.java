@@ -81,6 +81,45 @@ public class MIB {
         }
     }
 
+
+    public static boolean addMIBPage(String id, String message, boolean anon, String uuid) {
+        MongoCollection<Document> collection = Callerphone.dbConnector.getMibCollection();
+
+
+        try {
+            Bottle bottle = getBottle(uuid);
+
+            if (bottle == null) {
+                return false;
+            }
+
+            int newPageNum = bottle.getPages().size();
+            long currentTime = Instant.now().getEpochSecond();
+
+            Page newPage = new Page(newPageNum, id, message, anon, currentTime);
+
+            bottle.getPages().add(newPage);
+
+            ArrayList<Document> updatedPages = new ArrayList<>();
+            for (Page page : bottle.getPages()) {
+                Document pageDoc = new Document("pageNum", page.getPageNum())
+                        .append("author", page.getAuthor())
+                        .append("message", page.getMessage())
+                        .append("signed", page.isSigned())
+                        .append("released", page.getReleased());
+                updatedPages.add(pageDoc);
+            }
+
+            collection.updateOne(new Document("id", uuid), new Document("$set", new Document("pages", updatedPages)));
+
+            return true;
+        } catch (MongoException me) {
+            logger.error("Unable to update MIB {}: {}", uuid, me.getMessage());
+            return false;
+        }
+    }
+
+
     private static Bottle parseDocumentToBottle(Document mib) {
         String uuid = mib.containsKey("id") ? mib.getString("id") : "unknown";
 
@@ -105,5 +144,4 @@ public class MIB {
 
         return new Bottle(uuid, pages);
     }
-
 }

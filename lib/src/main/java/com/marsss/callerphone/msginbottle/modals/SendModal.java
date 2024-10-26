@@ -13,10 +13,9 @@ import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
 public class SendModal implements IModalInteraction {
     @Override
     public void runModal(ModalInteractionEvent e) {
-        if (System.currentTimeMillis() - Cooldown.getMIBSendCoolDown(e.getMember().getId()) < ToolSet.SENDBOTTLE_COOLDOWN) {
-            e.reply(MIBResponse.SEND_MAX.toString()).setEphemeral(true).queue();
-            return;
-        }
+        String[] sendData = e.getModalId().split("-");
+
+        String uuid = sendData.length > 1 ? sendData[1] : null;
 
         String message = e.getValue("message").getAsString();
         String messageFiltered = ToolSet.messageCheck(message);
@@ -39,7 +38,7 @@ public class SendModal implements IModalInteraction {
             return;
         }
 
-        MIBStatus stat = MessageInBottle.sendBottle(e.getUser().getId(), message, signed);
+        MIBStatus stat = MessageInBottle.sendBottle(e.getUser().getId(), message, signed, uuid);
 
         switch (stat) {
             case RATE_LIMITED:
