@@ -1,55 +1,83 @@
 package com.marsss.callerphone.msginbottle;
 
-import com.marsss.callerphone.Callerphone;
 import com.marsss.callerphone.ToolSet;
+import com.marsss.callerphone.msginbottle.entities.Bottle;
+import com.marsss.callerphone.msginbottle.entities.Page;
 import com.marsss.database.categories.Cooldown;
+import com.marsss.database.categories.MIB;
+import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.interactions.components.ActionRow;
+import net.dv8tion.jda.api.interactions.components.buttons.Button;
+import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder;
+import net.dv8tion.jda.api.utils.messages.MessageCreateData;
+import org.bson.Document;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
+import java.time.Instant;
+import java.util.*;
+import java.util.concurrent.CompletableFuture;
 
 public class MessageInBottle {
+    public static final Logger logger = LoggerFactory.getLogger(MessageInBottle.class);
 
-    public static final HashMap<String, MIBBottle> bottles = new HashMap<>();
-
-    public static MIBStatus sendBottle(String id, String page) {
-        if (System.currentTimeMillis() - Cooldown.getMIBSendCoolDown(id) < ToolSet.SENDBOTTLE_COOLDOWN) {
-            return MIBStatus.RATE_LIMITED;
+    public static MIBStatus sendBottle(String id, String message, boolean anon) {
+        if (MIB.createMIB(id, message, anon)) {
+            Cooldown.setMIBSendCoolDown(id);
+            return MIBStatus.SENT;
         }
 
-        MIBBottle newBottle = new MIBBottle(id, page);
-
-        bottles.put(newBottle.getUuid(), newBottle);
-
-        Cooldown.setMIBSendCoolDown(id);
-
-        return MIBStatus.SENT;
+        return MIBStatus.ERROR;
     }
 
-    public static MIBBottle findBottle(String id) {
-        if (System.currentTimeMillis() - Cooldown.getMIBFindCoolDown(id) < ToolSet.FINDBOTTLE_COOLDOWN) {
-            return null;
+    public static Bottle findBottle(String id) {
+        Bottle mib = MIB.findBottle();
+
+        if (mib != null) {
+            Cooldown.setMIBFindCoolDown(id);
+
+            return mib;
+        }
+        return null;
+    }
+
+    public static MessageCreateData createMessage(Bottle bottle, int pageNum) {
+        if (pageNum == Integer.MAX_VALUE) {
+            pageNum = Math.min(Math.max(bottle.getPages().size() - 1, 0), bottle.getPages().size() - 1);
         }
 
-        MIBBottle bottle = new MIBBottle(Callerphone.selfUser.getId(), "No bottle to be found " + ToolSet.CP_ERR);
+        Page page = bottle.getPages().get(pageNum);
 
-        Iterator it = bottles.entrySet().iterator();
-        while (it.hasNext()) {
-            MIBBottle tempBottle = (MIBBottle) ((Map.Entry) it.next()).getValue();
-            //if(!tempBottle.getParticipantID().getLast().equals(id)) {
-            bottle = tempBottle;
-            it.remove();
-            break;
-            //}
+        CompletableFuture<MessageCreateData> future = new CompletableFuture<>();
+
+        ToolSet.getUser(page.getAuthor()).queue(lastUser -> {
+                    EmbedBuilder bottleEmbed = new EmbedBuilder()
+                            .setTitle("<:MessageInBottle:1089648266284638339> **A message in bottle has arrived!**")
+                            .setDescription(page.getMessage())
+                            .appendDescription("\n\n\u3000**\\- " + lastUser.getName() + "** from  <t:" + page.getReleased() + ":R>")
+                            .setFooter("Pages" + page.getPageNum() + "/" + bottle.getPages().size())
+                            .setTimestamp(Instant.now())
+                            .setColor(ToolSet.COLOR);
+
+                    Button previousPage = Button.secondary("pvp-" + bottle.getUuid() + "-" + Math.max(page.getPageNum() - 1, 0), "\u2B05");
+                    Button nextPage = Button.secondary("nxp-" + bottle.getUuid() + "-" + Math.min(page.getPageNum() + 1, bottle.getPages().size()-1), "\u2B95");
+                    Button reportButton = Button.danger("rpt-" + bottle.getUuid(), "Report");
+                    Button saveACopy = Button.secondary("sve", "Save");
+
+                    MessageCreateData message = new MessageCreateBuilder()
+                            .setEmbeds(bottleEmbed.build())
+                            .setComponents(ActionRow.of(previousPage, nextPage, reportButton, saveACopy)).build();
+
+                    future.complete(message);
+                },
+                future::completeExceptionally
+        );
+
+        try {
+            return future.get();
+        } catch (Exception e) {
         }
 
-        Cooldown.setMIBFindCoolDown(id);
-
-        return bottle;
+        return null;
     }
-
-    public static MIBBottle getBottle(String uuid) {
-        return bottles.get(uuid);
-    }
-
 }

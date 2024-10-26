@@ -20,6 +20,8 @@ import com.marsss.callerphone.minigames.games.TicTacToe;
 import com.marsss.callerphone.minigames.handlers.TicTacToeHandler;
 import com.marsss.callerphone.msginbottle.commands.FindBottle;
 import com.marsss.callerphone.msginbottle.commands.SendBottle;
+import com.marsss.callerphone.msginbottle.handlers.NextHandler;
+import com.marsss.callerphone.msginbottle.handlers.PreviousHandler;
 import com.marsss.callerphone.msginbottle.handlers.ReportHandler;
 import com.marsss.callerphone.msginbottle.handlers.SaveHandler;
 import com.marsss.callerphone.msginbottle.modals.SendModal;
@@ -37,6 +39,7 @@ import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.sharding.DefaultShardManagerBuilder;
 import net.dv8tion.jda.api.sharding.ShardManager;
+import net.dv8tion.jda.api.utils.ChunkingFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -140,7 +143,7 @@ public class Callerphone {
                 sdMgr = DefaultShardManagerBuilder.createDefault(token, intent)
                         //.enableCache(CacheFlag.VOICE_STATE)
                         //.enableCache(CacheFlag.ROLE_TAGS)
-                        //.setChunkingFilter(ChunkingFilter.ALL)
+                        .setChunkingFilter(ChunkingFilter.ALL)
                         //.setMemberCachePolicy(MemberCachePolicy.ALL)
                         .setShardsTotal(-1)
                         .build();
@@ -219,6 +222,8 @@ public class Callerphone {
 
             ArrayList<IButtonInteraction> btnLst = new ArrayList<>();
             btnLst.add(new TicTacToeHandler());
+            btnLst.add(new NextHandler());
+            btnLst.add(new PreviousHandler());
             btnLst.add(new ReportHandler());
             btnLst.add(new SaveHandler());
 

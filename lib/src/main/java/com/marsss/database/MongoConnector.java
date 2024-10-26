@@ -11,6 +11,7 @@ public class MongoConnector {
     private MongoDatabase mongoDatabase;
     private MongoCollection<Document> usersCollection;
     private MongoCollection<Document> poolsCollection;
+    private MongoCollection<Document> mibCollection;
 
     public MongoConnector() {
     }
@@ -27,6 +28,7 @@ public class MongoConnector {
             setMongoDatabase(db);
             setUsersCollection(db.getCollection("users"));
             setPoolsCollection(db.getCollection("pools"));
+            setMibCollection(db.getCollection("mib"));
             return true;
         } catch (Exception e) {
             e.printStackTrace();
@@ -56,5 +58,13 @@ public class MongoConnector {
 
     public void setPoolsCollection(MongoCollection<Document> poolsCollection) {
         this.poolsCollection = poolsCollection;
+    }
+
+    public MongoCollection<Document> getMibCollection() {
+        return mibCollection;
+    }
+
+    public void setMibCollection(MongoCollection<Document> mibCollection) {
+        this.mibCollection = mibCollection;
     }
 }

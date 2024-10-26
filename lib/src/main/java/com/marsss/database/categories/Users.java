@@ -32,7 +32,7 @@ public class Users {
                     .append("cooldowns_MIBSend", 0L)
                     .append("cooldowns_MIBFind", 0L));
 
-            if (result.wasAcknowledged()) {
+            if (result.getInsertedId() != null) {
                 logger.info("Added new user: {}", id);
             } else {
                 logger.error("User addition not acknowledged for user: {}", id);

@@ -1,55 +1,34 @@
 package com.marsss.callerphone.msginbottle.commands;
 
+import com.marsss.callerphone.Response;
 import com.marsss.callerphone.ToolSet;
-import com.marsss.callerphone.msginbottle.MIBBottle;
+import com.marsss.callerphone.msginbottle.entities.Bottle;
 import com.marsss.callerphone.msginbottle.MIBResponse;
 import com.marsss.callerphone.msginbottle.MessageInBottle;
 import com.marsss.commandType.ISlashCommand;
-import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.entities.User;
+import com.marsss.database.categories.Cooldown;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
-import net.dv8tion.jda.api.interactions.components.ActionRow;
-import net.dv8tion.jda.api.interactions.components.buttons.Button;
-import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder;
 
-import java.time.Instant;
 import java.util.concurrent.TimeUnit;
 
 public class FindBottle implements ISlashCommand {
     @Override
     public void runSlash(SlashCommandInteractionEvent e) {
-        MIBBottle bottle = findBottle(e.getUser().getId());
-
-        if(bottle == null) {
-            e.reply(MIBResponse.FIND_MAX.toString()).queue();
+        if (System.currentTimeMillis() - Cooldown.getMIBSendCoolDown(e.getMember().getId()) < ToolSet.FINDBOTTLE_COOLDOWN) {
+            e.reply(MIBResponse.FIND_MAX.toString()).setEphemeral(true).queue();
             return;
         }
 
-        User sender = ToolSet.getUser(bottle.getParticipantID().get(0));
+        Bottle bottle = MessageInBottle.findBottle(e.getMember().getId());
 
-        EmbedBuilder bottleEmbed = new EmbedBuilder()
-                .setTitle("<:MessageInBottle:1089648266284638339> **A message in bottle has arrived!**")
-                .setDescription("**" + sender.getName() + "**#" + sender.getDiscriminator() + ":\n\n")
-                .appendDescription(bottle.getPage().get(0))
-                .appendDescription("\n\n<t:" + bottle.getTimeSent() + ":R>")
-                .setFooter("Time found")
-                .setTimestamp(Instant.now())
-                .setColor(ToolSet.COLOR);
+        if (bottle == null) {
+            e.reply(Response.ERROR.toString()).queue();
+            return;
+        }
 
-        Button reportButton = Button.danger("rpt-" + bottle.getUuid(), "Report");
-        Button saveACopy = Button.secondary("sve", "Save");
-
-        MessageCreateBuilder message = new MessageCreateBuilder()
-                .setEmbeds(bottleEmbed.build())
-                .setComponents(ActionRow.of(reportButton, saveACopy));
-
-        e.reply(message.build()).setEphemeral(true).queueAfter(1, TimeUnit.SECONDS);
-    }
-
-    private MIBBottle findBottle(String id) {
-        return MessageInBottle.findBottle(id);
+        e.reply(MessageInBottle.createMessage(bottle, Integer.MAX_VALUE)).setEphemeral(true).queueAfter(1, TimeUnit.SECONDS);
     }
 
 

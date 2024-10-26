@@ -7,7 +7,6 @@ import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEve
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
-import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu;
 import net.dv8tion.jda.api.interactions.components.text.TextInput;
 import net.dv8tion.jda.api.interactions.components.text.TextInputStyle;
 import net.dv8tion.jda.api.interactions.modals.Modal;
@@ -20,11 +19,11 @@ public class PoolSettings implements ISlashCommand {
             return;
         }
 
-        StringSelectMenu publicity = StringSelectMenu.create("publicity")
-                .setRequiredRange(1, 1)
-                .addOption("true", "true")
-                .addOption("false", "false")
-                .setDefaultValues(String.valueOf(ChannelPool.getCapacity(e.getChannel().getId())))
+        TextInput publicity = TextInput.create("publicity", "Pool Publicity (true | false)", TextInputStyle.SHORT)
+                .setPlaceholder("Set pool publicity here")
+                .setMinLength(4)
+                .setMaxLength(5)
+                .setValue(ChannelPool.getPublicity(e.getChannel().getId()))
                 .build();
 
         TextInput.Builder passwordBuilder = TextInput.create("password", "Pool Password", TextInputStyle.SHORT)
@@ -41,24 +40,17 @@ public class PoolSettings implements ISlashCommand {
 
         TextInput password = passwordBuilder.build();
 
-        StringSelectMenu capacity = StringSelectMenu.create("capacity")
-                .setRequiredRange(1, 1)
-                .addOption("1", "1")
-                .addOption("2", "2")
-                .addOption("3", "3")
-                .addOption("4", "4")
-                .addOption("5", "5")
-                .addOption("6", "6")
-                .addOption("7", "7")
-                .addOption("8", "8")
-                .addOption("9", "9")
-                .addOption("10", "10")
-                .setDefaultValues(String.valueOf(ChannelPool.getCapacity(e.getChannel().getId())))
+        TextInput capacity = TextInput.create("capacity", "Pool Capacity (1 - 10)", TextInputStyle.SHORT)
+                .setPlaceholder("Set pool capacity here")
+                .setMinLength(1)
+                .setMaxLength(2)
+                .setValue(String.valueOf(ChannelPool.getCapacity(e.getChannel().getId())))
                 .build();
 
         Modal modal = Modal.create("poolSettings", "Pool Channel Settings")
                 .addComponents(ActionRow.of(publicity), ActionRow.of(password), ActionRow.of(capacity))
                 .build();
+
 
         e.replyModal(modal).queue();
     }

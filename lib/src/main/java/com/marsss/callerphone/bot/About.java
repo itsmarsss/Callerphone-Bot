@@ -50,7 +50,7 @@ public class About implements ISlashCommand {
                         totalServers += shard.getGuilds().size();
                         totalUsers += shard.getUsers().size();
 
-                        for (Guild g : jda.getGuilds()) {
+                        for (Guild g : shard.getGuilds()) {
                             users += g.getMemberCount();
                         }
                     }

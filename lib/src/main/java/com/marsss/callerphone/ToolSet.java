@@ -12,10 +12,12 @@ import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.utils.messages.MessageCreateData;
 
 import java.awt.*;
 import java.util.LinkedList;
+import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -36,6 +38,9 @@ public class ToolSet {
         CP_CALL = Callerphone.config.getCallerphoneCall();
     }
 
+    public static String generateUUID() {
+        return UUID.randomUUID().toString().replace("-", "");
+    }
 
     public static TextChannel getTextChannel(String id) {
         if (id.isEmpty()) {
@@ -62,7 +67,7 @@ public class ToolSet {
     }
 
 
-    public static User getUser(String id) {
+    public static RestAction<User> getUser(String id) {
         if (id.isEmpty()) {
             return null;
         }
@@ -74,9 +79,7 @@ public class ToolSet {
             return null;
         }
 
-        final User USER = Callerphone.sdMgr.getUserById(idL);
-
-        return USER;
+        return Callerphone.sdMgr.retrieveUserById(idL);
     }
 
 
@@ -148,10 +151,6 @@ public class ToolSet {
                 .setFooter("This is to protect both Bot and User from unforeseen issues in the future. Please read these documents carefully.", Callerphone.selfUser.getAvatarUrl())
                 .setColor(ToolSet.COLOR)
                 .build();
-    }
-
-    public static void sendCommandCooldown(MessageReceivedEvent event) {
-        event.getMessage().reply(":warning: **Command Cooldown;** " + ((ToolSet.COMMAND_COOLDOWN - (System.currentTimeMillis() - Cooldown.getCmdCooldown(event.getAuthor().getId()))) / 1000) + " second(s)").queue();
     }
 
     public static void sendCommandCooldown(SlashCommandInteractionEvent event) {
