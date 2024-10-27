@@ -3,7 +3,6 @@ package com.marsss.callerphone.msginbottle.commands;
 import com.marsss.callerphone.Response;
 import com.marsss.callerphone.ToolSet;
 import com.marsss.callerphone.msginbottle.entities.Bottle;
-import com.marsss.callerphone.msginbottle.MIBResponse;
 import com.marsss.callerphone.msginbottle.MessageInBottle;
 import com.marsss.commandType.ISlashCommand;
 import com.marsss.database.categories.Cooldown;
@@ -21,7 +20,7 @@ public class FindBottle implements ISlashCommand {
             return;
         }
 
-        Bottle bottle = MessageInBottle.findBottle(e.getMember().getId());
+        Bottle bottle = MessageInBottle.findBottle();
 
         if (bottle == null) {
             e.reply(Response.ERROR.toString()).queue();

@@ -35,17 +35,9 @@ public class TCCallerphone {
                 }
                 CALLER_CHANNEL.sendMessage(ChatResponse.PICKED_UP.toString()).queue();
 
-                logger.info("From TC: "
-                        + convo.getCallerTCId()
-                        + " - To TC: "
-                        + convo.getReceiverTCId()
-                );
+                logger.info("From TC: {} - To TC: {}", convo.getCallerTCId(), convo.getReceiverTCId());
 
-                logger.info("From Guild: "
-                        + CALLER_CHANNEL.getGuild().getId()
-                        + " - To Guild: "
-                        + RECEIVER_CHANNEL.getGuild().getId()
-                );
+                logger.info("From Guild: {} - To Guild: {}", CALLER_CHANNEL.getGuild().getId(), RECEIVER_CHANNEL.getGuild().getId());
 
                 return ChatStatus.SUCCESS_RECEIVER;
             } else if (convo.getCallerTCId().equals("empty")) {

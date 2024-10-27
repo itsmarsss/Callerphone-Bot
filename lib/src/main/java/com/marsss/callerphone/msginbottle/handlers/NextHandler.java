@@ -11,8 +11,6 @@ public class NextHandler implements IButtonInteraction {
 
     @Override
     public void runClick(ButtonInteraction e) {
-        e.deferEdit().queue();
-
         String[] previousData = e.getButton().getId().split("-");
         String uuid = previousData[1];
         int page = Integer.parseInt(previousData[2]);

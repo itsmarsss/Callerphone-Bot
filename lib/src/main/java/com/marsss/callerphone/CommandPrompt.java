@@ -21,14 +21,16 @@ public class CommandPrompt {
     public static final Logger logger = LoggerFactory.getLogger(CommandPrompt.class);
 
     private ShardManager sdMgr;
-    private User selfUser;
 
-    public void startPrompting() throws InterruptedException {
+    public void startPrompting() {
         Scanner sc = new Scanner(System.in);
+
+        User selfUser;
 
         while (true) {
             sdMgr = Callerphone.sdMgr;
             selfUser = Callerphone.selfUser;
+
             System.out.print("> ");
             String cmd = sc.nextLine();
             if (cmd.startsWith("start")) {

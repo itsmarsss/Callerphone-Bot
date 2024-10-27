@@ -164,10 +164,6 @@ public class BotUser implements Comparable<BotUser> {
     }
     @Override
     public int compareTo(@NotNull BotUser user) {
-        if (this.credits > user.credits)
-            return -1;
-        if (this.credits < user.credits)
-            return 1;
-        return 0;
+        return Long.compare(user.credits, this.credits);
     }
 }

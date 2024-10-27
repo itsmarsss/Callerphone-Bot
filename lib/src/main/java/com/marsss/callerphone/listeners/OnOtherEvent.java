@@ -29,11 +29,7 @@ public class OnOtherEvent extends ListenerAdapter {
                 .setTitle("Disconnected");
 
         disconnectCount++;
-        logger.warn("Bot disconnected for: " +
-                (OffsetDateTime.now().getHour() - timeDisconnected.getHour()) + " hour(s) " +
-                (OffsetDateTime.now().getMinute() - timeDisconnected.getMinute()) + " minute(s) " +
-                (OffsetDateTime.now().getSecond() - timeDisconnected.getSecond()) + " second(s) and " +
-                (timeDisconnected.getNano() / 1000000) + " | " + disconnectCount + " time(s)!");
+        logger.warn("Bot disconnected for: {} hour(s) {} minute(s) {} second(s) and {} | {} time(s)!", OffsetDateTime.now().getHour() - timeDisconnected.getHour(), OffsetDateTime.now().getMinute() - timeDisconnected.getMinute(), OffsetDateTime.now().getSecond() - timeDisconnected.getSecond(), timeDisconnected.getNano() / 1000000, disconnectCount);
 
         Emd.setDescription("The bot disconnected for " +
                         (OffsetDateTime.now().getHour() - timeDisconnected.getHour()) + " hour(s) " +

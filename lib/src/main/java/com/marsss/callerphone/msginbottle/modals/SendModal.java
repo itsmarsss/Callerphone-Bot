@@ -2,7 +2,6 @@ package com.marsss.callerphone.msginbottle.modals;
 
 import com.marsss.callerphone.Response;
 import com.marsss.callerphone.ToolSet;
-import com.marsss.callerphone.channelpool.PoolResponse;
 import com.marsss.callerphone.msginbottle.MIBResponse;
 import com.marsss.callerphone.msginbottle.MIBStatus;
 import com.marsss.callerphone.msginbottle.MessageInBottle;

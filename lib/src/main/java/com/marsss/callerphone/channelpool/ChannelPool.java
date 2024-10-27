@@ -110,7 +110,7 @@ public class ChannelPool {
 
     public static boolean hasPassword(String id) {
         if (config.containsKey(id)) {
-            return !config.get(id).getPwd().equals("");
+            return !config.get(id).getPwd().isEmpty();
         }
         return false;
     }
