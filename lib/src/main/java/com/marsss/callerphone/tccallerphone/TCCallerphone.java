@@ -2,53 +2,68 @@ package com.marsss.callerphone.tccallerphone;
 
 import com.marsss.callerphone.Callerphone;
 import com.marsss.callerphone.ToolSet;
+import com.marsss.callerphone.tccallerphone.entities.ConversationStorage;
+import com.marsss.callerphone.tccallerphone.entities.MessageStorage;
+import com.marsss.database.categories.Chats;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
 import net.dv8tion.jda.api.utils.FileUpload;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class TCCallerphone {
 
-    public static final ArrayList<ConvoStorage> convos = new ArrayList<>();
+    public static final List<ConversationStorage> queue = new ArrayList<>();
+    public static final Map<String, ConversationStorage> conversationMap = new HashMap<>();
 
     public static ChatStatus onCallCommand(MessageChannelUnion tcchannel, boolean anon) {
         final Logger logger = LoggerFactory.getLogger(TCCallerphone.class);
         final String CHANNELID = tcchannel.getId();
 
-        for (ConvoStorage convo : convos) {
-            if (!convo.getCallerTCId().equals("empty") && convo.getReceiverTCId().isEmpty()) {
-                convo.setReceiverAnonymous(anon);
-                convo.setReceiverTCId(CHANNELID);
-                convo.setCallerLastMessage(System.currentTimeMillis());
-                convo.setReceiverLastMessage(System.currentTimeMillis());
+        if (queue.isEmpty()) {
+            ConversationStorage convo = new ConversationStorage();
 
-                final TextChannel CALLER_CHANNEL = ToolSet.getTextChannel(convo.getCallerTCId());
-                final TextChannel RECEIVER_CHANNEL = ToolSet.getTextChannel(convo.getReceiverTCId());
+            convo.setCallerAnonymous(anon);
+            convo.setCallerTCId(CHANNELID);
+            queue.add(convo);
 
-                if (CALLER_CHANNEL == null || RECEIVER_CHANNEL == null) {
-                    convo.resetMessage();
-                    return ChatStatus.NON_EXISTENT;
-                }
-                CALLER_CHANNEL.sendMessage(ChatResponse.PICKED_UP.toString()).queue();
-
-                logger.info("From TC: {} - To TC: {}", convo.getCallerTCId(), convo.getReceiverTCId());
-
-                logger.info("From Guild: {} - To Guild: {}", CALLER_CHANNEL.getGuild().getId(), RECEIVER_CHANNEL.getGuild().getId());
-
-                return ChatStatus.SUCCESS_RECEIVER;
-            } else if (convo.getCallerTCId().equals("empty")) {
-                convo.setCallerAnonymous(anon);
-                convo.setCallerTCId(CHANNELID);
-
-                return ChatStatus.SUCCESS_CALLER;
-            }
+            return ChatStatus.SUCCESS_CALLER;
         }
-        logger.warn("Port not found");
-        return ChatStatus.NON_EXISTENT;
+
+        ConversationStorage convo = queue.get(0);
+        queue.remove(0);
+
+        convo.setReceiverAnonymous(anon);
+        convo.setReceiverTCId(CHANNELID);
+
+        convo.setStarted(Instant.now().getEpochSecond());
+        convo.setCallerLastMessage(System.currentTimeMillis());
+        convo.setReceiverLastMessage(System.currentTimeMillis());
+
+        final TextChannel CALLER_CHANNEL = ToolSet.getTextChannel(convo.getCallerTCId());
+        final TextChannel RECEIVER_CHANNEL = ToolSet.getTextChannel(convo.getReceiverTCId());
+
+        if (CALLER_CHANNEL == null || RECEIVER_CHANNEL == null) {
+            convo.resetMessage();
+            return ChatStatus.NON_EXISTENT;
+        }
+
+        conversationMap.put(convo.getCallerTCId(), convo);
+        conversationMap.put(convo.getReceiverTCId(), convo);
+
+        CALLER_CHANNEL.sendMessage(ChatResponse.PICKED_UP.toString()).queue();
+
+        logger.info("From Channel: {} - To Channel: {}", convo.getCallerTCId(), convo.getReceiverTCId());
+        logger.info("From Guild: {} - To Guild: {}", CALLER_CHANNEL.getGuild().getId(), RECEIVER_CHANNEL.getGuild().getId());
+
+        return ChatStatus.SUCCESS_RECEIVER;
     }
 
     public static String onEndCallCommand(MessageChannelUnion channel) {
@@ -56,100 +71,85 @@ public class TCCallerphone {
             return ChatResponse.NO_CALL.toString();
         }
 
-        ConvoStorage convo = getCall(channel.getId());
+        ConversationStorage convo = getCall(channel.getId());
 
-        if (convo != null) {
-            final String CALLER_ID = convo.getCallerTCId();
-            final String RECEIVER_ID = convo.getReceiverTCId();
-
-            final TextChannel CALLER_CHANNEL = ToolSet.getTextChannel(CALLER_ID);
-            final TextChannel RECEIVER_CHANNEL = ToolSet.getTextChannel(RECEIVER_ID);
-
-            if (RECEIVER_ID.equals(channel.getId())) {
-                if (!convo.getCallerTCId().equals("empty")) {
-                    if (CALLER_CHANNEL != null) {
-                        CALLER_CHANNEL.sendMessage(ChatResponse.OTHER_PARTY_HUNG_UP.toString()).queue();
-                    }
-                }
-            } else {
-                if (!convo.getReceiverTCId().isEmpty()) {
-                    if (RECEIVER_CHANNEL != null) {
-                        RECEIVER_CHANNEL.sendMessage(ChatResponse.OTHER_PARTY_HUNG_UP.toString()).queue();
-                    }
-                }
-            }
-
-            final boolean report = convo.getReport();
-
-            ArrayList<String> data = new ArrayList<>(convo.getMessages());
-
-            log(data, CALLER_ID, RECEIVER_ID);
-
-            if (report) {
-                report(data, CALLER_ID, RECEIVER_ID);
-            }
-
-            convo.resetMessage();
-
-            return ChatResponse.HUNG_UP.toString();
+        if (convo == null) {
+            return ChatResponse.NO_CALL.toString();
         }
-        return ChatResponse.NO_CALL.toString();
+
+        final String CALLER_ID = convo.getCallerTCId();
+        final String RECEIVER_ID = convo.getReceiverTCId();
+
+        final TextChannel CALLER_CHANNEL = ToolSet.getTextChannel(CALLER_ID);
+        final TextChannel RECEIVER_CHANNEL = ToolSet.getTextChannel(RECEIVER_ID);
+
+        if (RECEIVER_ID.equals(channel.getId())) {
+            if (!convo.getCallerTCId().equals("empty")) {
+                if (CALLER_CHANNEL != null) {
+                    CALLER_CHANNEL.sendMessage(ChatResponse.OTHER_PARTY_HUNG_UP.toString()).queue();
+                }
+            }
+        } else {
+            if (!convo.getReceiverTCId().isEmpty()) {
+                if (RECEIVER_CHANNEL != null) {
+                    RECEIVER_CHANNEL.sendMessage(ChatResponse.OTHER_PARTY_HUNG_UP.toString()).queue();
+                }
+            }
+        }
+
+        convo.setEnded(Instant.now().getEpochSecond());
+
+        final boolean report = convo.getReport();
+
+        log(convo, CALLER_ID, RECEIVER_ID);
+        Chats.createChat(convo);
+
+        if (report) {
+            report(convo, CALLER_ID, RECEIVER_ID);
+        }
+
+        conversationMap.remove(convo.getCallerTCId());
+        conversationMap.remove(convo.getReceiverTCId());
+
+        return ChatResponse.HUNG_UP.toString();
     }
 
-    private static void log(ArrayList<String> data, String callerID, String receiverID) {
-        LocalDateTime now = LocalDateTime.now();
-        final String month = String.valueOf(now.getMonthValue());
-        final String day = String.valueOf(now.getDayOfMonth());
-        final String hour = String.valueOf(now.getHour());
-        final String minute = String.valueOf(now.getMinute());
-        final String ID = month + "/" + day + "/" + hour + "/" + minute + "C" + callerID + "R" + receiverID;
+    private static void log(ConversationStorage convo, String callerID, String receiverID) {
+        List<MessageStorage> data = convo.getMessages();
 
         StringBuilder dataString = new StringBuilder();
-        for (String m : data)
+        for (MessageStorage m : data)
             dataString.append(m).append("\n");
 
 
         final TextChannel TEMP_CHANNEL = ToolSet.getTextChannel(Callerphone.config.getTempChatChannel());
         if (TEMP_CHANNEL != null) {
-            TEMP_CHANNEL.sendMessage("**ID:** " + ID).addFiles(FileUpload.fromData(dataString.toString().getBytes(), ID + ".txt")).queue();
+            TEMP_CHANNEL.sendMessage("**ID:** " + convo.getId())
+                    .addFiles(FileUpload.fromData(dataString.toString().getBytes(), convo.getId() + ".txt")).queue();
         }
     }
 
-    private static void report(ArrayList<String> data, String callerID, String receiverID) {
-        LocalDateTime now = LocalDateTime.now();
-        final String month = String.valueOf(now.getMonthValue());
-        final String day = String.valueOf(now.getDayOfMonth());
-        final String hour = String.valueOf(now.getHour());
-        final String minute = String.valueOf(now.getMinute());
-        final String ID = month + "/" + day + "/" + hour + "/" + minute + "C" + callerID + "R" + receiverID;
+    private static void report(ConversationStorage convo, String callerID, String receiverID) {
+        List<MessageStorage> data = convo.getMessages();
 
         StringBuilder dataString = new StringBuilder();
-        for (String m : data)
+        for (MessageStorage m : data)
             dataString.append(m).append("\n");
 
 
         final TextChannel REPORT_CHANNEL = ToolSet.getTextChannel(Callerphone.config.getReportChatChannel());
         if (REPORT_CHANNEL != null) {
-            REPORT_CHANNEL.sendMessage("**ID:** " + ID).addFiles(FileUpload.fromData(dataString.toString().getBytes(), ID + ".txt")).queue();
+            REPORT_CHANNEL.sendMessage("**ID:** " + convo.getId())
+                    .addFiles(FileUpload.fromData(dataString.toString().getBytes(), convo.getId() + ".txt")).queue();
         }
     }
 
-    public static ConvoStorage getCall(String tc) {
-        for (ConvoStorage c : convos) {
-            if ((tc.equals(c.getCallerTCId()) || tc.equals(c.getReceiverTCId()))) {
-                return c;
-            }
-        }
-        return null;
+    public static ConversationStorage getCall(String tc) {
+        return conversationMap.getOrDefault(tc, null);
     }
 
     public static boolean hasCall(String tc) {
-        for (ConvoStorage c : convos) {
-            if ((tc.equals(c.getCallerTCId()) || tc.equals(c.getReceiverTCId()))) {
-                return true;
-            }
-        }
-        return false;
+        return conversationMap.containsKey(tc);
     }
 
 }

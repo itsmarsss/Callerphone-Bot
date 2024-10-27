@@ -1,11 +1,14 @@
 package com.marsss.callerphone.tccallerphone;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 
 import com.marsss.callerphone.Callerphone;
 
 import com.marsss.callerphone.Response;
 import com.marsss.callerphone.ToolSet;
+import com.marsss.callerphone.tccallerphone.entities.ConversationStorage;
+import com.marsss.callerphone.tccallerphone.entities.MessageStorage;
 import com.marsss.database.categories.Cooldown;
 import com.marsss.database.categories.Users;
 import net.dv8tion.jda.api.entities.Member;
@@ -54,35 +57,28 @@ public class TCCallerphoneListener extends ListenerAdapter {
 
         final String CHANNELID = event.getChannel().getId();
 
-        ConvoStorage c = TCCallerphone.getCall(CHANNELID);
+        ConversationStorage c = TCCallerphone.getCall(CHANNELID);
 
         if (c == null) {
             return;
         }
 
-        if (c.getCallerTCId().equals("empty") || c.getReceiverTCId().isEmpty()) {
-            return;
-        }
-        c.addMessage(
-                (c.getCallerTCId().equals(CHANNELID) ? "Caller " : "Receiver ")
-                        + MESSAGE.getAuthor().getName()
-                        + "(" + MESSAGE.getAuthor().getId() + ")"
-                        + ": " + messageRaw
-        );
+        String[] flagged = ToolSet.messageFlagged(messageRaw);
 
-        messageRaw = ToolSet.messageCheck(messageRaw);
+        c.addMessage(new MessageStorage(c.getCallerTCId().equals(CHANNELID), MESSAGE.getAuthor().getId(), CHANNELID, messageRaw, flagged, Instant.now().getEpochSecond()));
+
+        messageRaw = ToolSet.filterMessage(messageRaw);
+
+        if(!c.getParticipants().contains(MEMBER.getId()))
+            c.getParticipants().add(MEMBER.getId());
 
         if (c.getCallerTCId().equals(CHANNELID)) {
             if (System.currentTimeMillis() - c.getCallerLastMessage() > ToolSet.MESSAGE_COOLDOWN) {
-                messageRaw = ToolSet.filter(messageRaw);
-
                 c.setCallerLastMessage(System.currentTimeMillis());
                 sendMessage(c, c.getCallerAnonymous(), c.getReceiverTCId(), messageRaw, MESSAGE);
             }
         } else if (c.getReceiverTCId().equals(CHANNELID)) {
             if (System.currentTimeMillis() - c.getReceiverLastMessage() > ToolSet.MESSAGE_COOLDOWN) {
-                messageRaw = ToolSet.filter(messageRaw);
-
                 c.setReceiverLastMessage(System.currentTimeMillis());
                 sendMessage(c, c.getReceiverAnonymous(), c.getCallerTCId(), messageRaw, MESSAGE);
             }
@@ -97,7 +93,7 @@ public class TCCallerphoneListener extends ListenerAdapter {
 
     }
 
-    private void sendMessage(ConvoStorage c, boolean anon, String destination, String content, Message msg) {
+    private void sendMessage(ConversationStorage c, boolean anon, String destination, String content, Message msg) {
         final TextChannel DESTINATION_CHANNEL = ToolSet.getTextChannel(destination);
 
         if (anon) {
@@ -122,10 +118,10 @@ public class TCCallerphoneListener extends ListenerAdapter {
         }
     }
 
-    private void terminate(ConvoStorage c) {
-        StringBuilder data = new StringBuilder();
-        for (String m : c.getMessages())
-            data.append(m).append("\n");
+    private void terminate(ConversationStorage c) {
+        StringBuilder dataString = new StringBuilder();
+        for (MessageStorage m : c.getMessages())
+            dataString.append(m).append("\n");
 
         final TextChannel CALLER_CHANNEL = ToolSet.getTextChannel(c.getCallerTCId());
         final TextChannel RECEIVER_CHANNEL = ToolSet.getTextChannel(c.getReceiverTCId());
@@ -137,23 +133,15 @@ public class TCCallerphoneListener extends ListenerAdapter {
             RECEIVER_CHANNEL.sendMessage(Response.CONNECTION_ERROR.toString()).queue();
         }
 
-        c.resetMessage();
-        LocalDateTime now = LocalDateTime.now();
-        String month = String.valueOf(now.getMonthValue());
-        String day = String.valueOf(now.getDayOfMonth());
-        String hour = String.valueOf(now.getHour());
-        String minute = String.valueOf(now.getMinute());
-        String ID = month + day + hour + minute + c.getCallerTCId() + c.getReceiverTCId();
-
-        final String DATA = data.toString();
+        final String DATA = dataString.toString();
         if (c.getReport()) {
             final TextChannel REPORT_CHANNEL = ToolSet.getTextChannel(Callerphone.config.getReportChatChannel());
             if (REPORT_CHANNEL == null) {
                 System.out.println("Invalid REPORT channel.");
             } else {
                 REPORT_CHANNEL
-                        .sendMessage("**ID:** " + ID)
-                        .addFiles(FileUpload.fromData(DATA.getBytes(), ID + ".txt"))
+                        .sendMessage("**ID:** " + c.getId())
+                        .addFiles(FileUpload.fromData(DATA.getBytes(), c.getId() + ".txt"))
                         .queue();
             }
         }

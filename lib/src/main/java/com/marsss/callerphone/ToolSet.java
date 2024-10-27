@@ -16,6 +16,8 @@ import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.utils.messages.MessageCreateData;
 
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.LinkedList;
 import java.util.UUID;
 import java.util.regex.Matcher;
@@ -82,8 +84,28 @@ public class ToolSet {
         return Callerphone.sdMgr.retrieveUserById(idL);
     }
 
+    public static String[] messageFlagged(String messageRaw) {
+        java.util.List<String> flagged = new ArrayList<>();
+        if (messageRaw.contains("@here") || messageRaw.contains("@everyone"))
+            flagged.add("ping");
 
-    public static String messageCheck(String messageRaw) {
+        if (hasLink(messageRaw))
+            flagged.add("link");
+
+        if (messageRaw.length() > 1500)
+            flagged.add("length");
+
+        for (String ftr : Filter.filter) {
+            if(messageRaw.contains(ftr)) {
+                flagged.add("profanity");
+                break;
+            }
+        }
+
+        return flagged.toArray(new String[flagged.size()]);
+    }
+
+    public static String filterMessage(String messageRaw) {
         if (messageRaw.contains("@here") || messageRaw.contains("@everyone"))
             return Response.ATTEMPTED_PING.toString();
 
@@ -92,6 +114,14 @@ public class ToolSet {
 
         if (messageRaw.length() > 1500)
             return Response.MESSAGE_TOO_LONG.toString();
+
+        for (String ftr : Filter.filter) {
+            StringBuilder rep = new StringBuilder();
+            for (int i = 0; i < ftr.length(); i++) {
+                rep.append("#");
+            }
+            messageRaw = messageRaw.replaceAll("(?i)" + ftr, rep.toString());
+        }
 
         return messageRaw;
     }
@@ -106,17 +136,6 @@ public class ToolSet {
         }
 
         return links.size() != 0;
-    }
-
-    public static String filter(String messageraw) {
-        for (String ftr : Filter.filter) {
-            StringBuilder rep = new StringBuilder();
-            for (int i = 0; i < ftr.length(); i++) {
-                rep.append("#");
-            }
-            messageraw = messageraw.replaceAll("(?i)" + ftr, rep.toString());
-        }
-        return messageraw;
     }
 
     public static void printWelcome() {

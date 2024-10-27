@@ -17,8 +17,7 @@ public class SendModal implements IModalInteraction {
         String uuid = sendData.length > 1 ? sendData[1] : null;
 
         String message = e.getValue("message").getAsString();
-        String messageFiltered = ToolSet.messageCheck(message);
-        messageFiltered = ToolSet.filter(messageFiltered);
+        String messageFiltered = ToolSet.filterMessage(message);
 
         if (!message.equals(messageFiltered)) {
             e.reply(MIBResponse.MESSAGE_FLAGGED.toString()).setEphemeral(true).queue();

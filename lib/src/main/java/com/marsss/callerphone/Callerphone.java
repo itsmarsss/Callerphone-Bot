@@ -7,7 +7,6 @@ import java.net.URLDecoder;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
-import java.util.concurrent.ConcurrentLinkedQueue;
 
 import com.marsss.ICommand;
 import com.marsss.callerphone.channelpool.commands.*;
@@ -44,7 +43,7 @@ import com.marsss.callerphone.bot.*;
 import com.marsss.callerphone.utils.*;
 import com.marsss.callerphone.listeners.*;
 import com.marsss.callerphone.channelpool.*;
-import com.marsss.callerphone.tccallerphone.ConvoStorage;
+import com.marsss.callerphone.tccallerphone.entities.ConversationStorage;
 
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.Guild;
@@ -246,9 +245,9 @@ public class Callerphone {
             sdMgr.addEventListener(new ChannelPoolListener());
 
 
-            for (int i = 0; i < 10000; i++) {
-                TCCallerphone.convos.add(new ConvoStorage(new ConcurrentLinkedQueue<>(), "empty", "", 0, 0, false, false, false));
-            }
+//            for (int i = 0; i < 10000; i++) {
+//                TCCallerphone.convos.add(new ConversationStorage("empty", "", false, false, false));
+//            }
 
             sdMgr.setActivity(Activity.watching("for /help"));
             logger.info("Bot online");

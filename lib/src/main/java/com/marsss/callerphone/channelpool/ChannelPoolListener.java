@@ -38,7 +38,7 @@ public class ChannelPoolListener extends ListenerAdapter {
         if (content.startsWith("\\\\") || content.toLowerCase().startsWith(Callerphone.config.getPrefix()))
             return;
 
-        content = ToolSet.messageCheck(content);
+        content = ToolSet.filterMessage(content);
 
         String sendCont = String.format("**%s** `%s` | <t:%d:f>\n%s",
                 MESSAGE.getAuthor().getName(),

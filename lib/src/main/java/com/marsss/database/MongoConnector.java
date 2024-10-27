@@ -14,6 +14,7 @@ public class MongoConnector {
     private MongoCollection<Document> usersCollection;
     private MongoCollection<Document> poolsCollection;
     private MongoCollection<Document> mibCollection;
+    private MongoCollection<Document> chatsCollection;
 
     public MongoConnector() {
     }
@@ -32,6 +33,7 @@ public class MongoConnector {
             setUsersCollection(db.getCollection("users"));
             setPoolsCollection(db.getCollection("pools"));
             setMibCollection(db.getCollection("mib"));
+            setChatsCollection(db.getCollection("chats"));
 
             Filter.getFilter();
             return true;
@@ -79,5 +81,13 @@ public class MongoConnector {
 
     public void setMibCollection(MongoCollection<Document> mibCollection) {
         this.mibCollection = mibCollection;
+    }
+
+    public MongoCollection<Document> getChatsCollection() {
+        return chatsCollection;
+    }
+
+    public void setChatsCollection(MongoCollection<Document> chatsCollection) {
+        this.chatsCollection = chatsCollection;
     }
 }
