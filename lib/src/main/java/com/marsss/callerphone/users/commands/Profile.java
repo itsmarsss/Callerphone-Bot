@@ -36,7 +36,7 @@ public class Profile implements ISlashCommand {
         final int LVL = (int) TOTAL / 100;
         final int EXP = (int) TOTAL - 100 * LVL;
         String tempPrefix = Users.getPrefix(user.getId());
-        final String PREFIX = (tempPrefix.equals("") ? (LVL > 5 ? ":unlock: `" + Callerphone.config.getPrefix() + "prefix <prefix>`" : ":lock: `Level 50`") : tempPrefix);
+        final String PREFIX = (tempPrefix.isEmpty() ? (LVL > 10 ? ":unlock: `/prefix <prefix>`" : ":lock: `Level 10`") : "`" + tempPrefix + "`");
 
         String general = String.format(Response.PROFILE_GENERAL.toString(), LVL, EXP, PREFIX);
         String credits = String.format(Response.PROFILE_CREDITS.toString(), Users.getCredits(user.getId()), 0, 0);

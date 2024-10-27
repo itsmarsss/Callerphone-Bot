@@ -1,6 +1,5 @@
 package com.marsss.callerphone.channelpool;
 
-import com.marsss.callerphone.Callerphone;
 import com.marsss.callerphone.ToolSet;
 
 public enum PoolResponse {
@@ -20,13 +19,13 @@ public enum PoolResponse {
     KICKED_FROM_POOL(ToolSet.CP_EMJ + "You have been kicked from the pool."),
     NOT_HOSTING(ToolSet.CP_EMJ + "This channel is not hosting a pool."),
     NOT_IN_POOL(ToolSet.CP_EMJ + "This channel is not in a pool."),
-    POOL_END_WITH("> End pool with: `" + Callerphone.config.getPrefix() + "endpool`"),
+    POOL_END_WITH("> End pool with: `/endpool`"),
     POOL_HAS_CAPACITY(ToolSet.CP_EMJ + "This pool now has capacity **%s**."),
     POOL_ID("> This channel's pool ID is: `%s`"),
-    POOL_LEAVE_WITH("> Leave pool with: `" + Callerphone.config.getPrefix() + "leavepool`"),
+    POOL_LEAVE_WITH("> Leave pool with: `/leavepool`"),
     LEFT_POOL(ToolSet.CP_EMJ + "Channel `ID: %s` has left this pool."),
     POOL_PWD("> This channel's password is: %s"),
-    POOL_SET_SETTINGS("> Set pool settings: `" + Callerphone.config.getPrefix() + "poolsettings`"),
+    POOL_SET_SETTINGS("> Set pool settings: `/poolsettings`"),
     REQUESTED_ID_NOT_FOUND(ToolSet.CP_EMJ + "Requested pool `ID: %s` does not exist."),
     REQUESTED_NOT_FOUND(ToolSet.CP_EMJ + "Requested pool not found."),
     INVALID_PUBLICITY(ToolSet.CP_EMJ + "Pool publicity must be `true` or `false`."),

@@ -68,7 +68,7 @@ public class OnMessageEvent extends ListenerAdapter {
                                 MESSAGE.reply("Prefix too long (max. length is 15 chars)").queue();
                                 break;
                             }
-                            Users.setPrefix(MEMBER.getId(), prefix);
+                            Users.setPrefix(id, prefix);
                             MESSAGE.reply("ID: `" + id + "` now has prefix `" + prefix + "`").queue();
                         }
                         break;

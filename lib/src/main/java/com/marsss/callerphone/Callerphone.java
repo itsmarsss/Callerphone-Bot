@@ -46,12 +46,12 @@ import com.marsss.callerphone.listeners.*;
 import com.marsss.callerphone.channelpool.*;
 import com.marsss.callerphone.tccallerphone.ConvoStorage;
 
-import org.yaml.snakeyaml.Yaml;
-import org.yaml.snakeyaml.constructor.Constructor;
-
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.requests.GatewayIntent;
+import org.yaml.snakeyaml.LoaderOptions;
+import org.yaml.snakeyaml.Yaml;
+import org.yaml.snakeyaml.constructor.Constructor;
 
 public class Callerphone {
 
@@ -119,8 +119,10 @@ public class Callerphone {
         InputStream is;
         try {
             is = Files.newInputStream(Paths.get(parent + "/config.yml"));
-            Yaml yml = new Yaml(new Constructor(Config.class));
-            config = (Config) yml.load(is);
+
+            Yaml yml = new Yaml(new Constructor(Config.class, new LoaderOptions()));
+
+            config = yml.load(is);
             return config.isValid();
         } catch (Exception e) {
             e.printStackTrace();
@@ -250,7 +252,7 @@ public class Callerphone {
                 TCCallerphone.convos.add(new ConvoStorage(new ConcurrentLinkedQueue<>(), "empty", "", 0, 0, false, false, false));
             }
 
-            sdMgr.setActivity(Activity.watching("for " + config.getPrefix() + "help"));
+            sdMgr.setActivity(Activity.watching("for /help"));
             logger.info("Bot online");
 
             System.out.println("\nGuild List: ");

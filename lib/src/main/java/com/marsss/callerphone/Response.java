@@ -7,13 +7,13 @@ public enum Response {
      */
 
     ERROR(ToolSet.CP_EMJ + "An error occurred."),
-    MISSING_PARAM(ToolSet.CP_EMJ + "Missing parameters, do `" + Callerphone.config.getPrefix() + "help <command name>` for more information."),
+    MISSING_PARAM(ToolSet.CP_EMJ + "Missing parameters, do `/help <command name>` for more information."),
 
     PING_TEMPLATE("**Reset ping:** %sms \n**WS ping:** %sms"),
 
     // Profile
-    PROFILE_GENERAL("Level: `%d`\nExperience: `%d/100`\nPrefix: %s\n\n[`" + Callerphone.config.getPrefix() + "help exp`]"),
-    PROFILE_CREDITS("Credits: `\u00A9 %d`\nRedeemed: `\u00A9 %d`\nNet: `\u00A9 %d`\n\n[`" + Callerphone.config.getPrefix() + "help creds`]"),
+    PROFILE_GENERAL("Level: `%d`\nExperience: `%d/100`\nPrefix: %s\n\n[`/help exp`]"),
+    PROFILE_CREDITS("Credits: `\u00A9 %d`\nRedeemed: `\u00A9 %d`\nNet: `\u00A9 %d`\n\n[`/help creds`]"),
     PROFILE_MESSAGE("Executed: `%d`\n Transmitted: `%s`\nTotal: `%s`"),
 
     CONNECTION_ERROR(ToolSet.CP_EMJ + "Connection error, call ended."),

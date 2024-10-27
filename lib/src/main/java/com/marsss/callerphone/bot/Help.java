@@ -166,7 +166,7 @@ public class Help implements ISlashCommand {
                 .addField("TC Callerphone", "all text call commands will be in this category, do `/help tccall` for more information", false)
                 .addField("Msg Bottles", "all message in bottle commands will be in this category, do `/help msgbottle` for more information", false)
                 .addField("Music", "Callerphone no longer can play music", false)
-                .setFooter("Type `" + Callerphone.config.getPrefix() + "help <category name>` to see category commands");
+                .setFooter("Type `/help <category name>` to see category commands");
         if (admin) {
             categoryEmbed.addField("Moderator only", "all moderator commands will be in this category, do `" + Callerphone.config.getPrefix() + "help mod` in dm for more information", false);
         }

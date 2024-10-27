@@ -3,19 +3,17 @@ package com.marsss.callerphone.msginbottle;
 import com.marsss.callerphone.ToolSet;
 import com.marsss.callerphone.msginbottle.entities.Bottle;
 import com.marsss.callerphone.msginbottle.entities.Page;
-import com.marsss.database.categories.Cooldown;
 import com.marsss.database.categories.MIB;
+import com.marsss.database.categories.Users;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder;
 import net.dv8tion.jda.api.utils.messages.MessageCreateData;
-import org.bson.Document;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.Instant;
-import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
 public class MessageInBottle {
@@ -31,13 +29,8 @@ public class MessageInBottle {
         return MIBStatus.ERROR;
     }
 
-    public static Bottle findBottle(String id) {
-        Bottle mib = MIB.findBottle();
-
-        if (mib != null) {
-            return mib;
-        }
-        return null;
+    public static Bottle findBottle() {
+        return MIB.findBottle();
     }
 
     public static MessageCreateData createMessage(Bottle bottle, int pageNum) {
@@ -53,7 +46,9 @@ public class MessageInBottle {
                     EmbedBuilder bottleEmbed = new EmbedBuilder()
                             .setTitle("<:MessageInBottle:1089648266284638339> **A message in bottle has arrived!**")
                             .setDescription(page.getMessage())
-                            .appendDescription("\n\n\u3000**\\- " + (page.isSigned() ? lastUser.getName() : "anonymous") + "** from  <t:" + page.getReleased() + ":R>")
+                            .appendDescription("\n\n\u3000**\\- " + (page.isSigned() ?
+                                    "*[" + Users.getPrefix(lastUser.getId()) + "]* " + lastUser.getName() :
+                                    "anonymous") + "** from  <t:" + page.getReleased() + ":R>")
                             .setFooter("Pages " + (page.getPageNum() + 1) + "/" + bottle.getPages().size())
                             .setTimestamp(Instant.now())
                             .setColor(ToolSet.COLOR);
