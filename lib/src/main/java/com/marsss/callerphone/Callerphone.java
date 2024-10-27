@@ -60,8 +60,6 @@ public class Callerphone {
     public static String parent;
 
 
-    public static HashMap<String, String> replyMap = new HashMap<>();
-
     public static final ArrayList<ICommand> cmdLst = new ArrayList<>();
     public static final HashMap<String, ICommand> cmdMap = new HashMap<>();
     public static final HashMap<String, IModalInteraction> mdlMap = new HashMap<>();

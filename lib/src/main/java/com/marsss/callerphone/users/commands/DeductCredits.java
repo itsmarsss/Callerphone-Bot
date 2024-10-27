@@ -32,7 +32,7 @@ public class DeductCredits implements ITextCommand {
 
     private String deductCredits(User user, int amount) {
         Users.reward(user.getId(), (-amount));
-        return ToolSet.CP_EMJ + "Deducted `\u00A9 " + amount + "` from " + user.getAsMention();
+        return ToolSet.CP_EMJ + "Deducted `\u23E3 " + amount + "` from " + user.getAsMention();
     }
 
     @Override

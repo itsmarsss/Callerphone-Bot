@@ -22,7 +22,7 @@ public class OnOtherEvent extends ListenerAdapter {
         timeDisconnected = event.getTimeDisconnected();
     }
 
-    public void onSessionResumed(SessionResumeEvent event) {
+    public void onSessionResume(SessionResumeEvent event) {
         final TextChannel LOG_CHANNEL = ToolSet.getTextChannel(Callerphone.config.getLogStatusChannel());
         EmbedBuilder Emd = new EmbedBuilder()
                 .setColor(Color.RED)

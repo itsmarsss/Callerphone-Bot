@@ -47,7 +47,7 @@ public class Chat implements ISlashCommand {
         if (TCCallerphone.hasCall(channel.getId())) {
             return ChatStatus.CONFLICT;
         }
-        return TCCallerphone.onCallCommand(channel, false, anon);
+        return TCCallerphone.onCallCommand(channel, anon);
     }
 
     @Override

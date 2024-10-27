@@ -9,6 +9,7 @@ import com.marsss.database.categories.Cooldown;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
+import net.dv8tion.jda.api.utils.messages.MessageCreateData;
 
 import java.util.concurrent.TimeUnit;
 
@@ -27,8 +28,15 @@ public class FindBottle implements ISlashCommand {
             return;
         }
 
+        MessageCreateData mibMessage = MessageInBottle.createMessage(bottle, Integer.MAX_VALUE);
+
+        if(mibMessage == null) {
+            e.reply(Response.ERROR.toString()).queue();
+            return;
+        }
+
         Cooldown.setMIBFindCoolDown(e.getMember().getId());
-        e.reply(MessageInBottle.createMessage(bottle, Integer.MAX_VALUE)).setEphemeral(true).queueAfter(1, TimeUnit.SECONDS);
+        e.reply(mibMessage).setEphemeral(true).queueAfter(1, TimeUnit.SECONDS);
     }
 
 

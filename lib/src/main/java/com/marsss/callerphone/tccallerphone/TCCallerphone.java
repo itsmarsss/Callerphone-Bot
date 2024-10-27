@@ -15,7 +15,7 @@ public class TCCallerphone {
 
     public static final ArrayList<ConvoStorage> convos = new ArrayList<>();
 
-    public static ChatStatus onCallCommand(MessageChannelUnion tcchannel, boolean cens, boolean anon) {
+    public static ChatStatus onCallCommand(MessageChannelUnion tcchannel, boolean anon) {
         final Logger logger = LoggerFactory.getLogger(TCCallerphone.class);
         final String CHANNELID = tcchannel.getId();
 

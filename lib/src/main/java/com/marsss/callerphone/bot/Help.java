@@ -112,13 +112,13 @@ public class Help implements ISlashCommand {
             case "creds":
                 TITLE = "**EARN CREDITS**";
                 DESC = "__Commands:__" +
-                        "\n> Message ~ `\u00A9 1`" +
-                        "\n> Slash ~ `\u00A9 2`" +
+                        "\n> Message ~ `\u23E3 1`" +
+                        "\n> Slash ~ `\u23E3 2`" +
                         "\n\n__Messages:__" +
-                        "\n> Channel Pool ~ `\u00A9 3`" +
-                        "\n> Channel Chat ~ `\u00A9 5`" +
+                        "\n> Channel Pool ~ `\u23E3 3`" +
+                        "\n> Channel Chat ~ `\u23E3 5`" +
                         "\n\n__Other:__" +
-                        "\n> Bug Report ~ `\u00A9 5,000`" +
+                        "\n> Bug Report ~ `\u23E3 5,000`" +
                         "\n\n**NOTE:** Channel Pool/Chat can be earned a maximum of once per " + (ToolSet.CREDIT_COOLDOWN / 1000) + " seconds. *(Spam prevention)*";
                 break;
 

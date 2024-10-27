@@ -13,7 +13,7 @@ public enum Response {
 
     // Profile
     PROFILE_GENERAL("Level: `%d`\nExperience: `%d/100`\nPrefix: %s\n\n[`/help exp`]"),
-    PROFILE_CREDITS("Credits: `\u00A9 %d`\nRedeemed: `\u00A9 %d`\nNet: `\u00A9 %d`\n\n[`/help creds`]"),
+    PROFILE_CREDITS("Credits: `\u23E3 %d`\nRedeemed: `\u23E3 %d`\nNet: `\u23E3 %d`\n\n[`/help creds`]"),
     PROFILE_MESSAGE("Executed: `%d`\n Transmitted: `%s`\nTotal: `%s`"),
 
     CONNECTION_ERROR(ToolSet.CP_EMJ + "Connection error, call ended."),

@@ -32,7 +32,7 @@ public class RewardCredits implements ITextCommand {
 
     private String rewardCredits(User user, int amount) {
         Users.reward(user.getId(), amount);
-        return ToolSet.CP_EMJ + "Rewarded `\u00A9 " + amount + "` to " + user.getAsMention();
+        return ToolSet.CP_EMJ + "Rewarded `\u23E3 " + amount + "` to " + user.getAsMention();
     }
 
     @Override
