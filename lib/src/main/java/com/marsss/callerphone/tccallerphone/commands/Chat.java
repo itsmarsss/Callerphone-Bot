@@ -22,12 +22,6 @@ public class Chat implements ISlashCommand {
             case "anonymous":
                 stat = chatUncensored(e.getChannel(), true);
                 break;
-            case "familyfriendly":
-                stat = chatFamilyFriendly(e.getChannel(), false);
-                break;
-            case "ffandanon":
-                stat = chatFamilyFriendly(e.getChannel(), true);
-                break;
         }
 
         switch (stat) {
@@ -56,18 +50,10 @@ public class Chat implements ISlashCommand {
         return TCCallerphone.onCallCommand(channel, false, anon);
     }
 
-    private ChatStatus chatFamilyFriendly(MessageChannelUnion channel, boolean anon) {
-        if (TCCallerphone.hasCall(channel.getId())) {
-            return ChatStatus.CONFLICT;
-        }
-        return TCCallerphone.onCallCommand(channel, true, anon);
-    }
-
     @Override
     public String getHelp() {
         return "</chat default:1075168968798634115> - Chat with people from other servers.\n" +
                 "</chat anonymous:1075168968798634115> - Chat with people from other servers anonymously.\n" +
-                "</chat familyfriendly:1075168968798634115> - Chat with people from other servers with profanity blocked.\n" +
                 "</chat ffandanon:1075168968798634115> - Chat with people from other servers anonymously and with profanity blocked.\n";
     }
 
@@ -82,7 +68,6 @@ public class Chat implements ISlashCommand {
                 .addSubcommands(
                         new SubcommandData("default", "Chat with people from other servers"),
                         new SubcommandData("anonymous", "Chat with people from other servers anonymously."),
-                        new SubcommandData("familyfriendly", "Chat with people from other servers with profanity blocked."),
                         new SubcommandData("ffandanon", "Chat with people from other servers anonymously and with profanity blocked.")
                 )
                 .setGuildOnly(true);
