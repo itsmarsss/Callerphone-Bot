@@ -40,9 +40,8 @@ public class ChannelPoolListener extends ListenerAdapter {
 
         content = ToolSet.messageCheck(content);
 
-        String sendCont = String.format("**%s**#%s `%s` | <t:%d:f>\n%s",
+        String sendCont = String.format("**%s** `%s` | <t:%d:f>\n%s",
                 MESSAGE.getAuthor().getName(),
-                MESSAGE.getAuthor().getDiscriminator(),
                 MEMBER.getEffectiveName(),
                 MESSAGE.getTimeCreated().toEpochSecond(),
                 content

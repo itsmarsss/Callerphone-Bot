@@ -11,22 +11,17 @@ public class ConvoStorage {
     private long callerLastMessage;
     private long receiverLastMessage;
 
-    private boolean callerFamilyFriendly;
-    private boolean receiverFamilyFriendly;
-
     private boolean callerAnonymous;
     private boolean receiverAnonymous;
 
     private boolean report;
 
-    public ConvoStorage(Queue<String> messages, String callerTCId, String receiverTCId, long callerLastMessage, long receiverLastMessage, boolean callerFamilyFriendly, boolean receiverFamilyFriendly, boolean callerAnonymous, boolean receiverAnonymous, boolean report) {
+    public ConvoStorage(Queue<String> messages, String callerTCId, String receiverTCId, long callerLastMessage, long receiverLastMessage, boolean callerAnonymous, boolean receiverAnonymous, boolean report) {
         this.messages = messages;
         this.callerTCId = callerTCId;
         this.receiverTCId = receiverTCId;
         this.callerLastMessage = callerLastMessage;
         this.receiverLastMessage = receiverLastMessage;
-        this.callerFamilyFriendly = callerFamilyFriendly;
-        this.receiverFamilyFriendly = receiverFamilyFriendly;
         this.callerAnonymous = callerAnonymous;
         this.receiverAnonymous = receiverAnonymous;
         this.report = report;
@@ -52,14 +47,6 @@ public class ConvoStorage {
 
     public long getReceiverLastMessage() {
         return receiverLastMessage;
-    }
-
-    public boolean getCallerFamilyFriendly() {
-        return callerFamilyFriendly;
-    }
-
-    public boolean getReceiverFamilyFriendly() {
-        return receiverFamilyFriendly;
     }
 
     public boolean getCallerAnonymous() {
@@ -96,14 +83,6 @@ public class ConvoStorage {
         receiverLastMessage = time;
     }
 
-    public void setCallerFamilyFriendly(boolean ccf) {
-        callerFamilyFriendly = ccf;
-    }
-
-    public void setReceiverFamilyFriendly(boolean rff) {
-        receiverFamilyFriendly = rff;
-    }
-
     public void setCallerAnonymous(boolean canon) {
         callerAnonymous = canon;
     }
@@ -122,8 +101,6 @@ public class ConvoStorage {
         receiverTCId = "";
         callerLastMessage = 0;
         receiverLastMessage = 0;
-        callerFamilyFriendly = true;
-        receiverFamilyFriendly = true;
         callerAnonymous = false;
         receiverAnonymous = false;
         report = false;

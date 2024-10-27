@@ -31,7 +31,7 @@ public class UserInfo implements ISlashCommand {
     public MessageEmbed userInfo(Member member) {
         Color COLOR = null;
         final String NAME = member.getEffectiveName();
-        final String TAG = member.getUser().getAsTag();
+        final String TAG = member.getUser().getName();
         final String GUILD_JOIN_DATE = member.getTimeJoined().format(DateTimeFormatter.RFC_1123_DATE_TIME);
         final String DISCORD_JOINED_DATE = member.getUser().getTimeCreated().format(DateTimeFormatter.RFC_1123_DATE_TIME);
         final String ID = member.getUser().getId();

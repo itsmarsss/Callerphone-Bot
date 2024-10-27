@@ -48,6 +48,7 @@ public class SendModal implements IModalInteraction {
                 e.reply(Response.ERROR.toString()).setEphemeral(true).queue();
                 break;
             case SENT:
+                Cooldown.setMIBSendCoolDown(e.getUser().getId());
                 e.reply(MIBResponse.SEND_SUCCESS.toString()).setEphemeral(true).queue();
                 break;
         }

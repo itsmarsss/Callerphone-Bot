@@ -17,9 +17,9 @@ public enum Response {
     PROFILE_MESSAGE("Executed: `%d`\n Transmitted: `%s`\nTotal: `%s`"),
 
     CONNECTION_ERROR(ToolSet.CP_EMJ + "Connection error, call ended."),
-    DEFAULT_MESSAGE_TEMPLATE("**%s**#%s " + ToolSet.CP_CALL + "%s"),
-    MODERATOR_MESSAGE_TEMPLATE("***[Moderator]* %s**#%s " + ToolSet.CP_CALL + "%s"),
-    PREFIX_MESSAGE_TEMPLATE("***[%s]* %s**#%s " + ToolSet.CP_CALL + "%s"),
+    DEFAULT_MESSAGE_TEMPLATE("**%s** " + ToolSet.CP_CALL + "%s"),
+    MODERATOR_MESSAGE_TEMPLATE("***[Moderator]* %s** " + ToolSet.CP_CALL + "%s"),
+    PREFIX_MESSAGE_TEMPLATE("***[%s]* %s** " + ToolSet.CP_CALL + "%s"),
     MESSAGE_TOO_LONG(ToolSet.CP_ERR + "I sent a message too long for Callerphone to handle " + ToolSet.CP_ERR),
     ATTEMPTED_PING(ToolSet.CP_ERR + "I tried to ping everyone " + ToolSet.CP_ERR),
     ATTEMPTED_LINK(ToolSet.CP_ERR + "I tried to send a link " + ToolSet.CP_ERR),

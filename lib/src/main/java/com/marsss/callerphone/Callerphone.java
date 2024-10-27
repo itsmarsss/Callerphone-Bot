@@ -36,7 +36,7 @@ import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.sharding.DefaultShardManagerBuilder;
 import net.dv8tion.jda.api.sharding.ShardManager;
-import net.dv8tion.jda.api.utils.ChunkingFilter;
+import net.dv8tion.jda.api.utils.MemberCachePolicy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -135,13 +135,14 @@ public class Callerphone {
                         //.enableCache(CacheFlag.VOICE_STATE)
                         //.enableCache(CacheFlag.ROLE_TAGS)
                         //.setMemberCachePolicy(MemberCachePolicy.ALL)
+                        .setShardsTotal(-1)
                         .build();
             } else {
                 sdMgr = DefaultShardManagerBuilder.createDefault(token, intent)
                         //.enableCache(CacheFlag.VOICE_STATE)
                         //.enableCache(CacheFlag.ROLE_TAGS)
-                        .setChunkingFilter(ChunkingFilter.ALL)
-                        //.setMemberCachePolicy(MemberCachePolicy.ALL)
+                        //.setChunkingFilter(ChunkingFilter.ALL)
+                        .setMemberCachePolicy(MemberCachePolicy.ALL)
                         .setShardsTotal(-1)
                         .build();
             }
@@ -246,7 +247,7 @@ public class Callerphone {
 
 
             for (int i = 0; i < 10000; i++) {
-                TCCallerphone.convos.add(new ConvoStorage(new ConcurrentLinkedQueue<>(), "empty", "", 0, 0, true, true, false, false, false));
+                TCCallerphone.convos.add(new ConvoStorage(new ConcurrentLinkedQueue<>(), "empty", "", 0, 0, false, false, false));
             }
 
             sdMgr.setActivity(Activity.watching("for " + config.getPrefix() + "help"));

@@ -25,7 +25,6 @@ public class MessageInBottle {
         boolean stat = uuid == null ? MIB.createMIB(id, message, anon) : MIB.addMIBPage(id, message, anon, uuid);
 
         if (stat) {
-            Cooldown.setMIBSendCoolDown(id);
             return MIBStatus.SENT;
         }
 
@@ -36,8 +35,6 @@ public class MessageInBottle {
         Bottle mib = MIB.findBottle();
 
         if (mib != null) {
-            Cooldown.setMIBFindCoolDown(id);
-
             return mib;
         }
         return null;
@@ -56,7 +53,7 @@ public class MessageInBottle {
                     EmbedBuilder bottleEmbed = new EmbedBuilder()
                             .setTitle("<:MessageInBottle:1089648266284638339> **A message in bottle has arrived!**")
                             .setDescription(page.getMessage())
-                            .appendDescription("\n\n\u3000**\\- " + lastUser.getName() + "** from  <t:" + page.getReleased() + ":R>")
+                            .appendDescription("\n\n\u3000**\\- " + (page.isSigned() ? lastUser.getName() : "anonymous") + "** from  <t:" + page.getReleased() + ":R>")
                             .setFooter("Pages " + (page.getPageNum() + 1) + "/" + bottle.getPages().size())
                             .setTimestamp(Instant.now())
                             .setColor(ToolSet.COLOR);

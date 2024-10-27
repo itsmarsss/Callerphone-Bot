@@ -17,8 +17,10 @@ public class Users {
     public static final Logger logger = LoggerFactory.getLogger(Users.class);
 
     public static void createUser(String id) {
+        MongoCollection<Document> usersCollection = Callerphone.dbConnector.getUsersCollection();
+
         try {
-            InsertOneResult result = Callerphone.dbConnector.getUsersCollection().insertOne(new Document()
+            InsertOneResult result = usersCollection.insertOne(new Document()
                     .append("_id", new ObjectId())
                     .append("id", id)
                     .append("status", "user")

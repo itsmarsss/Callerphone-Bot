@@ -1,20 +1,29 @@
 package com.marsss.database.categories;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.LinkedList;
+import com.marsss.callerphone.Callerphone;
+import com.mongodb.MongoException;
+import com.mongodb.client.MongoCollection;
+import org.bson.Document;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class Filter {
-    public static final LinkedList<String> filter = new LinkedList<>();
+    public static final Logger logger = LoggerFactory.getLogger(Filter.class);
 
-    private static void getFilter(File file) throws IOException {
-        try (BufferedReader br = new BufferedReader(new FileReader(file))) {
-            String line;
-            while ((line = br.readLine()) != null) {
-                filter.add(line);
-            }
+    public static List<String> filter = new ArrayList<>();
+
+    public static void getFilter() {
+        MongoCollection<Document> filterCollection = Callerphone.dbConnector.getFilterCollection();
+
+        try {
+            Document filterDocument = filterCollection.find(new Document("id", "filter")).first();
+
+            filter = (List<String>) filterDocument.get("filters");
+        } catch (MongoException me) {
+            logger.error("Unable to update filter: {}", me.getMessage());
         }
     }
 }

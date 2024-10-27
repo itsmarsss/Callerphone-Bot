@@ -4,6 +4,7 @@ import com.marsss.ICommand;
 import com.marsss.commandType.ISlashCommand;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.interactions.commands.build.*;
@@ -17,16 +18,17 @@ import java.time.OffsetDateTime;
 import java.util.Scanner;
 
 public class CommandPrompt {
-
     public static final Logger logger = LoggerFactory.getLogger(CommandPrompt.class);
 
-    private ShardManager sdMgr = Callerphone.sdMgr;
-    private User selfUser = Callerphone.selfUser;
+    private ShardManager sdMgr;
+    private User selfUser;
 
     public void startPrompting() throws InterruptedException {
         Scanner sc = new Scanner(System.in);
 
         while (true) {
+            sdMgr = Callerphone.sdMgr;
+            selfUser = Callerphone.selfUser;
             System.out.print("> ");
             String cmd = sc.nextLine();
             if (cmd.startsWith("start")) {
@@ -65,7 +67,7 @@ public class CommandPrompt {
                 sc.close();
                 System.exit(0);
             } else if (cmd.equals("info")) {
-                if (sdMgr != null) {
+                if (sdMgr.getShards().get(0) != null) {
                     String tag = selfUser.getAsTag();
                     String avatarUrl = selfUser.getAvatarUrl();
                     OffsetDateTime timeCreated = selfUser.getTimeCreated();
@@ -76,15 +78,33 @@ public class CommandPrompt {
                     System.out.println("Id: " + id);
                     System.out.println("Shard Info:");
 
+                    long totalServers = 0;
+                    long cachedUsers = 0;
+                    long totalUsers = 0;
+
                     int i = 0;
-                    for(JDA jda : sdMgr.getShards()) {
+                    for (JDA jda : sdMgr.getShards()) {
+                        totalServers += jda.getGuilds().size();
+                        cachedUsers += jda.getUsers().size();
+
+                        long users = 0;
+
+                        for (Guild g : jda.getGuilds()) {
+                            users += g.getMemberCount();
+                        }
+
+                        totalUsers += users;
+
                         System.out.println(i);
                         System.out.println("\tShard info: " + jda.getShardInfo().getShardString());
                         System.out.println("\tGuilds: " + jda.getGuilds().size());
+                        System.out.println("\tUsers: " + users);
                         i++;
                     }
 
-                    System.out.println("Total Guilds: " + sdMgr.getGuilds().size());
+                    System.out.println("Total Guilds: " + totalServers);
+                    System.out.println("Total Cached Users: " + cachedUsers);
+                    System.out.println("Total Users: " + totalUsers);
                     continue;
                 }
                 logger.info("Bot Is Offline");
@@ -106,7 +126,7 @@ public class CommandPrompt {
     }
 
     private void upsert() {
-        for(JDA jda : sdMgr.getShards()) {
+        for (JDA jda : sdMgr.getShards()) {
             CommandListUpdateAction commands = jda.updateCommands();
 
             for (ICommand command : Callerphone.cmdLst) {

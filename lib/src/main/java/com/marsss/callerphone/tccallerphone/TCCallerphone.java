@@ -21,7 +21,6 @@ public class TCCallerphone {
 
         for (ConvoStorage convo : convos) {
             if (!convo.getCallerTCId().equals("empty") && convo.getReceiverTCId().isEmpty()) {
-                convo.setReceiverFamilyFriendly(cens);
                 convo.setReceiverAnonymous(anon);
                 convo.setReceiverTCId(CHANNELID);
                 convo.setCallerLastMessage(System.currentTimeMillis());
@@ -50,7 +49,6 @@ public class TCCallerphone {
 
                 return ChatStatus.SUCCESS_RECEIVER;
             } else if (convo.getCallerTCId().equals("empty")) {
-                convo.setCallerFamilyFriendly(cens);
                 convo.setCallerAnonymous(anon);
                 convo.setCallerTCId(CHANNELID);
 

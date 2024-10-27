@@ -73,7 +73,7 @@ public class PlayMiniGame implements ISlashCommand {
         } else {
             message.setContent("Successfully challenged " + to.getAsMention() + " to a game of TicTacToe.");
 
-            ToolSet.sendPrivateGameMessageFrom(from, new MessageCreateBuilder().setContent("You game of TicTacToe with @" + to.getAsTag() + " will show up here.").build(), ttt);
+            ToolSet.sendPrivateGameMessageFrom(from, new MessageCreateBuilder().setContent("You game of TicTacToe with @" + to.getName() + " will show up here.").build(), ttt);
 
 
             ToolSet.sendPrivateGameMessageTo(to, ttt.getMessageForTo(), ttt);

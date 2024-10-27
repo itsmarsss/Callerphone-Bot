@@ -22,22 +22,27 @@ public class MIB {
     public static final Logger logger = LoggerFactory.getLogger(MIB.class);
 
     public static boolean createMIB(String id, String message, boolean anon) {
+        MongoCollection<Document> mibCollection = Callerphone.dbConnector.getMibCollection();
+
         try {
             List<Document> pages = new ArrayList<>();
+
+            long time = Instant.now().getEpochSecond();
 
             pages.add(new Document()
                     .append("pageNum", 0)
                     .append("author", id)
                     .append("message", message)
                     .append("signed", anon)
-                    .append("released", Instant.now().getEpochSecond()));
+                    .append("released", time));
 
             String midUUID = ToolSet.generateUUID();
 
-            InsertOneResult result = Callerphone.dbConnector.getMibCollection().insertOne(new Document()
+            InsertOneResult result = mibCollection.insertOne(new Document()
                     .append("_id", new ObjectId())
                     .append("id", midUUID)
-                    .append("pages", pages));
+                    .append("pages", pages)
+                    .append("created", time));
 
             if (result.getInsertedId() != null) {
                 logger.info("Added new MIB: {}", id);
@@ -52,8 +57,10 @@ public class MIB {
     }
 
     public static Bottle findBottle() {
+        MongoCollection<Document> mibCollection = Callerphone.dbConnector.getMibCollection();
+
         try {
-            List<Document> randomDocument = Callerphone.dbConnector.getMibCollection().aggregate(
+            List<Document> randomDocument = mibCollection.aggregate(
                             Collections.singletonList(Aggregates.sample(1)))
                     .into(new ArrayList<>());
 
@@ -84,7 +91,6 @@ public class MIB {
 
     public static boolean addMIBPage(String id, String message, boolean anon, String uuid) {
         MongoCollection<Document> collection = Callerphone.dbConnector.getMibCollection();
-
 
         try {
             Bottle bottle = getBottle(uuid);

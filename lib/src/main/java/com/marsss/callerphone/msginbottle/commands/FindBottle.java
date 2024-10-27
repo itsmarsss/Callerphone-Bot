@@ -16,7 +16,7 @@ import java.util.concurrent.TimeUnit;
 public class FindBottle implements ISlashCommand {
     @Override
     public void runSlash(SlashCommandInteractionEvent e) {
-        if (System.currentTimeMillis() - Cooldown.getMIBSendCoolDown(e.getMember().getId()) < ToolSet.FINDBOTTLE_COOLDOWN) {
+        if (System.currentTimeMillis() - Cooldown.getMIBFindCoolDown(e.getMember().getId()) < ToolSet.FINDBOTTLE_COOLDOWN) {
             e.reply(":warning: **Find MIB Cooldown;** " + ((ToolSet.FINDBOTTLE_COOLDOWN - (System.currentTimeMillis() - Cooldown.getMIBFindCoolDown(e.getMember().getId()))) / 60000) + " minute(s)").setEphemeral(true).queue();
             return;
         }
@@ -28,6 +28,7 @@ public class FindBottle implements ISlashCommand {
             return;
         }
 
+        Cooldown.setMIBFindCoolDown(e.getMember().getId());
         e.reply(MessageInBottle.createMessage(bottle, Integer.MAX_VALUE)).setEphemeral(true).queueAfter(1, TimeUnit.SECONDS);
     }
 

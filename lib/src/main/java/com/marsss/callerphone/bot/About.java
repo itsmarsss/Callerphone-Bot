@@ -43,19 +43,17 @@ public class About implements ISlashCommand {
 
         jda.retrieveUserById(Callerphone.config.getOwnerID()).queue(u -> {
                     long totalServers = 0;
+                    long cachedUsers = 0;
                     long totalUsers = 0;
-                    long users = 0;
 
                     for (JDA shard : Callerphone.sdMgr.getShards()) {
                         totalServers += shard.getGuilds().size();
-                        totalUsers += shard.getUsers().size();
+                        cachedUsers += shard.getUsers().size();
 
                         for (Guild g : shard.getGuilds()) {
-                            users += g.getMemberCount();
+                            totalUsers += g.getMemberCount();
                         }
                     }
-
-                    String UNIQUE_USERS = Callerphone.isQuickStart ? "N/A (QuickStart)" : totalUsers + " unique user(s)";
 
                     aboutEmbed.setAuthor("Made by " + u.getName(), null, u.getAvatarUrl())
                             .setColor(ToolSet.COLOR)
@@ -71,8 +69,8 @@ public class About implements ISlashCommand {
                                             jda.getVoiceChannels().size() + " voice channel(s)", true)
 
                             .addField("Users",
-                                    users + " user(s)\n" +
-                                            UNIQUE_USERS, true)
+                                    totalUsers + " total user(s)\n" +
+                                            cachedUsers + " cached user(s)", true)
 
                             .addField("CPU Usage",
                                     (String.valueOf(ManagementFactory.getOperatingSystemMXBean().getSystemLoadAverage()).startsWith("-")) ? ("Unavailable") : (ManagementFactory.getOperatingSystemMXBean().getSystemLoadAverage() + "%") + "\n" +
