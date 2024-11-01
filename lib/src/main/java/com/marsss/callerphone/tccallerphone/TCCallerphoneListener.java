@@ -69,7 +69,7 @@ public class TCCallerphoneListener extends ListenerAdapter {
 
         messageRaw = ToolSet.filterMessage(messageRaw);
 
-        if(!c.getParticipants().contains(MEMBER.getId()))
+        if (!c.getParticipants().contains(MEMBER.getId()))
             c.getParticipants().add(MEMBER.getId());
 
         if (c.getCallerTCId().equals(CHANNELID)) {
@@ -98,7 +98,8 @@ public class TCCallerphoneListener extends ListenerAdapter {
 
         if (anon) {
             if (DESTINATION_CHANNEL != null) {
-                DESTINATION_CHANNEL.sendMessage("**Discordian** " + Callerphone.config.getCallerphoneCall() + content).complete();
+                DESTINATION_CHANNEL.sendMessage("**Discordian " + (c.getParticipants().indexOf(msg.getAuthor().getId()) + 1) + "** " +
+                        Callerphone.config.getCallerphoneCall() + content).complete();
             } else {
                 terminate(c);
             }

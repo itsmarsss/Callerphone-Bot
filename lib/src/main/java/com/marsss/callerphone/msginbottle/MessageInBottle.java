@@ -43,12 +43,17 @@ public class MessageInBottle {
         CompletableFuture<MessageCreateData> future = new CompletableFuture<>();
 
         ToolSet.getUser(page.getAuthor()).queue(lastUser -> {
+                    String sign = "anonymous";
+                    String prefix = Users.getPrefix(lastUser.getId());
+
+                    if (page.isSigned()) {
+                        sign = (prefix.isEmpty() ? "" : "*[" + prefix + "]* ") + lastUser.getName();
+                    }
+
                     EmbedBuilder bottleEmbed = new EmbedBuilder()
                             .setTitle("<:MessageInBottle:1089648266284638339> **A message in bottle has arrived!**")
                             .setDescription(page.getMessage())
-                            .appendDescription("\n\n\u3000**\\- " + (page.isSigned() ?
-                                    "*[" + Users.getPrefix(lastUser.getId()) + "]* " + lastUser.getName() :
-                                    "anonymous") + "** from  <t:" + page.getReleased() + ":R>")
+                            .appendDescription("\n\n\u3000**\\- " + sign + "** from  <t:" + page.getReleased() + ":R>")
                             .setFooter("Pages " + (page.getPageNum() + 1) + "/" + bottle.getPages().size())
                             .setTimestamp(Instant.now())
                             .setColor(ToolSet.COLOR);

@@ -173,7 +173,7 @@ public class ToolSet {
     }
 
     public static void sendCommandCooldown(SlashCommandInteractionEvent event) {
-        event.reply(":warning: **Command Cooldown;** " + ((ToolSet.COMMAND_COOLDOWN - (System.currentTimeMillis() - Cooldown.getCmdCooldown(event.getUser().getId()))) / 1000) + " second(s)").queue();
+        event.reply(":warning: **Command Cooldown;** " + ((ToolSet.COMMAND_COOLDOWN - (System.currentTimeMillis() - Cooldown.getCmdCooldown(event.getUser().getId()))) / 1000) + " second(s)").setEphemeral(true).queue();
     }
 
     public static void sendPrivateEmbed(User user, MessageEmbed embed) {
