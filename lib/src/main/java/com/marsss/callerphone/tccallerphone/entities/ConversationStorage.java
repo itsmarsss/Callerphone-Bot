@@ -86,6 +86,9 @@ public class ConversationStorage {
         return messages;
     }
 
+    public void setMessages(List<MessageStorage> messages) {
+        this.messages = messages;
+    }
     public String getCallerTCId() {
         return callerTCId;
     }

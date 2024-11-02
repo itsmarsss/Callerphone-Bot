@@ -7,6 +7,8 @@ import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
+import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder;
+import net.dv8tion.jda.api.utils.messages.MessageCreateData;
 
 public class EndChat implements ISlashCommand {
     @Override
@@ -14,10 +16,11 @@ public class EndChat implements ISlashCommand {
         e.reply(endChat(e.getChannel())).queue();
     }
 
-    private String endChat(MessageChannelUnion channel) {
+    private MessageCreateData endChat(MessageChannelUnion channel) {
         if(!TCCallerphone.hasCall(channel.getId())) {
-            return ChatResponse.NO_CALL.toString();
+            return new MessageCreateBuilder().setContent(ChatResponse.NO_CALL.toString()).build();
         }
+
         return TCCallerphone.onEndCallCommand(channel);
     }
 

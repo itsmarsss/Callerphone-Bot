@@ -17,7 +17,6 @@ import net.dv8tion.jda.api.utils.messages.MessageCreateData;
 
 import java.awt.*;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.LinkedList;
 import java.util.UUID;
 import java.util.regex.Matcher;

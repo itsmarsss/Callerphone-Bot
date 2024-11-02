@@ -21,7 +21,7 @@ public class Filter {
         try {
             Document filterDocument = filterCollection.find(new Document("id", "filter")).first();
 
-            filter = (List<String>) filterDocument.get("filters");
+            filter = filterDocument.getList("filters", String.class);
         } catch (MongoException me) {
             logger.error("Unable to update filter: {}", me.getMessage());
         }

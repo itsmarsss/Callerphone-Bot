@@ -21,10 +21,10 @@ import com.marsss.callerphone.msginbottle.commands.FindBottle;
 import com.marsss.callerphone.msginbottle.commands.SendBottle;
 import com.marsss.callerphone.msginbottle.handlers.*;
 import com.marsss.callerphone.msginbottle.modals.SendModal;
+import com.marsss.callerphone.tccallerphone.handlers.ReportChatHandler;
 import com.marsss.callerphone.users.commands.DeductCredits;
 import com.marsss.callerphone.users.commands.Profile;
 import com.marsss.callerphone.users.commands.RewardCredits;
-import com.marsss.callerphone.tccallerphone.TCCallerphone;
 import com.marsss.callerphone.tccallerphone.TCCallerphoneListener;
 import com.marsss.callerphone.tccallerphone.commands.*;
 import com.marsss.commandType.IButtonInteraction;
@@ -43,7 +43,6 @@ import com.marsss.callerphone.bot.*;
 import com.marsss.callerphone.utils.*;
 import com.marsss.callerphone.listeners.*;
 import com.marsss.callerphone.channelpool.*;
-import com.marsss.callerphone.tccallerphone.entities.ConversationStorage;
 
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.Guild;
@@ -224,6 +223,7 @@ public class Callerphone {
             btnLst.add(new PreviousHandler());
             btnLst.add(new ReportHandler());
             btnLst.add(new SaveHandler());
+            btnLst.add(new ReportChatHandler());
 
             for (IButtonInteraction btn : btnLst) {
                 btnMap.put(btn.getID(), btn);

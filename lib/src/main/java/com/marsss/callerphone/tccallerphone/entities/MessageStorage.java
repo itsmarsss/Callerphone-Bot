@@ -1,7 +1,6 @@
 package com.marsss.callerphone.tccallerphone.entities;
 
 import com.marsss.callerphone.ToolSet;
-import net.dv8tion.jda.api.utils.messages.MessageCreateData;
 
 import java.util.concurrent.CompletableFuture;
 
@@ -12,6 +11,8 @@ public class MessageStorage {
     private String content;
     private String[] flags;
     private long sent;
+
+    public MessageStorage() {}
 
     public MessageStorage(boolean caller, String author, String channel, String content, String[] flags, long sent) {
         this.caller = caller;

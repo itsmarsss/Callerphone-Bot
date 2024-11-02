@@ -7,16 +7,16 @@ import com.marsss.callerphone.tccallerphone.entities.MessageStorage;
 import com.marsss.database.categories.Chats;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
+import net.dv8tion.jda.api.interactions.components.ActionRow;
+import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.utils.FileUpload;
+import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder;
+import net.dv8tion.jda.api.utils.messages.MessageCreateData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.Instant;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class TCCallerphone {
 
@@ -66,15 +66,15 @@ public class TCCallerphone {
         return ChatStatus.SUCCESS_RECEIVER;
     }
 
-    public static String onEndCallCommand(MessageChannelUnion channel) {
+    public static MessageCreateData onEndCallCommand(MessageChannelUnion channel) {
         if (!hasCall(channel.getId())) {
-            return ChatResponse.NO_CALL.toString();
+            return new MessageCreateBuilder().setContent(ChatResponse.NO_CALL.toString()).build();
         }
 
         ConversationStorage convo = getCall(channel.getId());
 
         if (convo == null) {
-            return ChatResponse.NO_CALL.toString();
+            return new MessageCreateBuilder().setContent(ChatResponse.NO_CALL.toString()).build();
         }
 
         final String CALLER_ID = convo.getCallerTCId();
@@ -83,16 +83,18 @@ public class TCCallerphone {
         final TextChannel CALLER_CHANNEL = ToolSet.getTextChannel(CALLER_ID);
         final TextChannel RECEIVER_CHANNEL = ToolSet.getTextChannel(RECEIVER_ID);
 
+        Button reportButton = Button.danger("reportchat-" + convo.getId(), "Report");
+
         if (RECEIVER_ID.equals(channel.getId())) {
             if (!convo.getCallerTCId().equals("empty")) {
                 if (CALLER_CHANNEL != null) {
-                    CALLER_CHANNEL.sendMessage(ChatResponse.OTHER_PARTY_HUNG_UP.toString()).queue();
+                    CALLER_CHANNEL.sendMessage(ChatResponse.OTHER_PARTY_HUNG_UP.toString()).setComponents(ActionRow.of(reportButton)).queue();
                 }
             }
         } else {
             if (!convo.getReceiverTCId().isEmpty()) {
                 if (RECEIVER_CHANNEL != null) {
-                    RECEIVER_CHANNEL.sendMessage(ChatResponse.OTHER_PARTY_HUNG_UP.toString()).queue();
+                    RECEIVER_CHANNEL.sendMessage(ChatResponse.OTHER_PARTY_HUNG_UP.toString()).setComponents(ActionRow.of(reportButton)).queue();
                 }
             }
         }
@@ -101,20 +103,20 @@ public class TCCallerphone {
 
         final boolean report = convo.getReport();
 
-        log(convo, CALLER_ID, RECEIVER_ID);
+        log(convo);
         Chats.createChat(convo);
 
         if (report) {
-            report(convo, CALLER_ID, RECEIVER_ID);
+            report(convo);
         }
 
         conversationMap.remove(convo.getCallerTCId());
         conversationMap.remove(convo.getReceiverTCId());
 
-        return ChatResponse.HUNG_UP.toString();
+        return new MessageCreateBuilder().setContent(ChatResponse.HUNG_UP.toString()).setComponents(ActionRow.of(reportButton)).build();
     }
 
-    private static void log(ConversationStorage convo, String callerID, String receiverID) {
+    private static void log(ConversationStorage convo) {
         List<MessageStorage> data = convo.getMessages();
 
         StringBuilder dataString = new StringBuilder();
@@ -129,7 +131,7 @@ public class TCCallerphone {
         }
     }
 
-    private static void report(ConversationStorage convo, String callerID, String receiverID) {
+    public static void report(ConversationStorage convo) {
         List<MessageStorage> data = convo.getMessages();
 
         StringBuilder dataString = new StringBuilder();

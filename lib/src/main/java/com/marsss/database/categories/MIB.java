@@ -129,7 +129,7 @@ public class MIB {
     private static Bottle parseDocumentToBottle(Document mib) {
         String uuid = mib.containsKey("id") ? mib.getString("id") : "unknown";
 
-        List<Document> pagesDocs = (List<Document>) mib.get("pages");
+        List<Document> pagesDocs = mib.getList("pages", Document.class);
         ArrayList<Page> pages = new ArrayList<>();
 
         if (pagesDocs != null) {
