@@ -85,7 +85,7 @@ public class ToolSet {
 
     public static String[] messageFlagged(String messageRaw) {
         java.util.List<String> flagged = new ArrayList<>();
-        if (messageRaw.contains("@here") || messageRaw.contains("@everyone"))
+        if (hasPing(messageRaw))
             flagged.add("ping");
 
         if (hasLink(messageRaw))
@@ -95,14 +95,14 @@ public class ToolSet {
             flagged.add("length");
 
         for (String ftr : Filter.containsfilter) {
-            if(messageRaw.contains(ftr)) {
+            if (messageRaw.matches("(?i)" + ftr)) {
                 flagged.add("profanity");
                 break;
             }
         }
 
         for (String ftr : Filter.wordsfilter) {
-            if(messageRaw.contains(" " + ftr + " ")) {
+            if (messageRaw.matches(generateRegex(ftr))) {
                 flagged.add("profanity");
                 break;
             }
@@ -112,7 +112,7 @@ public class ToolSet {
     }
 
     public static String filterMessage(String messageRaw) {
-        if (messageRaw.contains("@here") || messageRaw.contains("@everyone"))
+        if (hasPing(messageRaw))
             return Response.ATTEMPTED_PING.toString();
 
         if (hasLink(messageRaw))
@@ -134,10 +134,14 @@ public class ToolSet {
             for (int i = 0; i < ftr.length(); i++) {
                 rep.append("#");
             }
-            messageRaw = messageRaw.replaceAll("(?i)" + ftr, " " + rep.toString() + " ");
+            messageRaw = messageRaw.replaceAll(generateRegex(ftr), " " + rep.toString() + " ");
         }
 
         return messageRaw;
+    }
+
+    public static boolean hasPing(String msg) {
+        return msg.contains("@here") || msg.contains("@everyone");
     }
 
     public static boolean hasLink(String msg) {
@@ -150,6 +154,18 @@ public class ToolSet {
         }
 
         return links.size() != 0;
+    }
+
+    public static String generateRegex(String word) {
+        StringBuilder regexBuilder = new StringBuilder("(?i)");
+
+        for (char c : word.toCharArray()) {
+            regexBuilder.append(c).append("\\s*[\\W_]*");
+        }
+
+        regexBuilder.setLength(regexBuilder.length() - 6);
+
+        return regexBuilder.toString();
     }
 
     public static void printWelcome() {
