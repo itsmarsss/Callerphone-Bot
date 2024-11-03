@@ -19,8 +19,8 @@ import java.util.concurrent.CompletableFuture;
 public class MessageInBottle {
     public static final Logger logger = LoggerFactory.getLogger(MessageInBottle.class);
 
-    public static MIBStatus sendBottle(String id, String message, boolean anon, String uuid) {
-        boolean stat = uuid == null ? MIB.createMIB(id, message, anon) : MIB.addMIBPage(id, message, anon, uuid);
+    public static MIBStatus sendBottle(String id, String message, boolean anon, String mibId) {
+        boolean stat = mibId == null ? MIB.createMIB(id, message, anon) : MIB.addMIBPage(id, message, anon, mibId);
 
         if (stat) {
             return MIBStatus.SENT;
@@ -58,10 +58,10 @@ public class MessageInBottle {
                             .setTimestamp(Instant.now())
                             .setColor(ToolSet.COLOR);
 
-                    Button addPage = Button.success("adp-" + bottle.getUuid(), "Add Page");
-                    Button previousPage = Button.secondary("pvp-" + bottle.getUuid() + "-" + Math.max(page.getPageNum() - 1, 0), "\u25C0\uFE0F");
-                    Button nextPage = Button.secondary("nxp-" + bottle.getUuid() + "-" + Math.min(page.getPageNum() + 1, bottle.getPages().size() - 1), "\u25B6\uFE0F");
-                    Button reportButton = Button.danger("rpt-" + bottle.getUuid() + "-" + page.getPageNum(), "Report");
+                    Button addPage = Button.success("adp-" + bottle.getId(), "Add Page");
+                    Button previousPage = Button.secondary("pvp-" + bottle.getId() + "-" + Math.max(page.getPageNum() - 1, 0), "\u25C0\uFE0F");
+                    Button nextPage = Button.secondary("nxp-" + bottle.getId() + "-" + Math.min(page.getPageNum() + 1, bottle.getPages().size() - 1), "\u25B6\uFE0F");
+                    Button reportButton = Button.danger("rpt-" + bottle.getId() + "-" + page.getPageNum(), "Report");
                     Button saveACopy = Button.secondary("sve", "Save");
 
                     MessageCreateData message = new MessageCreateBuilder()

@@ -14,10 +14,10 @@ public class PreviousHandler implements IButtonInteraction {
         e.deferEdit().queue();
 
         String[] previousData = e.getButton().getId().split("-");
-        String uuid = previousData[1];
+        String id = previousData[1];
         int page = Integer.parseInt(previousData[2]);
 
-        Bottle mib = MIB.getBottle(uuid);
+        Bottle mib = MIB.getBottle(id);
 
         e.getHook().editOriginal(MessageEditData.fromCreateData(MessageInBottle.createMessage(mib, page))).queue();
     }

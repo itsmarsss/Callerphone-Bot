@@ -4,20 +4,20 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Bottle {
-    private String uuid;
+    private String id;
     private List<Page> pages;
 
-    public Bottle(String uuid, ArrayList<Page> pages) {
-        this.uuid = uuid;
+    public Bottle(String id, ArrayList<Page> pages) {
+        this.id = id;
         this.pages = pages;
     }
 
-    public String getUuid() {
-        return uuid;
+    public String getId() {
+        return id;
     }
 
-    public void setUuid(String uuid) {
-        this.uuid = uuid;
+    public void setId(String id) {
+        this.id = id;
     }
 
     public List<Page> getPages() {

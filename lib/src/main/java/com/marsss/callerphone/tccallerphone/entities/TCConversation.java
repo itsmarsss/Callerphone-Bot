@@ -6,11 +6,11 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ConversationStorage {
+public class TCConversation {
     private String id;
 
     private List<String> participants;
-    private List<MessageStorage> messages;
+    private List<TCMessage> messages;
 
     private String callerTCId;
     private String receiverTCId;
@@ -26,8 +26,8 @@ public class ConversationStorage {
 
     private boolean report;
 
-    public ConversationStorage() {
-        this.id = ToolSet.generateUUID();
+    public TCConversation() {
+        this.id = ToolSet.generateUID();
 
         this.started = Instant.now().getEpochSecond();
         this.ended = -1;
@@ -47,8 +47,8 @@ public class ConversationStorage {
         this.report = false;
     }
 
-    public ConversationStorage(String callerTCId, String receiverTCId, boolean callerAnonymous, boolean receiverAnonymous, boolean report) {
-        this.id = ToolSet.generateUUID();
+    public TCConversation(String callerTCId, String receiverTCId, boolean callerAnonymous, boolean receiverAnonymous, boolean report) {
+        this.id = ToolSet.generateUID();
 
         this.started = Instant.now().getEpochSecond();
         this.ended = -1;
@@ -82,11 +82,11 @@ public class ConversationStorage {
         return participants;
     }
 
-    public List<MessageStorage> getMessages() {
+    public List<TCMessage> getMessages() {
         return messages;
     }
 
-    public void setMessages(List<MessageStorage> messages) {
+    public void setMessages(List<TCMessage> messages) {
         this.messages = messages;
     }
     public String getCallerTCId() {
@@ -131,7 +131,7 @@ public class ConversationStorage {
         this.participants = participants;
     }
 
-    public void addMessage(MessageStorage message) {
+    public void addMessage(TCMessage message) {
         messages.add(message);
     }
 

@@ -4,7 +4,7 @@ import com.marsss.callerphone.ToolSet;
 
 import java.util.concurrent.CompletableFuture;
 
-public class MessageStorage {
+public class TCMessage {
     private boolean caller;
     private String author;
     private String channel;
@@ -12,9 +12,9 @@ public class MessageStorage {
     private String[] flags;
     private long sent;
 
-    public MessageStorage() {}
+    public TCMessage() {}
 
-    public MessageStorage(boolean caller, String author, String channel, String content, String[] flags, long sent) {
+    public TCMessage(boolean caller, String author, String channel, String content, String[] flags, long sent) {
         this.caller = caller;
         this.author = author;
         this.channel = channel;

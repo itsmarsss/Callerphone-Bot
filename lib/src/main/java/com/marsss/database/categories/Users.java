@@ -13,6 +13,8 @@ import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 
+import static com.marsss.database.DatabaseUtil.getOrDefault;
+
 public class Users {
     public static final Logger logger = LoggerFactory.getLogger(Users.class);
 
@@ -21,7 +23,6 @@ public class Users {
 
         try {
             InsertOneResult result = usersCollection.insertOne(new Document()
-                    .append("_id", new ObjectId())
                     .append("id", id)
                     .append("status", "user")
                     .append("prefix", "")
@@ -37,7 +38,7 @@ public class Users {
             if (result.getInsertedId() != null) {
                 logger.info("Added new user: {}", id);
             } else {
-                logger.error("User addition not acknowledged for user: {}", id);
+                logger.error("User addition not inserted for user: {}", id);
             }
         } catch (MongoException me) {
             logger.error("Unable to add new user: {}", me.getMessage());
@@ -99,7 +100,7 @@ public class Users {
             }
 
             logger.info("User: {} got {}", id, field);
-            return userDocument.getLong(field);
+            return getOrDefault(userDocument, field, 0);
         } catch (MongoException me) {
             logger.error("Unable to get {} for user: {}, {}", field, id, me.getMessage());
             return 0;
@@ -116,7 +117,7 @@ public class Users {
                 return "";
             }
 
-            return userDocument.getString(field);
+            return getOrDefault(userDocument, field, "unknown");
         } catch (MongoException me) {
             logger.error("Unable to get {} for user: {}, {}", field, id, me.getMessage());
             return "";

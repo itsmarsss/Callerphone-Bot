@@ -7,6 +7,8 @@ import org.bson.Document;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static com.marsss.database.DatabaseUtil.getOrDefault;
+
 public class Cooldown {
     public static final Logger logger = LoggerFactory.getLogger(Cooldown.class);
 
@@ -16,7 +18,7 @@ public class Cooldown {
         try {
             Document userDocument = usersCollection.find(new Document("id", id)).first();
             if (userDocument != null) {
-                return userDocument.getLong("cooldowns_" + cooldownType);
+                return getOrDefault(userDocument, "cooldowns_" + cooldownType, 0);
             } else {
                 return 0;
             }

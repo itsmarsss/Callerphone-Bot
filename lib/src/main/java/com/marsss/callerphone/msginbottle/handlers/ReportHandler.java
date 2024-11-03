@@ -11,11 +11,11 @@ public class ReportHandler implements IButtonInteraction {
     @Override
     public void runClick(ButtonInteraction e) {
         String[] reportData = e.getButton().getId().split("-");
-        String uuid = reportData[1];
+        String id = reportData[1];
         String pageNum = reportData[2];
 
         final TextChannel REPORT_CHANNEL = ToolSet.getTextChannel(Callerphone.config.getReportChatChannel());
-        REPORT_CHANNEL.sendMessage("**UUID**: " + uuid + "\n**Page**: " + pageNum).addEmbeds(e.getMessage().getEmbeds()).queue();
+        REPORT_CHANNEL.sendMessage("**UUID**: " + id + "\n**Page**: " + pageNum).addEmbeds(e.getMessage().getEmbeds()).queue();
 
         e.reply(ToolSet.CP_EMJ + "Reported!").setEphemeral(true).queue();
     }

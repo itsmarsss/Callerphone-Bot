@@ -2,8 +2,8 @@ package com.marsss.callerphone.tccallerphone;
 
 import com.marsss.callerphone.Callerphone;
 import com.marsss.callerphone.ToolSet;
-import com.marsss.callerphone.tccallerphone.entities.ConversationStorage;
-import com.marsss.callerphone.tccallerphone.entities.MessageStorage;
+import com.marsss.callerphone.tccallerphone.entities.TCConversation;
+import com.marsss.callerphone.tccallerphone.entities.TCMessage;
 import com.marsss.database.categories.Chats;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
@@ -20,15 +20,15 @@ import java.util.*;
 
 public class TCCallerphone {
 
-    public static final List<ConversationStorage> queue = new ArrayList<>();
-    public static final Map<String, ConversationStorage> conversationMap = new HashMap<>();
+    public static final List<TCConversation> queue = new ArrayList<>();
+    public static final Map<String, TCConversation> conversationMap = new HashMap<>();
 
     public static ChatStatus onCallCommand(MessageChannelUnion tcchannel, boolean anon) {
         final Logger logger = LoggerFactory.getLogger(TCCallerphone.class);
         final String CHANNELID = tcchannel.getId();
 
         if (queue.isEmpty()) {
-            ConversationStorage convo = new ConversationStorage();
+            TCConversation convo = new TCConversation();
 
             convo.setCallerAnonymous(anon);
             convo.setCallerTCId(CHANNELID);
@@ -37,7 +37,7 @@ public class TCCallerphone {
             return ChatStatus.SUCCESS_CALLER;
         }
 
-        ConversationStorage convo = queue.get(0);
+        TCConversation convo = queue.get(0);
         queue.remove(0);
 
         convo.setReceiverAnonymous(anon);
@@ -71,7 +71,7 @@ public class TCCallerphone {
             return new MessageCreateBuilder().setContent(ChatResponse.NO_CALL.toString()).build();
         }
 
-        ConversationStorage convo = getCall(channel.getId());
+        TCConversation convo = getCall(channel.getId());
 
         if (convo == null) {
             return new MessageCreateBuilder().setContent(ChatResponse.NO_CALL.toString()).build();
@@ -116,11 +116,11 @@ public class TCCallerphone {
         return new MessageCreateBuilder().setContent(ChatResponse.HUNG_UP.toString()).setComponents(ActionRow.of(reportButton)).build();
     }
 
-    private static void log(ConversationStorage convo) {
-        List<MessageStorage> data = convo.getMessages();
+    private static void log(TCConversation convo) {
+        List<TCMessage> data = convo.getMessages();
 
         StringBuilder dataString = new StringBuilder();
-        for (MessageStorage m : data)
+        for (TCMessage m : data)
             dataString.append(m).append("\n");
 
 
@@ -131,11 +131,11 @@ public class TCCallerphone {
         }
     }
 
-    public static void report(ConversationStorage convo) {
-        List<MessageStorage> data = convo.getMessages();
+    public static void report(TCConversation convo) {
+        List<TCMessage> data = convo.getMessages();
 
         StringBuilder dataString = new StringBuilder();
-        for (MessageStorage m : data)
+        for (TCMessage m : data)
             dataString.append(m).append("\n");
 
 
@@ -146,7 +146,7 @@ public class TCCallerphone {
         }
     }
 
-    public static ConversationStorage getCall(String tc) {
+    public static TCConversation getCall(String tc) {
         return conversationMap.getOrDefault(tc, null);
     }
 

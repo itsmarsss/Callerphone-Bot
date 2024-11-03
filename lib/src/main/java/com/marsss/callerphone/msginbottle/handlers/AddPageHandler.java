@@ -10,7 +10,7 @@ import net.dv8tion.jda.api.interactions.modals.Modal;
 public class AddPageHandler implements IButtonInteraction {
     @Override
     public void runClick(ButtonInteraction e) {
-        String uuid = e.getButton().getId().split("-")[1];
+        String id = e.getButton().getId().split("-")[1];
 
         TextInput message = TextInput.create("message", "Message (10 - 1500 characters)", TextInputStyle.PARAGRAPH)
                 .setPlaceholder("Write your message in a bottle here")
@@ -25,7 +25,7 @@ public class AddPageHandler implements IButtonInteraction {
                 .setValue("true")
                 .build();
 
-        Modal modal = Modal.create("sendMIB-" + uuid, "Add Page To Message In Bottle")
+        Modal modal = Modal.create("sendMIB-" + id, "Add Page To Message In Bottle")
                 .addComponents(ActionRow.of(message), ActionRow.of(signed))
                 .build();
 

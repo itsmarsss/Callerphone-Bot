@@ -6,8 +6,8 @@ import com.marsss.callerphone.Callerphone;
 
 import com.marsss.callerphone.Response;
 import com.marsss.callerphone.ToolSet;
-import com.marsss.callerphone.tccallerphone.entities.ConversationStorage;
-import com.marsss.callerphone.tccallerphone.entities.MessageStorage;
+import com.marsss.callerphone.tccallerphone.entities.TCConversation;
+import com.marsss.callerphone.tccallerphone.entities.TCMessage;
 import com.marsss.database.categories.Cooldown;
 import com.marsss.database.categories.Users;
 import net.dv8tion.jda.api.entities.Member;
@@ -56,7 +56,7 @@ public class TCCallerphoneListener extends ListenerAdapter {
 
         final String CHANNELID = event.getChannel().getId();
 
-        ConversationStorage c = TCCallerphone.getCall(CHANNELID);
+        TCConversation c = TCCallerphone.getCall(CHANNELID);
 
         if (c == null) {
             return;
@@ -64,7 +64,7 @@ public class TCCallerphoneListener extends ListenerAdapter {
 
         String[] flagged = ToolSet.messageFlagged(messageRaw);
 
-        c.addMessage(new MessageStorage(c.getCallerTCId().equals(CHANNELID), MESSAGE.getAuthor().getId(), CHANNELID, messageRaw, flagged, Instant.now().getEpochSecond()));
+        c.addMessage(new TCMessage(c.getCallerTCId().equals(CHANNELID), MESSAGE.getAuthor().getId(), CHANNELID, messageRaw, flagged, Instant.now().getEpochSecond()));
 
         messageRaw = ToolSet.filterMessage(messageRaw);
 
@@ -92,7 +92,7 @@ public class TCCallerphoneListener extends ListenerAdapter {
 
     }
 
-    private void sendMessage(ConversationStorage c, boolean anon, String destination, String content, Message msg) {
+    private void sendMessage(TCConversation c, boolean anon, String destination, String content, Message msg) {
         final TextChannel DESTINATION_CHANNEL = ToolSet.getTextChannel(destination);
 
         if (anon) {
@@ -118,9 +118,9 @@ public class TCCallerphoneListener extends ListenerAdapter {
         }
     }
 
-    private void terminate(ConversationStorage c) {
+    private void terminate(TCConversation c) {
         StringBuilder dataString = new StringBuilder();
-        for (MessageStorage m : c.getMessages())
+        for (TCMessage m : c.getMessages())
             dataString.append(m).append("\n");
 
         final TextChannel CALLER_CHANNEL = ToolSet.getTextChannel(c.getCallerTCId());

@@ -2,7 +2,7 @@ package com.marsss.callerphone.tccallerphone.handlers;
 
 import com.marsss.callerphone.ToolSet;
 import com.marsss.callerphone.tccallerphone.TCCallerphone;
-import com.marsss.callerphone.tccallerphone.entities.ConversationStorage;
+import com.marsss.callerphone.tccallerphone.entities.TCConversation;
 import com.marsss.commandType.IButtonInteraction;
 import com.marsss.database.categories.Chats;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
@@ -15,7 +15,7 @@ public class ReportChatHandler implements IButtonInteraction {
         String[] reportData = e.getButton().getId().split("-");
         String id = reportData[1];
 
-        ConversationStorage convo = Chats.queryChat(id);
+        TCConversation convo = Chats.queryChat(id);
 
         if(convo == null) {
             e.reply(ToolSet.CP_EMJ + "Error with reporting, you can also report during a chat with </reportchat:1075168978189692948>!").setEphemeral(true).queue();

@@ -9,7 +9,6 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.Aggregates;
 import com.mongodb.client.result.InsertOneResult;
 import org.bson.Document;
-import org.bson.types.ObjectId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,6 +16,8 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
+import static com.marsss.database.DatabaseUtil.getOrDefault;
 
 public class MIB {
     public static final Logger logger = LoggerFactory.getLogger(MIB.class);
@@ -36,18 +37,17 @@ public class MIB {
                     .append("signed", anon)
                     .append("released", time));
 
-            String midUUID = ToolSet.generateUUID();
+            String mib = ToolSet.generateUID();
 
             InsertOneResult result = mibCollection.insertOne(new Document()
-                    .append("_id", new ObjectId())
-                    .append("id", midUUID)
+                    .append("id", mib)
                     .append("pages", pages)
                     .append("created", time));
 
             if (result.getInsertedId() != null) {
                 logger.info("Added new MIB: {}", id);
             } else {
-                logger.error("MIB addition not acknowledged for MIB: {}", id);
+                logger.error("MIB addition not inserted for MIB: {}", id);
             }
             return true;
         } catch (MongoException me) {
@@ -74,26 +74,26 @@ public class MIB {
         return null;
     }
 
-    public static Bottle getBottle(String uuid) {
+    public static Bottle getBottle(String id) {
         MongoCollection<Document> mibCollection = Callerphone.dbConnector.getMibCollection();
 
         try {
-            Document mibDocument = mibCollection.find(new Document("id", uuid)).first();
+            Document mibDocument = mibCollection.find(new Document("id", id)).first();
 
-            logger.info("MIB: {}", uuid);
+            logger.info("MIB: {}", id);
             return parseDocumentToBottle(mibDocument);
         } catch (MongoException me) {
-            logger.error("Unable to get MIB {}: {}", uuid, me.getMessage());
+            logger.error("Unable to get MIB {}: {}", id, me.getMessage());
             return null;
         }
     }
 
 
-    public static boolean addMIBPage(String id, String message, boolean anon, String uuid) {
+    public static boolean addMIBPage(String id, String message, boolean anon, String mibId) {
         MongoCollection<Document> collection = Callerphone.dbConnector.getMibCollection();
 
         try {
-            Bottle bottle = getBottle(uuid);
+            Bottle bottle = getBottle(mibId);
 
             if (bottle == null) {
                 return false;
@@ -116,38 +116,38 @@ public class MIB {
                 updatedPages.add(pageDoc);
             }
 
-            collection.updateOne(new Document("id", uuid), new Document("$set", new Document("pages", updatedPages)));
+            collection.updateOne(new Document("id", mibId), new Document("$set", new Document("pages", updatedPages)));
 
             return true;
         } catch (MongoException me) {
-            logger.error("Unable to update MIB {}: {}", uuid, me.getMessage());
+            logger.error("Unable to update MIB {}: {}", mibId, me.getMessage());
             return false;
         }
     }
 
 
-    private static Bottle parseDocumentToBottle(Document mib) {
-        String uuid = mib.containsKey("id") ? mib.getString("id") : "unknown";
+    private static Bottle parseDocumentToBottle(Document mibDocument) {
+        String id = getOrDefault(mibDocument, "id", "unknown");
 
-        List<Document> pagesDocs = mib.getList("pages", Document.class);
+        List<Document> pagesDocs = mibDocument.getList("pages", Document.class);
         ArrayList<Page> pages = new ArrayList<>();
 
         if (pagesDocs != null) {
             for (Document pageDoc : pagesDocs) {
                 try {
-                    int pageNum = pageDoc.containsKey("pageNum") ? pageDoc.getInteger("pageNum") : Integer.MAX_VALUE;
-                    String author = pageDoc.containsKey("author") ? pageDoc.getString("author") : "unknown";
-                    String message = pageDoc.containsKey("message") ? pageDoc.getString("message") : "*No found content.*";
-                    boolean signed = pageDoc.containsKey("signed") ? pageDoc.getBoolean("signed") : false;
-                    long released = pageDoc.containsKey("released") ? pageDoc.getLong("released") : Instant.now().getEpochSecond();
+                    int pageNum = (int) getOrDefault(pageDoc, "pageNum", Integer.MAX_VALUE);
+                    String author = getOrDefault(pageDoc, "author", "unknown");
+                    String message = getOrDefault(pageDoc, "message", "*No content found*");
+                    boolean signed = getOrDefault(pageDoc, "signed", false);
+                    long released = getOrDefault(pageDoc, "released", Instant.now().getEpochSecond());
 
                     pages.add(new Page(pageNum, author, message, signed, released));
                 } catch (Exception e) {
-                    logger.error("Error parsing page id {}: {}", uuid, e.getMessage());
+                    logger.error("Error parsing page id {}: {}", id, e.getMessage());
                 }
             }
         }
 
-        return new Bottle(uuid, pages);
+        return new Bottle(id, pages);
     }
 }

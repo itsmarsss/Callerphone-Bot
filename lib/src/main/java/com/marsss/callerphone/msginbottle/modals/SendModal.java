@@ -14,7 +14,7 @@ public class SendModal implements IModalInteraction {
     public void runModal(ModalInteractionEvent e) {
         String[] sendData = e.getModalId().split("-");
 
-        String uuid = sendData.length > 1 ? sendData[1] : null;
+        String id = sendData.length > 1 ? sendData[1] : null;
 
         String message = e.getValue("message").getAsString();
         String messageFiltered = ToolSet.filterMessage(message);
@@ -36,7 +36,7 @@ public class SendModal implements IModalInteraction {
             return;
         }
 
-        MIBStatus stat = MessageInBottle.sendBottle(e.getUser().getId(), message, signed, uuid);
+        MIBStatus stat = MessageInBottle.sendBottle(e.getUser().getId(), message, signed, id);
 
         switch (stat) {
             case RATE_LIMITED:

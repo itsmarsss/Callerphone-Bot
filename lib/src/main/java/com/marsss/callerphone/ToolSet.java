@@ -39,7 +39,7 @@ public class ToolSet {
         CP_CALL = Callerphone.config.getCallerphoneCall();
     }
 
-    public static String generateUUID() {
+    public static String generateUID() {
         return UUID.randomUUID().toString().replace("-", "");
     }
 

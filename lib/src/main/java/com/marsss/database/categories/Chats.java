@@ -1,8 +1,8 @@
 package com.marsss.database.categories;
 
 import com.marsss.callerphone.Callerphone;
-import com.marsss.callerphone.tccallerphone.entities.ConversationStorage;
-import com.marsss.callerphone.tccallerphone.entities.MessageStorage;
+import com.marsss.callerphone.tccallerphone.entities.TCConversation;
+import com.marsss.callerphone.tccallerphone.entities.TCMessage;
 import com.mongodb.MongoException;
 import com.mongodb.client.MongoCollection;
 import org.bson.Document;
@@ -13,10 +13,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static com.marsss.database.DatabaseUtil.getOrDefault;
+
 public class Chats {
     public static final Logger logger = LoggerFactory.getLogger(Chats.class);
 
-    public static boolean createChat(ConversationStorage convo) {
+    public static boolean createChat(TCConversation convo) {
         MongoCollection<Document> chatsCollection = Callerphone.dbConnector.getChatsCollection();
 
         try {
@@ -34,7 +36,7 @@ public class Chats {
                     .append("report", convo.getReport());
 
             List<Document> messageDocs = new ArrayList<>();
-            for (MessageStorage message : convo.getMessages()) {
+            for (TCMessage message : convo.getMessages()) {
                 Document messageDoc = new Document()
                         .append("caller", message.isCaller())
                         .append("author", message.getAuthor())
@@ -55,38 +57,37 @@ public class Chats {
         return false;
     }
 
-    public static ConversationStorage queryChat(String id) {
+    public static TCConversation queryChat(String id) {
         MongoCollection<Document> chatsCollection = Callerphone.dbConnector.getChatsCollection();
 
         try {
-            Document chatDocument = chatsCollection.find(new Document("id", id)).first();
+            Document conversationDocument = chatsCollection.find(new Document("id", id)).first();
 
-            ConversationStorage conversation = new ConversationStorage();
+            TCConversation conversation = new TCConversation();
+            conversation.setId(getOrDefault(conversationDocument, "id", "unknown"));
+            conversation.setParticipants(getOrDefault(conversationDocument, "participants", new ArrayList<>(), String.class));
+            conversation.setCallerTCId(getOrDefault(conversationDocument, "callerTCId", "unknown"));
+            conversation.setReceiverTCId(getOrDefault(conversationDocument, "receiverTCId", "unknown"));
+            conversation.setCallerLastMessage(getOrDefault(conversationDocument, "callerLastMessage", -1));
+            conversation.setReceiverLastMessage(getOrDefault(conversationDocument, "receiverLastMessage", -1));
+            conversation.setCallerAnonymous(getOrDefault(conversationDocument, "callerAnonymous", false));
+            conversation.setReceiverAnonymous(getOrDefault(conversationDocument, "receiverAnonymous", false));
+            conversation.setStarted(getOrDefault(conversationDocument, "started", -1));
+            conversation.setEnded(getOrDefault(conversationDocument, "ended", -1));
+            conversation.setReport(getOrDefault(conversationDocument, "report", false));
 
-            conversation.setId(chatDocument.containsKey("id") ? chatDocument.getString("id") : "unknown");
-            conversation.setParticipants(chatDocument.containsKey("participants") ? chatDocument.getList("participants", String.class) : new ArrayList<>());
-            conversation.setCallerTCId(chatDocument.containsKey("callerTCId") ? chatDocument.getString("callerTCId") : "-1");
-            conversation.setReceiverTCId(chatDocument.containsKey("receiverTCId") ? chatDocument.getString("receiverTCId") : "-1");
-            conversation.setCallerLastMessage(chatDocument.containsKey("callerLastMessage") ? chatDocument.getLong("callerLastMessage") : -1);
-            conversation.setReceiverLastMessage(chatDocument.containsKey("receiverLastMessage") ? chatDocument.getLong("receiverLastMessage") : -1);
-            conversation.setCallerAnonymous(chatDocument.containsKey("callerAnonymous") ? chatDocument.getBoolean("callerAnonymous") : false);
-            conversation.setReceiverAnonymous(chatDocument.containsKey("receiverAnonymous") ? chatDocument.getBoolean("receiverAnonymous") : false);
-            conversation.setStarted(chatDocument.containsKey("started") ? chatDocument.getLong("started") : -1);
-            conversation.setEnded(chatDocument.containsKey("ended") ? chatDocument.getLong("ended") : -1);
-            conversation.setReport(chatDocument.containsKey("report") ? chatDocument.getBoolean("report") : false);
-
-            List<MessageStorage> messages = new ArrayList<>();
-            List<Document> messageDocuments = chatDocument.getList("messages", Document.class);
+            List<TCMessage> messages = new ArrayList<>();
+            List<Document> messageDocuments = conversationDocument.getList("messages", Document.class);
 
             for (Document messageDocument : messageDocuments) {
-                MessageStorage message = new MessageStorage();
+                TCMessage message = new TCMessage();
 
-                message.setCaller(messageDocument.containsKey("caller") ? messageDocument.getBoolean("caller") : false);
-                message.setAuthor(messageDocument.containsKey("author") ? messageDocument.getString("author") : "-1");
-                message.setChannel(messageDocument.containsKey("channel") ? messageDocument.getString("channel") : "-1");
-                message.setContent(messageDocument.containsKey("content") ? messageDocument.getString("content") : "unknown");
-                message.setFlags(messageDocument.containsKey("flags") ? messageDocument.getList("flags", String.class).toArray(new String[0]) : new String[0]);
-                message.setSent(messageDocument.containsKey("sent") ? messageDocument.getLong("sent") : -1);
+                message.setCaller(getOrDefault(messageDocument, "caller", false));
+                message.setAuthor(getOrDefault(messageDocument, "author", "unknown"));
+                message.setChannel(getOrDefault(messageDocument, "channel", "unknown"));
+                message.setContent(getOrDefault(messageDocument, "content", "unknown"));
+                message.setFlags(getOrDefault(conversationDocument, "participants", new ArrayList<>(), String.class).toArray(new String[0]));
+                message.setSent(getOrDefault(messageDocument, "sent", -1));
 
                 messages.add(message);
             }
