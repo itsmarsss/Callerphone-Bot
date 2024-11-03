@@ -1,11 +1,13 @@
 package com.marsss.callerphone.msginbottle;
 
+import com.marsss.callerphone.Callerphone;
 import com.marsss.callerphone.ToolSet;
 import com.marsss.callerphone.msginbottle.entities.Bottle;
 import com.marsss.callerphone.msginbottle.entities.Page;
 import com.marsss.database.categories.MIB;
 import com.marsss.database.categories.Users;
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder;
@@ -20,13 +22,14 @@ public class MessageInBottle {
     public static final Logger logger = LoggerFactory.getLogger(MessageInBottle.class);
 
     public static MIBStatus sendBottle(String id, String message, boolean anon, String mibId) {
-        boolean stat = mibId == null ? MIB.createMIB(id, message, anon) : MIB.addMIBPage(id, message, anon, mibId);
+        Bottle bottle = mibId == null ? MIB.createMIB(id, message, anon) : MIB.addMIBPage(id, message, anon, mibId);
 
-        if (stat) {
-            return MIBStatus.SENT;
+        if (bottle == null) {
+            return MIBStatus.ERROR;
         }
 
-        return MIBStatus.ERROR;
+        log(bottle);
+        return MIBStatus.SENT;
     }
 
     public static Bottle findBottle() {
@@ -79,5 +82,14 @@ public class MessageInBottle {
         }
 
         return null;
+    }
+
+    private static void log(Bottle bottle) {
+        MessageCreateData message = createMessage(bottle, bottle.getPages().size() - 1);
+        final TextChannel TEMP_CHANNEL = ToolSet.getTextChannel(Callerphone.config.getTempChatChannel());
+
+        if (TEMP_CHANNEL != null) {
+            TEMP_CHANNEL.sendMessage("**ID:** " + bottle.getId()).addEmbeds(message.getEmbeds()).queue();
+        }
     }
 }

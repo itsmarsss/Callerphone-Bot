@@ -13,6 +13,10 @@ public class DatabaseUtil {
         return document.containsKey(key) ? document.getLong(key) : defaultValue;
     }
 
+    public static int getOrDefaultInt(Document document, String key, int defaultValue) {
+        return document.containsKey(key) ? document.getInteger(key) : defaultValue;
+    }
+
     public static boolean getOrDefault(Document document, String key, boolean defaultValue) {
         return document.containsKey(key) ? document.getBoolean(key) : defaultValue;
     }

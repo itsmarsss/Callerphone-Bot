@@ -18,11 +18,12 @@ import java.util.Collections;
 import java.util.List;
 
 import static com.marsss.database.DatabaseUtil.getOrDefault;
+import static com.marsss.database.DatabaseUtil.getOrDefaultInt;
 
 public class MIB {
     public static final Logger logger = LoggerFactory.getLogger(MIB.class);
 
-    public static boolean createMIB(String id, String message, boolean anon) {
+    public static Bottle createMIB(String id, String message, boolean anon) {
         MongoCollection<Document> mibCollection = Callerphone.dbConnector.getMibsCollection();
 
         try {
@@ -37,10 +38,10 @@ public class MIB {
                     .append("signed", anon)
                     .append("released", time));
 
-            String mib = ToolSet.generateUID();
+            String mibId = ToolSet.generateUID();
 
             InsertOneResult result = mibCollection.insertOne(new Document()
-                    .append("id", mib)
+                    .append("id", mibId)
                     .append("pages", pages)
                     .append("created", time));
 
@@ -49,11 +50,11 @@ public class MIB {
             } else {
                 logger.error("MIB addition not inserted for MIB: {}", id);
             }
-            return true;
+            return getBottle(mibId);
         } catch (MongoException me) {
             logger.error("Unable to add new MIB: {}", me.getMessage());
         }
-        return false;
+        return null;
     }
 
     public static Bottle findBottle() {
@@ -89,14 +90,14 @@ public class MIB {
     }
 
 
-    public static boolean addMIBPage(String id, String message, boolean anon, String mibId) {
+    public static Bottle addMIBPage(String id, String message, boolean anon, String mibId) {
         MongoCollection<Document> collection = Callerphone.dbConnector.getMibsCollection();
 
         try {
             Bottle bottle = getBottle(mibId);
 
             if (bottle == null) {
-                return false;
+                return null;
             }
 
             int newPageNum = bottle.getPages().size();
@@ -118,10 +119,10 @@ public class MIB {
 
             collection.updateOne(new Document("id", mibId), new Document("$set", new Document("pages", updatedPages)));
 
-            return true;
+            return bottle;
         } catch (MongoException me) {
             logger.error("Unable to update MIB {}: {}", mibId, me.getMessage());
-            return false;
+            return null;
         }
     }
 
@@ -129,13 +130,14 @@ public class MIB {
     private static Bottle parseDocumentToBottle(Document mibDocument) {
         String id = getOrDefault(mibDocument, "id", "unknown");
 
-        List<Document> pagesDocs = getOrDefault(mibDocument, "messages", new ArrayList<>(), Document.class);
+        List<Document> pagesDocs = getOrDefault(mibDocument, "pages", new ArrayList<>(), Document.class);
+
         ArrayList<Page> pages = new ArrayList<>();
 
         if (pagesDocs != null) {
             for (Document pageDoc : pagesDocs) {
                 try {
-                    int pageNum = (int) getOrDefault(pageDoc, "pageNum", Integer.MAX_VALUE);
+                    int pageNum = getOrDefaultInt(pageDoc, "pageNum", -1);
                     String author = getOrDefault(pageDoc, "author", "unknown");
                     String message = getOrDefault(pageDoc, "message", "*No content found*");
                     boolean signed = getOrDefault(pageDoc, "signed", false);
@@ -147,7 +149,6 @@ public class MIB {
                 }
             }
         }
-
         return new Bottle(id, pages);
     }
 }
