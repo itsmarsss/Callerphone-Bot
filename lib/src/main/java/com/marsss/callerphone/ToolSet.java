@@ -94,8 +94,15 @@ public class ToolSet {
         if (messageRaw.length() > 1500)
             flagged.add("length");
 
-        for (String ftr : Filter.filter) {
+        for (String ftr : Filter.containsfilter) {
             if(messageRaw.contains(ftr)) {
+                flagged.add("profanity");
+                break;
+            }
+        }
+
+        for (String ftr : Filter.wordsfilter) {
+            if(messageRaw.contains(" " + ftr + " ")) {
                 flagged.add("profanity");
                 break;
             }
@@ -114,12 +121,20 @@ public class ToolSet {
         if (messageRaw.length() > 1500)
             return Response.MESSAGE_TOO_LONG.toString();
 
-        for (String ftr : Filter.filter) {
+        for (String ftr : Filter.containsfilter) {
             StringBuilder rep = new StringBuilder();
             for (int i = 0; i < ftr.length(); i++) {
                 rep.append("#");
             }
             messageRaw = messageRaw.replaceAll("(?i)" + ftr, rep.toString());
+        }
+
+        for (String ftr : Filter.wordsfilter) {
+            StringBuilder rep = new StringBuilder();
+            for (int i = 0; i < ftr.length(); i++) {
+                rep.append("#");
+            }
+            messageRaw = messageRaw.replaceAll("(?i)" + ftr, " " + rep.toString() + " ");
         }
 
         return messageRaw;

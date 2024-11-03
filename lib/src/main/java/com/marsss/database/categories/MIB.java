@@ -23,7 +23,7 @@ public class MIB {
     public static final Logger logger = LoggerFactory.getLogger(MIB.class);
 
     public static boolean createMIB(String id, String message, boolean anon) {
-        MongoCollection<Document> mibCollection = Callerphone.dbConnector.getMibCollection();
+        MongoCollection<Document> mibCollection = Callerphone.dbConnector.getMibsCollection();
 
         try {
             List<Document> pages = new ArrayList<>();
@@ -57,7 +57,7 @@ public class MIB {
     }
 
     public static Bottle findBottle() {
-        MongoCollection<Document> mibCollection = Callerphone.dbConnector.getMibCollection();
+        MongoCollection<Document> mibCollection = Callerphone.dbConnector.getMibsCollection();
 
         try {
             List<Document> randomDocument = mibCollection.aggregate(
@@ -75,7 +75,7 @@ public class MIB {
     }
 
     public static Bottle getBottle(String id) {
-        MongoCollection<Document> mibCollection = Callerphone.dbConnector.getMibCollection();
+        MongoCollection<Document> mibCollection = Callerphone.dbConnector.getMibsCollection();
 
         try {
             Document mibDocument = mibCollection.find(new Document("id", id)).first();
@@ -90,7 +90,7 @@ public class MIB {
 
 
     public static boolean addMIBPage(String id, String message, boolean anon, String mibId) {
-        MongoCollection<Document> collection = Callerphone.dbConnector.getMibCollection();
+        MongoCollection<Document> collection = Callerphone.dbConnector.getMibsCollection();
 
         try {
             Bottle bottle = getBottle(mibId);
@@ -129,7 +129,7 @@ public class MIB {
     private static Bottle parseDocumentToBottle(Document mibDocument) {
         String id = getOrDefault(mibDocument, "id", "unknown");
 
-        List<Document> pagesDocs = mibDocument.getList("pages", Document.class);
+        List<Document> pagesDocs = getOrDefault(mibDocument, "messages", new ArrayList<>(), Document.class);
         ArrayList<Page> pages = new ArrayList<>();
 
         if (pagesDocs != null) {

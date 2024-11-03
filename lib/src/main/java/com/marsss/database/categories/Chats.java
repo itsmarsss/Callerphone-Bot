@@ -77,7 +77,7 @@ public class Chats {
             conversation.setReport(getOrDefault(conversationDocument, "report", false));
 
             List<TCMessage> messages = new ArrayList<>();
-            List<Document> messageDocuments = conversationDocument.getList("messages", Document.class);
+            List<Document> messageDocuments = getOrDefault(conversationDocument, "messages", new ArrayList<>(), Document.class);
 
             for (Document messageDocument : messageDocuments) {
                 TCMessage message = new TCMessage();

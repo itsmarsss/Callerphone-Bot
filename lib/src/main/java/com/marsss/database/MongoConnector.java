@@ -10,10 +10,10 @@ import org.bson.Document;
 public class MongoConnector {
 
     private MongoDatabase mongoDatabase;
-    private MongoCollection<Document> filterCollection;
+    private MongoCollection<Document> filtersCollection;
     private MongoCollection<Document> usersCollection;
     private MongoCollection<Document> poolsCollection;
-    private MongoCollection<Document> mibCollection;
+    private MongoCollection<Document> mibsCollection;
     private MongoCollection<Document> chatsCollection;
 
     public MongoConnector() {
@@ -29,10 +29,10 @@ public class MongoConnector {
             MongoDatabase db = mongoClient.getDatabase("callerphone-bot");
 
             setMongoDatabase(db);
-            setFilterCollection(db.getCollection("filter"));
+            setFiltersCollection(db.getCollection("filters"));
             setUsersCollection(db.getCollection("users"));
             setPoolsCollection(db.getCollection("pools"));
-            setMibCollection(db.getCollection("mib"));
+            setMibsCollection(db.getCollection("mibs"));
             setChatsCollection(db.getCollection("chats"));
 
             Filter.getFilter();
@@ -51,12 +51,12 @@ public class MongoConnector {
         this.mongoDatabase = mongoDatabase;
     }
 
-    public MongoCollection<Document> getFilterCollection() {
-        return filterCollection;
+    public MongoCollection<Document> getFiltersCollection() {
+        return filtersCollection;
     }
 
-    public void setFilterCollection(MongoCollection<Document> filterCollection) {
-        this.filterCollection = filterCollection;
+    public void setFiltersCollection(MongoCollection<Document> filtersCollection) {
+        this.filtersCollection = filtersCollection;
     }
 
     public MongoCollection<Document> getUsersCollection() {
@@ -75,12 +75,12 @@ public class MongoConnector {
         this.poolsCollection = poolsCollection;
     }
 
-    public MongoCollection<Document> getMibCollection() {
-        return mibCollection;
+    public MongoCollection<Document> getMibsCollection() {
+        return mibsCollection;
     }
 
-    public void setMibCollection(MongoCollection<Document> mibCollection) {
-        this.mibCollection = mibCollection;
+    public void setMibsCollection(MongoCollection<Document> mibsCollection) {
+        this.mibsCollection = mibsCollection;
     }
 
     public MongoCollection<Document> getChatsCollection() {
