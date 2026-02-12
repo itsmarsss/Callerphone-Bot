@@ -15,7 +15,7 @@ public class ReportHandler implements IButtonInteraction {
         String pageNum = reportData[2];
 
         final TextChannel REPORT_CHANNEL = ToolSet.getTextChannel(Callerphone.config.getReportChatChannel());
-        REPORT_CHANNEL.sendMessage("**UUID**: " + id + "\n**Page**: " + pageNum).addEmbeds(e.getMessage().getEmbeds()).queue();
+        REPORT_CHANNEL.sendMessage("**ID**: " + id + "\n**Page**: " + pageNum).addEmbeds(e.getMessage().getEmbeds()).queue();
 
         e.reply(ToolSet.CP_EMJ + "Reported!").setEphemeral(true).queue();
     }

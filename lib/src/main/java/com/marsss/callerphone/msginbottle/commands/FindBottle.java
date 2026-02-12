@@ -36,7 +36,7 @@ public class FindBottle implements ISlashCommand {
         }
 
         Cooldown.setMIBFindCoolDown(e.getMember().getId());
-        e.reply(mibMessage).setEphemeral(true).queueAfter(1, TimeUnit.SECONDS);
+        e.reply(mibMessage).setEphemeral(true).queue();
     }
 
 

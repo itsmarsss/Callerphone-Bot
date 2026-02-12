@@ -36,7 +36,7 @@ public class SendModal implements IModalInteraction {
             return;
         }
 
-        MIBStatus stat = MessageInBottle.sendBottle(e.getUser().getId(), message, signed, id);
+        MIBStatus stat = MessageInBottle.sendBottle(e.getUser().getId(), messageFiltered, signed, id);
 
         switch (stat) {
             case RATE_LIMITED:
