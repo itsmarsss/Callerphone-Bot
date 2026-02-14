@@ -7,6 +7,7 @@ import com.marsss.callerphone.tccallerphone.ChatStatus;
 import com.marsss.callerphone.tccallerphone.TCCallerphone;
 import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.interactions.InteractionContextType;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
@@ -70,6 +71,6 @@ public class Chat implements ISlashCommand {
                         new SubcommandData("anonymous", "Chat with people from other servers anonymously."),
                         new SubcommandData("ffandanon", "Chat with people from other servers anonymously and with profanity blocked.")
                 )
-                .setGuildOnly(true);
+                .setContexts(InteractionContextType.GUILD);
     }
 }

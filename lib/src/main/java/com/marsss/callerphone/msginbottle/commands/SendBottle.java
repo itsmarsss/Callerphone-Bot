@@ -4,12 +4,13 @@ import com.marsss.callerphone.ToolSet;
 import com.marsss.commandType.ISlashCommand;
 import com.marsss.database.categories.Cooldown;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.interactions.InteractionContextType;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
-import net.dv8tion.jda.api.interactions.components.ActionRow;
-import net.dv8tion.jda.api.interactions.components.text.TextInput;
-import net.dv8tion.jda.api.interactions.components.text.TextInputStyle;
-import net.dv8tion.jda.api.interactions.modals.Modal;
+import net.dv8tion.jda.api.components.label.Label;
+import net.dv8tion.jda.api.components.textinput.TextInput;
+import net.dv8tion.jda.api.components.textinput.TextInputStyle;
+import net.dv8tion.jda.api.modals.Modal;
 
 public class SendBottle implements ISlashCommand {
     @Override
@@ -18,13 +19,13 @@ public class SendBottle implements ISlashCommand {
             e.reply(":warning: **Send MIB Cooldown;** " + ((ToolSet.SENDBOTTLE_COOLDOWN - (System.currentTimeMillis() - Cooldown.getMIBSendCoolDown(e.getMember().getId()))) / 60000) + " minute(s)").setEphemeral(true).queue();
             return;
         }
-        TextInput message = TextInput.create("message", "Message (10 - 1500 characters)", TextInputStyle.PARAGRAPH)
+        TextInput message = TextInput.create("message", TextInputStyle.PARAGRAPH)
                 .setPlaceholder("Write your message in a bottle here")
                 .setMinLength(10)
                 .setMaxLength(1500)
                 .build();
 
-        TextInput signed = TextInput.create("signed", "Page Signed (true | false)", TextInputStyle.SHORT)
+        TextInput signed = TextInput.create("signed", TextInputStyle.SHORT)
                 .setPlaceholder("Set page signed here")
                 .setMinLength(4)
                 .setMaxLength(5)
@@ -33,7 +34,7 @@ public class SendBottle implements ISlashCommand {
 
 
         Modal modal = Modal.create("sendMIB", "Send Message In Bottle")
-                .addComponents(ActionRow.of(message), ActionRow.of(signed))
+                .addComponents(Label.of("Message (10 - 1500 characters)", message), Label.of("Page Signed (true | false)", signed))
                 .build();
 
         e.replyModal(modal).queue();
@@ -53,6 +54,6 @@ public class SendBottle implements ISlashCommand {
     @Override
     public SlashCommandData getCommandData() {
         return Commands.slash(getTriggers()[0], getHelp().split(" - ")[1])
-                .setGuildOnly(true);
+                .setContexts(InteractionContextType.GUILD);
     }
 }

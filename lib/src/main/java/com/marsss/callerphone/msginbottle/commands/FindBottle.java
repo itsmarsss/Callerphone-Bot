@@ -7,6 +7,7 @@ import com.marsss.callerphone.msginbottle.MessageInBottle;
 import com.marsss.commandType.ISlashCommand;
 import com.marsss.database.categories.Cooldown;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.interactions.InteractionContextType;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 import net.dv8tion.jda.api.utils.messages.MessageCreateData;
@@ -53,6 +54,6 @@ public class FindBottle implements ISlashCommand {
     @Override
     public SlashCommandData getCommandData() {
         return Commands.slash(getTriggers()[0], getHelp().split(" - ")[1])
-                .setGuildOnly(true);
+                .setContexts(InteractionContextType.GUILD);
     }
 }

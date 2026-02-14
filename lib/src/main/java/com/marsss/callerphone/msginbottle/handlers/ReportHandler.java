@@ -10,7 +10,7 @@ public class ReportHandler implements IButtonInteraction {
 
     @Override
     public void runClick(ButtonInteraction e) {
-        String[] reportData = e.getButton().getId().split("-");
+        String[] reportData = e.getButton().getCustomId().split("-");
         String id = reportData[1];
         String pageNum = reportData[2];
 

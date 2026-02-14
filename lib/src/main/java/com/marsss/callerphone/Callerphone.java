@@ -76,7 +76,7 @@ public class Callerphone {
             GatewayIntent.GUILD_MESSAGES,
             GatewayIntent.GUILD_MESSAGE_REACTIONS,
             GatewayIntent.GUILD_VOICE_STATES,
-            GatewayIntent.GUILD_EMOJIS_AND_STICKERS,
+            GatewayIntent.GUILD_EXPRESSIONS,
             GatewayIntent.GUILD_INVITES,
             GatewayIntent.DIRECT_MESSAGES,
             GatewayIntent.MESSAGE_CONTENT);

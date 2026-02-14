@@ -16,7 +16,7 @@ import java.util.concurrent.TimeUnit;
 public class TicTacToeHandler implements IButtonInteraction {
     @Override
     public void runClick(ButtonInteraction e) {
-        String[] param = e.getButton().getId().replaceFirst("ttt-", "").split("-");
+        String[] param = e.getButton().getCustomId().replaceFirst("ttt-", "").split("-");
 
 
         TicTacToe game = (TicTacToe) Users.getUser(e.getUser().getId()).getGame(param[1]);

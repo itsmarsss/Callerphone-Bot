@@ -6,6 +6,7 @@ import com.marsss.commandType.ISlashCommand;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.interactions.InteractionContextType;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 
@@ -36,6 +37,6 @@ public class Donate implements ISlashCommand {
     @Override
     public SlashCommandData getCommandData() {
         return Commands.slash(getTriggers()[0], getHelp().split(" - ")[1])
-                .setGuildOnly(true);
+                .setContexts(InteractionContextType.GUILD);
     }
 }

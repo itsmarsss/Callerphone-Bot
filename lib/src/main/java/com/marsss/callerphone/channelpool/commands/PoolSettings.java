@@ -4,12 +4,13 @@ import com.marsss.callerphone.channelpool.ChannelPool;
 import com.marsss.callerphone.channelpool.PoolResponse;
 import com.marsss.commandType.ISlashCommand;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.interactions.InteractionContextType;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
-import net.dv8tion.jda.api.interactions.components.ActionRow;
-import net.dv8tion.jda.api.interactions.components.text.TextInput;
-import net.dv8tion.jda.api.interactions.components.text.TextInputStyle;
-import net.dv8tion.jda.api.interactions.modals.Modal;
+import net.dv8tion.jda.api.components.label.Label;
+import net.dv8tion.jda.api.components.textinput.TextInput;
+import net.dv8tion.jda.api.components.textinput.TextInputStyle;
+import net.dv8tion.jda.api.modals.Modal;
 
 public class PoolSettings implements ISlashCommand {
     @Override
@@ -19,14 +20,14 @@ public class PoolSettings implements ISlashCommand {
             return;
         }
 
-        TextInput publicity = TextInput.create("publicity", "Pool Publicity (true | false)", TextInputStyle.SHORT)
+        TextInput publicity = TextInput.create("publicity", TextInputStyle.SHORT)
                 .setPlaceholder("Set pool publicity here")
                 .setMinLength(4)
                 .setMaxLength(5)
                 .setValue(ChannelPool.getPublicity(e.getChannel().getId()))
                 .build();
 
-        TextInput.Builder passwordBuilder = TextInput.create("password", "Pool Password", TextInputStyle.SHORT)
+        TextInput.Builder passwordBuilder = TextInput.create("password", TextInputStyle.SHORT)
                 .setPlaceholder("Set pool password here")
                 .setMinLength(5)
                 .setMaxLength(30)
@@ -40,7 +41,7 @@ public class PoolSettings implements ISlashCommand {
 
         TextInput password = passwordBuilder.build();
 
-        TextInput capacity = TextInput.create("capacity", "Pool Capacity (1 - 10)", TextInputStyle.SHORT)
+        TextInput capacity = TextInput.create("capacity", TextInputStyle.SHORT)
                 .setPlaceholder("Set pool capacity here")
                 .setMinLength(1)
                 .setMaxLength(2)
@@ -48,7 +49,7 @@ public class PoolSettings implements ISlashCommand {
                 .build();
 
         Modal modal = Modal.create("poolSettings", "Pool Channel Settings")
-                .addComponents(ActionRow.of(publicity), ActionRow.of(password), ActionRow.of(capacity))
+                .addComponents(Label.of("Pool Publicity (true | false)", publicity), Label.of("Pool Password", password), Label.of("Pool Capacity (1 - 10)", capacity))
                 .build();
 
 
@@ -68,6 +69,6 @@ public class PoolSettings implements ISlashCommand {
     @Override
     public SlashCommandData getCommandData() {
         return Commands.slash(getTriggers()[0], getHelp().split(" - ")[1])
-                .setGuildOnly(true);
+                .setContexts(InteractionContextType.GUILD);
     }
 }

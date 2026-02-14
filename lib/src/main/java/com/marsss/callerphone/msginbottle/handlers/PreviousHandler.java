@@ -13,7 +13,7 @@ public class PreviousHandler implements IButtonInteraction {
     public void runClick(ButtonInteraction e) {
         e.deferEdit().queue();
 
-        String[] previousData = e.getButton().getId().split("-");
+        String[] previousData = e.getButton().getCustomId().split("-");
         String id = previousData[1];
         int page = Integer.parseInt(previousData[2]);
 

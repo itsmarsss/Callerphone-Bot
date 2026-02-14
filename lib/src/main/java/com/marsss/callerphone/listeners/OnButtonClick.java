@@ -10,7 +10,7 @@ import org.jetbrains.annotations.NotNull;
 public class OnButtonClick extends ListenerAdapter {
     public void onButtonInteraction(@NotNull ButtonInteractionEvent event) {
         try {
-            String id = event.getButton().getId().split("-")[0];
+            String id = event.getButton().getCustomId().split("-")[0];
             if (Callerphone.btnMap.containsKey(id)) {
                 Callerphone.btnMap.get(id).runClick(event);
                 return;
@@ -18,7 +18,7 @@ public class OnButtonClick extends ListenerAdapter {
             event.reply(
                     ToolSet.CP_EMJ
                             + "Hmmm, the button `"
-                            + event.getButton().getId()
+                            + event.getButton().getCustomId()
                             + "` shouldn't exist! Please join our support server and report this issue. "
                             + Callerphone.config.getSupportServer()
             ).queue();

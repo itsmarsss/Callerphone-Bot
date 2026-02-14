@@ -5,14 +5,14 @@ import com.marsss.callerphone.tccallerphone.TCCallerphone;
 import com.marsss.callerphone.tccallerphone.entities.TCConversation;
 import com.marsss.commandType.IButtonInteraction;
 import com.marsss.database.categories.Chats;
-import net.dv8tion.jda.api.interactions.components.buttons.Button;
+import net.dv8tion.jda.api.components.buttons.Button;
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonInteraction;
 
 public class ReportChatHandler implements IButtonInteraction {
 
     @Override
     public void runClick(ButtonInteraction e) {
-        String[] reportData = e.getButton().getId().split("-");
+        String[] reportData = e.getButton().getCustomId().split("-");
         String id = reportData[1];
 
         TCConversation convo = Chats.queryChat(id);

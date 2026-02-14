@@ -1,24 +1,24 @@
 package com.marsss.callerphone.msginbottle.handlers;
 
 import com.marsss.commandType.IButtonInteraction;
-import net.dv8tion.jda.api.interactions.components.ActionRow;
+import net.dv8tion.jda.api.components.label.Label;
+import net.dv8tion.jda.api.components.textinput.TextInput;
+import net.dv8tion.jda.api.components.textinput.TextInputStyle;
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonInteraction;
-import net.dv8tion.jda.api.interactions.components.text.TextInput;
-import net.dv8tion.jda.api.interactions.components.text.TextInputStyle;
-import net.dv8tion.jda.api.interactions.modals.Modal;
+import net.dv8tion.jda.api.modals.Modal;
 
 public class AddPageHandler implements IButtonInteraction {
     @Override
     public void runClick(ButtonInteraction e) {
-        String id = e.getButton().getId().split("-")[1];
+        String id = e.getButton().getCustomId().split("-")[1];
 
-        TextInput message = TextInput.create("message", "Message (10 - 1500 characters)", TextInputStyle.PARAGRAPH)
+        TextInput message = TextInput.create("message", TextInputStyle.PARAGRAPH)
                 .setPlaceholder("Write your message in a bottle here")
                 .setMinLength(10)
                 .setMaxLength(1500)
                 .build();
 
-        TextInput signed = TextInput.create("signed", "Page Signed (true | false)", TextInputStyle.SHORT)
+        TextInput signed = TextInput.create("signed", TextInputStyle.SHORT)
                 .setPlaceholder("Set page signed here")
                 .setMinLength(4)
                 .setMaxLength(5)
@@ -26,7 +26,7 @@ public class AddPageHandler implements IButtonInteraction {
                 .build();
 
         Modal modal = Modal.create("sendMIB-" + id, "Add Page To Message In Bottle")
-                .addComponents(ActionRow.of(message), ActionRow.of(signed))
+                .addComponents(Label.of("Message (10 - 1500 characters)", message), Label.of("Page Signed (true | false)", signed))
                 .build();
 
         e.replyModal(modal).queue();

@@ -3,8 +3,8 @@ package com.marsss.callerphone.minigames.games;
 import com.marsss.callerphone.Callerphone;
 import com.marsss.callerphone.minigames.IMiniGame;
 import com.marsss.callerphone.minigames.MiniGameStatus;
-import net.dv8tion.jda.api.interactions.components.ActionRow;
-import net.dv8tion.jda.api.interactions.components.buttons.Button;
+import net.dv8tion.jda.api.components.actionrow.ActionRow;
+import net.dv8tion.jda.api.components.buttons.Button;
 import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder;
 import net.dv8tion.jda.api.utils.messages.MessageCreateData;
 
