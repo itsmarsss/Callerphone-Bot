@@ -8,4 +8,4 @@
  */
 
 rootProject.name = 'Callerphone Bot'
-include('lib')
+include('app')
