@@ -1,0 +1,46 @@
+package com.itsmarsss.callerphone.tccallerphone.commands;
+
+import com.itsmarsss.commandType.ISlashCommand;
+import com.itsmarsss.callerphone.tccallerphone.ChatResponse;
+import com.itsmarsss.callerphone.tccallerphone.entities.TCConversation;
+import com.itsmarsss.callerphone.tccallerphone.TCCallerphone;
+import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.interactions.InteractionContextType;
+import net.dv8tion.jda.api.interactions.commands.build.Commands;
+import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
+
+public class ReportChat implements ISlashCommand {
+    @Override
+    public void runSlash(SlashCommandInteractionEvent e) {
+        e.reply(reportChat(e.getChannel())).queue();
+    }
+
+    private String reportChat(MessageChannelUnion channel) {
+        if (!TCCallerphone.hasCall(channel.getId())) {
+            return ChatResponse.CHAT_REPORT_VIA_SERVER.toString();
+        }
+        TCConversation call = TCCallerphone.getCall(channel.getId());
+        if (call != null) {
+            call.setReport(true);
+            return ChatResponse.CHAT_REPORTED_SUCCESS.toString();
+        }
+        return ChatResponse.CHAT_REPORTED_NOT_SUCCESS.toString();
+    }
+
+    @Override
+    public String getHelp() {
+        return "</reportchat:1075168978189692948> - Report current chat with another server.";
+    }
+
+    @Override
+    public String getName() {
+        return "reportchat";
+    }
+
+    @Override
+    public SlashCommandData getCommandData() {
+        return Commands.slash(getName(), getHelp().split(" - ")[1])
+                .setContexts(InteractionContextType.GUILD);
+    }
+}
