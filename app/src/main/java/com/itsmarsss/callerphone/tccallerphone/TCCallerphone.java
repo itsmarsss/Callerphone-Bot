@@ -29,6 +29,11 @@ public class TCCallerphone {
         final Logger logger = LoggerFactory.getLogger(TCCallerphone.class);
         final String CHANNELID = tcchannel.getId();
 
+        // Check if channel already has an active call
+        if (conversationMap.containsKey(CHANNELID)) {
+            return ChatStatus.CONFLICT;
+        }
+
         if (queue.isEmpty()) {
             TCConversation convo = new TCConversation();
 

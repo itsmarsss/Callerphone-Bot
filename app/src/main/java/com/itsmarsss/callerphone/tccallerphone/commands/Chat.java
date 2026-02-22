@@ -45,9 +45,6 @@ public class Chat implements ISlashCommand {
     }
 
     private ChatStatus chatUncensored(MessageChannelUnion channel, boolean anon) {
-        if (TCCallerphone.hasCall(channel.getId())) {
-            return ChatStatus.CONFLICT;
-        }
         return TCCallerphone.onCallCommand(channel, anon);
     }
 
