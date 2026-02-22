@@ -1,7 +1,9 @@
 package com.itsmarsss.callerphone.channelpool.modals;
 
+import com.itsmarsss.callerphone.Constants;
 import com.itsmarsss.callerphone.channelpool.ChannelPool;
 import com.itsmarsss.callerphone.channelpool.PoolResponse;
+import com.itsmarsss.callerphone.utils.InteractionUtils;
 import com.itsmarsss.commandType.IModalInteraction;
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
 
@@ -13,29 +15,16 @@ public class SettingsModal implements IModalInteraction {
             return;
         }
 
-        String publicityStr = e.getValue("publicity").getAsString().toLowerCase();
-        boolean publicity;
+        Boolean publicity = InteractionUtils.parseBooleanFromModal(e, "publicity");
 
-        if (publicityStr.equals("true")) {
-            publicity = true;
-        } else if (publicityStr.equals("false")) {
-            publicity = false;
-        } else {
+        if (publicity == null) {
             e.reply(PoolResponse.INVALID_PUBLICITY.toString()).setEphemeral(true).queue();
             return;
         }
 
-        String capacityStr = e.getValue("capacity").getAsString().toLowerCase();
-        int capacity;
+        Integer capacity = InteractionUtils.parseIntegerFromModal(e, "capacity");
 
-        try {
-            capacity = Integer.parseInt(capacityStr);
-
-            if (capacity < 2 || capacity > 10) {
-                e.reply(PoolResponse.INVALID_CAPACITY.toString()).setEphemeral(true).queue();
-                return;
-            }
-        } catch (Exception ex) {
+        if (capacity == null || capacity < Constants.POOL_MIN_CAPACITY || capacity > Constants.POOL_MAX_CAPACITY) {
             e.reply(PoolResponse.INVALID_CAPACITY.toString()).setEphemeral(true).queue();
             return;
         }

@@ -56,12 +56,7 @@ public class OnSlashCommand extends ListenerAdapter {
                             + Callerphone.config.getSupportServer()
             ).queue();
         } catch (Exception e) {
-            e.printStackTrace();
-            sendError(event, e);
+            ErrorHandler.handleSlashCommandError(event, e);
         }
-    }
-
-    public static void sendError(SlashCommandInteractionEvent event, Exception error) {
-        event.reply(String.format(Response.ERROR_MSG.toString(), error.toString())).queue();
     }
 }

@@ -5,6 +5,7 @@ import com.itsmarsss.callerphone.ToolSet;
 import com.itsmarsss.callerphone.msginbottle.MIBResponse;
 import com.itsmarsss.callerphone.msginbottle.MIBStatus;
 import com.itsmarsss.callerphone.msginbottle.MessageInBottle;
+import com.itsmarsss.callerphone.utils.InteractionUtils;
 import com.itsmarsss.commandType.IModalInteraction;
 import com.itsmarsss.database.categories.Cooldown;
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
@@ -12,7 +13,7 @@ import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
 public class SendModal implements IModalInteraction {
     @Override
     public void runModal(ModalInteractionEvent e) {
-        String[] sendData = e.getModalId().split("-");
+        String[] sendData = InteractionUtils.parseCustomId(e.getModalId());
 
         String id = sendData.length > 1 ? sendData[1] : null;
 
@@ -24,14 +25,9 @@ public class SendModal implements IModalInteraction {
             return;
         }
 
-        String signedStr = e.getValue("signed").getAsString().toLowerCase();
-        boolean signed;
+        Boolean signed = InteractionUtils.parseBooleanFromModal(e, "signed");
 
-        if (signedStr.equals("true")) {
-            signed = true;
-        } else if (signedStr.equals("false")) {
-            signed = false;
-        } else {
+        if (signed == null) {
             e.reply(MIBResponse.INVALID_SIGNED.toString()).setEphemeral(true).queue();
             return;
         }
