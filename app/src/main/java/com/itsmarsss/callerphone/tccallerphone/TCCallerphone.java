@@ -17,11 +17,13 @@ import org.slf4j.LoggerFactory;
 
 import java.time.Instant;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class TCCallerphone {
 
-    public static final List<TCConversation> queue = new ArrayList<>();
-    public static final Map<String, TCConversation> conversationMap = new HashMap<>();
+    public static final Queue<TCConversation> queue = new ConcurrentLinkedQueue<>();
+    public static final Map<String, TCConversation> conversationMap = new ConcurrentHashMap<>();
 
     public static ChatStatus onCallCommand(MessageChannelUnion tcchannel, boolean anon) {
         final Logger logger = LoggerFactory.getLogger(TCCallerphone.class);
@@ -37,8 +39,7 @@ public class TCCallerphone {
             return ChatStatus.SUCCESS_CALLER;
         }
 
-        TCConversation convo = queue.get(0);
-        queue.remove(0);
+        TCConversation convo = queue.poll();
 
         convo.setReceiverAnonymous(anon);
         convo.setReceiverTCId(CHANNELID);
