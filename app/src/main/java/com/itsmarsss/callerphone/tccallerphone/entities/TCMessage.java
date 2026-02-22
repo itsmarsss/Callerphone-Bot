@@ -1,12 +1,9 @@
 package com.itsmarsss.callerphone.tccallerphone.entities;
 
-import com.itsmarsss.callerphone.ToolSet;
-
-import java.util.concurrent.CompletableFuture;
-
 public class TCMessage {
     private boolean caller;
     private String author;
+    private String authorName;
     private String channel;
     private String content;
     private String[] flags;
@@ -14,9 +11,10 @@ public class TCMessage {
 
     public TCMessage() {}
 
-    public TCMessage(boolean caller, String author, String channel, String content, String[] flags, long sent) {
+    public TCMessage(boolean caller, String author, String authorName, String channel, String content, String[] flags, long sent) {
         this.caller = caller;
         this.author = author;
+        this.authorName = authorName;
         this.channel = channel;
         this.content = content;
         this.flags = flags;
@@ -37,6 +35,14 @@ public class TCMessage {
 
     public void setAuthor(String author) {
         this.author = author;
+    }
+
+    public String getAuthorName() {
+        return authorName;
+    }
+
+    public void setAuthorName(String authorName) {
+        this.authorName = authorName;
     }
 
     public String getChannel() {
@@ -72,22 +78,8 @@ public class TCMessage {
     }
 
     public String toString() {
-        CompletableFuture<String> future = new CompletableFuture<>();
-
-        ToolSet.getUser(author).queue(user -> {
-            future.complete(user.getName());
-        });
-
-        try {
-            return (caller ? "Caller " : "Receiver ")
-                    + future.get()
-                    + "(" + author + ")"
-                    + ": " + content;
-        } catch (Exception e) {
-        }
-
         return (caller ? "Caller " : "Receiver ")
-                + "null"
+                + (authorName != null ? authorName : "Unknown")
                 + "(" + author + ")"
                 + ": " + content;
     }

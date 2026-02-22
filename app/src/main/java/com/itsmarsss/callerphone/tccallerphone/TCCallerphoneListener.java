@@ -64,7 +64,7 @@ public class TCCallerphoneListener extends ListenerAdapter {
 
         String[] flagged = ToolSet.messageFlagged(messageRaw);
 
-        c.addMessage(new TCMessage(c.getCallerTCId().equals(CHANNELID), MESSAGE.getAuthor().getId(), CHANNELID, messageRaw, flagged, Instant.now().getEpochSecond()));
+        c.addMessage(new TCMessage(c.getCallerTCId().equals(CHANNELID), MESSAGE.getAuthor().getId(), MESSAGE.getAuthor().getName(), CHANNELID, messageRaw, flagged, Instant.now().getEpochSecond()));
 
         messageRaw = ToolSet.filterMessage(messageRaw);
 

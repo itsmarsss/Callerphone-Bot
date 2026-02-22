@@ -84,6 +84,7 @@ public class Chats {
 
                 message.setCaller(getOrDefault(messageDocument, "caller", false));
                 message.setAuthor(getOrDefault(messageDocument, "author", "unknown"));
+                message.setAuthorName(getOrDefault(messageDocument, "authorName", null));
                 message.setChannel(getOrDefault(messageDocument, "channel", "unknown"));
                 message.setContent(getOrDefault(messageDocument, "content", "unknown"));
                 message.setFlags(getOrDefault(conversationDocument, "participants", new ArrayList<>(), String.class).toArray(new String[0]));
