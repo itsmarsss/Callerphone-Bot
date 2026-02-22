@@ -117,33 +117,31 @@ public class TCCallerphone {
         return new MessageCreateBuilder().setContent(ChatResponse.HUNG_UP.toString()).setComponents(ActionRow.of(reportButton)).build();
     }
 
-    private static void log(TCConversation convo) {
-        List<TCMessage> data = convo.getMessages();
-
+    public static String formatMessages(List<TCMessage> messages) {
         StringBuilder dataString = new StringBuilder();
-        for (TCMessage m : data)
+        for (TCMessage m : messages) {
             dataString.append(m).append("\n");
+        }
+        return dataString.toString();
+    }
 
+    private static void log(TCConversation convo) {
+        String dataString = formatMessages(convo.getMessages());
 
         final TextChannel TEMP_CHANNEL = ToolSet.getTextChannel(Callerphone.config.getTempChatChannel());
         if (TEMP_CHANNEL != null) {
             TEMP_CHANNEL.sendMessage("**ID:** " + convo.getId())
-                    .addFiles(FileUpload.fromData(dataString.toString().getBytes(), convo.getId() + ".txt")).queue();
+                    .addFiles(FileUpload.fromData(dataString.getBytes(), convo.getId() + ".txt")).queue();
         }
     }
 
     public static void report(TCConversation convo) {
-        List<TCMessage> data = convo.getMessages();
-
-        StringBuilder dataString = new StringBuilder();
-        for (TCMessage m : data)
-            dataString.append(m).append("\n");
-
+        String dataString = formatMessages(convo.getMessages());
 
         final TextChannel REPORT_CHANNEL = ToolSet.getTextChannel(Callerphone.config.getReportChatChannel());
         if (REPORT_CHANNEL != null) {
             REPORT_CHANNEL.sendMessage("**ID:** " + convo.getId())
-                    .addFiles(FileUpload.fromData(dataString.toString().getBytes(), convo.getId() + ".txt")).queue();
+                    .addFiles(FileUpload.fromData(dataString.getBytes(), convo.getId() + ".txt")).queue();
         }
     }
 

@@ -119,9 +119,7 @@ public class TCCallerphoneListener extends ListenerAdapter {
     }
 
     private void terminate(TCConversation c) {
-        StringBuilder dataString = new StringBuilder();
-        for (TCMessage m : c.getMessages())
-            dataString.append(m).append("\n");
+        String dataString = TCCallerphone.formatMessages(c.getMessages());
 
         final TextChannel CALLER_CHANNEL = ToolSet.getTextChannel(c.getCallerTCId());
         final TextChannel RECEIVER_CHANNEL = ToolSet.getTextChannel(c.getReceiverTCId());
@@ -133,7 +131,7 @@ public class TCCallerphoneListener extends ListenerAdapter {
             RECEIVER_CHANNEL.sendMessage(Response.CONNECTION_ERROR.toString()).queue();
         }
 
-        final String DATA = dataString.toString();
+        final String DATA = dataString;
         if (c.getReport()) {
             final TextChannel REPORT_CHANNEL = ToolSet.getTextChannel(Callerphone.config.getReportChatChannel());
             if (REPORT_CHANNEL == null) {
