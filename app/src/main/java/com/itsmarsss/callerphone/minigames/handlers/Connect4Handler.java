@@ -1,12 +1,13 @@
 package com.itsmarsss.callerphone.minigames.handlers;
 
+import com.itsmarsss.callerphone.Response;
 import com.itsmarsss.commandType.IButtonInteraction;
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonInteraction;
 
 public class Connect4Handler implements IButtonInteraction {
     @Override
     public void runClick(ButtonInteraction e) {
-
+        e.reply(Response.FEATURE_COMING_SOON.toString()).setEphemeral(true).queue();
     }
 
     @Override
