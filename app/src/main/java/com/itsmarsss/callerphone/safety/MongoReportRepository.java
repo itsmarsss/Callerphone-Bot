@@ -58,7 +58,9 @@ public final class MongoReportRepository implements ReportRepository {
                 .append("status", report.getStatus())
                 .append("assigneeId", report.getAssigneeId())
                 .append("priority", report.getPriority())
-                .append("createdAt", BsonTime.toDate(report.getCreatedAt()));
+                .append("createdAt", BsonTime.toDate(report.getCreatedAt()))
+                .append("evidence", report.getEvidence())
+                .append("autoPaused", report.isAutoPaused());
     }
 
     private static Report fromDocument(Document doc) {
@@ -75,6 +77,9 @@ public final class MongoReportRepository implements ReportRepository {
         report.setAssigneeId(doc.getString("assigneeId"));
         report.setPriority(doc.getInteger("priority", 1));
         report.setCreatedAt(BsonTime.toInstant(doc.get("createdAt")));
+        List<String> evidence = doc.getList("evidence", String.class);
+        report.setEvidence(evidence == null ? List.of() : evidence);
+        report.setAutoPaused(Boolean.TRUE.equals(doc.getBoolean("autoPaused")));
         return report;
     }
 }

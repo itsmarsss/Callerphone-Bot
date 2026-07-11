@@ -53,28 +53,27 @@ public final class DiscoveryService {
 
     public DiscoveryResult next(String viewerId) {
         if (safety.isMatchSuspended(viewerId)) {
-            return DiscoveryResult.fail("Your Match access is restricted.");
+            return DiscoveryResult.fail(EmptyStates.restricted());
         }
         Optional<AgeCohort> cohort = users.findById(viewerId)
                 .filter(u -> u.isEnrolled())
                 .map(u -> u.getAgeCohort());
         if (cohort.isEmpty()) {
-            return DiscoveryResult.fail("Join Match and choose an age group first (`/match join`).");
+            return DiscoveryResult.fail(EmptyStates.notEnrolled());
         }
         Optional<MatchProfile> viewerOpt = profiles.findByUserId(viewerId);
         if (viewerOpt.isEmpty() || viewerOpt.get().getState() != ProfileState.ACTIVE) {
-            return DiscoveryResult.fail("Your profile must be active before browsing.");
+            return DiscoveryResult.fail(EmptyStates.notActive());
         }
         MatchProfile viewer = viewerOpt.get();
         if (!cohort.get().equals(viewer.getAgeCohort())) {
-            return DiscoveryResult.fail("Age group mismatch. Re-select your age group.");
+            return DiscoveryResult.fail("Age group mismatch. Re-select your age group via `/match join`.");
         }
         profileService.resetDailyCountersIfNeeded(viewer);
+        bumpBrowseStreak(viewerId);
         int discoveryLimit = premium.dailyDiscoveries(viewerId);
         if (viewer.getDiscoveryViewsToday() >= discoveryLimit) {
-            return DiscoveryResult.fail(
-                    "Daily discovery limit reached (" + discoveryLimit
-                            + "). Come back tomorrow — Premium will raise this later.");
+            return DiscoveryResult.fail(premium.upsellForLimit("discovery"));
         }
 
         Set<String> exclude = new HashSet<>(decisions.findSubjectIdsForViewer(viewerId));
@@ -103,7 +102,7 @@ public final class DiscoveryService {
             scored.add(new Scored(candidate, score(viewer, candidate)));
         }
         if (scored.isEmpty()) {
-            return DiscoveryResult.fail("No more profiles right now. Check back later.");
+            return DiscoveryResult.fail(EmptyStates.noCandidates());
         }
         scored.sort(Comparator.comparingDouble(Scored::score).reversed());
         int top = Math.min(5, scored.size());
@@ -113,12 +112,33 @@ public final class DiscoveryService {
         return DiscoveryResult.profile(pick, session);
     }
 
+    public BrowseSession reopenSession(String viewerId, String subjectId) {
+        return sessions.create(viewerId, subjectId);
+    }
+
     public Optional<BrowseSession> session(String sessionId) {
         return sessions.find(sessionId);
     }
 
     public void clearSession(String sessionId) {
         sessions.delete(sessionId);
+    }
+
+    private void bumpBrowseStreak(String viewerId) {
+        users.findById(viewerId).ifPresent(user -> {
+            String today = java.time.LocalDate.now(java.time.ZoneOffset.UTC).toString();
+            String yesterday = java.time.LocalDate.now(java.time.ZoneOffset.UTC).minusDays(1).toString();
+            if (today.equals(user.getLastBrowseDay())) {
+                return;
+            }
+            if (yesterday.equals(user.getLastBrowseDay())) {
+                user.setBrowseStreakDays(user.getBrowseStreakDays() + 1);
+            } else {
+                user.setBrowseStreakDays(1);
+            }
+            user.setLastBrowseDay(today);
+            users.save(user);
+        });
     }
 
     private static boolean preferencesCompatible(MatchProfile viewer, MatchProfile candidate) {
@@ -150,8 +170,25 @@ public final class DiscoveryService {
         long recencyBoost = candidate.getLastActiveAt() == null
                 ? 0
                 : Math.max(0, 7 - java.time.Duration.between(candidate.getLastActiveAt(), java.time.Instant.now()).toDays());
+        // Fairness: new profiles get exposure so the inventory feels alive
+        double newProfileBoost = 0;
+        if (candidate.getCreatedAt() != null) {
+            long ageHours = java.time.Duration.between(candidate.getCreatedAt(), java.time.Instant.now()).toHours();
+            if (ageHours < 72) {
+                newProfileBoost = 1.2;
+            } else if (ageHours < 168) {
+                newProfileBoost = 0.5;
+            }
+        }
+        double completion = 0;
+        if (candidate.getBio() != null && candidate.getBio().length() > 40) {
+            completion += 0.3;
+        }
+        if (candidate.getPrompts() != null && !candidate.getPrompts().isEmpty()) {
+            completion += 0.2;
+        }
         double noise = ThreadLocalRandom.current().nextDouble(0, 0.35);
-        return shared * 2.0 + recencyBoost * 0.15 + noise;
+        return shared * 2.0 + recencyBoost * 0.15 + newProfileBoost + completion + noise;
     }
 
     private record Scored(MatchProfile profile, double score) {

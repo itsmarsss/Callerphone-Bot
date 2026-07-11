@@ -1,6 +1,8 @@
 package com.itsmarsss.callerphone.match.service;
 
 import com.itsmarsss.callerphone.analytics.AnalyticsService;
+import com.itsmarsss.callerphone.identity.MatchUser;
+import com.itsmarsss.callerphone.identity.MatchUserRepository;
 import com.itsmarsss.callerphone.match.model.ConversationStage;
 import com.itsmarsss.callerphone.match.model.DecisionType;
 import com.itsmarsss.callerphone.match.model.Match;
@@ -15,6 +17,8 @@ import com.itsmarsss.callerphone.safety.SafetyService;
 
 import java.time.Duration;
 import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneOffset;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -29,6 +33,7 @@ public final class DecisionService {
     private final SafetyService safety;
     private final NotificationService notifications;
     private final AnalyticsService analytics;
+    private final MatchUserRepository users;
 
     public DecisionService(
             MatchDecisionRepository decisions,
@@ -39,7 +44,8 @@ public final class DecisionService {
             PremiumService premium,
             SafetyService safety,
             NotificationService notifications,
-            AnalyticsService analytics
+            AnalyticsService analytics,
+            MatchUserRepository users
     ) {
         this.decisions = decisions;
         this.matches = matches;
@@ -50,6 +56,7 @@ public final class DecisionService {
         this.safety = safety;
         this.notifications = notifications;
         this.analytics = analytics;
+        this.users = users;
     }
 
     public DecisionResult decide(String actorId, String sessionId, DecisionType type) {
@@ -76,8 +83,7 @@ public final class DecisionService {
         if (type == DecisionType.INTERESTED) {
             int limit = premium.dailyInterests(actorId);
             if (viewer.getInterestSignalsToday() >= limit) {
-                return DecisionResult.fail(
-                        "Daily interest limit reached (" + limit + "). Come back tomorrow — higher limits ship with Premium later.");
+                return DecisionResult.fail(premium.upsellForLimit("interest"));
             }
         }
 
@@ -88,6 +94,12 @@ public final class DecisionService {
         if (type == DecisionType.INTERESTED) {
             profiles.bumpInterest(viewer);
         }
+        if (type == DecisionType.SKIP) {
+            MatchUser user = users.findById(actorId).orElseGet(() -> new MatchUser(actorId));
+            user.setLastSkipSubjectId(session.subjectId());
+            user.setLastSkipAt(Instant.now());
+            users.save(user);
+        }
         discovery.clearSession(sessionId);
 
         if (type == DecisionType.INTERESTED
@@ -96,9 +108,7 @@ public final class DecisionService {
             int peerCap = premium.activeConversations(session.subjectId());
             if (conversations.countActiveByUserId(actorId) >= actorCap
                     || conversations.countActiveByUserId(session.subjectId()) >= peerCap) {
-                return DecisionResult.interested(
-                        "Interest saved — it's mutual, but an active-conversation limit was hit. "
-                                + "Unmatch an old chat or wait; Premium will raise this limit later.");
+                return DecisionResult.interested(premium.upsellForLimit("conversations"));
             }
             MutualCreate created = createMutualMatch(actorId, session.subjectId());
             notifications.notifyMutualMatch(actorId, session.subjectId(), created.conversationId());
@@ -123,7 +133,45 @@ public final class DecisionService {
             return DecisionResult.interested("Interest sent (" + used + "/" + limit + " today). Keep browsing!");
         }
         analytics.track(actorId, "match_skip", session.subjectId());
-        return DecisionResult.skipped("Skipped. Next profile coming up.");
+        return DecisionResult.skipped("Skipped. Use `/match undo` once to undo your last skip.");
+    }
+
+    public DecisionResult undoLastSkip(String actorId) {
+        MatchUser user = users.findById(actorId).orElse(null);
+        if (user == null || user.getLastSkipSubjectId() == null || user.getLastSkipSubjectId().isBlank()) {
+            return DecisionResult.fail("Nothing to undo.");
+        }
+        if (user.getLastSkipAt() != null
+                && user.getLastSkipAt().isBefore(Instant.now().minus(Duration.ofHours(1)))) {
+            return DecisionResult.fail("Last skip is too old to undo (1 hour window).");
+        }
+        String today = LocalDate.now(ZoneOffset.UTC).toString();
+        if (!today.equals(user.getUsageDay())) {
+            user.setUsageDay(today);
+            user.setUndosToday(0);
+        }
+        int limit = premium.dailyUndos(actorId);
+        if (user.getUndosToday() >= limit) {
+            return DecisionResult.fail(premium.upsellForLimit("undo"));
+        }
+        String subjectId = user.getLastSkipSubjectId();
+        Optional<MatchDecision> existing = decisions.find(actorId, subjectId);
+        if (existing.isEmpty() || existing.get().decision() != DecisionType.SKIP) {
+            return DecisionResult.fail("Last skip is no longer available.");
+        }
+        decisions.delete(actorId, subjectId);
+        user.setUndosToday(user.getUndosToday() + 1);
+        user.setLastSkipSubjectId(null);
+        user.setLastSkipAt(null);
+        users.save(user);
+        analytics.track(actorId, "match_undo_skip", subjectId);
+        BrowseSession session = discovery.reopenSession(actorId, subjectId);
+        String name = profiles.find(subjectId).map(MatchProfile::getDisplayName).orElse("that profile");
+        return DecisionResult.undone(
+                "Undo complete (" + user.getUndosToday() + "/" + limit + " today). "
+                        + "Showing **" + name + "** again — decide now.",
+                session
+        );
     }
 
     private MutualCreate createMutualMatch(String a, String b) {
@@ -152,21 +200,32 @@ public final class DecisionService {
     private record MutualCreate(Match match, String conversationId) {
     }
 
-    public record DecisionResult(boolean success, boolean mutual, String message, Match match, String conversationId) {
+    public record DecisionResult(
+            boolean success,
+            boolean mutual,
+            String message,
+            Match match,
+            String conversationId,
+            BrowseSession restoredSession
+    ) {
         public static DecisionResult fail(String message) {
-            return new DecisionResult(false, false, message, null, null);
+            return new DecisionResult(false, false, message, null, null, null);
         }
 
         public static DecisionResult interested(String message) {
-            return new DecisionResult(true, false, message, null, null);
+            return new DecisionResult(true, false, message, null, null, null);
         }
 
         public static DecisionResult skipped(String message) {
-            return new DecisionResult(true, false, message, null, null);
+            return new DecisionResult(true, false, message, null, null, null);
         }
 
         public static DecisionResult mutual(String message, Match match, String conversationId) {
-            return new DecisionResult(true, true, message, match, conversationId);
+            return new DecisionResult(true, true, message, match, conversationId, null);
+        }
+
+        public static DecisionResult undone(String message, BrowseSession session) {
+            return new DecisionResult(true, false, message, null, null, session);
         }
     }
 }

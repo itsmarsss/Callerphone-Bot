@@ -81,15 +81,20 @@ public final class MatchConversationService {
         user.setConversationSelectedAt(Instant.now());
         user.touch();
         users.save(user);
+        conversation.clearUnread(userId);
+        conversations.save(conversation);
         MatchProfile self = profiles.find(userId).orElse(null);
         MatchProfile peer = profiles.find(other).orElse(null);
         String name = peer != null && peer.getDisplayName() != null && !peer.getDisplayName().isBlank()
                 ? peer.getDisplayName()
                 : "your match";
         String icebreaker = Icebreakers.forPair(self, peer);
+        String streak = conversation.getChatStreakDays() > 1
+                ? "\nChat streak: **" + conversation.getChatStreakDays() + "** days."
+                : "";
         String message = "Now chatting with **" + name + "** (" + conversation.getStage() + ").\n"
                 + "Send a **text DM** to the bot to relay. Idle timeout "
-                + MatchLimits.CHAT_IDLE_MINUTES + " minutes.\n\n"
+                + MatchLimits.CHAT_IDLE_MINUTES + " minutes." + streak + "\n\n"
                 + "Suggested opener: _" + icebreaker + "_";
         return SelectResult.ok(message, conversation, other, icebreaker);
     }
@@ -160,6 +165,19 @@ public final class MatchConversationService {
         ));
         conversation.setMessageCount(conversation.getMessageCount() + 1);
         conversation.setLastActivityAt(Instant.now());
+        conversation.setLastMessagePreview(content.length() > 80 ? content.substring(0, 77) + "…" : content);
+        conversation.incrementUnread(recipientId);
+        conversation.clearUnread(senderId);
+        String day = java.time.LocalDate.now(java.time.ZoneOffset.UTC).toString();
+        String yesterday = java.time.LocalDate.now(java.time.ZoneOffset.UTC).minusDays(1).toString();
+        if (!day.equals(conversation.getLastChatDay())) {
+            if (yesterday.equals(conversation.getLastChatDay())) {
+                conversation.setChatStreakDays(conversation.getChatStreakDays() + 1);
+            } else {
+                conversation.setChatStreakDays(1);
+            }
+            conversation.setLastChatDay(day);
+        }
         conversations.save(conversation);
         user.setConversationSelectedAt(Instant.now());
         users.save(user);

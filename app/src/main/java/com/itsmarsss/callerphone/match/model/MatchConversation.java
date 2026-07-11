@@ -1,7 +1,9 @@
 package com.itsmarsss.callerphone.match.model;
 
 import java.time.Instant;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public final class MatchConversation {
     private String conversationId;
@@ -16,6 +18,11 @@ public final class MatchConversation {
     private Instant lastActivityAt = Instant.now();
     private Instant connectedAt;
     private Instant archivedAt;
+    private Map<String, Integer> unreadByUser = new HashMap<>();
+    private String lastMessagePreview = "";
+    private Instant lastNudgeAt;
+    private int chatStreakDays;
+    private String lastChatDay = "";
 
     public MatchConversation() {
     }
@@ -114,6 +121,58 @@ public final class MatchConversation {
 
     public void setArchivedAt(Instant archivedAt) {
         this.archivedAt = archivedAt;
+    }
+
+    public Map<String, Integer> getUnreadByUser() {
+        return unreadByUser;
+    }
+
+    public void setUnreadByUser(Map<String, Integer> unreadByUser) {
+        this.unreadByUser = unreadByUser == null ? new HashMap<>() : new HashMap<>(unreadByUser);
+    }
+
+    public int unreadFor(String userId) {
+        return unreadByUser.getOrDefault(userId, 0);
+    }
+
+    public void incrementUnread(String userId) {
+        unreadByUser.merge(userId, 1, Integer::sum);
+    }
+
+    public void clearUnread(String userId) {
+        unreadByUser.put(userId, 0);
+    }
+
+    public String getLastMessagePreview() {
+        return lastMessagePreview;
+    }
+
+    public void setLastMessagePreview(String lastMessagePreview) {
+        this.lastMessagePreview = lastMessagePreview == null ? "" : lastMessagePreview;
+    }
+
+    public Instant getLastNudgeAt() {
+        return lastNudgeAt;
+    }
+
+    public void setLastNudgeAt(Instant lastNudgeAt) {
+        this.lastNudgeAt = lastNudgeAt;
+    }
+
+    public int getChatStreakDays() {
+        return chatStreakDays;
+    }
+
+    public void setChatStreakDays(int chatStreakDays) {
+        this.chatStreakDays = chatStreakDays;
+    }
+
+    public String getLastChatDay() {
+        return lastChatDay;
+    }
+
+    public void setLastChatDay(String lastChatDay) {
+        this.lastChatDay = lastChatDay == null ? "" : lastChatDay;
     }
 
     public String otherParticipant(String userId) {

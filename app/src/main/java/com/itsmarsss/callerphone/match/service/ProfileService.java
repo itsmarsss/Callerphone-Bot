@@ -125,12 +125,42 @@ public final class ProfileService {
     public EnrollmentService.ServiceResult setAvatar(String userId, String avatarUrl) {
         MatchProfile profile = getOrCreateDraft(userId);
         ensureCohort(profile, userId);
-        // Discord avatar for everyone — age group is pairing only, not feature tiers
-        profile.setMedia(List.of(MediaRef.avatar(UUID.randomUUID().toString(), avatarUrl)));
+        // Keep avatar as primary media slot 0
+        List<MediaRef> media = new java.util.ArrayList<>();
+        media.add(MediaRef.avatar(UUID.randomUUID().toString(), avatarUrl));
+        if (profile.getMedia() != null) {
+            for (MediaRef ref : profile.getMedia()) {
+                if (ref != null && !"discord_avatar".equals(ref.source()) && media.size() < MatchLimits.MAX_PROFILE_PHOTOS) {
+                    media.add(ref);
+                }
+            }
+        }
+        profile.setMedia(media);
         profile.setOnboardingStep(Math.max(profile.getOnboardingStep(), 6));
         profile.touch();
         profiles.save(profile);
         return EnrollmentService.ServiceResult.ok("Avatar linked from Discord.");
+    }
+
+    /** Optional extra photo via Discord CDN URL (same for all age groups). */
+    public EnrollmentService.ServiceResult addPhotoUrl(String userId, String url) {
+        if (url == null || url.isBlank() || !url.startsWith("https://")) {
+            return EnrollmentService.ServiceResult.fail("Provide an https image URL (e.g. Discord attachment).");
+        }
+        MatchProfile profile = getOrCreateDraft(userId);
+        List<MediaRef> media = profile.getMedia() == null
+                ? new java.util.ArrayList<>()
+                : new java.util.ArrayList<>(profile.getMedia());
+        long extras = media.stream().filter(m -> m != null && !"discord_avatar".equals(m.source())).count();
+        if (extras >= MatchLimits.MAX_PROFILE_PHOTOS - 1) {
+            return EnrollmentService.ServiceResult.fail("Max " + (MatchLimits.MAX_PROFILE_PHOTOS - 1) + " extra photos.");
+        }
+        media.add(MediaRef.discordAttachment(
+                UUID.randomUUID().toString(), null, null, url, "image", media.size()));
+        profile.setMedia(media);
+        profile.touch();
+        profiles.save(profile);
+        return EnrollmentService.ServiceResult.ok("Photo added (" + media.size() + " media slots).");
     }
 
     /** Publishes the profile for discovery. No moderator gate — reports handle abuse. */

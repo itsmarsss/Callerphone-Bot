@@ -154,10 +154,17 @@ public final class ModCommandRouter extends ListenerAdapter {
                         sb.append("• `").append(report.getId()).append("` ")
                                 .append(report.getCategory()).append(" subject=")
                                 .append(report.getSubjectId()).append(" prio=")
-                                .append(report.getPriority()).append('\n');
+                                .append(report.getPriority())
+                                .append(report.isAutoPaused() ? " AUTO-PAUSE" : "")
+                                .append(" evidence=").append(report.getEvidence() == null ? 0 : report.getEvidence().size())
+                                .append('\n');
                     }
                     message.reply(sb.toString()).queue();
                 }
+                case "mpremium" -> requireId(message, args, id -> {
+                    ApplicationContext.get().premium().grant(id);
+                    message.reply("Premium entitlement granted for `" + id + "` (test grant).").queue();
+                });
                 case "mresolve" -> {
                     if (args.length < 3) {
                         message.reply("`" + prefix + "mresolve <reportId> <status>`").queue();
@@ -220,7 +227,8 @@ public final class ModCommandRouter extends ListenerAdapter {
                 `%smsuspend <id> [reason]` — Match suspension
                 `%smrestore <id>` — clear Match sanctions
                 `%smreview` — sample live profiles
-                """.formatted(p, p, p, p, p, p, p, p, p, p, p, p, p);
+                `%smpremium <id>` — test-grant Premium entitlements
+                """.formatted(p, p, p, p, p, p, p, p, p, p, p, p, p, p);
         EmbedBuilder help = new EmbedBuilder()
                 .setTitle("Mod")
                 .setDescription(desc)

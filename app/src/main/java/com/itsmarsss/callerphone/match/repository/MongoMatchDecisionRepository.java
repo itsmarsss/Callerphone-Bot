@@ -90,6 +90,14 @@ public final class MongoMatchDecisionRepository implements MatchDecisionReposito
                 .filter(d -> d.decision() == DecisionType.INTERESTED && !d.isExpired(Instant.now()));
     }
 
+    @Override
+    public void delete(String viewerId, String subjectId) {
+        collection.deleteOne(Filters.and(
+                Filters.eq("viewerId", viewerId),
+                Filters.eq("subjectId", subjectId)
+        ));
+    }
+
     private static MatchDecision fromDocument(Document doc) {
         return new MatchDecision(
                 doc.getString("viewerId"),

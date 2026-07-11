@@ -95,6 +95,18 @@ public final class NotificationService {
                 null);
     }
 
+    public void notifyInactivityNudge(String userId, String peerName, String conversationId, String opener) {
+        dmIfEnabled(userId, "Still thinking of " + peerName + "?",
+                "You matched with **" + peerName + "** but the chat went quiet.\n"
+                        + "Suggested opener: _" + opener + "_\n\n"
+                        + "Open `/match chats` to pick up where you left off — one nudge only.",
+                conversationId);
+    }
+
+    public void notifyWeeklyDigest(String userId, String body) {
+        dmIfEnabled(userId, "Your weekly Match digest", body, null);
+    }
+
     public void postReportToStaff(Report report) {
         if (Callerphone.config == null) {
             return;
@@ -104,6 +116,17 @@ public final class NotificationService {
             logger.debug("No report channel for Match report {}", report.getId());
             return;
         }
+        StringBuilder evidence = new StringBuilder();
+        if (report.getEvidence() != null) {
+            int n = 0;
+            for (String line : report.getEvidence()) {
+                if (n++ >= 8) {
+                    evidence.append("…\n");
+                    break;
+                }
+                evidence.append(line.length() > 120 ? line.substring(0, 117) + "…" : line).append('\n');
+            }
+        }
         EmbedBuilder emb = new EmbedBuilder()
                 .setTitle(report.getPriority() >= 10 ? "URGENT Match report" : "Match report")
                 .setColor(report.getPriority() >= 10 ? Color.RED : new Color(220, 120, 40))
@@ -112,9 +135,11 @@ public final class NotificationService {
                 .addField("Priority", String.valueOf(report.getPriority()), true)
                 .addField("Reporter", "`" + report.getReporterId() + "`", true)
                 .addField("Subject", "`" + report.getSubjectId() + "`", true)
+                .addField("Auto-paused", report.isAutoPaused() ? "yes" : "no", true)
                 .addField("Target", nullSafe(report.getTargetType()) + " `" + nullSafe(report.getTargetId()) + "`", false)
                 .addField("Details", nullSafe(report.getDetails()).isBlank() ? "_none_" : report.getDetails(), false)
-                .setFooter("Staff: prefix mreports / mresolve <id> <status>");
+                .addField("Evidence", evidence.isEmpty() ? "_none captured_" : evidence.toString(), false)
+                .setFooter("Staff: mreports / mresolve / mpause / msuspend");
         channel.sendMessageEmbeds(emb.build()).queue(
                 ok -> {
                 },

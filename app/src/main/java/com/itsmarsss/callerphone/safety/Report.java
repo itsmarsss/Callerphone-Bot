@@ -1,6 +1,8 @@
 package com.itsmarsss.callerphone.safety;
 
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 public final class Report {
@@ -16,6 +18,8 @@ public final class Report {
     private String assigneeId;
     private int priority = 1;
     private Instant createdAt = Instant.now();
+    private List<String> evidence = new ArrayList<>();
+    private boolean autoPaused;
 
     public Report() {
         this.id = UUID.randomUUID().toString();
@@ -115,5 +119,21 @@ public final class Report {
 
     public void setCreatedAt(Instant createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public List<String> getEvidence() {
+        return evidence;
+    }
+
+    public void setEvidence(List<String> evidence) {
+        this.evidence = evidence == null ? new ArrayList<>() : new ArrayList<>(evidence);
+    }
+
+    public boolean isAutoPaused() {
+        return autoPaused;
+    }
+
+    public void setAutoPaused(boolean autoPaused) {
+        this.autoPaused = autoPaused;
     }
 }

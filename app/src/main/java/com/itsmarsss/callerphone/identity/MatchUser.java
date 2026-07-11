@@ -21,6 +21,14 @@ public final class MatchUser {
     private Instant leftAt;
     private String selectedConversationId;
     private Instant conversationSelectedAt;
+    private String lastSkipSubjectId;
+    private Instant lastSkipAt;
+    private int undosToday;
+    private String usageDay = "";
+    private boolean digestOptIn;
+    private Instant lastDigestAt;
+    private int browseStreakDays;
+    private String lastBrowseDay = "";
 
     public MatchUser() {
     }
@@ -139,6 +147,70 @@ public final class MatchUser {
 
     public void setConversationSelectedAt(Instant conversationSelectedAt) {
         this.conversationSelectedAt = conversationSelectedAt;
+    }
+
+    public String getLastSkipSubjectId() {
+        return lastSkipSubjectId;
+    }
+
+    public void setLastSkipSubjectId(String lastSkipSubjectId) {
+        this.lastSkipSubjectId = lastSkipSubjectId;
+    }
+
+    public Instant getLastSkipAt() {
+        return lastSkipAt;
+    }
+
+    public void setLastSkipAt(Instant lastSkipAt) {
+        this.lastSkipAt = lastSkipAt;
+    }
+
+    public int getUndosToday() {
+        return undosToday;
+    }
+
+    public void setUndosToday(int undosToday) {
+        this.undosToday = undosToday;
+    }
+
+    public String getUsageDay() {
+        return usageDay;
+    }
+
+    public void setUsageDay(String usageDay) {
+        this.usageDay = usageDay == null ? "" : usageDay;
+    }
+
+    public boolean isDigestOptIn() {
+        return digestOptIn;
+    }
+
+    public void setDigestOptIn(boolean digestOptIn) {
+        this.digestOptIn = digestOptIn;
+    }
+
+    public Instant getLastDigestAt() {
+        return lastDigestAt;
+    }
+
+    public void setLastDigestAt(Instant lastDigestAt) {
+        this.lastDigestAt = lastDigestAt;
+    }
+
+    public int getBrowseStreakDays() {
+        return browseStreakDays;
+    }
+
+    public void setBrowseStreakDays(int browseStreakDays) {
+        this.browseStreakDays = browseStreakDays;
+    }
+
+    public String getLastBrowseDay() {
+        return lastBrowseDay;
+    }
+
+    public void setLastBrowseDay(String lastBrowseDay) {
+        this.lastBrowseDay = lastBrowseDay == null ? "" : lastBrowseDay;
     }
 
     public void touch() {

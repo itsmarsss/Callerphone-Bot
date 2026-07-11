@@ -8,6 +8,8 @@ import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.ReplaceOptions;
 import org.bson.Document;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 public final class MongoMatchUserRepository implements MatchUserRepository {
@@ -32,6 +34,19 @@ public final class MongoMatchUserRepository implements MatchUserRepository {
         );
     }
 
+    @Override
+    public List<MatchUser> findDigestOptIn(int limit) {
+        List<MatchUser> out = new ArrayList<>();
+        for (Document doc : collection.find(Filters.and(
+                        Filters.eq("enrolled", true),
+                        Filters.eq("digestOptIn", true),
+                        Filters.eq("notificationsEnabled", true)))
+                .limit(limit)) {
+            out.add(fromDocument(doc));
+        }
+        return out;
+    }
+
     private static Document toDocument(MatchUser user) {
         return new Document("_id", user.getUserId())
                 .append("schemaVersion", user.getSchemaVersion())
@@ -46,7 +61,15 @@ public final class MongoMatchUserRepository implements MatchUserRepository {
                 .append("enrolledAt", BsonTime.toDate(user.getEnrolledAt()))
                 .append("leftAt", BsonTime.toDate(user.getLeftAt()))
                 .append("selectedConversationId", user.getSelectedConversationId())
-                .append("conversationSelectedAt", BsonTime.toDate(user.getConversationSelectedAt()));
+                .append("conversationSelectedAt", BsonTime.toDate(user.getConversationSelectedAt()))
+                .append("lastSkipSubjectId", user.getLastSkipSubjectId())
+                .append("lastSkipAt", BsonTime.toDate(user.getLastSkipAt()))
+                .append("undosToday", user.getUndosToday())
+                .append("usageDay", user.getUsageDay())
+                .append("digestOptIn", user.isDigestOptIn())
+                .append("lastDigestAt", BsonTime.toDate(user.getLastDigestAt()))
+                .append("browseStreakDays", user.getBrowseStreakDays())
+                .append("lastBrowseDay", user.getLastBrowseDay());
     }
 
     private static MatchUser fromDocument(Document doc) {
@@ -64,6 +87,14 @@ public final class MongoMatchUserRepository implements MatchUserRepository {
         user.setLeftAt(BsonTime.toInstant(doc.get("leftAt")));
         user.setSelectedConversationId(doc.getString("selectedConversationId"));
         user.setConversationSelectedAt(BsonTime.toInstant(doc.get("conversationSelectedAt")));
+        user.setLastSkipSubjectId(doc.getString("lastSkipSubjectId"));
+        user.setLastSkipAt(BsonTime.toInstant(doc.get("lastSkipAt")));
+        user.setUndosToday(doc.getInteger("undosToday", 0));
+        user.setUsageDay(doc.getString("usageDay"));
+        user.setDigestOptIn(Boolean.TRUE.equals(doc.getBoolean("digestOptIn")));
+        user.setLastDigestAt(BsonTime.toInstant(doc.get("lastDigestAt")));
+        user.setBrowseStreakDays(doc.getInteger("browseStreakDays", 0));
+        user.setLastBrowseDay(doc.getString("lastBrowseDay"));
         return user;
     }
 }

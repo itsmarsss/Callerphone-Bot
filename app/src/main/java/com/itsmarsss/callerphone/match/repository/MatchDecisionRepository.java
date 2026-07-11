@@ -19,4 +19,6 @@ public interface MatchDecisionRepository {
     List<MatchDecision> findIncomingInterested(String subjectId, int limit);
 
     Optional<MatchDecision> findReciprocalInterest(String firstUserId, String secondUserId);
+
+    void delete(String viewerId, String subjectId);
 }

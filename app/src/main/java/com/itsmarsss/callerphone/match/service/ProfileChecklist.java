@@ -33,6 +33,33 @@ public final class ProfileChecklist {
                 && profile.getInterests() != null && !profile.getInterests().isEmpty();
     }
 
+    public static int completionPercent(MatchUser user, MatchProfile profile) {
+        int score = 0;
+        int total = 7;
+        if (user != null && user.getTermsVersionAccepted() != null && !user.getTermsVersionAccepted().isBlank()) {
+            score++;
+        }
+        if (user != null && user.getAgeCohort() != null) {
+            score++;
+        }
+        if (profile != null && profile.getDisplayName() != null && !profile.getDisplayName().isBlank()) {
+            score++;
+        }
+        if (profile != null && profile.getBio() != null && !profile.getBio().isBlank()) {
+            score++;
+        }
+        if (profile != null && profile.getPrompts() != null && !profile.getPrompts().isEmpty()) {
+            score++;
+        }
+        if (profile != null && profile.getInterests() != null && !profile.getInterests().isEmpty()) {
+            score++;
+        }
+        if (profile != null && profile.getState() == ProfileState.ACTIVE) {
+            score++;
+        }
+        return (int) Math.round(100.0 * score / total);
+    }
+
     public static String nextStep(MatchUser user, MatchProfile profile) {
         if (user == null || user.getTermsVersionAccepted() == null || user.getTermsVersionAccepted().isBlank()) {
             return "Use `/match join` and accept the notices.";

@@ -64,6 +64,10 @@ public final class MongoMatchConversationRepository implements MatchConversation
     }
 
     private static Document toDocument(MatchConversation c) {
+        Document unread = new Document();
+        if (c.getUnreadByUser() != null) {
+            c.getUnreadByUser().forEach(unread::append);
+        }
         return new Document("_id", c.getConversationId())
                 .append("matchId", c.getMatchId())
                 .append("participants", c.getParticipants())
@@ -75,7 +79,12 @@ public final class MongoMatchConversationRepository implements MatchConversation
                 .append("createdAt", BsonTime.toDate(c.getCreatedAt()))
                 .append("lastActivityAt", BsonTime.toDate(c.getLastActivityAt()))
                 .append("connectedAt", BsonTime.toDate(c.getConnectedAt()))
-                .append("archivedAt", BsonTime.toDate(c.getArchivedAt()));
+                .append("archivedAt", BsonTime.toDate(c.getArchivedAt()))
+                .append("unreadByUser", unread)
+                .append("lastMessagePreview", c.getLastMessagePreview())
+                .append("lastNudgeAt", BsonTime.toDate(c.getLastNudgeAt()))
+                .append("chatStreakDays", c.getChatStreakDays())
+                .append("lastChatDay", c.getLastChatDay());
     }
 
     private static MatchConversation fromDocument(Document doc) {
@@ -93,6 +102,21 @@ public final class MongoMatchConversationRepository implements MatchConversation
         c.setLastActivityAt(BsonTime.toInstant(doc.get("lastActivityAt")));
         c.setConnectedAt(BsonTime.toInstant(doc.get("connectedAt")));
         c.setArchivedAt(BsonTime.toInstant(doc.get("archivedAt")));
+        Document unread = doc.get("unreadByUser", Document.class);
+        if (unread != null) {
+            java.util.Map<String, Integer> map = new java.util.HashMap<>();
+            for (String key : unread.keySet()) {
+                Object v = unread.get(key);
+                if (v instanceof Number n) {
+                    map.put(key, n.intValue());
+                }
+            }
+            c.setUnreadByUser(map);
+        }
+        c.setLastMessagePreview(doc.getString("lastMessagePreview"));
+        c.setLastNudgeAt(BsonTime.toInstant(doc.get("lastNudgeAt")));
+        c.setChatStreakDays(doc.getInteger("chatStreakDays", 0));
+        c.setLastChatDay(doc.getString("lastChatDay"));
         return c;
     }
 }

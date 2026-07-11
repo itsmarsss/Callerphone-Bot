@@ -125,6 +125,19 @@ public final class EnrollmentService {
         return ServiceResult.ok(enabled ? "Match notifications enabled." : "Match notifications disabled.");
     }
 
+    public ServiceResult setDigestOptIn(String userId, boolean enabled) {
+        MatchUser user = getOrCreate(userId);
+        user.setDigestOptIn(enabled);
+        if (enabled) {
+            user.setNotificationsEnabled(true);
+        }
+        user.touch();
+        users.save(user);
+        return ServiceResult.ok(enabled
+                ? "Weekly Match digest enabled (opt-in only)."
+                : "Weekly digest disabled.");
+    }
+
     public Optional<AgeCohort> requireCohort(String userId) {
         return users.findById(userId)
                 .filter(MatchUser::isEnrolled)

@@ -15,6 +15,7 @@ import com.itsmarsss.callerphone.match.service.BrowseSessionStore;
 import com.itsmarsss.callerphone.match.service.ConnectService;
 import com.itsmarsss.callerphone.match.service.DecisionService;
 import com.itsmarsss.callerphone.match.service.DiscoveryService;
+import com.itsmarsss.callerphone.match.service.ExportService;
 import com.itsmarsss.callerphone.match.service.MatchConversationService;
 import com.itsmarsss.callerphone.match.service.MatchMaintenanceJobs;
 import com.itsmarsss.callerphone.match.service.NotificationService;
@@ -56,9 +57,11 @@ public final class ApplicationContext {
     private final NotificationService notificationService;
     private final DeletionService deletionService;
     private final AnalyticsService analyticsService;
+    private final ExportService exportService;
     private final MatchMaintenanceJobs maintenanceJobs;
     private final MediaStorage mediaStorage;
     private final BrowseSessionStore browseSessionStore;
+    private final com.itsmarsss.callerphone.match.repository.MatchDecisionRepository decisionRepository;
 
     private ApplicationContext(MongoDatabase database, String mediaChannelId, JDA jdaOrNull) {
         this.dbExecutor = new DbExecutor(4);
@@ -76,6 +79,7 @@ public final class ApplicationContext {
         var audits = new MongoAuditRepository(database);
         this.browseSessionStore = new BrowseSessionStore(database);
         this.premiumService = new PremiumService();
+        this.decisionRepository = decisions;
 
         this.safetyService = new SafetyService(blocks, reports, sanctions, audits, matches, conversations);
         this.enrollmentService = new EnrollmentService(matchUsers, consents, profiles, safetyService);
@@ -84,14 +88,17 @@ public final class ApplicationContext {
         this.analyticsService = new AnalyticsService(new MongoProductEventRepository(database));
         this.profileService.setNotifications(notificationService);
         this.profileService.setAnalytics(analyticsService);
+        this.safetyService.setMessages(messages);
         this.safetyService.setReportAlerter(notificationService::postReportToStaff);
+        this.safetyService.setProfilePauser((userId, reason) ->
+                profileService.forcePause("system", userId, reason));
 
         this.discoveryService = new DiscoveryService(
                 profiles, decisions, matches, matchUsers, safetyService, profileService, premiumService, browseSessionStore
         );
         this.decisionService = new DecisionService(
                 decisions, matches, conversations, discoveryService, profileService, premiumService,
-                safetyService, notificationService, analyticsService
+                safetyService, notificationService, analyticsService, matchUsers
         );
         this.conversationService = new MatchConversationService(
                 conversations, messages, matches, matchUsers, profileService, safetyService
@@ -99,7 +106,9 @@ public final class ApplicationContext {
         this.conversationService.setNotifications(notificationService);
         this.connectService = new ConnectService(conversations, profileService, consents, safetyService, notificationService);
         this.deletionService = new DeletionService(matchUsers, consents, profiles, matches, conversations, audits);
+        this.exportService = new ExportService(matchUsers, profiles, conversations, messages);
         this.maintenanceJobs = new MatchMaintenanceJobs(database);
+        this.maintenanceJobs.wire(matchUsers, conversations, profiles, notificationService);
         this.maintenanceJobs.start();
         this.mediaStorage = jdaOrNull == null
                 ? new MediaStorage() {
@@ -201,8 +210,18 @@ public final class ApplicationContext {
         return analyticsService;
     }
 
+    public ExportService export() {
+        return exportService;
+    }
+
     public MediaStorage media() {
         return mediaStorage;
     }
+
+    public java.util.List<com.itsmarsss.callerphone.match.model.MatchDecision> incomingLikes(String userId) {
+        return decisionRepository.findIncomingInterested(userId, 20);
+    }
 }
+
+
 

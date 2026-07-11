@@ -8,8 +8,12 @@ import com.itsmarsss.callerphone.match.component.MatchComponentIds;
 import com.itsmarsss.callerphone.match.model.Gender;
 import com.itsmarsss.callerphone.match.model.MatchConversation;
 import com.itsmarsss.callerphone.match.model.MatchProfile;
+import com.itsmarsss.callerphone.match.service.DecisionService;
 import com.itsmarsss.callerphone.match.service.DiscoveryService;
+import com.itsmarsss.callerphone.match.service.EmptyStates;
 import com.itsmarsss.callerphone.match.service.ProfileChecklist;
+import com.itsmarsss.callerphone.match.service.UpsellCopy;
+import com.itsmarsss.callerphone.safety.ReportCategory;
 import com.itsmarsss.commandType.ISlashCommand;
 import net.dv8tion.jda.api.components.actionrow.ActionRow;
 import net.dv8tion.jda.api.components.buttons.Button;
@@ -57,13 +61,26 @@ public final class MatchCommand implements ISlashCommand {
             }
             case "likes" -> handleLikes(e, ctx, userId);
             case "chats" -> handleChats(e, ctx, userId);
+            case "undo" -> handleUndo(e, ctx, userId);
             case "pause" -> reply(e, ctx.profiles().pause(userId));
             case "resume" -> reply(e, ctx.profiles().resume(userId));
             case "notify" -> {
                 boolean enabled = e.getOption("enabled") == null || e.getOption("enabled").getAsBoolean();
                 reply(e, ctx.enrollment().setNotifications(userId, enabled));
             }
+            case "digest" -> {
+                boolean enabled = e.getOption("enabled") != null && e.getOption("enabled").getAsBoolean();
+                reply(e, ctx.enrollment().setDigestOptIn(userId, enabled));
+            }
             case "leave" -> reply(e, ctx.deletion().leaveAndSoftDelete(userId));
+            case "delete" -> reply(e, ctx.deletion().hardDeleteProfileContent(userId));
+            case "export" -> handleExport(e, ctx, userId);
+            case "premium" -> e.replyEmbeds(MatchEmbeds.simple("Premium", UpsellCopy.premiumPitch()))
+                    .setEphemeral(true).queue();
+            case "photo" -> {
+                String url = e.getOption("url") == null ? "" : e.getOption("url").getAsString();
+                reply(e, ctx.profiles().addPhotoUrl(userId, url));
+            }
             case "safety" -> handleSafety(e, ctx, userId);
             case "submit" -> {
                 ctx.profiles().setAvatar(userId, e.getUser().getEffectiveAvatarUrl());
@@ -120,8 +137,11 @@ public final class MatchCommand implements ISlashCommand {
         MatchUser user = ctx.enrollment().getOrCreate(userId);
         MatchProfile p = profile.get();
         ctx.profiles().resetDailyCountersIfNeeded(p);
-        String limits = "Discoveries today: " + p.getDiscoveryViewsToday() + "/" + ctx.premium().dailyDiscoveries(userId)
-                + " · Interests: " + p.getInterestSignalsToday() + "/" + ctx.premium().dailyInterests(userId);
+        MatchUser mu = user;
+        String limits = "Discoveries: " + p.getDiscoveryViewsToday() + "/" + ctx.premium().dailyDiscoveries(userId)
+                + " · Interests: " + p.getInterestSignalsToday() + "/" + ctx.premium().dailyInterests(userId)
+                + " · Streak: " + mu.getBrowseStreakDays() + "d"
+                + " · Complete: " + ProfileChecklist.completionPercent(mu, p) + "%";
         List<Button> row = new ArrayList<>();
         row.add(Button.primary(MatchComponentIds.of(MatchComponentIds.ACTION_EDIT_BASICS, "_"), "Edit basics"));
         row.add(Button.secondary(MatchComponentIds.of(MatchComponentIds.ACTION_EDIT_BIO, "_"), "Edit bio"));
@@ -178,12 +198,30 @@ public final class MatchCommand implements ISlashCommand {
     }
 
     private void handleLikes(SlashCommandInteractionEvent e, ApplicationContext ctx, String userId) {
-        if (!ctx.premium().canSeeIncomingInterest(userId)) {
-            e.reply(ToolSet.CP_EMJ + " Incoming interest is a Premium feature. Mutual connections still appear in `/match chats`.")
-                    .setEphemeral(true).queue();
+        // Free for everyone — uses decision repository via discovery path
+        var decisions = ctx.decisions();
+        // pull via reflection-free: use profile service + a thin path on Discovery/Decision
+        List<com.itsmarsss.callerphone.match.model.MatchDecision> incoming =
+                findIncoming(ctx, userId);
+        if (incoming.isEmpty()) {
+            e.reply(ToolSet.CP_EMJ + " " + EmptyStates.noLikes()).setEphemeral(true).queue();
             return;
         }
-        e.reply(ToolSet.CP_EMJ + " Premium interest inbox is not enabled yet.").setEphemeral(true).queue();
+        StringBuilder sb = new StringBuilder("People who expressed interest in you:\n");
+        int i = 1;
+        for (var d : incoming) {
+            String name = ctx.profiles().find(d.viewerId()).map(MatchProfile::getDisplayName).orElse(d.viewerId());
+            sb.append(i++).append(". **").append(name).append("** — express interest on their card in `/match browse` for a mutual match\n");
+            if (i > 15) {
+                break;
+            }
+        }
+        e.replyEmbeds(MatchEmbeds.simple("Incoming interest", sb.toString())).setEphemeral(true).queue();
+    }
+
+    private static List<com.itsmarsss.callerphone.match.model.MatchDecision> findIncoming(ApplicationContext ctx, String userId) {
+        // Access via Mongo repo is not exposed; use Safety/Decision through a package helper on ApplicationContext
+        return ctx.incomingLikes(userId);
     }
 
     private void handleChats(SlashCommandInteractionEvent e, ApplicationContext ctx, String userId) {
@@ -194,8 +232,7 @@ public final class MatchCommand implements ISlashCommand {
         }
         List<MatchConversation> chats = ctx.conversations().list(userId);
         if (chats.isEmpty()) {
-            e.reply(ToolSet.CP_EMJ + " No active connections yet. Browse with `/match browse`.")
-                    .setEphemeral(true).queue();
+            e.reply(ToolSet.CP_EMJ + " " + EmptyStates.noChats()).setEphemeral(true).queue();
             return;
         }
         StringBuilder sb = new StringBuilder("Your connections:\n");
@@ -205,11 +242,20 @@ public final class MatchCommand implements ISlashCommand {
         for (MatchConversation chat : chats) {
             String other = chat.otherParticipant(userId);
             String name = ctx.profiles().find(other).map(MatchProfile::getDisplayName).orElse(other);
-            sb.append(i++).append(". **").append(name).append("** — `")
-                    .append(chat.getStage()).append("` (").append(chat.getMessageCount()).append(" msgs)\n");
+            int unread = chat.unreadFor(userId);
+            String badge = unread > 0 ? " 🔴" + unread : "";
+            String preview = chat.getLastMessagePreview() == null || chat.getLastMessagePreview().isBlank()
+                    ? ""
+                    : "\n   _" + truncate(chat.getLastMessagePreview(), 60) + "_";
+            sb.append(i++).append(". **").append(name).append("**").append(badge).append(" — `")
+                    .append(chat.getStage()).append("` (").append(chat.getMessageCount()).append(" msgs)");
+            if (chat.getChatStreakDays() > 1) {
+                sb.append(" 🔥").append(chat.getChatStreakDays());
+            }
+            sb.append(preview).append('\n');
             buttons.add(Button.primary(
                     MatchComponentIds.of(MatchComponentIds.ACTION_CHAT_SELECT, chat.getConversationId()),
-                    "Chat: " + truncate(name, 20)
+                    (unread > 0 ? "● " : "") + "Chat: " + truncate(name, 18)
             ));
             if (buttons.size() == 5) {
                 rows.add(ActionRow.of(buttons));
@@ -225,10 +271,47 @@ public final class MatchCommand implements ISlashCommand {
                 .queue();
     }
 
+    private void handleUndo(SlashCommandInteractionEvent e, ApplicationContext ctx, String userId) {
+        e.deferReply(true).queue();
+        ctx.dbExecutor().execute(() -> {
+            DecisionService.DecisionResult result = ctx.decisions().undoLastSkip(userId);
+            if (!result.success() || result.restoredSession() == null) {
+                e.getHook().sendMessage(ToolSet.CP_EMJ + " " + result.message()).setEphemeral(true).queue();
+                return;
+            }
+            Optional<MatchProfile> profile = ctx.profiles().find(result.restoredSession().subjectId());
+            if (profile.isEmpty()) {
+                e.getHook().sendMessage(ToolSet.CP_EMJ + " " + result.message()).setEphemeral(true).queue();
+                return;
+            }
+            String sessionId = result.restoredSession().sessionId();
+            e.getHook().sendMessageEmbeds(MatchEmbeds.profileCard(profile.get(), false))
+                    .setContent(ToolSet.CP_EMJ + " " + result.message())
+                    .addComponents(ActionRow.of(
+                            Button.success(MatchComponentIds.of(MatchComponentIds.ACTION_INTERESTED, sessionId), "Interested"),
+                            Button.secondary(MatchComponentIds.of(MatchComponentIds.ACTION_SKIP, sessionId), "Skip")
+                    ))
+                    .setEphemeral(true)
+                    .queue();
+        });
+    }
+
+    private void handleExport(SlashCommandInteractionEvent e, ApplicationContext ctx, String userId) {
+        String json = ctx.export().exportJson(userId);
+        if (json.length() > 1800) {
+            json = json.substring(0, 1800) + "\n… truncated";
+        }
+        e.reply("```json\n" + json + "\n```").setEphemeral(true).queue();
+    }
+
     private void handleSafety(SlashCommandInteractionEvent e, ApplicationContext ctx, String userId) {
         String action = e.getOption("action") == null ? "help" : e.getOption("action").getAsString();
         String target = e.getOption("user_id") == null ? null : e.getOption("user_id").getAsString();
         String reason = e.getOption("reason") == null ? "" : e.getOption("reason").getAsString();
+        String category = e.getOption("category") == null ? "other" : e.getOption("category").getAsString();
+        String conversationId = e.getOption("conversation_id") == null
+                ? null
+                : e.getOption("conversation_id").getAsString();
         switch (action) {
             case "block" -> {
                 if (target == null) {
@@ -243,24 +326,35 @@ public final class MatchCommand implements ISlashCommand {
                     e.reply("Provide user_id to report.").setEphemeral(true).queue();
                     return;
                 }
-                ctx.safety().report(userId, target, reason.isBlank() ? "other" : reason, reason, "user", target);
-                e.reply(ToolSet.CP_EMJ + " Report submitted. Thank you.").setEphemeral(true).queue();
+                ReportCategory cat = ReportCategory.from(category).orElse(ReportCategory.OTHER);
+                ctx.safety().report(
+                        userId,
+                        target,
+                        cat.code(),
+                        reason.isBlank() ? cat.label() : reason,
+                        conversationId != null ? "conversation" : "user",
+                        conversationId != null ? conversationId : target
+                );
+                e.reply(ToolSet.CP_EMJ + " Report submitted (" + cat.label()
+                        + "). Mods review reports; urgent categories may auto-pause the other profile pending review.")
+                        .setEphemeral(true).queue();
             }
             case "unmatch" -> {
-                if (target == null) {
-                    e.reply("Provide conversation id as user_id field for unmatch.").setEphemeral(true).queue();
+                if (target == null && conversationId == null) {
+                    e.reply("Provide conversation_id (or user_id as conversation id).").setEphemeral(true).queue();
                     return;
                 }
-                reply(e, ctx.conversations().unmatch(userId, target));
+                reply(e, ctx.conversations().unmatch(userId, conversationId != null ? conversationId : target));
             }
             default -> e.replyEmbeds(MatchEmbeds.simple(
                     "Match safety",
                     """
-                            `/match safety action:block user_id:<id>` — block a user
-                            `/match safety action:report user_id:<id> reason:<text>` — report
-                            `/match safety action:unmatch user_id:<conversationId>` — unmatch
+                            `/match safety action:block user_id:<id>`
+                            `/match safety action:report user_id:<id> category:<cat> reason:<text> conversation_id:<opt>`
+                            `/match safety action:unmatch conversation_id:<id>`
 
-                            Urgent categories: grooming, age misrepresentation, threats, contact exchange.
+                            Categories: harassment, spam, inappropriate, age_lie, grooming, threats, contact, impersonation, other
+                            Urgent categories auto-pause the reported profile for mod review.
                             """
             )).setEphemeral(true).queue();
         }
@@ -327,10 +421,11 @@ public final class MatchCommand implements ISlashCommand {
     public String getHelp() {
         return "`/match join` — opt into Social\n" +
                 "`/match profile` — view your card\n" +
-                "`/match edit` — update fields\n" +
-                "`/match browse` — discover people\n" +
-                "`/match chats` — connections & relay\n" +
-                "`/match safety` — block, report, unmatch\n";
+                "`/match browse` · `/match likes` · `/match undo`\n" +
+                "`/match chats` — connections (unread badges)\n" +
+                "`/match safety` — block, report, unmatch\n" +
+                "`/match export` · `/match delete` · `/match leave`\n" +
+                "`/match digest` · `/match premium` · `/match photo`\n";
     }
 
     @Override
@@ -350,7 +445,8 @@ public final class MatchCommand implements ISlashCommand {
                                         .addChoice("bio", "bio")
                                         .addChoice("interests", "interests")),
                         new SubcommandData("browse", "Discover one compatible profile"),
-                        new SubcommandData("likes", "Incoming interest (Premium)"),
+                        new SubcommandData("likes", "See who expressed interest in you"),
+                        new SubcommandData("undo", "Undo your last skip"),
                         new SubcommandData("chats", "List or select mediated chats")
                                 .addOptions(new OptionData(OptionType.STRING, "action", "list or stop", false)
                                         .addChoice("list", "list")
@@ -359,7 +455,14 @@ public final class MatchCommand implements ISlashCommand {
                         new SubcommandData("resume", "Resume a paused profile"),
                         new SubcommandData("notify", "Toggle Match DMs")
                                 .addOptions(new OptionData(OptionType.BOOLEAN, "enabled", "Receive Match DMs", true)),
+                        new SubcommandData("digest", "Weekly opt-in digest")
+                                .addOptions(new OptionData(OptionType.BOOLEAN, "enabled", "Enable weekly digest", true)),
                         new SubcommandData("leave", "Leave discovery (keeps profile & chats)"),
+                        new SubcommandData("delete", "Hard-wipe Match profile content"),
+                        new SubcommandData("export", "Export your Match data as JSON"),
+                        new SubcommandData("premium", "Premium benefits (purchases not live)"),
+                        new SubcommandData("photo", "Add optional profile photo URL")
+                                .addOptions(new OptionData(OptionType.STRING, "url", "https image URL", true)),
                         new SubcommandData("submit", "Go live in discovery"),
                         new SubcommandData("safety", "Block, report, or unmatch")
                                 .addOptions(
@@ -368,8 +471,19 @@ public final class MatchCommand implements ISlashCommand {
                                                 .addChoice("block", "block")
                                                 .addChoice("report", "report")
                                                 .addChoice("unmatch", "unmatch"),
-                                        new OptionData(OptionType.STRING, "user_id", "Target user or conversation id", false),
-                                        new OptionData(OptionType.STRING, "reason", "Reason or category", false)
+                                        new OptionData(OptionType.STRING, "user_id", "Target user id", false),
+                                        new OptionData(OptionType.STRING, "conversation_id", "Conversation id for evidence", false),
+                                        new OptionData(OptionType.STRING, "category", "Report category", false)
+                                                .addChoice("harassment", "harassment")
+                                                .addChoice("spam", "spam")
+                                                .addChoice("inappropriate", "inappropriate")
+                                                .addChoice("age_lie", "age_lie")
+                                                .addChoice("grooming", "grooming")
+                                                .addChoice("threats", "threats")
+                                                .addChoice("contact", "contact")
+                                                .addChoice("impersonation", "impersonation")
+                                                .addChoice("other", "other"),
+                                        new OptionData(OptionType.STRING, "reason", "Details", false)
                                 )
                 )
                 .setContexts(InteractionContextType.GUILD, InteractionContextType.BOT_DM, InteractionContextType.PRIVATE_CHANNEL);
