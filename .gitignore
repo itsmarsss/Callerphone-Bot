@@ -38,3 +38,6 @@ hs_err_pid*
 
 # Config files (if they contain secrets)
 config.yml
+
+# Local-only notes (not tracked)
+plan/
