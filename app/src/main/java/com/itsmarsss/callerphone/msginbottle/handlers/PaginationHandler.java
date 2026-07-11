@@ -6,6 +6,7 @@ import com.itsmarsss.callerphone.utils.InteractionUtils;
 import com.itsmarsss.commandType.IButtonInteraction;
 import com.itsmarsss.database.categories.MIB;
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonInteraction;
+import net.dv8tion.jda.api.utils.messages.MessageCreateData;
 import net.dv8tion.jda.api.utils.messages.MessageEditData;
 
 public abstract class PaginationHandler implements IButtonInteraction {
@@ -15,11 +16,28 @@ public abstract class PaginationHandler implements IButtonInteraction {
         e.deferEdit().queue();
 
         String[] previousData = InteractionUtils.parseCustomId(e.getButton().getCustomId());
+        if (previousData.length < 3) {
+            return;
+        }
+
         String id = previousData[1];
-        int page = Integer.parseInt(previousData[2]);
+        int page;
+        try {
+            page = Integer.parseInt(previousData[2]);
+        } catch (NumberFormatException ex) {
+            return;
+        }
 
         Bottle mib = MIB.getBottle(id);
+        if (mib == null) {
+            return;
+        }
 
-        e.getHook().editOriginal(MessageEditData.fromCreateData(MessageInBottle.createMessage(mib, page))).queue();
+        MessageCreateData message = MessageInBottle.createMessage(mib, page);
+        if (message == null) {
+            return;
+        }
+
+        e.getHook().editOriginal(MessageEditData.fromCreateData(message)).queue();
     }
 }
