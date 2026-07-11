@@ -1,0 +1,48 @@
+plugins {
+    id 'java'
+    id 'application'
+    id 'com.github.johnrengelman.shadow' version '8.1.1'
+}
+
+application {
+    mainClass = 'com.itsmarsss.Main'
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_11
+    targetCompatibility = JavaVersion.VERSION_11
+}
+
+repositories {
+    maven {
+        name = 'm2-dv8tion'
+        url = 'https://m2.dv8tion.net/releases'
+    }
+    mavenCentral()
+    maven {
+        name = 'jfrog-duncte123'
+        url = 'https://duncte123.jfrog.io/artifactory/maven'
+    }
+}
+
+dependencies {
+    implementation 'net.dv8tion:JDA:6.3.0'
+    implementation 'ch.qos.logback:logback-classic:1.4.12'
+    implementation 'org.yaml:snakeyaml:2.3'
+    implementation 'com.googlecode.json-simple:json-simple:1.1.1'
+    implementation 'org.jsoup:jsoup:1.15.3'
+    implementation 'org.mongodb:mongodb-driver-sync:4.7.2'
+    implementation 'org.slf4j:slf4j-api:2.0.16'
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+}
+
+shadowJar {
+    archiveBaseName.set('app')
+    archiveClassifier.set('all')
+    mergeServiceFiles()
+}
+
+build.dependsOn shadowJar
