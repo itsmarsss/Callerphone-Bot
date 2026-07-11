@@ -68,7 +68,7 @@ public class JoinPool implements ISlashCommand {
                 HOST_CHANNEL.sendMessage(String.format(PoolResponse.JOIN_INCORRECT_PWD.toString(), channel.getId())).queue();
                 return String.format(PoolResponse.REQUESTED_ID_NOT_FOUND.toString(), host);
             case FULL:
-                HOST_CHANNEL.sendMessage(String.format(String.format(PoolResponse.JOIN_FULL_POOL.toString(), channel.getId()))).queue();
+                HOST_CHANNEL.sendMessage(String.format(PoolResponse.JOIN_FULL_POOL.toString(), channel.getId())).queue();
                 return PoolResponse.ALREADY_FULL.toString();
             case SUCCESS:
                 return String.format(PoolResponse.JOIN_POOL_SUCCESS.toString(), host, HOST_CHANNEL.getName());
