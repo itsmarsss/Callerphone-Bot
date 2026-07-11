@@ -26,6 +26,12 @@ import com.itsmarsss.callerphone.msginbottle.commands.SendBottle;
 import com.itsmarsss.callerphone.msginbottle.commands.ViewBottle;
 import com.itsmarsss.callerphone.msginbottle.handlers.*;
 import com.itsmarsss.callerphone.msginbottle.modals.SendModal;
+import com.itsmarsss.callerphone.bootstrap.ApplicationContext;
+import com.itsmarsss.callerphone.discord.match.MatchButtonHandler;
+import com.itsmarsss.callerphone.discord.match.MatchCommand;
+import com.itsmarsss.callerphone.discord.match.MatchDmListener;
+import com.itsmarsss.callerphone.discord.match.MatchModalHandler;
+import com.itsmarsss.callerphone.discord.mod.ModCommandRouter;
 import com.itsmarsss.callerphone.tccallerphone.handlers.ReportChatHandler;
 import com.itsmarsss.callerphone.users.commands.DeductCredits;
 import com.itsmarsss.callerphone.users.commands.Leaderboard;
@@ -108,6 +114,18 @@ public class Callerphone {
             System.exit(1);
         }
 
+        ApplicationContext.init(dbConnector.getMongoDatabase(), config.getMatchMediaChannel());
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            try {
+                if (ApplicationContext.isReady()) {
+                    ApplicationContext.get().shutdown();
+                }
+                dbConnector.close();
+            } catch (Exception e) {
+                logger.warn("Shutdown cleanup failed", e);
+            }
+        }, "callerphone-shutdown"));
+
         ToolSet.updateToolSet();
         new CommandPrompt().startPrompting();
     }
@@ -177,6 +195,7 @@ public class Callerphone {
                 new ChannelInfo(), new Colour(), new Help(), new RoleInfo(), new Search(),
                 new ServerInfo(), new UserInfo(),
                 new Chat(), new EndChat(), new Prefix(), new ReportChat(),
+                new MatchCommand(),
                 new HostPool(), new JoinPool(), new EndPool(), new LeavePool(),
                 new PoolParticipants(), new PoolSettings(), new KickPool(),
                 new DeductCredits(), new RewardCredits(),
@@ -193,7 +212,7 @@ public class Callerphone {
     }
 
     private static void registerModals() {
-        IModalInteraction[] modals = {new SendModal(), new SettingsModal()};
+        IModalInteraction[] modals = {new SendModal(), new SettingsModal(), new MatchModalHandler()};
         for (IModalInteraction modal : modals) {
             mdlMap.put(modal.getID(), modal);
             logger.debug("Registered modal: {}", modal.getID());
@@ -206,7 +225,7 @@ public class Callerphone {
                 new TicTacToeHandler(), new Connect4Handler(), new BattleShipHandler(),
                 new WordSearchHandler(), new AddPageHandler(), new NextHandler(),
                 new PreviousHandler(), new ReportHandler(), new SaveHandler(),
-                new ReportChatHandler()
+                new ReportChatHandler(), new MatchButtonHandler()
         };
         for (IButtonInteraction button : buttons) {
             btnMap.put(button.getID(), button);
@@ -218,7 +237,8 @@ public class Callerphone {
     private static void registerListeners() {
         sdMgr.addEventListener(
                 new OnButtonClick(),
-                new OnMessageEvent(),
+                new ModCommandRouter(),
+                new MatchDmListener(),
                 new OnModalEvent(),
                 new OnOtherEvent(),
                 new OnSlashCommand(),

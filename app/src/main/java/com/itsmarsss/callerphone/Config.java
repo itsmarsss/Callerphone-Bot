@@ -28,6 +28,8 @@ public class Config {
     private String termsOfService = "";
     private String ownerID = "";
     private String databaseURL = "";
+    /** Private channel for re-hosting Match photos (optional). */
+    private String matchMediaChannel = "";
 
     private StartType startUpType;
 
@@ -220,5 +222,13 @@ public class Config {
 
     public void setDatabaseURL(String databaseURL) {
         this.databaseURL = databaseURL;
+    }
+
+    public String getMatchMediaChannel() {
+        return nz(matchMediaChannel);
+    }
+
+    public void setMatchMediaChannel(String matchMediaChannel) {
+        this.matchMediaChannel = matchMediaChannel;
     }
 }
