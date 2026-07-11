@@ -41,13 +41,15 @@ public final class MatchButtonHandler implements IButtonInteraction {
 
         switch (action) {
             case MatchComponentIds.ACTION_JOIN_ACCEPT -> {
-                EnrollmentService.ServiceResult accepted = ctx.enrollment().acceptPolicies(userId);
-                e.replyEmbeds(MatchEmbeds.simple("Choose your age group",
-                                accepted.message() + "\n\nThis is **only** used to pair you with the same group. Groups never mix."))
+                ctx.enrollment().acceptPolicies(userId);
+                e.replyEmbeds(MatchEmbeds.soft(
+                                "Pick your age group",
+                                "One tap — this only decides **who you can meet**.\n"
+                                        + "Groups never mix. You can update other profile stuff next."))
                         .addComponents(ActionRow.of(
                                 Button.primary(MatchComponentIds.of(MatchComponentIds.ACTION_AGE_13_15, userId), "13–15"),
                                 Button.primary(MatchComponentIds.of(MatchComponentIds.ACTION_AGE_16_17, userId), "16–17"),
-                                Button.primary(MatchComponentIds.of(MatchComponentIds.ACTION_AGE_18_PLUS, userId), "18+")
+                                Button.success(MatchComponentIds.of(MatchComponentIds.ACTION_AGE_18_PLUS, userId), "18+")
                         ))
                         .setEphemeral(true)
                         .queue();
@@ -104,15 +106,16 @@ public final class MatchButtonHandler implements IButtonInteraction {
         ctx.profiles().setAvatar(userId, e.getUser().getEffectiveAvatarUrl());
         MatchUser user = ctx.enrollment().getOrCreate(userId);
         MatchProfile profile = ctx.profiles().getOrCreateDraft(userId);
-        e.replyEmbeds(MatchEmbeds.simple(
-                "Age group saved — checklist",
-                result.message() + "\n\n"
-                        + ProfileChecklist.format(user, profile)
-                        + "\n\n**Next:** " + ProfileChecklist.nextStep(user, profile)
+        e.replyEmbeds(MatchEmbeds.checklist(
+                "You're in · " + cohort.label(),
+                "Age group is only for pairing — you'll only meet people in **" + cohort.label() + "**.\n"
+                        + "Finish the steps below, then go live. No approval wait.",
+                ProfileChecklist.format(user, profile),
+                ProfileChecklist.nextStep(user, profile)
         )).addComponents(ActionRow.of(
-                Button.primary(MatchComponentIds.of(MatchComponentIds.ACTION_EDIT_BASICS, "_"), "Edit basics"),
-                Button.secondary(MatchComponentIds.of(MatchComponentIds.ACTION_EDIT_BIO, "_"), "Edit bio"),
-                Button.secondary(MatchComponentIds.of(MatchComponentIds.ACTION_EDIT_INTERESTS, "_"), "Interests")
+                Button.primary(MatchComponentIds.of(MatchComponentIds.ACTION_EDIT_BASICS, "_"), "1 · Basics"),
+                Button.secondary(MatchComponentIds.of(MatchComponentIds.ACTION_EDIT_BIO, "_"), "2 · Bio"),
+                Button.secondary(MatchComponentIds.of(MatchComponentIds.ACTION_EDIT_INTERESTS, "_"), "3 · Interests")
         )).setEphemeral(true).queue();
     }
 

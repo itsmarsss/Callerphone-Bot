@@ -86,6 +86,6 @@ public final class ProfileChecklist {
     }
 
     private static String check(boolean done, String label) {
-        return (done ? "✅" : "⬜") + " " + label;
+        return (done ? "✓" : "○") + "  " + label;
     }
 }

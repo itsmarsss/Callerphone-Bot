@@ -106,23 +106,23 @@ public final class MatchCommand implements ISlashCommand {
             )).setEphemeral(true).queue();
             return;
         }
-        e.replyEmbeds(MatchEmbeds.simple(
-                        "Join Callerphone Social",
+        e.replyEmbeds(MatchEmbeds.soft(
+                        "✦  Callerphone Social",
                         """
-                                Social is a **friendship & community discovery** product for Discord users 13+.
+                                Meet people who vibe with you — **friendship & community**, not dating apps.
 
-                                You will:
-                                1. Accept terms, privacy, and safety notices
-                                2. Choose your **age group** (pairing only — groups never mix)
-                                3. Build a short profile and go live (no approval wait)
+                                **How it works**
+                                1. Quick yes to terms & safety
+                                2. Pick your **age group** (pairing only — groups never mix)
+                                3. Tiny profile → **go live** (no approval wait)
+                                4. Browse · interested · match · chat
 
-                                Everyone gets the same product. Report abuse anytime; mods review reports.
-                                Mediated chat hides Discord IDs until both people explicitly connect.
+                                Abuse? Report anytime. Chats stay private until both of you choose to connect.
                                 """
                 ))
                 .addComponents(ActionRow.of(Button.success(
                         MatchComponentIds.of(MatchComponentIds.ACTION_JOIN_ACCEPT, userId),
-                        "I agree — continue"
+                        "Sounds good — let's go"
                 )))
                 .setEphemeral(true)
                 .queue();
@@ -152,9 +152,12 @@ public final class MatchCommand implements ISlashCommand {
         }
         e.replyEmbeds(
                         MatchEmbeds.profileCard(p, true),
-                        MatchEmbeds.simple("Progress", ProfileChecklist.format(user, p)
-                                + "\n\n**Next:** " + ProfileChecklist.nextStep(user, p)
-                                + "\n" + limits)
+                        MatchEmbeds.checklist(
+                                "Progress · " + ProfileChecklist.completionPercent(user, p) + "%",
+                                limits,
+                                ProfileChecklist.format(user, p),
+                                ProfileChecklist.nextStep(user, p)
+                        )
                 )
                 .addComponents(ActionRow.of(row))
                 .setEphemeral(true)
@@ -365,35 +368,43 @@ public final class MatchCommand implements ISlashCommand {
     }
 
     static Modal basicsModal() {
-        return Modal.create("m-v1-modal-basics", "Edit profile basics")
+        // Discord Label text max 45 chars — put examples in placeholders
+        return Modal.create("m-v1-modal-basics", "Your basics")
                 .addComponents(
                         Label.of("Display name", TextInput.create("displayName", TextInputStyle.SHORT)
+                                .setPlaceholder("How you want to show up")
                                 .setRequired(true).setMaxLength(32).build()),
-                        Label.of("Gender (woman/man/non_binary/other/prefer_not)", TextInput.create("gender", TextInputStyle.SHORT)
+                        Label.of("Gender (optional)", TextInput.create("gender", TextInputStyle.SHORT)
+                                .setPlaceholder("woman · man · non_binary · other · prefer_not")
                                 .setRequired(false).setMaxLength(24).build()),
-                        Label.of("Pronouns", TextInput.create("pronouns", TextInputStyle.SHORT)
+                        Label.of("Pronouns (optional)", TextInput.create("pronouns", TextInputStyle.SHORT)
+                                .setPlaceholder("e.g. she/her, he/him, they/them")
                                 .setRequired(false).setMaxLength(24).build()),
-                        Label.of("Open to meeting (optional: woman,man,non_binary,…)", TextInput.create("openTo", TextInputStyle.SHORT)
+                        Label.of("Open to meeting (optional)", TextInput.create("openTo", TextInputStyle.SHORT)
+                                .setPlaceholder("comma codes: woman, man, non_binary…")
                                 .setRequired(false).setMaxLength(64).build())
                 )
                 .build();
     }
 
     static Modal bioModal() {
-        return Modal.create("m-v1-modal-bio", "Edit bio & prompt")
+        return Modal.create("m-v1-modal-bio", "Bio & prompt")
                 .addComponents(
-                        Label.of("Bio", TextInput.create("bio", TextInputStyle.PARAGRAPH)
+                        Label.of("Short bio", TextInput.create("bio", TextInputStyle.PARAGRAPH)
+                                .setPlaceholder("A few sentences about you — keep it friendly")
                                 .setRequired(true).setMaxLength(300).build()),
                         Label.of("Ideal Sunday", TextInput.create("prompt", TextInputStyle.PARAGRAPH)
+                                .setPlaceholder("What does a perfect Sunday look like for you?")
                                 .setRequired(true).setMaxLength(200).build())
                 )
                 .build();
     }
 
     static Modal interestsModal() {
-        return Modal.create("m-v1-modal-interests", "Edit interests")
+        return Modal.create("m-v1-modal-interests", "Your interests")
                 .addComponents(
-                        Label.of("Up to 5 interests, comma-separated", TextInput.create("interests", TextInputStyle.PARAGRAPH)
+                        Label.of("Up to 5 interests", TextInput.create("interests", TextInputStyle.PARAGRAPH)
+                                .setPlaceholder("gaming, music, art, hiking, anime…")
                                 .setRequired(true).setMaxLength(120).build())
                 )
                 .build();

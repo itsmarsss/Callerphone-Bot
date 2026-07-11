@@ -61,15 +61,18 @@ public final class MatchModalHandler implements IModalInteraction {
     ) {
         MatchUser user = ctx.enrollment().getOrCreate(userId);
         MatchProfile profile = ctx.profiles().getOrCreateDraft(userId);
-        var reply = e.replyEmbeds(MatchEmbeds.simple(
-                result.success() ? "Saved" : "Could not save",
-                result.message() + "\n\n" + ProfileChecklist.format(user, profile)
-                        + "\n\n**Next:** " + ProfileChecklist.nextStep(user, profile)
-        )).setEphemeral(true);
+        var emb = result.success()
+                ? MatchEmbeds.checklist(
+                "Saved ✨",
+                result.message(),
+                ProfileChecklist.format(user, profile),
+                ProfileChecklist.nextStep(user, profile))
+                : MatchEmbeds.warm("Couldn't save that", result.message() + "\n\nTry again — no stress.");
+        var reply = e.replyEmbeds(emb).setEphemeral(true);
         if (result.success() && ProfileChecklist.readyToSubmit(profile)
                 && profile.getState() != com.itsmarsss.callerphone.match.model.ProfileState.ACTIVE) {
             reply = reply.addComponents(ActionRow.of(
-                    Button.success(MatchComponentIds.of(MatchComponentIds.ACTION_SUBMIT, "_"), "Go live")
+                    Button.success(MatchComponentIds.of(MatchComponentIds.ACTION_SUBMIT, "_"), "✦ Go live")
             ));
         }
         reply.queue();
