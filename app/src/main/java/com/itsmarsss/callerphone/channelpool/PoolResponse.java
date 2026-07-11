@@ -38,7 +38,12 @@ public enum PoolResponse {
         this.label = label;
     }
 
+    @Override
     public String toString() {
         return label;
+    }
+
+    public String format(Object... args) {
+        return String.format(label, args);
     }
 }

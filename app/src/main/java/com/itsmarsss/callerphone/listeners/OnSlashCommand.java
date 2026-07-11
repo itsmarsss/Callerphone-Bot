@@ -38,8 +38,10 @@ public class OnSlashCommand extends ListenerAdapter {
             }
 
             if (Users.isBlacklisted(userId)) {
-                event.reply(String.format(Response.BLACKLISTED.toString(), Users.getReason(userId)))
-                        .setEphemeral(true).queue();
+                event.reply(Response.BLACKLISTED.format(
+                        Users.getReason(userId),
+                        Callerphone.config.getSupportServer()
+                )).setEphemeral(true).queue();
                 return;
             }
 

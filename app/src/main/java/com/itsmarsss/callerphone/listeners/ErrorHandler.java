@@ -1,5 +1,6 @@
 package com.itsmarsss.callerphone.listeners;
 
+import com.itsmarsss.callerphone.Callerphone;
 import com.itsmarsss.callerphone.Response;
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
@@ -19,9 +20,9 @@ public class ErrorHandler {
      * Handle error for slash command interactions
      */
     public static void handleSlashCommandError(SlashCommandInteractionEvent event, Exception error) {
-        logger.error("Error in slash command: " + event.getName(), error);
+        logger.error("Error in slash command: {}", event.getName(), error);
         try {
-            event.reply(String.format(Response.ERROR_MSG.toString(), error.toString())).setEphemeral(true).queue();
+            event.reply(errorMessage(error)).setEphemeral(true).queue();
         } catch (Exception e) {
             logger.error("Failed to send error message", e);
         }
@@ -31,9 +32,9 @@ public class ErrorHandler {
      * Handle error for button interactions
      */
     public static void handleButtonError(ButtonInteractionEvent event, Exception error) {
-        logger.error("Error in button interaction: " + event.getButton().getCustomId(), error);
+        logger.error("Error in button interaction: {}", event.getButton().getCustomId(), error);
         try {
-            event.reply(String.format(Response.ERROR_MSG.toString(), error.toString())).setEphemeral(true).queue();
+            event.reply(errorMessage(error)).setEphemeral(true).queue();
         } catch (Exception e) {
             logger.error("Failed to send error message", e);
         }
@@ -43,9 +44,9 @@ public class ErrorHandler {
      * Handle error for modal interactions
      */
     public static void handleModalError(ModalInteractionEvent event, Exception error) {
-        logger.error("Error in modal interaction: " + event.getModalId(), error);
+        logger.error("Error in modal interaction: {}", event.getModalId(), error);
         try {
-            event.reply(String.format(Response.ERROR_MSG.toString(), error.toString())).setEphemeral(true).queue();
+            event.reply(errorMessage(error)).setEphemeral(true).queue();
         } catch (Exception e) {
             logger.error("Failed to send error message", e);
         }
@@ -57,9 +58,14 @@ public class ErrorHandler {
     public static void handleMessageError(MessageReceivedEvent event, Exception error) {
         logger.error("Error in message event", error);
         try {
-            event.getMessage().reply(String.format(Response.ERROR_MSG.toString(), error.toString())).queue();
+            event.getMessage().reply(errorMessage(error)).queue();
         } catch (Exception e) {
             logger.error("Failed to send error message", e);
         }
+    }
+
+    private static String errorMessage(Exception error) {
+        String support = Callerphone.config != null ? Callerphone.config.getSupportServer() : "";
+        return Response.ERROR_MSG.format(error.toString(), support);
     }
 }

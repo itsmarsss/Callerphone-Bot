@@ -1,9 +1,11 @@
 package com.itsmarsss.callerphone;
 
+/**
+ * YAML-backed bot configuration. SnakeYAML populates fields via setters.
+ */
 public class Config {
 
     private String botToken = "";
-
     private String prefix = "";
     private String callerphoneNormal = "";
     private String callerphoneError = "";
@@ -25,27 +27,35 @@ public class Config {
     private String privacyPolicy = "";
     private String termsOfService = "";
     private String ownerID = "";
-
     private String databaseURL = "";
 
     private StartType startUpType;
 
-    public Config() {}
+    public Config() {
+    }
+
+    public boolean isValid() {
+        return isPresent(botToken) && isPresent(databaseURL);
+    }
+
+    private static boolean isPresent(String value) {
+        return value != null && !value.trim().isEmpty();
+    }
+
+    private static String nz(String value) {
+        return value != null ? value : "";
+    }
 
     public String getBotToken() {
-        return botToken;
+        return nz(botToken);
     }
 
     public void setBotToken(String botToken) {
         this.botToken = botToken;
     }
 
-    public boolean isValid() {
-        return !botToken.isEmpty();
-    }
-
     public String getPrefix() {
-        return prefix;
+        return nz(prefix);
     }
 
     public void setPrefix(String prefix) {
@@ -53,7 +63,7 @@ public class Config {
     }
 
     public String getCallerphoneNormal() {
-        return callerphoneNormal;
+        return nz(callerphoneNormal);
     }
 
     public void setCallerphoneNormal(String callerphoneNormal) {
@@ -61,7 +71,7 @@ public class Config {
     }
 
     public String getCallerphoneError() {
-        return callerphoneError;
+        return nz(callerphoneError);
     }
 
     public void setCallerphoneError(String callerphoneError) {
@@ -69,7 +79,7 @@ public class Config {
     }
 
     public String getCallerphoneCall() {
-        return callerphoneCall;
+        return nz(callerphoneCall);
     }
 
     public void setCallerphoneCall(String callerphoneCall) {
@@ -85,7 +95,7 @@ public class Config {
     }
 
     public String getBotListingTopGG() {
-        return botListingTopGG;
+        return nz(botListingTopGG);
     }
 
     public void setBotListingTopGG(String botListingTopGG) {
@@ -93,7 +103,7 @@ public class Config {
     }
 
     public String getUpvoteBotTopGG() {
-        return upvoteBotTopGG;
+        return nz(upvoteBotTopGG);
     }
 
     public void setUpvoteBotTopGG(String upvoteBotTopGG) {
@@ -101,7 +111,7 @@ public class Config {
     }
 
     public String getBotListingDBL() {
-        return botListingDBL;
+        return nz(botListingDBL);
     }
 
     public void setBotListingDBL(String botListingDBL) {
@@ -109,7 +119,7 @@ public class Config {
     }
 
     public String getUpvoteBotDBL() {
-        return upvoteBotDBL;
+        return nz(upvoteBotDBL);
     }
 
     public void setUpvoteBotDBL(String upvoteBotDBL) {
@@ -117,7 +127,7 @@ public class Config {
     }
 
     public String getUpvoteSupportServerTopGG() {
-        return upvoteSupportServerTopGG;
+        return nz(upvoteSupportServerTopGG);
     }
 
     public void setUpvoteSupportServerTopGG(String upvoteSupportServerTopGG) {
@@ -125,7 +135,7 @@ public class Config {
     }
 
     public String getUpvoteSupportServerDBL() {
-        return upvoteSupportServerDBL;
+        return nz(upvoteSupportServerDBL);
     }
 
     public void setUpvoteSupportServerDBL(String upvoteSupportServerDBL) {
@@ -133,7 +143,7 @@ public class Config {
     }
 
     public String getLogStatusChannel() {
-        return logStatusChannel;
+        return nz(logStatusChannel);
     }
 
     public void setLogStatusChannel(String logStatusChannel) {
@@ -141,7 +151,7 @@ public class Config {
     }
 
     public String getTempChatChannel() {
-        return tempChatChannel;
+        return nz(tempChatChannel);
     }
 
     public void setTempChatChannel(String tempChatChannel) {
@@ -149,7 +159,7 @@ public class Config {
     }
 
     public String getReportChatChannel() {
-        return reportChatChannel;
+        return nz(reportChatChannel);
     }
 
     public void setReportChatChannel(String reportChatChannel) {
@@ -157,7 +167,7 @@ public class Config {
     }
 
     public String getBotInviteLink() {
-        return botInviteLink;
+        return nz(botInviteLink);
     }
 
     public void setBotInviteLink(String botInviteLink) {
@@ -165,7 +175,7 @@ public class Config {
     }
 
     public String getSupportServer() {
-        return supportServer;
+        return nz(supportServer);
     }
 
     public void setSupportServer(String supportServer) {
@@ -173,7 +183,7 @@ public class Config {
     }
 
     public String getDonateLink() {
-        return donateLink;
+        return nz(donateLink);
     }
 
     public void setDonateLink(String donateLink) {
@@ -181,7 +191,7 @@ public class Config {
     }
 
     public String getPrivacyPolicy() {
-        return privacyPolicy;
+        return nz(privacyPolicy);
     }
 
     public void setPrivacyPolicy(String privacyPolicy) {
@@ -189,7 +199,7 @@ public class Config {
     }
 
     public String getTermsOfService() {
-        return termsOfService;
+        return nz(termsOfService);
     }
 
     public void setTermsOfService(String termsOfService) {
@@ -197,7 +207,7 @@ public class Config {
     }
 
     public String getOwnerID() {
-        return ownerID;
+        return nz(ownerID);
     }
 
     public void setOwnerID(String ownerID) {
@@ -205,7 +215,7 @@ public class Config {
     }
 
     public String getDatabaseURL() {
-        return databaseURL;
+        return nz(databaseURL);
     }
 
     public void setDatabaseURL(String databaseURL) {
