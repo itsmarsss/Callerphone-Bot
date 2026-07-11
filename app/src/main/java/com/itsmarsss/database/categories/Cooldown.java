@@ -7,21 +7,37 @@ import org.bson.Document;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.concurrent.ConcurrentHashMap;
+
 import static com.itsmarsss.database.DatabaseUtil.getOrDefault;
 
+/**
+ * Cooldown storage with in-memory write-through cache to avoid Mongo on every message.
+ */
 public class Cooldown {
     public static final Logger logger = LoggerFactory.getLogger(Cooldown.class);
 
-    public static long queryUserCooldown(String id, String cooldownType) {
-        MongoCollection<Document> usersCollection = Callerphone.dbConnector.getUsersCollection();
+    private static final ConcurrentHashMap<String, Long> cache = new ConcurrentHashMap<>();
 
+    private static String cacheKey(String id, String cooldownType) {
+        return id + ":" + cooldownType;
+    }
+
+    public static long queryUserCooldown(String id, String cooldownType) {
+        String key = cacheKey(id, cooldownType);
+        Long cached = cache.get(key);
+        if (cached != null) {
+            return cached;
+        }
+
+        MongoCollection<Document> usersCollection = Callerphone.dbConnector.getUsersCollection();
         try {
             Document userDocument = usersCollection.find(new Document("id", id)).first();
-            if (userDocument != null) {
-                return getOrDefault(userDocument, "cooldowns_" + cooldownType, 0);
-            } else {
-                return 0;
-            }
+            long value = userDocument != null
+                    ? getOrDefault(userDocument, "cooldowns_" + cooldownType, 0L)
+                    : 0L;
+            cache.put(key, value);
+            return value;
         } catch (MongoException me) {
             logger.error("Unable to get {} cooldown for user: {}, {}", cooldownType, id, me.getMessage());
             return 0;
@@ -29,14 +45,16 @@ public class Cooldown {
     }
 
     private static void updateUserCooldown(String id, String cooldownType) {
-        MongoCollection<Document> usersCollection = Callerphone.dbConnector.getUsersCollection();
+        long now = System.currentTimeMillis();
+        cache.put(cacheKey(id, cooldownType), now);
 
+        MongoCollection<Document> usersCollection = Callerphone.dbConnector.getUsersCollection();
         try {
             usersCollection.updateOne(
                     new Document("id", id),
-                    new Document("$set", new Document("cooldowns_" + cooldownType, System.currentTimeMillis()))
+                    new Document("$set", new Document("cooldowns_" + cooldownType, now))
             );
-            logger.info("Updated {} cooldown for user: {}", cooldownType, id);
+            logger.debug("Updated {} cooldown for user: {}", cooldownType, id);
         } catch (MongoException me) {
             logger.error("Unable to update {} cooldown for user: {}, {}", cooldownType, id, me.getMessage());
         }
