@@ -7,16 +7,61 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.result.InsertOneResult;
 import com.mongodb.client.result.UpdateResult;
 import org.bson.Document;
-import org.bson.types.ObjectId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static com.itsmarsss.database.DatabaseUtil.getOrDefault;
 
 public class Users {
     public static final Logger logger = LoggerFactory.getLogger(Users.class);
+
+    private static final ConcurrentHashMap<String, CachedUser> cache = new ConcurrentHashMap<>();
+
+    private static final class CachedUser {
+        final boolean exists;
+        final String status;
+        final String prefix;
+        final String reason;
+
+        CachedUser(boolean exists, String status, String prefix, String reason) {
+            this.exists = exists;
+            this.status = status;
+            this.prefix = prefix;
+            this.reason = reason;
+        }
+    }
+
+    private static CachedUser loadUser(String id) {
+        CachedUser cached = cache.get(id);
+        if (cached != null) {
+            return cached;
+        }
+
+        MongoCollection<Document> usersCollection = Callerphone.dbConnector.getUsersCollection();
+        try {
+            Document doc = usersCollection.find(new Document("id", id)).first();
+            CachedUser loaded = doc == null
+                    ? new CachedUser(false, "", "", "")
+                    : new CachedUser(
+                    true,
+                    getOrDefault(doc, "status", "user"),
+                    getOrDefault(doc, "prefix", ""),
+                    getOrDefault(doc, "reason", "")
+            );
+            cache.put(id, loaded);
+            return loaded;
+        } catch (MongoException me) {
+            logger.error("Unable to load user {}: {}", id, me.getMessage());
+            return new CachedUser(false, "", "", "");
+        }
+    }
+
+    private static void invalidate(String id) {
+        cache.remove(id);
+    }
 
     public static void createUser(String id) {
         MongoCollection<Document> usersCollection = Callerphone.dbConnector.getUsersCollection();
@@ -36,6 +81,7 @@ public class Users {
                     .append("cooldowns_MIBFind", 0L));
 
             if (result.getInsertedId() != null) {
+                cache.put(id, new CachedUser(true, "user", "", ""));
                 logger.info("Added new user: {}", id);
             } else {
                 logger.error("User addition not inserted for user: {}", id);
@@ -83,6 +129,7 @@ public class Users {
                 );
             }
 
+            invalidate(id);
             logger.debug("User: {} updated {} to: {}", id, field, value);
         } catch (MongoException me) {
             logger.error("Unable to update {} for user: {}, {}", field, id, me.getMessage());
@@ -94,32 +141,13 @@ public class Users {
 
         try {
             Document userDocument = usersCollection.find(new Document("id", id)).first();
-
             if (userDocument == null) {
                 return 0;
             }
-
-            return getOrDefault(userDocument, field, 0);
+            return getOrDefault(userDocument, field, 0L);
         } catch (MongoException me) {
             logger.error("Unable to get {} for user: {}, {}", field, id, me.getMessage());
             return 0;
-        }
-    }
-
-    private static String queryUserFieldString(String id, String field) {
-        MongoCollection<Document> usersCollection = Callerphone.dbConnector.getUsersCollection();
-
-        try {
-            Document userDocument = usersCollection.find(new Document("id", id)).first();
-
-            if (userDocument == null) {
-                return "";
-            }
-
-            return getOrDefault(userDocument, field, "unknown");
-        } catch (MongoException me) {
-            logger.error("Unable to get {} for user: {}, {}", field, id, me.getMessage());
-            return "";
         }
     }
 
@@ -144,7 +172,7 @@ public class Users {
     }
 
     public static String getPrefix(String id) {
-        return queryUserFieldString(id, "prefix");
+        return loadUser(id).prefix;
     }
 
     public static long getCredits(String id) {
@@ -160,11 +188,11 @@ public class Users {
     }
 
     public static boolean isBlacklisted(String id) {
-        return queryUserFieldString(id, "status").equals("blacklisted");
+        return "blacklisted".equals(loadUser(id).status);
     }
 
     public static boolean isModerator(String id) {
-        return queryUserFieldString(id, "status").equals("moderator");
+        return "moderator".equals(loadUser(id).status);
     }
 
     public static void addBlacklist(String id) {
@@ -180,39 +208,31 @@ public class Users {
     }
 
     public static boolean hasPrefix(String id) {
-        String prefix = queryUserFieldString(id, "prefix");
+        String prefix = getPrefix(id);
         return prefix != null && !prefix.isEmpty();
     }
 
     public static String getReason(String id) {
-        return queryUserFieldString(id, "reason");
+        return loadUser(id).reason;
     }
 
     public static String getUserStatus(String id) {
-        if (isModerator(id)) {
+        CachedUser user = loadUser(id);
+        if ("moderator".equals(user.status)) {
             return "Moderator";
-        } else if (isBlacklisted(id)) {
-            return "Blacklisted | Reason: " + getReason(id);
+        }
+        if ("blacklisted".equals(user.status)) {
+            return "Blacklisted | Reason: " + user.reason;
         }
         return "User";
     }
 
     public static boolean hasUser(String id) {
-        MongoCollection<Document> usersCollection = Callerphone.dbConnector.getUsersCollection();
-
-        try {
-            Document userDocument = usersCollection.find(new Document("id", id)).first();
-            boolean exists = userDocument != null;
-
-            return exists;
-        } catch (MongoException me) {
-            logger.error("Unable to check existence for user: {}, {}", id, me.getMessage());
-            return false;
-        }
+        return loadUser(id).exists;
     }
 
-    ////////////////////////////
     public static final HashMap<String, BotUser> users = new HashMap<>();
+
     public static BotUser getUser(String id) {
         return users.get(id);
     }
