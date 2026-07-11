@@ -7,6 +7,7 @@ import com.itsmarsss.callerphone.msginbottle.entities.Page;
 import com.mongodb.MongoException;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.Aggregates;
+import com.mongodb.client.model.Updates;
 import com.mongodb.client.result.InsertOneResult;
 import org.bson.Document;
 import org.slf4j.Logger;
@@ -20,41 +21,44 @@ import java.util.List;
 import static com.itsmarsss.database.DatabaseUtil.getOrDefault;
 import static com.itsmarsss.database.DatabaseUtil.getOrDefaultInt;
 
-public class MIB {
+public final class MIB {
     public static final Logger logger = LoggerFactory.getLogger(MIB.class);
 
-    public static Bottle createMIB(String id, String message, boolean anon) {
+    private MIB() {
+    }
+
+    public static Bottle createMIB(String authorId, String message, boolean signed) {
         MongoCollection<Document> mibCollection = Callerphone.dbConnector.getMibsCollection();
 
         try {
-            List<Document> pages = new ArrayList<>();
-
             long time = Instant.now().getEpochSecond();
-
-            pages.add(new Document()
-                    .append("pageNum", 0)
-                    .append("author", id)
-                    .append("message", message)
-                    .append("signed", anon)
-                    .append("released", time));
-
             String mibId = ToolSet.generateUID();
+
+            Document page = new Document()
+                    .append("pageNum", 0)
+                    .append("author", authorId)
+                    .append("message", message)
+                    .append("signed", signed)
+                    .append("released", time);
 
             InsertOneResult result = mibCollection.insertOne(new Document()
                     .append("id", mibId)
-                    .append("pages", pages)
+                    .append("pages", Collections.singletonList(page))
                     .append("created", time));
 
-            if (result.getInsertedId() != null) {
-                logger.info("Added new MIB: {}", id);
-            } else {
-                logger.error("MIB addition not inserted for MIB: {}", id);
+            if (result.getInsertedId() == null) {
+                logger.error("MIB insert returned no id for author {}", authorId);
+                return null;
             }
-            return getBottle(mibId);
+
+            logger.debug("Created MIB {} by {}", mibId, authorId);
+            return new Bottle(mibId, new ArrayList<>(Collections.singletonList(
+                    new Page(0, authorId, message, signed, time)
+            )));
         } catch (MongoException me) {
             logger.error("Unable to add new MIB: {}", me.getMessage());
+            return null;
         }
-        return null;
     }
 
     public static Bottle findBottle() {
@@ -65,14 +69,14 @@ public class MIB {
                             Collections.singletonList(Aggregates.sample(1)))
                     .into(new ArrayList<>());
 
-            if (!randomDocument.isEmpty()) {
-                return parseDocumentToBottle(randomDocument.get(0));
+            if (randomDocument.isEmpty()) {
+                return null;
             }
-            return null;
+            return parseDocumentToBottle(randomDocument.get(0));
         } catch (MongoException me) {
             logger.error("Unable to find MIB: {}", me.getMessage());
+            return null;
         }
-        return null;
     }
 
     public static Bottle getBottle(String id) {
@@ -80,8 +84,9 @@ public class MIB {
 
         try {
             Document mibDocument = mibCollection.find(new Document("id", id)).first();
-
-            logger.info("MIB: {}", id);
+            if (mibDocument == null) {
+                return null;
+            }
             return parseDocumentToBottle(mibDocument);
         } catch (MongoException me) {
             logger.error("Unable to get MIB {}: {}", id, me.getMessage());
@@ -89,13 +94,11 @@ public class MIB {
         }
     }
 
-
-    public static Bottle addMIBPage(String id, String message, boolean anon, String mibId) {
+    public static Bottle addMIBPage(String authorId, String message, boolean signed, String mibId) {
         MongoCollection<Document> collection = Callerphone.dbConnector.getMibsCollection();
 
         try {
             Bottle bottle = getBottle(mibId);
-
             if (bottle == null) {
                 return null;
             }
@@ -103,22 +106,15 @@ public class MIB {
             int newPageNum = bottle.getPages().size();
             long currentTime = Instant.now().getEpochSecond();
 
-            Page newPage = new Page(newPageNum, id, message, anon, currentTime);
+            Document pageDoc = new Document("pageNum", newPageNum)
+                    .append("author", authorId)
+                    .append("message", message)
+                    .append("signed", signed)
+                    .append("released", currentTime);
 
-            bottle.getPages().add(newPage);
+            collection.updateOne(new Document("id", mibId), Updates.push("pages", pageDoc));
 
-            ArrayList<Document> updatedPages = new ArrayList<>();
-            for (Page page : bottle.getPages()) {
-                Document pageDoc = new Document("pageNum", page.getPageNum())
-                        .append("author", page.getAuthor())
-                        .append("message", page.getMessage())
-                        .append("signed", page.isSigned())
-                        .append("released", page.getReleased());
-                updatedPages.add(pageDoc);
-            }
-
-            collection.updateOne(new Document("id", mibId), new Document("$set", new Document("pages", updatedPages)));
-
+            bottle.getPages().add(new Page(newPageNum, authorId, message, signed, currentTime));
             return bottle;
         } catch (MongoException me) {
             logger.error("Unable to update MIB {}: {}", mibId, me.getMessage());
@@ -126,26 +122,27 @@ public class MIB {
         }
     }
 
-
     private static Bottle parseDocumentToBottle(Document mibDocument) {
+        if (mibDocument == null) {
+            return null;
+        }
+
         String id = getOrDefault(mibDocument, "id", "unknown");
-
         List<Document> pagesDocs = getOrDefault(mibDocument, "pages", new ArrayList<>(), Document.class);
-
         ArrayList<Page> pages = new ArrayList<>();
 
         if (pagesDocs != null) {
             for (Document pageDoc : pagesDocs) {
                 try {
-                    int pageNum = getOrDefaultInt(pageDoc, "pageNum", -1);
-                    String author = getOrDefault(pageDoc, "author", "unknown");
-                    String message = getOrDefault(pageDoc, "message", "*No content found*");
-                    boolean signed = getOrDefault(pageDoc, "signed", false);
-                    long released = getOrDefault(pageDoc, "released", Instant.now().getEpochSecond());
-
-                    pages.add(new Page(pageNum, author, message, signed, released));
+                    pages.add(new Page(
+                            getOrDefaultInt(pageDoc, "pageNum", -1),
+                            getOrDefault(pageDoc, "author", "unknown"),
+                            getOrDefault(pageDoc, "message", "*No content found*"),
+                            getOrDefault(pageDoc, "signed", false),
+                            getOrDefault(pageDoc, "released", Instant.now().getEpochSecond())
+                    ));
                 } catch (Exception e) {
-                    logger.error("Error parsing page id {}: {}", id, e.getMessage());
+                    logger.error("Error parsing page for MIB {}: {}", id, e.getMessage());
                 }
             }
         }

@@ -4,11 +4,19 @@ import com.itsmarsss.callerphone.Callerphone;
 import com.itsmarsss.database.categories.Filter;
 import com.mongodb.ConnectionString;
 import com.mongodb.MongoClientSettings;
-import com.mongodb.client.*;
+import com.mongodb.client.MongoClient;
+import com.mongodb.client.MongoClients;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoDatabase;
 import org.bson.Document;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class MongoConnector {
+    private static final Logger logger = LoggerFactory.getLogger(MongoConnector.class);
+    private static final String DATABASE_NAME = "callerphone-bot";
 
+    private MongoClient mongoClient;
     private MongoDatabase mongoDatabase;
     private MongoCollection<Document> filtersCollection;
     private MongoCollection<Document> usersCollection;
@@ -16,30 +24,35 @@ public class MongoConnector {
     private MongoCollection<Document> mibsCollection;
     private MongoCollection<Document> chatsCollection;
 
-    public MongoConnector() {
-    }
-
     public boolean init() {
         try {
             ConnectionString connectionString = new ConnectionString(Callerphone.config.getDatabaseURL());
+            MongoClientSettings settings = MongoClientSettings.builder()
+                    .applyConnectionString(connectionString)
+                    .build();
 
-            MongoClientSettings settings = MongoClientSettings.builder().applyConnectionString(connectionString).build();
+            mongoClient = MongoClients.create(settings);
+            mongoDatabase = mongoClient.getDatabase(DATABASE_NAME);
 
-            MongoClient mongoClient = MongoClients.create(settings);
-            MongoDatabase db = mongoClient.getDatabase("callerphone-bot");
-
-            setMongoDatabase(db);
-            setFiltersCollection(db.getCollection("filters"));
-            setUsersCollection(db.getCollection("users"));
-            setPoolsCollection(db.getCollection("pools"));
-            setMibsCollection(db.getCollection("mibs"));
-            setChatsCollection(db.getCollection("chats"));
+            filtersCollection = mongoDatabase.getCollection("filters");
+            usersCollection = mongoDatabase.getCollection("users");
+            poolsCollection = mongoDatabase.getCollection("pools");
+            mibsCollection = mongoDatabase.getCollection("mibs");
+            chatsCollection = mongoDatabase.getCollection("chats");
 
             Filter.getFilter();
+            logger.info("Connected to MongoDB database '{}'", DATABASE_NAME);
             return true;
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("Failed to connect to MongoDB", e);
             return false;
+        }
+    }
+
+    public void close() {
+        if (mongoClient != null) {
+            mongoClient.close();
+            mongoClient = null;
         }
     }
 
@@ -47,47 +60,23 @@ public class MongoConnector {
         return mongoDatabase;
     }
 
-    public void setMongoDatabase(MongoDatabase mongoDatabase) {
-        this.mongoDatabase = mongoDatabase;
-    }
-
     public MongoCollection<Document> getFiltersCollection() {
         return filtersCollection;
-    }
-
-    public void setFiltersCollection(MongoCollection<Document> filtersCollection) {
-        this.filtersCollection = filtersCollection;
     }
 
     public MongoCollection<Document> getUsersCollection() {
         return usersCollection;
     }
 
-    public void setUsersCollection(MongoCollection<Document> usersCollection) {
-        this.usersCollection = usersCollection;
-    }
-
     public MongoCollection<Document> getPoolsCollection() {
         return poolsCollection;
-    }
-
-    public void setPoolsCollection(MongoCollection<Document> poolsCollection) {
-        this.poolsCollection = poolsCollection;
     }
 
     public MongoCollection<Document> getMibsCollection() {
         return mibsCollection;
     }
 
-    public void setMibsCollection(MongoCollection<Document> mibsCollection) {
-        this.mibsCollection = mibsCollection;
-    }
-
     public MongoCollection<Document> getChatsCollection() {
         return chatsCollection;
-    }
-
-    public void setChatsCollection(MongoCollection<Document> chatsCollection) {
-        this.chatsCollection = chatsCollection;
     }
 }

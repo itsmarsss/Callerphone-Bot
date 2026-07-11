@@ -10,7 +10,6 @@ import org.bson.Document;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static com.itsmarsss.database.DatabaseUtil.getOrDefault;
@@ -231,9 +230,13 @@ public class Users {
         return loadUser(id).exists;
     }
 
-    public static final HashMap<String, BotUser> users = new HashMap<>();
+    /** In-memory session state (minigames, etc.). */
+    public static final ConcurrentHashMap<String, BotUser> users = new ConcurrentHashMap<>();
 
     public static BotUser getUser(String id) {
-        return users.get(id);
+        if (id == null || id.isEmpty()) {
+            return null;
+        }
+        return users.computeIfAbsent(id, BotUser::new);
     }
 }
