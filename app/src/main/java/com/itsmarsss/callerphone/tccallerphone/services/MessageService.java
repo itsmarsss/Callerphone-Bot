@@ -1,6 +1,7 @@
 package com.itsmarsss.callerphone.tccallerphone.services;
 
 import com.itsmarsss.callerphone.Callerphone;
+import com.itsmarsss.callerphone.Constants;
 import com.itsmarsss.callerphone.Response;
 import com.itsmarsss.callerphone.ToolSet;
 import com.itsmarsss.callerphone.tccallerphone.entities.ChatMessage;
@@ -38,7 +39,7 @@ public class MessageService {
         if (ToolSet.hasLink(content)) {
             return Response.ATTEMPTED_LINK.toString();
         }
-        if (content.length() > 1500) {
+        if (content.length() > Constants.MAX_MESSAGE_LENGTH) {
             return Response.MESSAGE_TOO_LONG.toString();
         }
         if (filterProfanity) {
