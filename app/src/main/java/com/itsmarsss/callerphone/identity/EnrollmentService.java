@@ -83,7 +83,8 @@ public final class EnrollmentService {
         }
         profile.touch();
         profiles.save(profile);
-        return ServiceResult.ok("Age group set to " + cohort.label() + ". Complete your profile next.");
+        return ServiceResult.ok("Age group set to " + cohort.label()
+                + ". Complete your profile next (basics → bio → interests → submit).");
     }
 
     public ServiceResult leave(String userId) {

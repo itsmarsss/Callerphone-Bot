@@ -58,6 +58,11 @@ public final class MatchCommand implements ISlashCommand {
             case "likes" -> handleLikes(e, ctx, userId);
             case "chats" -> handleChats(e, ctx, userId);
             case "pause" -> reply(e, ctx.profiles().pause(userId));
+            case "resume" -> reply(e, ctx.profiles().resume(userId));
+            case "notify" -> {
+                boolean enabled = e.getOption("enabled") == null || e.getOption("enabled").getAsBoolean();
+                reply(e, ctx.enrollment().setNotifications(userId, enabled));
+            }
             case "leave" -> reply(e, ctx.deletion().leaveAndSoftDelete(userId));
             case "safety" -> handleSafety(e, ctx, userId);
             case "submit" -> {
@@ -351,7 +356,10 @@ public final class MatchCommand implements ISlashCommand {
                                         .addChoice("list", "list")
                                         .addChoice("stop", "stop")),
                         new SubcommandData("pause", "Pause your profile"),
-                        new SubcommandData("leave", "Leave Social and pause profile"),
+                        new SubcommandData("resume", "Resume a paused profile (re-review)"),
+                        new SubcommandData("notify", "Toggle Match DMs")
+                                .addOptions(new OptionData(OptionType.BOOLEAN, "enabled", "Receive Match DMs", true)),
+                        new SubcommandData("leave", "Leave Social and clear Match profile data"),
                         new SubcommandData("submit", "Submit profile for review"),
                         new SubcommandData("safety", "Block, report, or unmatch")
                                 .addOptions(
