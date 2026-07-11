@@ -4,5 +4,6 @@ public enum ChatStatus {
     NON_EXISTENT,
     CONFLICT,
     SUCCESS_CALLER,
-    SUCCESS_RECEIVER
+    SUCCESS_RECEIVER,
+    NO_CALL
 }
