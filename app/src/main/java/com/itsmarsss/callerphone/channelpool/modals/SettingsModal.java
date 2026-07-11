@@ -30,14 +30,18 @@ public class SettingsModal implements IModalInteraction {
         }
 
         String id = e.getChannel().getId();
-
-        String password = e.getValue("password").getAsString();
+        String password = e.getValue("password") != null ? e.getValue("password").getAsString() : "";
+        if (password == null) {
+            password = "";
+        }
 
         ChannelPool.setPublicity(id, publicity);
         ChannelPool.setPassword(id, password);
         ChannelPool.setCap(id, capacity);
 
-        e.reply(String.format(PoolResponse.SETTINGS_SUCCESS.toString(), publicity, "||" + password + "||", capacity)).setEphemeral(true).queue();
+        String passwordDisplay = password.isEmpty() ? "`(none)`" : "||" + password + "||";
+        e.reply(PoolResponse.SETTINGS_SUCCESS.format(publicity, passwordDisplay, capacity))
+                .setEphemeral(true).queue();
     }
 
     @Override
