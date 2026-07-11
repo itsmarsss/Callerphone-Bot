@@ -1,5 +1,6 @@
 package com.itsmarsss.callerphone.match.service;
 
+import com.itsmarsss.callerphone.analytics.AnalyticsService;
 import com.itsmarsss.callerphone.match.model.ConversationStage;
 import com.itsmarsss.callerphone.match.model.DecisionType;
 import com.itsmarsss.callerphone.match.model.Match;
@@ -27,6 +28,7 @@ public final class DecisionService {
     private final PremiumService premium;
     private final SafetyService safety;
     private final NotificationService notifications;
+    private final AnalyticsService analytics;
 
     public DecisionService(
             MatchDecisionRepository decisions,
@@ -36,7 +38,8 @@ public final class DecisionService {
             ProfileService profiles,
             PremiumService premium,
             SafetyService safety,
-            NotificationService notifications
+            NotificationService notifications,
+            AnalyticsService analytics
     ) {
         this.decisions = decisions;
         this.matches = matches;
@@ -46,6 +49,7 @@ public final class DecisionService {
         this.premium = premium;
         this.safety = safety;
         this.notifications = notifications;
+        this.analytics = analytics;
     }
 
     public DecisionResult decide(String actorId, String sessionId, DecisionType type) {
@@ -98,6 +102,8 @@ public final class DecisionService {
             }
             MutualCreate created = createMutualMatch(actorId, session.subjectId());
             notifications.notifyMutualMatch(actorId, session.subjectId(), created.conversationId());
+            analytics.track(actorId, "match_mutual", session.subjectId());
+            analytics.track(session.subjectId(), "match_mutual", actorId);
             String peerName = profiles.find(session.subjectId())
                     .map(MatchProfile::getDisplayName)
                     .orElse("your match");
@@ -113,8 +119,10 @@ public final class DecisionService {
         if (type == DecisionType.INTERESTED) {
             long used = viewer.getInterestSignalsToday();
             int limit = premium.dailyInterests(actorId);
+            analytics.track(actorId, "match_interested", session.subjectId());
             return DecisionResult.interested("Interest sent (" + used + "/" + limit + " today). Keep browsing!");
         }
+        analytics.track(actorId, "match_skip", session.subjectId());
         return DecisionResult.skipped("Skipped. Next profile coming up.");
     }
 

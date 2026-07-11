@@ -1,5 +1,7 @@
 package com.itsmarsss.callerphone.bootstrap;
 
+import com.itsmarsss.callerphone.analytics.AnalyticsService;
+import com.itsmarsss.callerphone.analytics.MongoProductEventRepository;
 import com.itsmarsss.callerphone.identity.DeletionService;
 import com.itsmarsss.callerphone.identity.EnrollmentService;
 import com.itsmarsss.callerphone.identity.MongoConsentRepository;
@@ -14,6 +16,7 @@ import com.itsmarsss.callerphone.match.service.ConnectService;
 import com.itsmarsss.callerphone.match.service.DecisionService;
 import com.itsmarsss.callerphone.match.service.DiscoveryService;
 import com.itsmarsss.callerphone.match.service.MatchConversationService;
+import com.itsmarsss.callerphone.match.service.MatchMaintenanceJobs;
 import com.itsmarsss.callerphone.match.service.NotificationService;
 import com.itsmarsss.callerphone.match.service.PremiumService;
 import com.itsmarsss.callerphone.match.service.ProfileService;
@@ -52,6 +55,8 @@ public final class ApplicationContext {
     private final PremiumService premiumService;
     private final NotificationService notificationService;
     private final DeletionService deletionService;
+    private final AnalyticsService analyticsService;
+    private final MatchMaintenanceJobs maintenanceJobs;
     private final MediaStorage mediaStorage;
     private final BrowseSessionStore browseSessionStore;
 
@@ -76,14 +81,17 @@ public final class ApplicationContext {
         this.enrollmentService = new EnrollmentService(matchUsers, consents, profiles, safetyService);
         this.profileService = new ProfileService(profiles, matchUsers, enrollmentService, safetyService);
         this.notificationService = new NotificationService(matchUsers, profiles);
+        this.analyticsService = new AnalyticsService(new MongoProductEventRepository(database));
         this.profileService.setNotifications(notificationService);
+        this.profileService.setAnalytics(analyticsService);
         this.safetyService.setReportAlerter(notificationService::postReportToStaff);
 
         this.discoveryService = new DiscoveryService(
                 profiles, decisions, matches, matchUsers, safetyService, profileService, premiumService, browseSessionStore
         );
         this.decisionService = new DecisionService(
-                decisions, matches, conversations, discoveryService, profileService, premiumService, safetyService, notificationService
+                decisions, matches, conversations, discoveryService, profileService, premiumService,
+                safetyService, notificationService, analyticsService
         );
         this.conversationService = new MatchConversationService(
                 conversations, messages, matches, matchUsers, profileService, safetyService
@@ -91,6 +99,8 @@ public final class ApplicationContext {
         this.conversationService.setNotifications(notificationService);
         this.connectService = new ConnectService(conversations, profileService, consents, safetyService, notificationService);
         this.deletionService = new DeletionService(matchUsers, consents, profiles, matches, conversations, audits);
+        this.maintenanceJobs = new MatchMaintenanceJobs(database);
+        this.maintenanceJobs.start();
         this.mediaStorage = jdaOrNull == null
                 ? new MediaStorage() {
             @Override
@@ -139,6 +149,7 @@ public final class ApplicationContext {
     }
 
     public void shutdown() {
+        maintenanceJobs.shutdown();
         dbExecutor.shutdown();
     }
 
@@ -186,7 +197,12 @@ public final class ApplicationContext {
         return deletionService;
     }
 
+    public AnalyticsService analytics() {
+        return analyticsService;
+    }
+
     public MediaStorage media() {
         return mediaStorage;
     }
 }
+

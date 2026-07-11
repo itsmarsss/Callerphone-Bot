@@ -51,7 +51,10 @@ public final class MatchCommand implements ISlashCommand {
             case "join" -> handleJoin(e, ctx, userId);
             case "profile" -> handleProfile(e, ctx, userId);
             case "edit" -> handleEdit(e, ctx, userId);
-            case "browse" -> handleBrowse(e, ctx, userId);
+            case "browse" -> {
+                ctx.analytics().track(userId, "match_browse_open", null);
+                handleBrowse(e, ctx, userId);
+            }
             case "likes" -> handleLikes(e, ctx, userId);
             case "chats" -> handleChats(e, ctx, userId);
             case "pause" -> reply(e, ctx.profiles().pause(userId));

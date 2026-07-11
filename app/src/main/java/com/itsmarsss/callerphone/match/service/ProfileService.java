@@ -1,6 +1,6 @@
 package com.itsmarsss.callerphone.match.service;
 
-import com.itsmarsss.callerphone.identity.AgeCohort;
+import com.itsmarsss.callerphone.analytics.AnalyticsService;
 import com.itsmarsss.callerphone.identity.EnrollmentService;
 import com.itsmarsss.callerphone.identity.MatchUser;
 import com.itsmarsss.callerphone.identity.MatchUserRepository;
@@ -25,6 +25,7 @@ public final class ProfileService {
     private final EnrollmentService enrollment;
     private final SafetyService safety;
     private NotificationService notifications;
+    private AnalyticsService analytics;
 
     public ProfileService(
             MatchProfileRepository profiles,
@@ -40,6 +41,10 @@ public final class ProfileService {
 
     public void setNotifications(NotificationService notifications) {
         this.notifications = notifications;
+    }
+
+    public void setAnalytics(AnalyticsService analytics) {
+        this.analytics = analytics;
     }
 
     public Optional<MatchProfile> find(String userId) {
@@ -158,6 +163,11 @@ public final class ProfileService {
         profiles.save(profile);
         if (notifications != null) {
             notifications.postPendingReviewAlert(userId, profile.getDisplayName());
+        }
+        if (analytics != null) {
+            analytics.track(userId, "match_profile_submit", profile.getAgeCohort() == null
+                    ? ""
+                    : profile.getAgeCohort().code());
         }
         return EnrollmentService.ServiceResult.ok(
                 "Profile submitted for review. You'll get a DM when it's approved (if notifications are on).");

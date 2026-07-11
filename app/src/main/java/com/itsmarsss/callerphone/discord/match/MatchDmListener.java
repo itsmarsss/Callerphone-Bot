@@ -59,10 +59,23 @@ public final class MatchDmListener extends ListenerAdapter {
             }
             event.getJDA().retrieveUserById(result.recipientId()).queue(recipient -> {
                 recipient.openPrivateChannel().queue(channel -> {
-                    channel.sendMessage("**" + result.senderDisplay() + ":** " + result.content())
+                    String body = "💬 **Match message from " + result.senderDisplay() + "**\n"
+                            + result.content()
+                            + "\n\n_Reply after selecting this chat in `/match chats`. "
+                            + "Report: `/match safety action:report`_";
+                    channel.sendMessage(body)
                             .queue(
-                                    ok -> event.getMessage().addReaction(net.dv8tion.jda.api.entities.emoji.Emoji.fromUnicode("✅")).queue(),
-                                    err -> event.getMessage().reply(ToolSet.CP_EMJ + " Delivery failed. They may have DMs closed.").queue()
+                                    ok -> {
+                                        event.getMessage().addReaction(
+                                                net.dv8tion.jda.api.entities.emoji.Emoji.fromUnicode("✅")).queue();
+                                        if (ApplicationContext.isReady()) {
+                                            ApplicationContext.get().analytics()
+                                                    .track(event.getAuthor().getId(), "match_message_relayed",
+                                                            result.conversationId());
+                                        }
+                                    },
+                                    err -> event.getMessage().reply(ToolSet.CP_EMJ
+                                            + " Delivery failed. They may have DMs closed.").queue()
                             );
                 }, err -> event.getMessage().reply(ToolSet.CP_EMJ + " Could not open recipient DM.").queue());
             }, err -> event.getMessage().reply(ToolSet.CP_EMJ + " Recipient not found.").queue());
