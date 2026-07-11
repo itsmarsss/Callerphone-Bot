@@ -1,28 +1,18 @@
 package com.itsmarsss.callerphone.tccallerphone.commands;
 
 import com.itsmarsss.commandType.ISlashCommand;
-import com.itsmarsss.callerphone.tccallerphone.ChatResponse;
-import com.itsmarsss.callerphone.tccallerphone.TCCallerphone;
-import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
+import com.itsmarsss.callerphone.tccallerphone.services.ConversationService;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.InteractionContextType;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
-import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder;
-import net.dv8tion.jda.api.utils.messages.MessageCreateData;
 
 public class EndChat implements ISlashCommand {
+    private final ConversationService conversationService = ConversationService.getInstance();
+
     @Override
     public void runSlash(SlashCommandInteractionEvent e) {
-        e.reply(endChat(e.getChannel())).queue();
-    }
-
-    private MessageCreateData endChat(MessageChannelUnion channel) {
-        if(!TCCallerphone.hasCall(channel.getId())) {
-            return new MessageCreateBuilder().setContent(ChatResponse.NO_CALL.toString()).build();
-        }
-
-        return TCCallerphone.onEndCallCommand(channel);
+        e.reply(conversationService.endConversation(e.getChannel().getId())).queue();
     }
 
     @Override

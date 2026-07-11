@@ -1,161 +1,38 @@
 package com.itsmarsss.callerphone.tccallerphone;
 
-import com.itsmarsss.callerphone.Callerphone;
-import com.itsmarsss.callerphone.ToolSet;
-import com.itsmarsss.callerphone.tccallerphone.entities.TCConversation;
-import com.itsmarsss.callerphone.tccallerphone.entities.TCMessage;
-import com.itsmarsss.database.categories.Chats;
-import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
+import com.itsmarsss.callerphone.tccallerphone.entities.ChatMode;
+import com.itsmarsss.callerphone.tccallerphone.entities.Conversation;
+import com.itsmarsss.callerphone.tccallerphone.services.ConversationService;
 import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
-import net.dv8tion.jda.api.components.actionrow.ActionRow;
-import net.dv8tion.jda.api.components.buttons.Button;
-import net.dv8tion.jda.api.utils.FileUpload;
-import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder;
 import net.dv8tion.jda.api.utils.messages.MessageCreateData;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import java.time.Instant;
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentLinkedQueue;
+/**
+ * Backward-compatible facade over {@link ConversationService}.
+ * Prefer calling ConversationService directly in new code.
+ */
+public final class TCCallerphone {
+    private static final ConversationService service = ConversationService.getInstance();
 
-public class TCCallerphone {
+    private TCCallerphone() {
+    }
 
-    public static final Queue<TCConversation> queue = new ConcurrentLinkedQueue<>();
-    public static final Map<String, TCConversation> conversationMap = new ConcurrentHashMap<>();
-
-    public static ChatStatus onCallCommand(MessageChannelUnion tcchannel, boolean anon) {
-        final Logger logger = LoggerFactory.getLogger(TCCallerphone.class);
-        final String CHANNELID = tcchannel.getId();
-
-        // Check if channel already has an active call
-        if (conversationMap.containsKey(CHANNELID)) {
-            return ChatStatus.CONFLICT;
-        }
-
-        if (queue.isEmpty()) {
-            TCConversation convo = new TCConversation();
-
-            convo.setCallerAnonymous(anon);
-            convo.setCallerTCId(CHANNELID);
-            queue.add(convo);
-
-            return ChatStatus.SUCCESS_CALLER;
-        }
-
-        TCConversation convo = queue.poll();
-
-        convo.setReceiverAnonymous(anon);
-        convo.setReceiverTCId(CHANNELID);
-
-        convo.setStarted(Instant.now().getEpochSecond());
-        convo.setCallerLastMessage(System.currentTimeMillis());
-        convo.setReceiverLastMessage(System.currentTimeMillis());
-
-        final TextChannel CALLER_CHANNEL = ToolSet.getTextChannel(convo.getCallerTCId());
-        final TextChannel RECEIVER_CHANNEL = ToolSet.getTextChannel(convo.getReceiverTCId());
-
-        if (CALLER_CHANNEL == null || RECEIVER_CHANNEL == null) {
-            convo.resetMessage();
-            return ChatStatus.NON_EXISTENT;
-        }
-
-        conversationMap.put(convo.getCallerTCId(), convo);
-        conversationMap.put(convo.getReceiverTCId(), convo);
-
-        CALLER_CHANNEL.sendMessage(ChatResponse.PICKED_UP.toString()).queue();
-
-        logger.info("From Channel: {} - To Channel: {}", convo.getCallerTCId(), convo.getReceiverTCId());
-        logger.info("From Guild: {} - To Guild: {}", CALLER_CHANNEL.getGuild().getId(), RECEIVER_CHANNEL.getGuild().getId());
-
-        return ChatStatus.SUCCESS_RECEIVER;
+    public static ChatStatus onCallCommand(MessageChannelUnion channel, ChatMode mode) {
+        return service.startChat(channel.getId(), mode).getStatus();
     }
 
     public static MessageCreateData onEndCallCommand(MessageChannelUnion channel) {
-        if (!hasCall(channel.getId())) {
-            return new MessageCreateBuilder().setContent(ChatResponse.NO_CALL.toString()).build();
-        }
-
-        TCConversation convo = getCall(channel.getId());
-
-        if (convo == null) {
-            return new MessageCreateBuilder().setContent(ChatResponse.NO_CALL.toString()).build();
-        }
-
-        final String CALLER_ID = convo.getCallerTCId();
-        final String RECEIVER_ID = convo.getReceiverTCId();
-
-        final TextChannel CALLER_CHANNEL = ToolSet.getTextChannel(CALLER_ID);
-        final TextChannel RECEIVER_CHANNEL = ToolSet.getTextChannel(RECEIVER_ID);
-
-        Button reportButton = Button.danger("reportchat-" + convo.getId(), "Report");
-
-        if (RECEIVER_ID.equals(channel.getId())) {
-            if (!convo.getCallerTCId().equals("empty")) {
-                if (CALLER_CHANNEL != null) {
-                    CALLER_CHANNEL.sendMessage(ChatResponse.OTHER_PARTY_HUNG_UP.toString()).setComponents(ActionRow.of(reportButton)).queue();
-                }
-            }
-        } else {
-            if (!convo.getReceiverTCId().isEmpty()) {
-                if (RECEIVER_CHANNEL != null) {
-                    RECEIVER_CHANNEL.sendMessage(ChatResponse.OTHER_PARTY_HUNG_UP.toString()).setComponents(ActionRow.of(reportButton)).queue();
-                }
-            }
-        }
-
-        convo.setEnded(Instant.now().getEpochSecond());
-
-        final boolean report = convo.getReport();
-
-        log(convo);
-        Chats.createChat(convo);
-
-        if (report) {
-            report(convo);
-        }
-
-        conversationMap.remove(convo.getCallerTCId());
-        conversationMap.remove(convo.getReceiverTCId());
-
-        return new MessageCreateBuilder().setContent(ChatResponse.HUNG_UP.toString()).setComponents(ActionRow.of(reportButton)).build();
+        return service.endConversation(channel.getId());
     }
 
-    public static String formatMessages(List<TCMessage> messages) {
-        StringBuilder dataString = new StringBuilder();
-        for (TCMessage m : messages) {
-            dataString.append(m).append("\n");
-        }
-        return dataString.toString();
+    public static void report(Conversation convo) {
+        service.reportById(convo.getId());
     }
 
-    private static void log(TCConversation convo) {
-        String dataString = formatMessages(convo.getMessages());
-
-        final TextChannel TEMP_CHANNEL = ToolSet.getTextChannel(Callerphone.config.getTempChatChannel());
-        if (TEMP_CHANNEL != null) {
-            TEMP_CHANNEL.sendMessage("**ID:** " + convo.getId())
-                    .addFiles(FileUpload.fromData(dataString.getBytes(), convo.getId() + ".txt")).queue();
-        }
+    public static Conversation getCall(String channelId) {
+        return service.getActiveConversation(channelId).orElse(null);
     }
 
-    public static void report(TCConversation convo) {
-        String dataString = formatMessages(convo.getMessages());
-
-        final TextChannel REPORT_CHANNEL = ToolSet.getTextChannel(Callerphone.config.getReportChatChannel());
-        if (REPORT_CHANNEL != null) {
-            REPORT_CHANNEL.sendMessage("**ID:** " + convo.getId())
-                    .addFiles(FileUpload.fromData(dataString.getBytes(), convo.getId() + ".txt")).queue();
-        }
+    public static boolean hasCall(String channelId) {
+        return service.isInConversation(channelId);
     }
-
-    public static TCConversation getCall(String tc) {
-        return conversationMap.getOrDefault(tc, null);
-    }
-
-    public static boolean hasCall(String tc) {
-        return conversationMap.containsKey(tc);
-    }
-
 }

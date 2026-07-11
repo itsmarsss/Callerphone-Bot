@@ -1,147 +1,59 @@
 package com.itsmarsss.callerphone.tccallerphone;
 
-import java.time.Instant;
-
 import com.itsmarsss.callerphone.Callerphone;
-
-import com.itsmarsss.callerphone.Response;
 import com.itsmarsss.callerphone.ToolSet;
-import com.itsmarsss.callerphone.tccallerphone.entities.TCConversation;
-import com.itsmarsss.callerphone.tccallerphone.entities.TCMessage;
+import com.itsmarsss.callerphone.tccallerphone.services.ConversationService;
 import com.itsmarsss.database.categories.Cooldown;
 import com.itsmarsss.database.categories.Users;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.User;
-import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
-import net.dv8tion.jda.api.utils.FileUpload;
 
 public class TCCallerphoneListener extends ListenerAdapter {
+    private final ConversationService conversationService = ConversationService.getInstance();
 
+    @Override
     public void onMessageReceived(MessageReceivedEvent event) {
         if (!event.isFromGuild()) {
             return;
         }
 
-        final Message MESSAGE = event.getMessage();
-
-
-        if (MESSAGE.isWebhookMessage())
+        final Message message = event.getMessage();
+        if (message.isWebhookMessage() || message.getAuthor().isBot() || message.getAuthor().isSystem()) {
             return;
+        }
 
-        if (!TCCallerphone.hasCall(event.getChannel().getId()))
+        final String channelId = event.getChannel().getId();
+        if (!conversationService.isInConversation(channelId)) {
             return;
+        }
 
-        final Member MEMBER = event.getMember();
+        final Member member = event.getMember();
+        if (member == null) {
+            return;
+        }
 
-        if (!Users.hasUser(MEMBER.getId())) {
+        if (!Users.hasUser(member.getId())) {
             ToolSet.sendPPAndTOS(event);
             return;
         }
 
-        if (Users.isBlacklisted(MEMBER.getId())) {
-            //event.getMessage().addReaction("\u274C").queue();
+        if (Users.isBlacklisted(member.getId())) {
             return;
         }
 
-        if (MESSAGE.getAuthor().isBot() || MESSAGE.getAuthor().isSystem())
-            return;
-
-        String messageRaw = MESSAGE.getContentDisplay();
-
-        if (messageRaw.startsWith("\\\\") || messageRaw.toLowerCase().startsWith(Callerphone.config.getPrefix()))
-            return;
-
-        final String CHANNELID = event.getChannel().getId();
-
-        TCConversation c = TCCallerphone.getCall(CHANNELID);
-
-        if (c == null) {
+        String messageRaw = message.getContentDisplay();
+        if (messageRaw.startsWith("\\\\") || messageRaw.toLowerCase().startsWith(Callerphone.config.getPrefix())) {
             return;
         }
 
-        String[] flagged = ToolSet.messageFlagged(messageRaw);
-
-        c.addMessage(new TCMessage(c.getCallerTCId().equals(CHANNELID), MESSAGE.getAuthor().getId(), MESSAGE.getAuthor().getName(), CHANNELID, messageRaw, flagged, Instant.now().getEpochSecond()));
-
-        messageRaw = ToolSet.filterMessage(messageRaw);
-
-        if (!c.getParticipants().contains(MEMBER.getId()))
-            c.getParticipants().add(MEMBER.getId());
-
-        if (c.getCallerTCId().equals(CHANNELID)) {
-            if (System.currentTimeMillis() - c.getCallerLastMessage() > ToolSet.MESSAGE_COOLDOWN) {
-                c.setCallerLastMessage(System.currentTimeMillis());
-                sendMessage(c, c.getCallerAnonymous(), c.getReceiverTCId(), messageRaw, MESSAGE);
-            }
-        } else if (c.getReceiverTCId().equals(CHANNELID)) {
-            if (System.currentTimeMillis() - c.getReceiverLastMessage() > ToolSet.MESSAGE_COOLDOWN) {
-                c.setReceiverLastMessage(System.currentTimeMillis());
-                sendMessage(c, c.getReceiverAnonymous(), c.getCallerTCId(), messageRaw, MESSAGE);
-            }
-        }
+        conversationService.handleMessage(channelId, message.getAuthor(), messageRaw);
 
         if ((System.currentTimeMillis() - Cooldown.getPoolCooldown(event.getAuthor().getId())) > ToolSet.CREDIT_COOLDOWN) {
             Cooldown.setUserCooldown(event.getAuthor().getId());
-
             Users.reward(event.getAuthor().getId(), 5);
             Users.addTransmit(event.getAuthor().getId(), 1);
-        }
-
-    }
-
-    private void sendMessage(TCConversation c, boolean anon, String destination, String content, Message msg) {
-        final TextChannel DESTINATION_CHANNEL = ToolSet.getTextChannel(destination);
-
-        if (anon) {
-            if (DESTINATION_CHANNEL != null) {
-                DESTINATION_CHANNEL.sendMessage("**Discordian " + (c.getParticipants().indexOf(msg.getAuthor().getId()) + 1) + "** " +
-                        Callerphone.config.getCallerphoneCall() + content).complete();
-            } else {
-                terminate(c);
-            }
-            return;
-        }
-        User auth = msg.getAuthor();
-        String template = Response.DEFAULT_MESSAGE_TEMPLATE.toString();
-        if (Users.isModerator(msg.getAuthor().getId())) {
-            template = Response.MODERATOR_MESSAGE_TEMPLATE.toString();
-        } else if (Users.hasPrefix(msg.getAuthor().getId())) {
-            template = Response.PREFIX_MESSAGE_TEMPLATE.toString().replaceFirst("%s", Users.getPrefix(msg.getAuthor().getId()));
-        }
-        if (DESTINATION_CHANNEL != null) {
-            DESTINATION_CHANNEL.sendMessage(String.format(template, auth.getName(), content)).complete();
-        } else {
-            terminate(c);
-        }
-    }
-
-    private void terminate(TCConversation c) {
-        String dataString = TCCallerphone.formatMessages(c.getMessages());
-
-        final TextChannel CALLER_CHANNEL = ToolSet.getTextChannel(c.getCallerTCId());
-        final TextChannel RECEIVER_CHANNEL = ToolSet.getTextChannel(c.getReceiverTCId());
-        if (CALLER_CHANNEL != null) {
-            CALLER_CHANNEL.sendMessage(Response.CONNECTION_ERROR.toString()).queue();
-        }
-
-        if (RECEIVER_CHANNEL != null) {
-            RECEIVER_CHANNEL.sendMessage(Response.CONNECTION_ERROR.toString()).queue();
-        }
-
-        final String DATA = dataString;
-        if (c.getReport()) {
-            final TextChannel REPORT_CHANNEL = ToolSet.getTextChannel(Callerphone.config.getReportChatChannel());
-            if (REPORT_CHANNEL == null) {
-                System.out.println("Invalid REPORT channel.");
-            } else {
-                REPORT_CHANNEL
-                        .sendMessage("**ID:** " + c.getId())
-                        .addFiles(FileUpload.fromData(DATA.getBytes(), c.getId() + ".txt"))
-                        .queue();
-            }
         }
     }
 }
