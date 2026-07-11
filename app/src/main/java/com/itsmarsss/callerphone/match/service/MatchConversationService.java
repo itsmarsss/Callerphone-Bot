@@ -1,0 +1,188 @@
+package com.itsmarsss.callerphone.match.service;
+
+import com.itsmarsss.callerphone.identity.EnrollmentService;
+import com.itsmarsss.callerphone.identity.MatchUser;
+import com.itsmarsss.callerphone.identity.MatchUserRepository;
+import com.itsmarsss.callerphone.match.model.ConversationStage;
+import com.itsmarsss.callerphone.match.model.MatchConversation;
+import com.itsmarsss.callerphone.match.model.MatchMessage;
+import com.itsmarsss.callerphone.match.model.MatchProfile;
+import com.itsmarsss.callerphone.match.model.MatchStatus;
+import com.itsmarsss.callerphone.match.model.Match;
+import com.itsmarsss.callerphone.match.repository.MatchConversationRepository;
+import com.itsmarsss.callerphone.match.repository.MatchMessageRepository;
+import com.itsmarsss.callerphone.match.repository.MatchRepository;
+import com.itsmarsss.callerphone.match.validation.ProfileValidator;
+import com.itsmarsss.callerphone.safety.SafetyService;
+
+import java.time.Duration;
+import java.time.Instant;
+import java.util.List;
+import java.util.Optional;
+
+public final class MatchConversationService {
+    private final MatchConversationRepository conversations;
+    private final MatchMessageRepository messages;
+    private final MatchRepository matches;
+    private final MatchUserRepository users;
+    private final ProfileService profiles;
+    private final SafetyService safety;
+
+    public MatchConversationService(
+            MatchConversationRepository conversations,
+            MatchMessageRepository messages,
+            MatchRepository matches,
+            MatchUserRepository users,
+            ProfileService profiles,
+            SafetyService safety
+    ) {
+        this.conversations = conversations;
+        this.messages = messages;
+        this.matches = matches;
+        this.users = users;
+        this.profiles = profiles;
+        this.safety = safety;
+    }
+
+    public List<MatchConversation> list(String userId) {
+        return conversations.findActiveByUserId(userId);
+    }
+
+    public EnrollmentService.ServiceResult select(String userId, String conversationId) {
+        Optional<MatchConversation> opt = conversations.findById(conversationId);
+        if (opt.isEmpty() || opt.get().getParticipants() == null || !opt.get().getParticipants().contains(userId)) {
+            return EnrollmentService.ServiceResult.fail("Conversation not found.");
+        }
+        MatchConversation conversation = opt.get();
+        if (conversation.getStage() == ConversationStage.ARCHIVED) {
+            return EnrollmentService.ServiceResult.fail("That conversation is archived.");
+        }
+        String other = conversation.otherParticipant(userId);
+        if (other != null && safety.isBlockedEitherWay(userId, other)) {
+            return EnrollmentService.ServiceResult.fail("You cannot chat with this connection.");
+        }
+        MatchUser user = users.findById(userId).orElseGet(() -> new MatchUser(userId));
+        user.setSelectedConversationId(conversationId);
+        user.setConversationSelectedAt(Instant.now());
+        user.touch();
+        users.save(user);
+        String name = profiles.find(other).map(MatchProfile::getDisplayName).orElse("your match");
+        return EnrollmentService.ServiceResult.ok("Now chatting with **" + name + "**. Send a text DM to relay. Use `/match chats` to switch.");
+    }
+
+    public EnrollmentService.ServiceResult stopChat(String userId) {
+        MatchUser user = users.findById(userId).orElse(null);
+        if (user == null) {
+            return EnrollmentService.ServiceResult.fail("Not enrolled.");
+        }
+        user.setSelectedConversationId(null);
+        user.setConversationSelectedAt(null);
+        users.save(user);
+        return EnrollmentService.ServiceResult.ok("Stopped Match chat context.");
+    }
+
+    public RelayResult relayDm(String senderId, String content, String sourceMessageId) {
+        if (content == null || content.isBlank()) {
+            return RelayResult.fail("Empty message.");
+        }
+        if (ProfileValidator.containsContactOrUrl(content)) {
+            return RelayResult.fail("Messages cannot include contact info or links during mediated chat.");
+        }
+        MatchUser user = users.findById(senderId).orElse(null);
+        if (user == null || user.getSelectedConversationId() == null) {
+            return RelayResult.none();
+        }
+        if (user.getConversationSelectedAt() != null
+                && user.getConversationSelectedAt().isBefore(Instant.now().minus(Duration.ofMinutes(MatchLimits.CHAT_IDLE_MINUTES)))) {
+            user.setSelectedConversationId(null);
+            user.setConversationSelectedAt(null);
+            users.save(user);
+            return RelayResult.fail("Chat context timed out. Select a conversation with `/match chats`.");
+        }
+        Optional<MatchConversation> opt = conversations.findById(user.getSelectedConversationId());
+        if (opt.isEmpty()) {
+            return RelayResult.fail("Selected conversation is gone.");
+        }
+        MatchConversation conversation = opt.get();
+        if (conversation.getStage() == ConversationStage.ARCHIVED
+                || conversation.getStage() == ConversationStage.CONNECTED) {
+            // CONNECTED: still allow mediated? Plan says after connect may share identity; keep relay optional
+            if (conversation.getStage() == ConversationStage.ARCHIVED) {
+                return RelayResult.fail("Conversation archived.");
+            }
+        }
+        String recipientId = conversation.otherParticipant(senderId);
+        if (recipientId == null || safety.isBlockedEitherWay(senderId, recipientId)) {
+            return RelayResult.fail("Cannot deliver this message.");
+        }
+        Optional<Match> match = matches.findById(conversation.getMatchId());
+        if (match.isEmpty() || match.get().getStatus() != MatchStatus.ACTIVE) {
+            return RelayResult.fail("Match is no longer active.");
+        }
+
+        String display = profiles.find(senderId).map(MatchProfile::getDisplayName).orElse("Match");
+        messages.save(new MatchMessage(
+                sourceMessageId,
+                conversation.getConversationId(),
+                senderId,
+                recipientId,
+                content,
+                Instant.now(),
+                "sent"
+        ));
+        conversation.setMessageCount(conversation.getMessageCount() + 1);
+        conversation.setLastActivityAt(Instant.now());
+        conversations.save(conversation);
+        user.setConversationSelectedAt(Instant.now());
+        users.save(user);
+        return RelayResult.relay(recipientId, display, content, conversation.getConversationId());
+    }
+
+    public EnrollmentService.ServiceResult unmatch(String userId, String conversationId) {
+        Optional<MatchConversation> opt = conversations.findById(conversationId);
+        if (opt.isEmpty() || !opt.get().getParticipants().contains(userId)) {
+            return EnrollmentService.ServiceResult.fail("Conversation not found.");
+        }
+        MatchConversation conversation = opt.get();
+        matches.findById(conversation.getMatchId()).ifPresent(match -> {
+            match.setStatus(MatchStatus.UNMATCHED);
+            match.setEndedAt(Instant.now());
+            match.setEndedBy(userId);
+            matches.save(match);
+        });
+        conversation.setStage(ConversationStage.ARCHIVED);
+        conversation.setArchivedAt(Instant.now());
+        conversations.save(conversation);
+        clearSelectionIf(userId, conversationId);
+        String other = conversation.otherParticipant(userId);
+        if (other != null) {
+            clearSelectionIf(other, conversationId);
+        }
+        return EnrollmentService.ServiceResult.ok("Unmatched. Relay closed.");
+    }
+
+    private void clearSelectionIf(String userId, String conversationId) {
+        users.findById(userId).ifPresent(user -> {
+            if (conversationId.equals(user.getSelectedConversationId())) {
+                user.setSelectedConversationId(null);
+                user.setConversationSelectedAt(null);
+                users.save(user);
+            }
+        });
+    }
+
+    public record RelayResult(boolean handled, boolean success, String message, String recipientId,
+                              String senderDisplay, String content, String conversationId) {
+        public static RelayResult none() {
+            return new RelayResult(false, false, null, null, null, null, null);
+        }
+
+        public static RelayResult fail(String message) {
+            return new RelayResult(true, false, message, null, null, null, null);
+        }
+
+        public static RelayResult relay(String recipientId, String senderDisplay, String content, String conversationId) {
+            return new RelayResult(true, true, "sent", recipientId, senderDisplay, content, conversationId);
+        }
+    }
+}
