@@ -61,7 +61,7 @@ public class Users {
                 );
             }
 
-            logger.info("User: {} updated {} by: {}", id, field, amount);
+            logger.debug("User: {} updated {} by: {}", id, field, amount);
         } catch (MongoException me) {
             logger.error("Unable to update {} for user: {}, {}", field, id, me.getMessage());
         }
@@ -83,7 +83,7 @@ public class Users {
                 );
             }
 
-            logger.info("User: {} updated {} to: {}", id, field, value);
+            logger.debug("User: {} updated {} to: {}", id, field, value);
         } catch (MongoException me) {
             logger.error("Unable to update {} for user: {}, {}", field, id, me.getMessage());
         }
@@ -99,7 +99,6 @@ public class Users {
                 return 0;
             }
 
-            logger.info("User: {} got {}", id, field);
             return getOrDefault(userDocument, field, 0);
         } catch (MongoException me) {
             logger.error("Unable to get {} for user: {}, {}", field, id, me.getMessage());
@@ -205,7 +204,6 @@ public class Users {
             Document userDocument = usersCollection.find(new Document("id", id)).first();
             boolean exists = userDocument != null;
 
-            logger.info("User existence check for {}: {}", id, exists);
             return exists;
         } catch (MongoException me) {
             logger.error("Unable to check existence for user: {}, {}", id, me.getMessage());
