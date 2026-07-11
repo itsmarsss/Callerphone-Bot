@@ -11,11 +11,7 @@ import java.util.*;
 import com.itsmarsss.ICommand;
 import com.itsmarsss.callerphone.channelpool.commands.*;
 import com.itsmarsss.callerphone.channelpool.modals.SettingsModal;
-import com.itsmarsss.callerphone.minigames.IMiniGame;
 import com.itsmarsss.callerphone.minigames.commands.PlayMiniGame;
-import com.itsmarsss.callerphone.minigames.games.BattleShip;
-import com.itsmarsss.callerphone.minigames.games.Connect4;
-import com.itsmarsss.callerphone.minigames.games.TicTacToe;
 import com.itsmarsss.callerphone.minigames.handlers.TicTacToeHandler;
 import com.itsmarsss.callerphone.msginbottle.commands.FindBottle;
 import com.itsmarsss.callerphone.msginbottle.commands.SendBottle;
@@ -45,7 +41,6 @@ import com.itsmarsss.callerphone.listeners.*;
 import com.itsmarsss.callerphone.channelpool.*;
 
 import net.dv8tion.jda.api.entities.Activity;
-import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import org.yaml.snakeyaml.LoaderOptions;
 import org.yaml.snakeyaml.Yaml;
@@ -150,125 +145,82 @@ public class Callerphone {
             selfUser = sdMgr.getShards().get(0).getSelfUser();
 
 
-            System.out.println("Shard Count: " + sdMgr.getShardsTotal());
-
-            System.out.println("Mapping Commands:");
-
-            cmdLst.add(new About());
-            cmdLst.add(new BotInfo());
-            cmdLst.add(new Donate());
-            cmdLst.add(new Invite());
-            cmdLst.add(new Profile());
-
-
-            cmdLst.add(new ChannelInfo());
-            cmdLst.add(new Colour());
-            cmdLst.add(new Help());
-            cmdLst.add(new RoleInfo());
-            cmdLst.add(new Search());
-            cmdLst.add(new ServerInfo());
-            cmdLst.add(new UserInfo());
-
-            cmdLst.add(new Chat());
-            cmdLst.add(new EndChat());
-            cmdLst.add(new Prefix());
-            cmdLst.add(new ReportChat());
-
-            cmdLst.add(new HostPool());
-            cmdLst.add(new JoinPool());
-            cmdLst.add(new EndPool());
-            cmdLst.add(new LeavePool());
-            cmdLst.add(new PoolParticipants());
-            cmdLst.add(new PoolSettings());
-            cmdLst.add(new KickPool());
-
-            cmdLst.add(new DeductCredits());
-            cmdLst.add(new RewardCredits());
-
-            cmdLst.add(new PlayMiniGame());
-
-            cmdLst.add(new FindBottle());
-            cmdLst.add(new SendBottle());
-
-            for (ICommand cmd : cmdLst) {
-                cmdMap.put(cmd.getName(), cmd);
-                System.out.println("Put: key=" + cmd.getName() + ", value=" + cmd.getClass().getName());
-            }
-
-
-            System.out.println();
-            System.out.println();
-            System.out.println("Mapping Modals:");
-
-            ArrayList<IModalInteraction> mdlLst = new ArrayList<>();
-            mdlLst.add(new SendModal());
-            mdlLst.add(new SettingsModal());
-
-            for (IModalInteraction mdl : mdlLst) {
-                mdlMap.put(mdl.getID(), mdl);
-                System.out.println("Put: key=" + mdl.getID() + ", value=" + mdl.getClass().getName());
-            }
-
-
-            System.out.println();
-            System.out.println();
-            System.out.println("Mapping Buttons:");
-
-            ArrayList<IButtonInteraction> btnLst = new ArrayList<>();
-            btnLst.add(new TicTacToeHandler());
-            btnLst.add(new AddPageHandler());
-            btnLst.add(new NextHandler());
-            btnLst.add(new PreviousHandler());
-            btnLst.add(new ReportHandler());
-            btnLst.add(new SaveHandler());
-            btnLst.add(new ReportChatHandler());
-
-            for (IButtonInteraction btn : btnLst) {
-                btnMap.put(btn.getID(), btn);
-                System.out.println("Put: key=" + btn.getID() + ", value=" + btn.getClass().getName());
-            }
-
-            ArrayList<IMiniGame> gameLst = new ArrayList<>();
-
-            gameLst.add(new BattleShip());
-            gameLst.add(new TicTacToe());
-            gameLst.add(new Connect4());
-
-            sdMgr.addEventListener(new OnButtonClick());
-            sdMgr.addEventListener(new OnMessageEvent());
-            sdMgr.addEventListener(new OnModalEvent());
-            sdMgr.addEventListener(new OnOtherEvent());
-            sdMgr.addEventListener(new OnSlashCommand());
-            sdMgr.addEventListener(new TCCallerphoneListener());
-            sdMgr.addEventListener(new ChannelPoolListener());
-
-
-//            for (int i = 0; i < 10000; i++) {
-//                TCCallerphone.convos.add(new ConversationStorage("empty", "", false, false, false));
-//            }
+            logger.info("Shard count: {}", sdMgr.getShardsTotal());
+            registerCommands();
+            registerModals();
+            registerButtons();
+            registerListeners();
 
             sdMgr.setActivity(Activity.watching("for /help"));
-            logger.info("Bot online");
+            logger.info("Bot online with {} guilds", sdMgr.getGuilds().size());
 
-            System.out.println("\nGuild List: ");
-            for (Guild g : sdMgr.getGuilds()) {
-                System.out.println("- " + g.getName());
-            }
-
-            final TextChannel LOG_CHANNEL = ToolSet.getTextChannel(config.getLogStatusChannel());
-            if (LOG_CHANNEL == null) {
-                System.out.println("------------------------------");
-                logger.error("Error Sending Startup Message");
+            final TextChannel logChannel = ToolSet.getTextChannel(config.getLogStatusChannel());
+            if (logChannel == null) {
+                logger.error("Invalid log status channel; startup message not sent");
             } else {
                 EmbedBuilder embedBuilder = new EmbedBuilder().setTitle("Status")
                         .setColor(new Color(24, 116, 52))
                         .setFooter("Hello World!")
                         .setDescription(sdMgr.getShards().get(0).getSelfUser().getAsMention() + " is now online;" + startupmsg);
-                LOG_CHANNEL.sendMessageEmbeds(embedBuilder.build()).queue();
+                logChannel.sendMessageEmbeds(embedBuilder.build()).queue();
             }
         } catch (Exception e) {
-            e.printStackTrace();
-            logger.error(e.toString());
+            logger.error("Bot init failed", e);
         }
+    }
+
+    private static void registerCommands() {
+        ICommand[] commands = {
+                new About(), new BotInfo(), new Donate(), new Invite(), new Profile(),
+                new ChannelInfo(), new Colour(), new Help(), new RoleInfo(), new Search(),
+                new ServerInfo(), new UserInfo(),
+                new Chat(), new EndChat(), new Prefix(), new ReportChat(),
+                new HostPool(), new JoinPool(), new EndPool(), new LeavePool(),
+                new PoolParticipants(), new PoolSettings(), new KickPool(),
+                new DeductCredits(), new RewardCredits(),
+                new PlayMiniGame(),
+                new FindBottle(), new SendBottle()
+        };
+
+        for (ICommand cmd : commands) {
+            cmdLst.add(cmd);
+            cmdMap.put(cmd.getName(), cmd);
+            logger.debug("Registered command: {}", cmd.getName());
+        }
+        logger.info("Registered {} commands", cmdLst.size());
+    }
+
+    private static void registerModals() {
+        IModalInteraction[] modals = {new SendModal(), new SettingsModal()};
+        for (IModalInteraction modal : modals) {
+            mdlMap.put(modal.getID(), modal);
+            logger.debug("Registered modal: {}", modal.getID());
+        }
+        logger.info("Registered {} modals", mdlMap.size());
+    }
+
+    private static void registerButtons() {
+        IButtonInteraction[] buttons = {
+                new TicTacToeHandler(), new AddPageHandler(), new NextHandler(),
+                new PreviousHandler(), new ReportHandler(), new SaveHandler(),
+                new ReportChatHandler()
+        };
+        for (IButtonInteraction button : buttons) {
+            btnMap.put(button.getID(), button);
+            logger.debug("Registered button: {}", button.getID());
+        }
+        logger.info("Registered {} buttons", btnMap.size());
+    }
+
+    private static void registerListeners() {
+        sdMgr.addEventListener(
+                new OnButtonClick(),
+                new OnMessageEvent(),
+                new OnModalEvent(),
+                new OnOtherEvent(),
+                new OnSlashCommand(),
+                new TCCallerphoneListener(),
+                new ChannelPoolListener()
+        );
     }
 }

@@ -44,43 +44,34 @@ public class ToolSet {
     }
 
     public static TextChannel getTextChannel(String id) {
-        if (id.isEmpty()) {
+        if (id == null || id.isEmpty() || Callerphone.sdMgr == null) {
             return null;
         }
 
-        long idL;
         try {
-            idL = Long.parseLong(id);
+            TextChannel channel = Callerphone.sdMgr.getTextChannelById(id);
+            if (channel == null) {
+                return null;
+            }
+            if (!channel.getGuild().getSelfMember().hasPermission(channel, Permission.MESSAGE_SEND)) {
+                return null;
+            }
+            return channel;
         } catch (Exception e) {
             return null;
         }
-
-        final TextChannel CHANNEL = Callerphone.sdMgr.getTextChannelById(idL);
-
-        if (CHANNEL == null)
-            return null;
-
-        if (!CHANNEL.getGuild().getSelfMember().hasPermission(CHANNEL, Permission.MESSAGE_SEND)) {
-            return null;
-        }
-
-        return CHANNEL;
     }
 
-
     public static RestAction<User> getUser(String id) {
-        if (id.isEmpty()) {
+        if (id == null || id.isEmpty() || Callerphone.sdMgr == null) {
             return null;
         }
 
-        long idL;
         try {
-            idL = Long.parseLong(id);
+            return Callerphone.sdMgr.retrieveUserById(id);
         } catch (Exception e) {
             return null;
         }
-
-        return Callerphone.sdMgr.retrieveUserById(idL);
     }
 
     public static String[] messageFlagged(String messageRaw) {
