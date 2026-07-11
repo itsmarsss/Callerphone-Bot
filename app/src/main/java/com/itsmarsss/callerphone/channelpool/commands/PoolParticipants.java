@@ -10,7 +10,7 @@ import net.dv8tion.jda.api.interactions.InteractionContextType;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 
-import java.util.LinkedList;
+import java.util.List;
 
 public class PoolParticipants implements ISlashCommand {
     @Override
@@ -19,34 +19,29 @@ public class PoolParticipants implements ISlashCommand {
     }
 
     private String poolParticipants(String id) {
-        final LinkedList<String> PARTICIPANTS = ChannelPool.getClients(id);
-
-        if (PARTICIPANTS.isEmpty()) {
+        List<String> participants = ChannelPool.getClients(id);
+        if (participants.isEmpty()) {
             return PoolResponse.NOT_IN_POOL.toString();
         }
 
-        final StringBuilder LIST = new StringBuilder();
-        for (int i = 0; i < PARTICIPANTS.size(); i++) {
-            LIST.append("\n`ID: ")
-                    .append(PARTICIPANTS.get(i))
-                    .append("` (");
+        StringBuilder list = new StringBuilder();
+        for (int i = 0; i < participants.size(); i++) {
+            String channelId = participants.get(i);
+            list.append("\n`ID: ").append(channelId).append("` (");
 
-            final TextChannel TEXT_CHANNEL = ToolSet.getTextChannel(PARTICIPANTS.get(i));
-            if (TEXT_CHANNEL == null) {
-                LIST.append("[N/A NOT FOUND] | #[N/A NOT FOUND])");
+            TextChannel channel = ToolSet.getTextChannel(channelId);
+            if (channel == null) {
+                list.append("[N/A NOT FOUND] | #[N/A NOT FOUND])");
             } else {
-                LIST.append(TEXT_CHANNEL.getGuild().getName()).append(" | #")
-                        .append(TEXT_CHANNEL.getName())
+                list.append(channel.getGuild().getName())
+                        .append(" | #")
+                        .append(channel.getName())
                         .append(")");
             }
-            if (i == 0) {
-                LIST.append(" [Host] :crown:");
-            } else {
-                LIST.append(" [Client] :link:");
-            }
-        }
 
-        return LIST.toString();
+            list.append(i == 0 ? " [Host] :crown:" : " [Client] :link:");
+        }
+        return list.toString();
     }
 
     @Override
@@ -61,7 +56,7 @@ public class PoolParticipants implements ISlashCommand {
 
     @Override
     public SlashCommandData getCommandData() {
-        return Commands.slash(getName(), getHelp().split(" - ")[1])
+        return Commands.slash(getName(), "Show channel pool participants")
                 .setContexts(InteractionContextType.GUILD);
     }
 }

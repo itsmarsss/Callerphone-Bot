@@ -11,11 +11,23 @@ public class ReportHandler implements IButtonInteraction {
     @Override
     public void runClick(ButtonInteraction e) {
         String[] reportData = e.getButton().getCustomId().split("-");
+        if (reportData.length < 3) {
+            e.reply(ToolSet.CP_EMJ + "Invalid report button.").setEphemeral(true).queue();
+            return;
+        }
+
         String id = reportData[1];
         String pageNum = reportData[2];
 
-        final TextChannel REPORT_CHANNEL = ToolSet.getTextChannel(Callerphone.config.getReportChatChannel());
-        REPORT_CHANNEL.sendMessage("**ID**: " + id + "\n**Page**: " + pageNum).addEmbeds(e.getMessage().getEmbeds()).queue();
+        TextChannel reportChannel = ToolSet.getTextChannel(Callerphone.config.getReportChatChannel());
+        if (reportChannel == null) {
+            e.reply(ToolSet.CP_EMJ + "Report channel is not configured.").setEphemeral(true).queue();
+            return;
+        }
+
+        reportChannel.sendMessage("**ID**: " + id + "\n**Page**: " + pageNum)
+                .addEmbeds(e.getMessage().getEmbeds())
+                .queue();
 
         e.reply(ToolSet.CP_EMJ + "Reported!").setEphemeral(true).queue();
     }
