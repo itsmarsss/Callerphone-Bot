@@ -1,7 +1,6 @@
 package com.itsmarsss.callerphone.listeners;
 
 import com.itsmarsss.callerphone.Callerphone;
-import com.itsmarsss.callerphone.Response;
 import com.itsmarsss.callerphone.ToolSet;
 import com.itsmarsss.database.categories.Users;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -10,143 +9,159 @@ import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
+/**
+ * Owner/moderator DM admin commands.
+ */
 public class OnMessageEvent extends ListenerAdapter {
+
+    @Override
     public void onMessageReceived(MessageReceivedEvent event) {
-        if (event.isFromGuild())
+        if (event.isFromGuild() || event.getAuthor().isBot() || event.getAuthor().isSystem()) {
             return;
-
-        if (!Users.isModerator(event.getAuthor().getId()))
-            return;
-
-        if (event.getAuthor().isBot() || event.getAuthor().isSystem())
-            return;
-
-        final User MEMBER = event.getAuthor();
-        final Message MESSAGE = event.getMessage();
-
-        String CONTENT = MESSAGE.getContentRaw();
-
-        final String[] args = CONTENT.split("\\s+");
-
-        if (CONTENT.startsWith(Callerphone.config.getPrefix() + "help mod")) {
-            String TITLE = "Mod";
-            String DESC = OnMessageEvent.adminHelp() + "\n"
-                    + OnMessageEvent.blacklistHelp() + "\n"
-                    + OnMessageEvent.supportHelp() + "\n"
-                    + OnMessageEvent.showItemsHelp();
-
-            EmbedBuilder HelpEmd = new EmbedBuilder()
-                    .setTitle(TITLE)
-                    .setDescription(DESC)
-                    .setFooter("Hope you found this useful!", Callerphone.selfUser.getAvatarUrl())
-                    .setColor(ToolSet.COLOR);
-
-            ToolSet.sendPrivateEmbed(MEMBER, HelpEmd.build());
+        }
+        if (!Users.isModerator(event.getAuthor().getId())) {
             return;
         }
 
-        if (CONTENT.toLowerCase().startsWith(Callerphone.config.getPrefix())) {
-            try {
-                String id = args[1];
-                switch (args[0].toLowerCase().replace(Callerphone.config.getPrefix(), "")) {
+        final User author = event.getAuthor();
+        final Message message = event.getMessage();
+        final String content = message.getContentRaw().trim();
+        final String prefix = Callerphone.config.getPrefix();
 
-                    case "blacklist":
-                        if (Users.isBlacklisted(id)) {
-                            MESSAGE.reply("ID blacklisted already").queue();
-                        } else {
-                            Users.addBlacklist(id);
-                            MESSAGE.reply("ID: `" + id + "` added to blacklist").queue();
-                        }
-                        break;
+        if (!content.toLowerCase().startsWith(prefix.toLowerCase())) {
+            return;
+        }
 
-                    case "prefix":
-                        if (Users.hasPrefix(id)) {
-                            MESSAGE.reply("ID has prefix already (" + Users.getPrefix(id) + ")").queue();
-                        } else {
-                            String prefix = args[2];
-                            if (prefix.length() > 15) {
-                                MESSAGE.reply("Prefix too long (max. length is 15 chars)").queue();
-                                break;
-                            }
-                            Users.setPrefix(id, prefix);
-                            MESSAGE.reply("ID: `" + id + "` now has prefix `" + prefix + "`").queue();
-                        }
-                        break;
+        String body = content.substring(prefix.length()).trim();
+        if (body.isEmpty()) {
+            return;
+        }
 
-                    case "mod":
-                        if (Users.isModerator(id)) {
-                            MESSAGE.reply("ID is mod already").queue();
-                        } else {
-                            Users.addModerator(id);
-                            MESSAGE.reply("ID: `" + id + "` added to mod list").queue();
-                        }
-                        break;
+        String[] args = body.split("\\s+");
+        String command = args[0].toLowerCase();
 
-
-                    case "rblacklist":
-                        if (!Users.isBlacklisted(id)) {
-                            MESSAGE.reply("ID not blacklisted").queue();
-                        } else {
-                            Users.addUser(id);
-                            MESSAGE.reply("ID: `" + id + "` removed from blacklist").queue();
-                        }
-                        break;
-
-                    case "rprefix":
-                        if (!Users.hasPrefix(id)) {
-                            MESSAGE.reply("ID does not have a prefix").queue();
-                        } else {
-                            Users.setPrefix(id, "");
-                            MESSAGE.reply("ID: `" + id + "` no longer has a prefix").queue();
-                        }
-                        break;
-
-                    case "rmod":
-                        if (!Users.isModerator(id)) {
-                            MESSAGE.reply("ID is not a mod").queue();
-                        } else {
-                            if (id.equals(Callerphone.config.getOwnerID())) {
-                                MESSAGE.reply("You cannot remove this mod").queue();
-                                break;
-                            }
-                            Users.addUser(id);
-                            MESSAGE.reply("ID: `" + id + "` removed from mod list").queue();
-                        }
-                        break;
-
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-                sendError(MESSAGE, e);
+        try {
+            if (command.equals("help") && args.length > 1 && args[1].equalsIgnoreCase("mod")) {
+                sendModHelp(author);
+                return;
             }
+
+            if (args.length < 2) {
+                message.reply(ToolSet.CP_EMJ + "Usage: `" + prefix + command + " <id> [args]`").queue();
+                return;
+            }
+
+            String id = args[1];
+            switch (command) {
+                case "blacklist":
+                    if (Users.isBlacklisted(id)) {
+                        message.reply("ID blacklisted already").queue();
+                    } else {
+                        Users.addBlacklist(id);
+                        message.reply("ID: `" + id + "` added to blacklist").queue();
+                    }
+                    break;
+
+                case "prefix":
+                    if (args.length < 3) {
+                        message.reply(ToolSet.CP_EMJ + "`" + prefix + "prefix <id> <prefix>`").queue();
+                        return;
+                    }
+                    if (Users.hasPrefix(id)) {
+                        message.reply("ID has prefix already (" + Users.getPrefix(id) + ")").queue();
+                    } else {
+                        String userPrefix = args[2];
+                        if (userPrefix.length() > 15) {
+                            message.reply("Prefix too long (max. length is 15 chars)").queue();
+                            break;
+                        }
+                        Users.setPrefix(id, userPrefix);
+                        message.reply("ID: `" + id + "` now has prefix `" + userPrefix + "`").queue();
+                    }
+                    break;
+
+                case "mod":
+                    if (Users.isModerator(id)) {
+                        message.reply("ID is mod already").queue();
+                    } else {
+                        Users.addModerator(id);
+                        message.reply("ID: `" + id + "` added to mod list").queue();
+                    }
+                    break;
+
+                case "rblacklist":
+                    if (!Users.isBlacklisted(id)) {
+                        message.reply("ID not blacklisted").queue();
+                    } else {
+                        Users.addUser(id);
+                        message.reply("ID: `" + id + "` removed from blacklist").queue();
+                    }
+                    break;
+
+                case "rprefix":
+                    if (!Users.hasPrefix(id)) {
+                        message.reply("ID does not have a prefix").queue();
+                    } else {
+                        Users.setPrefix(id, "");
+                        message.reply("ID: `" + id + "` no longer has a prefix").queue();
+                    }
+                    break;
+
+                case "rmod":
+                    if (!Users.isModerator(id)) {
+                        message.reply("ID is not a mod").queue();
+                    } else if (id.equals(Callerphone.config.getOwnerID())) {
+                        message.reply("You cannot remove this mod").queue();
+                    } else {
+                        Users.addUser(id);
+                        message.reply("ID: `" + id + "` removed from mod list").queue();
+                    }
+                    break;
+
+                default:
+                    // Not an admin command we handle
+                    break;
+            }
+        } catch (Exception e) {
+            ErrorHandler.handleMessageError(event, e);
         }
     }
 
-
-    public static void sendError(Message message, Exception error) {
-        message.reply(String.format(Response.ERROR_MSG.toString(), error.toString())).queue();
+    private void sendModHelp(User member) {
+        String desc = adminHelp() + "\n" + blacklistHelp() + "\n" + supportHelp() + "\n" + showItemsHelp();
+        EmbedBuilder help = new EmbedBuilder()
+                .setTitle("Mod")
+                .setDescription(desc)
+                .setFooter("Hope you found this useful!",
+                        Callerphone.selfUser != null ? Callerphone.selfUser.getAvatarUrl() : null)
+                .setColor(ToolSet.COLOR);
+        ToolSet.sendPrivateEmbed(member, help.build());
     }
 
     public static String adminHelp() {
-        return "`" + Callerphone.config.getPrefix() + "mod <id>` - Adds id to mod list.\n" +
-                "`" + Callerphone.config.getPrefix() + "rmod <id>` - Removes id from mod list.";
+        String p = Callerphone.config.getPrefix();
+        return "`" + p + "mod <id>` - Adds id to mod list.\n" +
+                "`" + p + "rmod <id>` - Removes id from mod list.";
     }
 
     public static String blacklistHelp() {
-        return "`" + Callerphone.config.getPrefix() + "blacklist <id>` - Adds id to blacklist.\n" +
-                "`" + Callerphone.config.getPrefix() + "rblacklist <id>` - Removes id from blacklist.";
+        String p = Callerphone.config.getPrefix();
+        return "`" + p + "blacklist <id>` - Adds id to blacklist.\n" +
+                "`" + p + "rblacklist <id>` - Removes id from blacklist.";
     }
 
     public static String supportHelp() {
-        return "`" + Callerphone.config.getPrefix() + "prefix <id> <prefix>` - Give user a prefix.\n" +
-                "`" + Callerphone.config.getPrefix() + "rprefix <id>` - Removes user prefix.";
+        String p = Callerphone.config.getPrefix();
+        return "`" + p + "prefix <id> <prefix>` - Give user a prefix.\n" +
+                "`" + p + "rprefix <id>` - Removes user prefix.";
     }
 
     public static String showItemsHelp() {
-        return "`" + Callerphone.config.getPrefix() + "blackedlist` - Shows all black listed users.\n" +
-                "`" + Callerphone.config.getPrefix() + "prefixlist` - Shows all prefixes for users.\n" +
-                "`" + Callerphone.config.getPrefix() + "infolist` - Shows all info for startup.\n" +
-                "`" + Callerphone.config.getPrefix() + "modlist` - Shows all moderators.\n" +
-                "`" + Callerphone.config.getPrefix() + "filterlist` - Shows all chat filters.";
+        String p = Callerphone.config.getPrefix();
+        return "`" + p + "blackedlist` - Shows all black listed users.\n" +
+                "`" + p + "prefixlist` - Shows all prefixes for users.\n" +
+                "`" + p + "infolist` - Shows all info for startup.\n" +
+                "`" + p + "modlist` - Shows all moderators.\n" +
+                "`" + p + "filterlist` - Shows all chat filters.";
     }
 }

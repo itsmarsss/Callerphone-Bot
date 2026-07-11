@@ -1,7 +1,6 @@
 package com.itsmarsss.callerphone.listeners;
 
 import com.itsmarsss.callerphone.Callerphone;
-import com.itsmarsss.callerphone.Response;
 import com.itsmarsss.callerphone.ToolSet;
 import com.itsmarsss.callerphone.utils.InteractionUtils;
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
@@ -13,8 +12,9 @@ public class OnModalEvent extends ListenerAdapter {
     public void onModalInteraction(@NotNull ModalInteractionEvent event) {
         try {
             String id = InteractionUtils.parseCustomId(event.getModalId())[0];
-            if (Callerphone.mdlMap.containsKey(id)) {
-                Callerphone.mdlMap.get(id).runModal(event);
+            var handler = Callerphone.mdlMap.get(id);
+            if (handler != null) {
+                handler.runModal(event);
                 return;
             }
             event.reply(
