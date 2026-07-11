@@ -10,51 +10,48 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
 public class ChannelPoolListener extends ListenerAdapter {
+    @Override
     public void onMessageReceived(MessageReceivedEvent event) {
         if (!event.isFromGuild()) {
             return;
         }
 
-        final Message MESSAGE = event.getMessage();
-
-        if (MESSAGE.isWebhookMessage())
-            return;
-
-        if (!(ChannelPool.isHost(event.getChannel().getId()) || ChannelPool.isChild(event.getChannel().getId())))
-            return;
-
-        final Member MEMBER = event.getMember();
-
-        if (Users.isBlacklisted(MEMBER.getUser().getId())) {
-            //event.getMessage().addReaction("\u274C").queue();
+        final Message message = event.getMessage();
+        if (message.isWebhookMessage()) {
             return;
         }
 
-        if (MEMBER.getUser().isBot() || MEMBER.getUser().isSystem())
+        final String channelId = event.getChannel().getId();
+        if (!ChannelPool.isInPool(channelId)) {
             return;
+        }
 
-        String content = MESSAGE.getContentRaw();
-
-        if (content.startsWith("\\\\") || content.toLowerCase().startsWith(Callerphone.config.getPrefix()))
+        final Member member = event.getMember();
+        if (member == null || member.getUser().isBot() || member.getUser().isSystem()) {
             return;
+        }
+
+        if (Users.isBlacklisted(member.getId())) {
+            return;
+        }
+
+        String content = message.getContentRaw();
+        if (content.startsWith("\\\\") || content.toLowerCase().startsWith(Callerphone.config.getPrefix())) {
+            return;
+        }
 
         content = ToolSet.filterMessage(content);
-
-        String sendCont = String.format("**%s** `%s` | <t:%d:f>\n%s",
-                MESSAGE.getAuthor().getName(),
-                MEMBER.getEffectiveName(),
-                MESSAGE.getTimeCreated().toEpochSecond(),
+        String payload = String.format("**%s** `%s` | <t:%d:f>\n%s",
+                message.getAuthor().getName(),
+                member.getEffectiveName(),
+                message.getTimeCreated().toEpochSecond(),
                 content
         );
 
-        ChannelPool.broadCast(event.getChannel().getId(),
-                event.getChannel().getId(),
-                sendCont
-        );
+        ChannelPool.broadCast(channelId, channelId, payload);
 
         if ((System.currentTimeMillis() - Cooldown.getPoolCooldown(event.getAuthor().getId())) > ToolSet.CREDIT_COOLDOWN) {
             Cooldown.setUserCooldown(event.getAuthor().getId());
-
             Users.reward(event.getAuthor().getId(), 3);
             Users.addTransmit(event.getAuthor().getId(), 1);
         }

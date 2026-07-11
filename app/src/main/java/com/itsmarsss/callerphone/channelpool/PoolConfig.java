@@ -1,22 +1,27 @@
 package com.itsmarsss.callerphone.channelpool;
 
+import com.itsmarsss.callerphone.Constants;
 import com.itsmarsss.callerphone.Response;
 
-import java.util.LinkedList;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class PoolConfig {
-    private String hostId;
+    private final String hostId;
     private String pwd;
     private int cap;
     private boolean pub;
 
-    public final LinkedList<String> children = new LinkedList<>();
+    public final CopyOnWriteArrayList<String> children = new CopyOnWriteArrayList<>();
 
     public PoolConfig(String hostId, String pwd, int cap, boolean pub) {
         this.hostId = hostId;
         this.pwd = pwd;
-        this.cap = cap;
+        this.cap = Math.min(Math.max(cap, Constants.POOL_MIN_CAPACITY), Constants.POOL_MAX_CAPACITY);
         this.pub = pub;
+    }
+
+    public String getHostId() {
+        return hostId;
     }
 
     public String getPwd() {
@@ -32,7 +37,7 @@ public class PoolConfig {
     }
 
     public void setCap(int cap) {
-        this.cap = Math.min(cap, 10);
+        this.cap = Math.min(Math.max(cap, Constants.POOL_MIN_CAPACITY), Constants.POOL_MAX_CAPACITY);
     }
 
     public boolean isPub() {

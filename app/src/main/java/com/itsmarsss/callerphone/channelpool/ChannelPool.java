@@ -1,5 +1,6 @@
 package com.itsmarsss.callerphone.channelpool;
 
+import com.itsmarsss.callerphone.Constants;
 import com.itsmarsss.callerphone.Response;
 import com.itsmarsss.callerphone.ToolSet;
 import net.dv8tion.jda.api.Permission;
@@ -10,34 +11,33 @@ import net.dv8tion.jda.api.components.actionrow.ActionRow;
 import net.dv8tion.jda.api.components.buttons.Button;
 import net.dv8tion.jda.api.requests.restaction.MessageCreateAction;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class ChannelPool {
 
-    public static final HashMap<String, PoolConfig> config = new HashMap<>();
-    public static final HashMap<String, String> parent = new HashMap<>();
-    //public static final HashMap<String, ArrayList<String>> childr = new HashMap<>();
+    public static final ConcurrentHashMap<String, PoolConfig> config = new ConcurrentHashMap<>();
+    public static final ConcurrentHashMap<String, String> parent = new ConcurrentHashMap<>();
 
     public static boolean permissionCheck(Member member, SlashCommandInteractionEvent e) {
         if (member == null) {
             return true;
         }
 
-        final boolean PERMS = !member.hasPermission(Permission.MANAGE_CHANNEL);
-        if (PERMS) {
+        if (!member.hasPermission(Permission.MANAGE_CHANNEL)) {
             e.reply(Response.NO_PERMISSION.toString()).queue();
-
+            return true;
         }
-        return PERMS;
+        return false;
     }
 
     public static PoolStatus endPool(String id) {
         if (isHost(id)) {
-            return clearChildren(id); // Success/Error
-        } else if (isChild(id)) {
+            return clearChildren(id);
+        }
+        if (isChild(id)) {
             return PoolStatus.IS_CHILD;
         }
         return PoolStatus.NOT_FOUND;
@@ -46,191 +46,178 @@ public class ChannelPool {
     public static PoolStatus hostPool(String id) {
         if (isHost(id)) {
             return PoolStatus.IS_HOST;
-        } else if (isChild(id)) {
+        }
+        if (isChild(id)) {
             return PoolStatus.IS_CHILD;
         }
-        config.put(id, new PoolConfig(id, "", 10, true));
-        config.get(id).children.add(id);
+        PoolConfig pool = new PoolConfig(id, "", Constants.POOL_DEFAULT_CAPACITY, true);
+        pool.children.add(id);
+        config.put(id, pool);
         return PoolStatus.SUCCESS;
     }
 
     public static PoolStatus joinPool(String hostId, String clientId, String pwd) {
-        if (!config.containsKey(hostId)) {
+        PoolConfig host = config.get(hostId);
+        if (host == null) {
             return PoolStatus.NOT_FOUND;
-        } else if (isHost(clientId)) {
+        }
+        if (isHost(clientId)) {
             return PoolStatus.IS_HOST;
-        } else if (isChild(clientId)) {
+        }
+        if (isChild(clientId)) {
             return PoolStatus.IS_CHILD;
-        } else if (!config.get(hostId).getPwd().equals(pwd)) {
-            if (!config.get(hostId).isPub()) {
+        }
+        if (!host.getPwd().equals(pwd)) {
+            if (!host.isPub()) {
                 return PoolStatus.NOT_FOUND;
             }
             return PoolStatus.INCORRECT_PASS;
         }
-        return addChildren(hostId, clientId); // Success/Full/Error
+        return addChildren(hostId, clientId);
     }
 
     public static PoolStatus leavePool(String id) {
         if (isHost(id)) {
             return PoolStatus.IS_HOST;
-        } else if (isChild(id)) {
-            return removeChild(parent.get(id), id); // Success/Error
+        }
+        if (isChild(id)) {
+            return removeChild(parent.get(id), id);
         }
         return PoolStatus.NOT_FOUND;
     }
 
     public static PoolStatus setCap(String id, int cap) {
-        if (isHost(id)) {
-            config.get(id).setCap(cap);
-            return PoolStatus.SUCCESS;
+        PoolConfig pool = config.get(id);
+        if (pool == null || !isHost(id)) {
+            return PoolStatus.NOT_FOUND;
         }
-        return PoolStatus.NOT_FOUND;
+        pool.setCap(cap);
+        return PoolStatus.SUCCESS;
     }
 
-
     public static LinkedList<String> getClients(String id) {
-        if (!parent.containsKey(id) && !config.containsKey(id)) {
+        String hostId = parent.getOrDefault(id, id);
+        PoolConfig pool = config.get(hostId);
+        if (pool == null) {
             return new LinkedList<>();
         }
-
-        if (parent.containsKey(id)) {
-            return config.get(parent.get(id)).children;
-        }
-        return config.get(id).children;
+        return new LinkedList<>(pool.children);
     }
 
     public static PoolStatus setPublicity(String id, boolean pub) {
-        if (isHost(id)) {
-            config.get(id).setPub(pub);
-            return PoolStatus.SUCCESS;
-        } else {
+        PoolConfig pool = config.get(id);
+        if (pool == null || !isHost(id)) {
             return PoolStatus.NOT_FOUND;
         }
+        pool.setPub(pub);
+        return PoolStatus.SUCCESS;
     }
 
     public static boolean hasPassword(String id) {
-        if (config.containsKey(id)) {
-            return !config.get(id).getPwd().isEmpty();
-        }
-        return false;
+        PoolConfig pool = config.get(id);
+        return pool != null && !pool.getPwd().isEmpty();
     }
 
     public static PoolStatus setPassword(String id, String pwd) {
-        if (isHost(id)) {
-            config.get(id).setPwd(pwd);
-            return PoolStatus.SUCCESS;
-        } else {
+        PoolConfig pool = config.get(id);
+        if (pool == null || !isHost(id)) {
             return PoolStatus.NOT_FOUND;
         }
+        pool.setPwd(pwd);
+        return PoolStatus.SUCCESS;
     }
 
     public static String getPassword(String id) {
-        if (config.containsKey(id)) {
-            return config.get(id).getPwd();
-        }
-        return "";
+        PoolConfig pool = config.get(id);
+        return pool != null ? pool.getPwd() : "";
     }
 
     public static String getPublicity(String id) {
-        if (config.containsKey(id)) {
-            if(config.get(id).isPub()) {
-                return "true";
-            }
-            return "false";
-        }
-        return "false";
+        PoolConfig pool = config.get(id);
+        return pool != null && pool.isPub() ? "true" : "false";
     }
 
     public static int getCapacity(String id) {
-        if (config.containsKey(id)) {
-            return config.get(id).getCap();
-        }
-        return 0;
+        PoolConfig pool = config.get(id);
+        return pool != null ? pool.getCap() : 0;
     }
 
-    public static PoolStatus clearChildren(String id) {
-        if (isHost(id)) {
-            LinkedList<String> pool = config.get(id).children;
-            pool.stream()
-                    .filter(cur -> !cur.equals(id))
-                    .forEach(iId -> {
-                        final TextChannel HOST_CHANNEL = ToolSet.getTextChannel(iId);
-                        if (HOST_CHANNEL != null) {
-                            HOST_CHANNEL
-                                    .sendMessage(
-                                            ToolSet.CP_EMJ + "This pool has been ended by the host channel `ID: " + iId
-                                                    + "` (#" + HOST_CHANNEL.getName() + ")."
-                                    ).queue();
-                        }
-                        parent.remove(iId);
-                    });
-
-            config.remove(id);
-            return PoolStatus.SUCCESS;
+    public static PoolStatus clearChildren(String hostId) {
+        PoolConfig pool = config.get(hostId);
+        if (pool == null || !isHost(hostId)) {
+            return PoolStatus.ERROR;
         }
-        return PoolStatus.ERROR;
+
+        TextChannel hostChannel = ToolSet.getTextChannel(hostId);
+        String hostName = hostChannel != null ? hostChannel.getName() : "unknown";
+
+        for (String childId : pool.children) {
+            if (childId.equals(hostId)) {
+                continue;
+            }
+            TextChannel childChannel = ToolSet.getTextChannel(childId);
+            if (childChannel != null) {
+                childChannel.sendMessage(
+                        ToolSet.CP_EMJ + "This pool has been ended by the host channel `ID: " + hostId
+                                + "` (#" + hostName + ")."
+                ).queue();
+            }
+            parent.remove(childId);
+        }
+
+        config.remove(hostId);
+        return PoolStatus.SUCCESS;
     }
 
     public static PoolStatus addChildren(String hostId, String childId) {
-        if (isHost(hostId)) {
-            if (config.get(hostId).children.size() >= config.get(hostId).getCap()) {
-                return PoolStatus.FULL;
-            }
-
-            final TextChannel HOST_CHANNEL = ToolSet.getTextChannel(hostId);
-            final TextChannel CHILD_CHANNEL = ToolSet.getTextChannel(childId);
-            if (HOST_CHANNEL != null) {
-                if (CHILD_CHANNEL != null) {
-                    systemBroadCast(hostId,
-                            ToolSet.CP_EMJ + "Channel `ID: " + childId
-                                    + "` (#" + CHILD_CHANNEL.getName() + ") has joined this pool. "
-                                    + (config.get(hostId).children.size() + 1) + "/" + config.get(hostId).getCap()
-                    );
-                } else {
-                    systemBroadCast(hostId,
-                            ToolSet.CP_EMJ + "Channel `ID: " + childId
-                                    + "` (#[N/A NOT FOUND]) has joined this pool. "
-                                    + (config.get(hostId).children.size() + 1) + "/" + config.get(hostId).getCap()
-                    );
-                }
-            }
-
-            config.get(hostId).children.add(childId);
-            parent.put(childId, hostId);
-            return PoolStatus.SUCCESS;
+        PoolConfig pool = config.get(hostId);
+        if (pool == null || !isHost(hostId)) {
+            return PoolStatus.ERROR;
         }
-        return PoolStatus.ERROR;
+        if (pool.children.size() >= pool.getCap()) {
+            return PoolStatus.FULL;
+        }
+
+        TextChannel childChannel = ToolSet.getTextChannel(childId);
+        String childName = childChannel != null ? childChannel.getName() : "[N/A NOT FOUND]";
+        int nextSize = pool.children.size() + 1;
+
+        systemBroadCast(hostId,
+                ToolSet.CP_EMJ + "Channel `ID: " + childId
+                        + "` (#" + childName + ") has joined this pool. "
+                        + nextSize + "/" + pool.getCap()
+        );
+
+        pool.children.add(childId);
+        parent.put(childId, hostId);
+        return PoolStatus.SUCCESS;
     }
 
-    public static PoolStatus removeChild(String hostID, String clientID) {
-        if (isChild(hostID)) {
+    public static PoolStatus removeChild(String hostId, String clientId) {
+        if (isChild(hostId)) {
             return PoolStatus.IS_CHILD;
         }
-
-        if (isChild(clientID)) {
-            config.get(hostID).children.remove(clientID);
-            parent.remove(clientID);
-
-            final TextChannel HOST_CHANNEL = ToolSet.getTextChannel(hostID);
-            final TextChannel CHILD_CHANNEL = ToolSet.getTextChannel(clientID);
-            if (HOST_CHANNEL != null) {
-                if (CHILD_CHANNEL != null) {
-                    systemBroadCast(hostID,
-                            ToolSet.CP_EMJ + "Channel `ID: " + clientID + "` (#" + CHILD_CHANNEL.getName() + ") has left this pool. "
-                                    + config.get(hostID).children.size() + "/" + config.get(hostID).getCap()
-                    );
-                } else {
-                    systemBroadCast(hostID,
-                            ToolSet.CP_EMJ + "Channel `ID: " + clientID + "` (#[N/A NOT FOUND]) has left this pool. "
-                                    + config.get(hostID).children.size() + "/" + config.get(hostID).getCap()
-                    );
-                }
-            }
-
-            return PoolStatus.SUCCESS;
-        } else {
+        if (!isChild(clientId)) {
             return PoolStatus.NOT_FOUND;
         }
+
+        PoolConfig pool = config.get(hostId);
+        if (pool == null) {
+            return PoolStatus.NOT_FOUND;
+        }
+
+        pool.children.remove(clientId);
+        parent.remove(clientId);
+
+        TextChannel childChannel = ToolSet.getTextChannel(clientId);
+        String childName = childChannel != null ? childChannel.getName() : "[N/A NOT FOUND]";
+
+        systemBroadCast(hostId,
+                ToolSet.CP_EMJ + "Channel `ID: " + clientId + "` (#" + childName + ") has left this pool. "
+                        + pool.children.size() + "/" + pool.getCap()
+        );
+
+        return PoolStatus.SUCCESS;
     }
 
     public static boolean isHost(String id) {
@@ -241,100 +228,106 @@ public class ChannelPool {
         return parent.containsKey(id) && !config.containsKey(id);
     }
 
+    public static boolean isInPool(String id) {
+        return isHost(id) || isChild(id);
+    }
+
     public static void broadCast(String sender, String original, String msg) {
-        if (isHost(sender)) {
-            handleIsHost(sender, original, msg);
-        } else if (parent.containsKey(sender)) {
-            broadCast(parent.get(sender), original, msg);
-        }
-    }
-
-    private static void handleIsHost(String sender, String original, String msg) {
-        LinkedList<String> pool = config.get(sender).children;
-        pool.stream().filter(id -> !id.equals(original)).forEach(id -> {
-            final TextChannel TEXT_CHANNEL = ToolSet.getTextChannel(id);
-            if (TEXT_CHANNEL == null) {
-                handleChannelLeft(sender, id);
-                return;
-            }
-            final MessageCreateAction MESSAGE_ACTION = buildMessageAction(original, msg, id);
-            if (MESSAGE_ACTION != null) {
-                MESSAGE_ACTION.complete();
-            }
-        });
-    }
-
-    private static MessageCreateAction buildMessageAction(String original, String msg, String id) {
-        MessageCreateAction ma;
-
-        final TextChannel TEXT_CHANNEL = ToolSet.getTextChannel(id);
-
-        if (TEXT_CHANNEL != null) {
-            ma = TEXT_CHANNEL.sendMessage(msg);
-        } else {
-            return null;
-        }
-        Collection<ActionRow> actionrow = new ArrayList<>();
-        Collection<Button> collection = new ArrayList<>();
-
-        String link;
-        String name;
-        String guild;
-
-        final TextChannel ORIGINAL_CHANNEL = ToolSet.getTextChannel(original);
-        if (ORIGINAL_CHANNEL != null) {
-            link = String.format(
-                    "https://discord.com/channels/%s/%s",
-                    ORIGINAL_CHANNEL.getGuild().getId(),
-                    ORIGINAL_CHANNEL.getId()
-            );
-            name = (ORIGINAL_CHANNEL.getName().length() > 10 ? ORIGINAL_CHANNEL.getName().substring(0, 11) + "..." : ORIGINAL_CHANNEL.getName());
-            guild = (ORIGINAL_CHANNEL.getGuild().getName().length() > 10
-                    ?
-                    ORIGINAL_CHANNEL.getGuild().getName().substring(0, 11) + "..."
-                    :
-                    ORIGINAL_CHANNEL.getGuild().getName());
-        } else {
-            link = "[N/A NOT FOUND]";
-            name = "[N/A NOT FOUND]";
-            guild = "[N/A NOT FOUND]";
-        }
-
-        collection.add(
-                Button.link(
-                        link,
-                        "From: #" + name
-                                + " (" + guild + ")"
-                )
-        );
-
-        ActionRow row = ActionRow.of(collection);
-        actionrow.add(row);
-        ma = ma.setComponents(actionrow);
-        return ma;
-    }
-
-    private static void handleChannelLeft(String sender, String id) {
-        if (sender.equals(id)) {
-            clearChildren(sender);
+        String hostId = isHost(sender) ? sender : parent.get(sender);
+        if (hostId == null) {
             return;
         }
-        config.get(sender).children.remove(id);
-        systemBroadCast(sender, String.format(PoolResponse.LEFT_POOL.toString(), id));
+        handleIsHost(hostId, original, msg);
     }
 
+    private static void handleIsHost(String hostId, String original, String msg) {
+        PoolConfig pool = config.get(hostId);
+        if (pool == null) {
+            return;
+        }
 
-    public static void systemBroadCast(String hostId, String msg) {
-        LinkedList<String> pool = config.get(hostId).children;
-        for (String id : pool) {
-            final TextChannel TEXT_CHANNEL = ToolSet.getTextChannel(id);
-            if (TEXT_CHANNEL == null) {
-                systemBroadCast(hostId, String.format(PoolResponse.LEFT_POOL.toString(), id));
+        List<String> leftChannels = new CopyOnWriteArrayList<>();
+        for (String id : pool.children) {
+            if (id.equals(original)) {
                 continue;
             }
-            MessageCreateAction ma = TEXT_CHANNEL.sendMessage(msg);
-            ma.complete();
+            MessageCreateAction action = buildMessageAction(original, msg, id);
+            if (action == null) {
+                leftChannels.add(id);
+                continue;
+            }
+            action.queue();
+        }
+
+        for (String leftId : leftChannels) {
+            handleChannelLeft(hostId, leftId);
         }
     }
 
+    private static MessageCreateAction buildMessageAction(String original, String msg, String destinationId) {
+        TextChannel destination = ToolSet.getTextChannel(destinationId);
+        if (destination == null) {
+            return null;
+        }
+
+        TextChannel origin = ToolSet.getTextChannel(original);
+        MessageCreateAction action = destination.sendMessage(msg);
+        if (origin == null) {
+            return action;
+        }
+
+        String link = String.format("https://discord.com/channels/%s/%s",
+                origin.getGuild().getId(), origin.getId());
+        String name = truncate(origin.getName(), 10);
+        String guild = truncate(origin.getGuild().getName(), 10);
+
+        return action.setComponents(
+                ActionRow.of(Button.link(link, "From: #" + name + " (" + guild + ")"))
+        );
+    }
+
+    private static String truncate(String value, int maxLen) {
+        if (value == null) {
+            return "";
+        }
+        return value.length() > maxLen ? value.substring(0, maxLen + 1) + "..." : value;
+    }
+
+    private static void handleChannelLeft(String hostId, String channelId) {
+        if (hostId.equals(channelId)) {
+            clearChildren(hostId);
+            return;
+        }
+        PoolConfig pool = config.get(hostId);
+        if (pool == null) {
+            return;
+        }
+        pool.children.remove(channelId);
+        parent.remove(channelId);
+        systemBroadCast(hostId, String.format(PoolResponse.LEFT_POOL.toString(), channelId));
+    }
+
+    public static void systemBroadCast(String hostId, String msg) {
+        PoolConfig pool = config.get(hostId);
+        if (pool == null) {
+            return;
+        }
+
+        List<String> leftChannels = new CopyOnWriteArrayList<>();
+        for (String id : pool.children) {
+            TextChannel channel = ToolSet.getTextChannel(id);
+            if (channel == null) {
+                leftChannels.add(id);
+                continue;
+            }
+            channel.sendMessage(msg).queue();
+        }
+
+        for (String leftId : leftChannels) {
+            if (!leftId.equals(hostId)) {
+                pool.children.remove(leftId);
+                parent.remove(leftId);
+            }
+        }
+    }
 }
