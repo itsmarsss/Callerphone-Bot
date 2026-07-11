@@ -6,10 +6,13 @@ import com.itsmarsss.commandType.ITextCommand;
 import com.itsmarsss.database.categories.Users;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
 public class RewardCredits implements ITextCommand {
+    private static final Logger logger = LoggerFactory.getLogger(RewardCredits.class);
 
     @Override
     public void runCommand(MessageReceivedEvent e) {
@@ -17,22 +20,26 @@ public class RewardCredits implements ITextCommand {
             e.getMessage().reply(ToolSet.CP_EMJ + "Run this command once you own this bot...").queue();
             return;
         }
-        try {
-            final String[] ARGS = e.getMessage().getContentRaw().split("\\s+");
-            final List<User> MENTIONS = e.getMessage().getMentions().getUsers();
-            final User USER = !MENTIONS.isEmpty() ? MENTIONS.get(0) : e.getAuthor();
-            int amount;
-            amount = Integer.parseInt(ARGS[1]);
-            e.getMessage().reply(rewardCredits(USER, amount)).queue();
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            e.getMessage().reply(ToolSet.CP_EMJ + "`/rewardcreds <amount> <@user>`").queue();
-        }
-    }
 
-    private String rewardCredits(User user, int amount) {
-        Users.reward(user.getId(), amount);
-        return ToolSet.CP_EMJ + "Rewarded `\u23E3 " + amount + "` to " + user.getAsMention();
+        try {
+            String[] args = e.getMessage().getContentRaw().split("\\s+");
+            if (args.length < 2) {
+                e.getMessage().reply(ToolSet.CP_EMJ + "`reward <amount> [@user]`").queue();
+                return;
+            }
+
+            int amount = Integer.parseInt(args[1]);
+            List<User> mentions = e.getMessage().getMentions().getUsers();
+            User user = !mentions.isEmpty() ? mentions.get(0) : e.getAuthor();
+
+            Users.reward(user.getId(), amount);
+            e.getMessage().reply(ToolSet.CP_EMJ + "Rewarded `\u23E3 " + amount + "` to " + user.getAsMention()).queue();
+        } catch (NumberFormatException ex) {
+            e.getMessage().reply(ToolSet.CP_EMJ + "Amount must be a number. `reward <amount> [@user]`").queue();
+        } catch (Exception ex) {
+            logger.error("reward credits failed", ex);
+            e.getMessage().reply(ToolSet.CP_EMJ + "`reward <amount> [@user]`").queue();
+        }
     }
 
     @Override

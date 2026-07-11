@@ -1,34 +1,24 @@
 package com.itsmarsss.callerphone.users;
 
+import com.itsmarsss.callerphone.Constants;
 import com.itsmarsss.callerphone.Response;
 import com.itsmarsss.callerphone.minigames.IMiniGame;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.HashMap;
-
-import static com.itsmarsss.callerphone.users.UserStatus.*;
+import java.util.Locale;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class BotUser implements Comparable<BotUser> {
 
-/*
-"id": "1234567890",
-"status": "user/moderator/blacklist",
-"reason": "",
-"prefix": "",
-"credits": 0,
-"executed": 0,
-"transmitted": 0
-*/
-
     private String id = "";
-    private UserStatus status = USER;
+    private UserStatus status = UserStatus.USER;
     private String reason = "";
     private String prefix = "";
     private long credits = 0;
     private long executed = 0;
     private long transmitted = 0;
 
-    private HashMap<String, IMiniGame> miniGames = new HashMap<>();
+    private final ConcurrentHashMap<String, IMiniGame> miniGames = new ConcurrentHashMap<>();
 
     public BotUser() {
     }
@@ -37,7 +27,8 @@ public class BotUser implements Comparable<BotUser> {
         this.id = id;
     }
 
-    public BotUser(String id, UserStatus status, String reason, String prefix, long credits, long executed, long transmitted) {
+    public BotUser(String id, UserStatus status, String reason, String prefix,
+                   long credits, long executed, long transmitted) {
         this.id = id;
         this.status = status;
         this.reason = reason;
@@ -60,7 +51,7 @@ public class BotUser implements Comparable<BotUser> {
     }
 
     public void setStatus(UserStatus status) {
-        this.status = status;
+        this.status = status != null ? status : UserStatus.USER;
     }
 
     public String getReason() {
@@ -68,7 +59,7 @@ public class BotUser implements Comparable<BotUser> {
     }
 
     public void setReason(String reason) {
-        this.reason = reason;
+        this.reason = reason != null ? reason : "";
     }
 
     public String getPrefix() {
@@ -76,7 +67,7 @@ public class BotUser implements Comparable<BotUser> {
     }
 
     public void setPrefix(String prefix) {
-        this.prefix = prefix;
+        this.prefix = prefix != null ? prefix : "";
     }
 
     public long getCredits() {
@@ -104,22 +95,9 @@ public class BotUser implements Comparable<BotUser> {
     }
 
     public String toJSON() {
-        String status = "user";
-        switch (this.status) {
-            case USER:
-                status = "user";
-                break;
-            case MODERATOR:
-                status = "moderator";
-                break;
-            case WARNED:
-                status = "warned";
-                break;
-            case BLACKLISTED:
-                status = "blacklisted";
-                break;
-        }
-        return String.format(Response.USER_TEMPLATE.toString(), id, status, reason, prefix, credits, executed, transmitted);
+        String statusName = status != null ? status.name().toLowerCase(Locale.ROOT) : "user";
+        return String.format(Response.USER_TEMPLATE.toString(),
+                id, statusName, reason, prefix, credits, executed, transmitted);
     }
 
     public void addCredits(long amount) {
@@ -134,34 +112,30 @@ public class BotUser implements Comparable<BotUser> {
         this.transmitted += amount;
     }
 
-
     public boolean addGame(IMiniGame game) {
-        if(this.miniGames.size() >= 10) {
+        if (game == null || miniGames.size() >= Constants.USER_MAX_GAMES) {
             return false;
         }
-        this.miniGames.put(game.getID(), game);
+        miniGames.put(game.getID(), game);
         return true;
     }
 
-    public boolean removeGame(String id) {
-        if(!this.miniGames.containsKey(id)) {
-            return false;
-        }
-        miniGames.remove(id);
-        return true;
+    public boolean removeGame(String gameId) {
+        return miniGames.remove(gameId) != null;
     }
 
-    public IMiniGame getGame(String id) {
-        return this.miniGames.getOrDefault(id, null);
+    public IMiniGame getGame(String gameId) {
+        return miniGames.get(gameId);
     }
 
     public boolean setGame(IMiniGame game) {
-        boolean status = removeGame(game.getID());
-        if(!status) {
+        if (game == null || !miniGames.containsKey(game.getID())) {
             return false;
         }
-        return addGame(game);
+        miniGames.put(game.getID(), game);
+        return true;
     }
+
     @Override
     public int compareTo(@NotNull BotUser user) {
         return Long.compare(user.credits, this.credits);
