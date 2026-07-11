@@ -1,123 +1,76 @@
 package com.itsmarsss.callerphone.utils;
 
-import com.itsmarsss.callerphone.ToolSet;
 import com.itsmarsss.commandType.ISlashCommand;
-import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
+import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.InteractionContextType;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 
-import java.time.format.DateTimeFormatter;
-
 public class ServerInfo implements ISlashCommand {
     @Override
     public void runSlash(SlashCommandInteractionEvent e) {
+        if (e.getGuild() == null) {
+            e.replyEmbeds(EmbedHelpers.error("This command can only be used in a server.")).setEphemeral(true).queue();
+            return;
+        }
         e.replyEmbeds(serverInfo(e.getGuild())).queue();
     }
 
-    private MessageEmbed serverInfo(Guild gld) {
-        final String NAME = gld.getName();
-        String DESCRIPTION = gld.getDescription();
+    private MessageEmbed serverInfo(Guild guild) {
+        Member owner = guild.getOwner();
+        TextChannel system = guild.getSystemChannel();
+        TextChannel rules = guild.getRulesChannel();
+        TextChannel community = guild.getCommunityUpdatesChannel();
+        VoiceChannel afk = guild.getAfkChannel();
 
-        final String ICONURL = gld.getIconUrl();
-        final String BANNERURL = gld.getBannerUrl();
-
-        final String MEMBERS = String.valueOf(gld.getMembers().size());
-        final String OWNER = gld.getOwner().getAsMention();
-
-
-        final String BOOSTCOUNT = String.valueOf(gld.getBoostCount());
-        final String BOOSTTIER = gld.getBoostTier().toString();
-
-        String CATEGORIES = "N/A";
-        String CHANNELS = "N/A";
-        String TEXTCHANNELS = "N/A";
-        String VOICECHANNELS = "N/A";
-        String STAGECHANNELS = "N/A";
-        String SYSTEMCHANNEL = "N/A";
-        String RULESCHANNEL = "N/A";
-        String COMMUNITYUPDATESCHANNEL = "N/A";
-
-        String ROLES = "N/A";
-
-        String AFKCHANNEL = "N/A";
-        String AFKTIMEOUT = "N/A";
-
-        if (DESCRIPTION == null)
-            DESCRIPTION = "N/A";
-
-        try {
-            CATEGORIES = String.valueOf(gld.getCategories().size());
-            CHANNELS = String.valueOf(gld.getChannels().size());
-            TEXTCHANNELS = String.valueOf(gld.getTextChannels().size());
-            VOICECHANNELS = String.valueOf(gld.getVoiceChannels().size());
-            STAGECHANNELS = String.valueOf(gld.getStageChannels().size());
-            SYSTEMCHANNEL = gld.getSystemChannel().getAsMention();
-            RULESCHANNEL = gld.getRulesChannel().getAsMention();
-            COMMUNITYUPDATESCHANNEL = gld.getCommunityUpdatesChannel().getAsMention();
-
-            ROLES = String.valueOf(gld.getRoles().size());
-
-            AFKCHANNEL = gld.getAfkChannel().getAsMention();
-            AFKTIMEOUT = gld.getAfkTimeout().getSeconds() + "s";
-        } catch (NullPointerException ex) {
-            ex.printStackTrace();
-        }
-
-        final String REGION = gld.retrieveRegions().toString();
-        final String DATECREATED = gld.getTimeCreated().format(DateTimeFormatter.RFC_1123_DATE_TIME);
-
-        EmbedBuilder serverInfoEmbed = new EmbedBuilder()
-                .setColor(ToolSet.COLOR)
-                .setDescription(":minidisc: **Server information for " + NAME + ":**")
+        return EmbedHelpers.base()
+                .setDescription(":minidisc: **Server information for " + guild.getName() + ":**")
                 .addField("General Information",
-                        "Name: " + NAME +
-                                "\nDescription: " + DESCRIPTION +
-                                "\nIcon URL: [Icon](" + ICONURL + ")" +
-                                "\nBanner URL: [Banner](" + BANNERURL + ")",
+                        "Name: " + guild.getName() +
+                                "\nDescription: " + EmbedHelpers.orDefault(guild.getDescription(), "N/A") +
+                                "\nIcon URL: " + linkOrNa(guild.getIconUrl(), "Icon") +
+                                "\nBanner URL: " + linkOrNa(guild.getBannerUrl(), "Banner"),
                         false)
-
                 .addField("Categories",
-                        "Category Count: " + CATEGORIES +
-                                "\nChannel Count: " + CHANNELS +
-                                "\nTextChannel Count: " + TEXTCHANNELS +
-                                "\nVoiceChannel Count: " + VOICECHANNELS +
-                                "\nStageChannel Count: " + STAGECHANNELS +
-                                "\nSystem Channel: " + SYSTEMCHANNEL +
-                                "\nRules Channel: " + RULESCHANNEL +
-                                "\nCommunity Update Channel: " + COMMUNITYUPDATESCHANNEL,
+                        "Category Count: " + guild.getCategories().size() +
+                                "\nChannel Count: " + guild.getChannels().size() +
+                                "\nTextChannel Count: " + guild.getTextChannels().size() +
+                                "\nVoiceChannel Count: " + guild.getVoiceChannels().size() +
+                                "\nStageChannel Count: " + guild.getStageChannels().size() +
+                                "\nSystem Channel: " + mentionOrNa(system) +
+                                "\nRules Channel: " + mentionOrNa(rules) +
+                                "\nCommunity Update Channel: " + mentionOrNa(community),
                         false)
-
                 .addField("Members",
-                        "Member Count: " + MEMBERS +
-                                "\nOwner: " + OWNER,
+                        "Member Count: " + guild.getMemberCount() +
+                                "\nOwner: " + (owner != null ? owner.getAsMention() : "N/A"),
                         true)
-
                 .addField("Boosts",
-                        "Boost Count: " + BOOSTCOUNT +
-                                "\nBoost Tier: " + BOOSTTIER,
+                        "Boost Count: " + guild.getBoostCount() +
+                                "\nBoost Tier: " + guild.getBoostTier(),
                         true)
-
-                .addField("Roles", "Role Count: " + ROLES,
-                        true)
-
-                .addField("Region",
-                        "Region: " + REGION +
-                                "\nCreation Date: " + DATECREATED,
-                        true)
-
+                .addField("Roles", "Role Count: " + guild.getRoles().size(), true)
+                .addField("Created", guild.getTimeCreated().format(EmbedHelpers.DATE_FMT), true)
                 .addField("AFK",
-                        "AFK Channel: " + AFKCHANNEL +
-                                "\nAFK Timeout: " + AFKTIMEOUT,
+                        "AFK Channel: " + mentionOrNa(afk) +
+                                "\nAFK Timeout: " + guild.getAfkTimeout().getSeconds() + "s",
                         true)
+                .setFooter("ID: " + guild.getId())
+                .setThumbnail(guild.getIconUrl())
+                .build();
+    }
 
-                .setFooter("ID: " + gld.getId())
-                .setThumbnail(ICONURL);
+    private static String mentionOrNa(net.dv8tion.jda.api.entities.channel.middleman.GuildChannel channel) {
+        return channel != null ? channel.getAsMention() : "N/A";
+    }
 
-        return serverInfoEmbed.build();
+    private static String linkOrNa(String url, String label) {
+        return url != null ? "[" + label + "](" + url + ")" : "N/A";
     }
 
     @Override
@@ -132,7 +85,7 @@ public class ServerInfo implements ISlashCommand {
 
     @Override
     public SlashCommandData getCommandData() {
-        return Commands.slash(getName(), getHelp().split(" - ")[1])
+        return Commands.slash(getName(), "Get information about the server")
                 .setContexts(InteractionContextType.GUILD);
     }
 }

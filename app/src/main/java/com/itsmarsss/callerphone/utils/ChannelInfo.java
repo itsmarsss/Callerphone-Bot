@@ -1,6 +1,5 @@
 package com.itsmarsss.callerphone.utils;
 
-import com.itsmarsss.callerphone.ToolSet;
 import com.itsmarsss.commandType.ISlashCommand;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
@@ -10,30 +9,25 @@ import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.InteractionContextType;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 
-import java.time.format.DateTimeFormatter;
-
 public class ChannelInfo implements ISlashCommand {
     @Override
     public void runSlash(SlashCommandInteractionEvent e) {
-        GuildChannel channel = e.getChannel().asGuildMessageChannel();
-
-        if(!e.getOptions().isEmpty()) {
-            channel = e.getOptions().get(0).getAsChannel();
-        }
-
-        e.replyEmbeds(sortChannelType(channel)).queue();
+        OptionMapping option = e.getOption("channel");
+        GuildChannel channel = option != null
+                ? option.getAsChannel()
+                : e.getChannel().asGuildMessageChannel();
+        e.replyEmbeds(buildEmbed(channel)).queue();
     }
 
-    public MessageEmbed sortChannelType(GuildChannel channel) {
-        ChannelType channelType = channel.getType();
-
-        switch (channelType) {
+    public MessageEmbed buildEmbed(GuildChannel channel) {
+        switch (channel.getType()) {
             case TEXT:
                 return textChannelInfo((TextChannel) channel);
             case VOICE:
@@ -41,112 +35,54 @@ public class ChannelInfo implements ISlashCommand {
             case CATEGORY:
                 return categoryChannelInfo((Category) channel);
             default:
-                return new EmbedBuilder().setDescription("Channel type not yet implemented.").build();
+                return EmbedHelpers.error("Channel type not yet implemented.");
         }
     }
 
-    public MessageEmbed textChannelInfo(TextChannel channel) {
-        final String NAME = channel.getName();
-        String TOPIC = channel.getTopic();
-        final String TYPE = channel.getType().name();
-        final String SLOWMODE = String.valueOf(channel.getSlowmode());
-        final String ID = channel.getId();
-        final String DATE_CREATED = channel.getTimeCreated().format(DateTimeFormatter.RFC_1123_DATE_TIME);
-        String PARENT;
-
-        try {
-            PARENT = channel.getParentCategory().getAsMention();
-        } catch (NullPointerException ex) {
-            PARENT = "Server";
-        }
-
-        final String POSITION = String.valueOf(channel.getPosition());
-        final String ISNSFW = String.valueOf(channel.isNSFW());
-        final String ISSYNCED = String.valueOf(channel.isSynced());
-
-        if (TOPIC == null) {
-            TOPIC = "No Topic";
-        }
-
-        EmbedBuilder channelInfoEmbed = new EmbedBuilder()
-                .setColor(ToolSet.COLOR)
+    private MessageEmbed textChannelInfo(TextChannel channel) {
+        return EmbedHelpers.base()
                 .setDescription(":speech_left: **Channel information for " + channel.getAsMention() + ":**")
-                .addField("Name", NAME, false)
-                .addField("Topic", TOPIC, true)
-                .addField("Type", TYPE, true)
-                .addField("Slowmode", SLOWMODE + "s", true)
-                .addField("Creation Date", DATE_CREATED, true)
-                .addField("Parent", PARENT, true)
-                .addField("Position", POSITION, true)
-                .addField("NSFW", ISNSFW, true)
-                .addField("Synced", ISSYNCED, true)
-                .setFooter("ID: " + ID);
-
-        return channelInfoEmbed.build();
+                .addField("Name", channel.getName(), false)
+                .addField("Topic", EmbedHelpers.orDefault(channel.getTopic(), "No Topic"), true)
+                .addField("Type", channel.getType().name(), true)
+                .addField("Slowmode", channel.getSlowmode() + "s", true)
+                .addField("Creation Date", channel.getTimeCreated().format(EmbedHelpers.DATE_FMT), true)
+                .addField("Parent", EmbedHelpers.parentCategory(channel), true)
+                .addField("Position", String.valueOf(channel.getPosition()), true)
+                .addField("NSFW", String.valueOf(channel.isNSFW()), true)
+                .addField("Synced", String.valueOf(channel.isSynced()), true)
+                .setFooter("ID: " + channel.getId())
+                .build();
     }
 
-    public MessageEmbed voiceChannelInfo(VoiceChannel channel) {
-        final String NAME = channel.getName();
-        final String TYPE = String.valueOf(channel.getType());
-        final String BITRATE = String.valueOf(channel.getBitrate());
-        final String REGION = String.valueOf(channel.getRegion());
-        String USERLIMIT = String.valueOf(channel.getUserLimit());
-        final String ID = channel.getId();
-        final String DATE_CREATED = channel.getTimeCreated().format(DateTimeFormatter.RFC_1123_DATE_TIME);
-        String PARENT;
-
-        try {
-            PARENT = channel.getParentCategory().getAsMention();
-        } catch (NullPointerException ex) {
-            PARENT = "Server";
-        }
-
-        final String POSITION = String.valueOf(channel.getPosition());
-        final String ISSYNCED = String.valueOf(channel.isSynced());
-
-
-        if (USERLIMIT.equals("0")) {
-            USERLIMIT = "Unlimited";
-        }
-
-        EmbedBuilder channelInfoEmbed = new EmbedBuilder()
-                .setColor(ToolSet.COLOR)
+    private MessageEmbed voiceChannelInfo(VoiceChannel channel) {
+        int limit = channel.getUserLimit();
+        return EmbedHelpers.base()
                 .setDescription(":radio: **Channel information for " + channel.getAsMention() + ":**")
-                .addField("Name", NAME, false)
-                .addField("Type", TYPE, false)
-                .addField("Bitrate", BITRATE + "kbps", true)
-                .addField("Region", REGION, true)
-                .addField("User Limit", USERLIMIT, true)
-                .addField("Creation Date", DATE_CREATED, false)
-                .addField("Parent", PARENT, true)
-                .addField("Position", POSITION, true)
-                .addField("Synced", ISSYNCED, true)
-                .setFooter("ID: " + ID);
-
-        return channelInfoEmbed.build();
+                .addField("Name", channel.getName(), false)
+                .addField("Type", channel.getType().name(), false)
+                .addField("Bitrate", channel.getBitrate() + "kbps", true)
+                .addField("Region", String.valueOf(channel.getRegion()), true)
+                .addField("User Limit", limit == 0 ? "Unlimited" : String.valueOf(limit), true)
+                .addField("Creation Date", channel.getTimeCreated().format(EmbedHelpers.DATE_FMT), false)
+                .addField("Parent", EmbedHelpers.parentCategory(channel), true)
+                .addField("Position", String.valueOf(channel.getPosition()), true)
+                .addField("Synced", String.valueOf(channel.isSynced()), true)
+                .setFooter("ID: " + channel.getId())
+                .build();
     }
 
-    public MessageEmbed categoryChannelInfo(Category channel) {
-        final String NAME = channel.getName();
-        final String TYPE = String.valueOf(channel.getType());
-        final String TEXTCHANNELS = String.valueOf(channel.getTextChannels().size());
-        final String VOICECHANNELS = String.valueOf(channel.getVoiceChannels().size());
-        final String ID = channel.getId();
-        final String DATE_CREATED = channel.getTimeCreated().format(DateTimeFormatter.RFC_1123_DATE_TIME);
-        final String POSITION = String.valueOf(channel.getPosition());
-
-        EmbedBuilder channelInfoEmbed = new EmbedBuilder()
-                .setColor(ToolSet.COLOR)
+    private MessageEmbed categoryChannelInfo(Category channel) {
+        return EmbedHelpers.base()
                 .setDescription(":file_folder: **Category information for " + channel.getAsMention() + ":**")
-                .addField("Name", NAME, false)
-                .addField("Type", TYPE, true)
-                .addField("TextChannels", TEXTCHANNELS, true)
-                .addField("VoiceChannels", VOICECHANNELS, true)
-                .addField("Creation Date", DATE_CREATED, false)
-                .addField("Position", POSITION, false)
-                .setFooter("ID: " + ID);
-
-        return channelInfoEmbed.build();
+                .addField("Name", channel.getName(), false)
+                .addField("Type", channel.getType().name(), true)
+                .addField("TextChannels", String.valueOf(channel.getTextChannels().size()), true)
+                .addField("VoiceChannels", String.valueOf(channel.getVoiceChannels().size()), true)
+                .addField("Creation Date", channel.getTimeCreated().format(EmbedHelpers.DATE_FMT), false)
+                .addField("Position", String.valueOf(channel.getPosition()), false)
+                .setFooter("ID: " + channel.getId())
+                .build();
     }
 
     @Override
@@ -161,10 +97,8 @@ public class ChannelInfo implements ISlashCommand {
 
     @Override
     public SlashCommandData getCommandData() {
-        return Commands.slash(getName(), getHelp().split(" - ")[1])
-                .addOptions(
-                        new OptionData(OptionType.CHANNEL, "channel", "Target channel")
-                )
+        return Commands.slash(getName(), "Get information about a channel")
+                .addOptions(new OptionData(OptionType.CHANNEL, "channel", "Target channel"))
                 .setContexts(InteractionContextType.GUILD);
     }
 }

@@ -1,86 +1,61 @@
 package com.itsmarsss.callerphone.utils;
 
 import com.itsmarsss.commandType.ISlashCommand;
-import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.InteractionContextType;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 
-import java.awt.*;
-import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 public class RoleInfo implements ISlashCommand {
 
     @Override
     public void runSlash(SlashCommandInteractionEvent e) {
-        Role role = e.getMember().getRoles().get(0);
-
-        if(!e.getOptions().isEmpty()) {
-            role = e.getOptions().get(0).getAsRole();
+        OptionMapping option = e.getOption("role");
+        Role role;
+        if (option != null) {
+            role = option.getAsRole();
+        } else {
+            Member member = e.getMember();
+            if (member == null || member.getRoles().isEmpty()) {
+                e.replyEmbeds(EmbedHelpers.error("Provide a role or have at least one role.")).setEphemeral(true).queue();
+                return;
+            }
+            role = member.getRoles().get(0);
         }
 
         e.replyEmbeds(roleInfo(role)).queue();
     }
 
     private MessageEmbed roleInfo(Role role) {
-        final Color COLOR = role.getColor();
-        final String NAME = role.getName();
-        final String ID = role.getId();
-        final String DATE_CREATED = role.getTimeCreated().format(DateTimeFormatter.RFC_1123_DATE_TIME);
-        StringBuilder PERMISSIONS = new StringBuilder();
-        StringBuilder MEMBERS_WITH_ROLE = new StringBuilder();
-        final String POSITION = String.valueOf(role.getGuild().getRoles().size() - role.getPosition());
-        final String ISHOISTED = String.valueOf(role.isHoisted());
-        final String ISMANAGED = String.valueOf(role.isManaged());
-        final String ISMENTIONABLE = String.valueOf(role.isMentionable());
-        final String ISPUBLICROLE = String.valueOf(role.isPublicRole());
+        List<Member> members = role.getGuild().getMembersWithRoles(role);
+        int positionFromTop = role.getGuild().getRoles().size() - role.getPosition();
 
-        for (Permission p : role.getPermissions()) {
-            PERMISSIONS.append(p.getName()).append(", ");
-        }
-        if (PERMISSIONS.length() > 0) {
-            PERMISSIONS = new StringBuilder(PERMISSIONS.substring(0, PERMISSIONS.length() - 2));
-        } else
-            PERMISSIONS = new StringBuilder("No permissions.");
-
-
-        for (Member m : role.getGuild().getMembersWithRoles(role)) {
-            MEMBERS_WITH_ROLE.append(m.getAsMention()).append(", ");
-        }
-        if (MEMBERS_WITH_ROLE.length() > 0) {
-            MEMBERS_WITH_ROLE = new StringBuilder(MEMBERS_WITH_ROLE.substring(0, MEMBERS_WITH_ROLE.length() - 2));
-            if (MEMBERS_WITH_ROLE.length() > 1024) {
-                MEMBERS_WITH_ROLE = new StringBuilder(MEMBERS_WITH_ROLE.substring(0, 1000));
-                MEMBERS_WITH_ROLE = new StringBuilder(MEMBERS_WITH_ROLE.substring(0, MEMBERS_WITH_ROLE.lastIndexOf(",")));
-                MEMBERS_WITH_ROLE.append("` + ").append(role.getGuild().getMembers().size() - (MEMBERS_WITH_ROLE.length() - MEMBERS_WITH_ROLE.toString().replaceAll("@", "").length())).append(" more`");
-            }
-        } else
-            MEMBERS_WITH_ROLE = new StringBuilder("No member has this Role.");
-
-        EmbedBuilder roleInfoEmbed = new EmbedBuilder()
-                .setColor(COLOR)
+        return EmbedHelpers.base()
+                .setColor(EmbedHelpers.roleColor(role))
                 .setDescription(":pencil: **Role information for " + role.getAsMention() + ":**")
-                .addField("Name", NAME, false)
-                .addField("Permissions", PERMISSIONS.toString(), false)
-                .addField("Members With Role", MEMBERS_WITH_ROLE.toString(), false)
-                .addField("Creation Date", DATE_CREATED, false)
-                .addField("Position", POSITION, false)
-                .addField("Apart from online", ISHOISTED, true)
-                .addField("Integration", ISMANAGED, true)
-                .addField(" ", " ", true)
-                .addField("Mentionable", ISMENTIONABLE, true)
-                .addField("Public Role", ISPUBLICROLE, true)
-                .addField(" ", " ", true)
-                .setFooter("ID: " + ID);
-
-        return roleInfoEmbed.build();
+                .addField("Name", role.getName(), false)
+                .addField("Permissions", EmbedHelpers.joinPermissions(role.getPermissions()), false)
+                .addField("Members With Role",
+                        members.isEmpty()
+                                ? "No member has this Role."
+                                : members.size() + " members\n" + EmbedHelpers.joinMentions(members, "None"),
+                        false)
+                .addField("Creation Date", role.getTimeCreated().format(EmbedHelpers.DATE_FMT), false)
+                .addField("Position", String.valueOf(positionFromTop), false)
+                .addField("Hoisted", String.valueOf(role.isHoisted()), true)
+                .addField("Integration", String.valueOf(role.isManaged()), true)
+                .addField("Mentionable", String.valueOf(role.isMentionable()), true)
+                .addField("Public Role", String.valueOf(role.isPublicRole()), true)
+                .setFooter("ID: " + role.getId())
+                .build();
     }
 
     @Override
@@ -95,10 +70,8 @@ public class RoleInfo implements ISlashCommand {
 
     @Override
     public SlashCommandData getCommandData() {
-        return Commands.slash(getName(), getHelp().split(" - ")[1])
-                .addOptions(
-                        new OptionData(OptionType.ROLE, "role", "Target role")
-                )
+        return Commands.slash(getName(), "Get information about a role")
+                .addOptions(new OptionData(OptionType.ROLE, "role", "Target role"))
                 .setContexts(InteractionContextType.GUILD);
     }
 }

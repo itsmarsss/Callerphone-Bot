@@ -1,10 +1,10 @@
 package com.itsmarsss.callerphone.utils;
 
-import com.itsmarsss.callerphone.ToolSet;
 import com.itsmarsss.commandType.ISlashCommand;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.InteractionContextType;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
@@ -12,85 +12,87 @@ import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 
-import java.awt.*;
-import java.util.Random;
+import java.awt.Color;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class Colour implements ISlashCommand {
     @Override
     public void runSlash(SlashCommandInteractionEvent e) {
-        switch (e.getSubcommandName()) {
+        String sub = e.getSubcommandName();
+        if (sub == null) {
+            e.replyEmbeds(EmbedHelpers.error("Missing subcommand.")).setEphemeral(true).queue();
+            return;
+        }
+
+        switch (sub) {
             case "random":
                 e.replyEmbeds(colorRandom()).queue();
                 break;
-
             case "hex":
-                e.replyEmbeds(colorHex(e.getOption("hex").getAsString())).queue();
+                OptionMapping hexOpt = e.getOption("hex");
+                e.replyEmbeds(colorHex(hexOpt != null ? hexOpt.getAsString() : "")).queue();
                 break;
-
-
             case "rgb":
                 e.replyEmbeds(colorRGB(
-                        e.getOption("r").getAsInt(),
-                        e.getOption("g").getAsInt(),
-                        e.getOption("b").getAsInt())
-                ).queue();
+                        optInt(e, "r", 0),
+                        optInt(e, "g", 0),
+                        optInt(e, "b", 0)
+                )).queue();
                 break;
+            default:
+                e.replyEmbeds(EmbedHelpers.error("Unknown subcommand.")).setEphemeral(true).queue();
         }
     }
 
+    private static int optInt(SlashCommandInteractionEvent e, String name, int fallback) {
+        OptionMapping opt = e.getOption(name);
+        return opt != null ? opt.getAsInt() : fallback;
+    }
+
     public static MessageEmbed colorRandom() {
-        final Color COLOR = randColor();
-        final int R = COLOR.getRed(), G = COLOR.getGreen(), B = COLOR.getBlue();
-        final String HEX = String.format("%02X%02X%02X", R, G, B);
-
-        EmbedBuilder colorEmbed = new EmbedBuilder()
-                .setTitle("Color")
-                .setDescription("**Hex:** #" + HEX + "\n**RGB:** " + R + ", " + G + ", " + B)
-                .setColor(COLOR);
-
-        return colorEmbed.build();
+        return colorEmbed(randColor());
     }
 
     public static MessageEmbed colorHex(String hex) {
         try {
-            hex = hex.replaceFirst("#", "");
-
-            final String RGB = Color.decode("#" + hex.replaceFirst("#", "")).toString()
-                    .substring(15)
-                    .replaceAll("[rgb=]", "")
-                    .replaceAll(",", ", ");
-
-            EmbedBuilder colorEmbed = new EmbedBuilder()
-                    .setTitle("Color")
-                    .setDescription("**Hex:** #" + hex + "\n**RGB:** " + RGB)
-                    .setColor(Integer.parseInt(hex, 16));
-
-            return colorEmbed.build();
+            String cleaned = hex == null ? "" : hex.replace("#", "").trim();
+            if (cleaned.length() != 6) {
+                throw new IllegalArgumentException("bad hex");
+            }
+            Color color = Color.decode("#" + cleaned);
+            return colorEmbed(color);
         } catch (Exception e) {
+            return EmbedHelpers.error("Please provide a valid hex value (e.g. `#FF00AA`).");
         }
-
-        return new EmbedBuilder()
-                .setTitle("Error")
-                .setDescription("Please provide a valid hex value")
-                .setColor(ToolSet.COLOR)
-                .build();
     }
 
     public static MessageEmbed colorRGB(int r, int g, int b) {
-        final String HEX = String.format("%02X%02X%02X", r, g, b);
+        r = clamp(r);
+        g = clamp(g);
+        b = clamp(b);
+        return colorEmbed(new Color(r, g, b));
+    }
 
-        EmbedBuilder colorEmd = new EmbedBuilder()
+    private static MessageEmbed colorEmbed(Color color) {
+        int r = color.getRed(), g = color.getGreen(), b = color.getBlue();
+        String hex = String.format("%02X%02X%02X", r, g, b);
+        return new EmbedBuilder()
                 .setTitle("Color")
-                .setDescription("**Hex:** #" + HEX + "\n**RGB:** " + r + ", " + g + ", " + b)
-                .setColor(Integer.parseInt(HEX, 16));
+                .setDescription("**Hex:** #" + hex + "\n**RGB:** " + r + ", " + g + ", " + b)
+                .setColor(color)
+                .build();
+    }
 
-        return colorEmd.build();
+    private static int clamp(int value) {
+        return Math.max(0, Math.min(255, value));
     }
 
     public static Color randColor() {
-        final Random RAND = new Random();
-        final int r = RAND.nextInt(256), g = RAND.nextInt(256), b = RAND.nextInt(256);
-        return new Color(r, g, b);
+        return new Color(
+                ThreadLocalRandom.current().nextInt(256),
+                ThreadLocalRandom.current().nextInt(256),
+                ThreadLocalRandom.current().nextInt(256)
+        );
     }
 
     @Override
@@ -107,25 +109,16 @@ public class Colour implements ISlashCommand {
 
     @Override
     public SlashCommandData getCommandData() {
-        return Commands.slash(getName(), "Colour's corner [random | hex | rgb]")
+        return Commands.slash(getName(), "Colour tools [random | hex | rgb]")
                 .addSubcommands(
                         new SubcommandData("random", "Random colour"),
                         new SubcommandData("hex", "Hex colour")
-                                .addOptions(
-                                        new OptionData(OptionType.STRING, "hex", "Hex code")
-                                                .setRequired(true)
-                                ),
+                                .addOptions(new OptionData(OptionType.STRING, "hex", "Hex code").setRequired(true)),
                         new SubcommandData("rgb", "RGB colour")
                                 .addOptions(
-                                        new OptionData(OptionType.INTEGER, "r", "Red value")
-                                                .setRequiredRange(0, 255)
-                                                .setRequired(true),
-                                        new OptionData(OptionType.INTEGER, "g", "Red value")
-                                                .setRequiredRange(0, 255)
-                                                .setRequired(true),
-                                        new OptionData(OptionType.INTEGER, "b", "Red value")
-                                                .setRequiredRange(0, 255)
-                                                .setRequired(true)
+                                        new OptionData(OptionType.INTEGER, "r", "Red value").setRequiredRange(0, 255).setRequired(true),
+                                        new OptionData(OptionType.INTEGER, "g", "Green value").setRequiredRange(0, 255).setRequired(true),
+                                        new OptionData(OptionType.INTEGER, "b", "Blue value").setRequiredRange(0, 255).setRequired(true)
                                 )
                 )
                 .setContexts(InteractionContextType.GUILD);
