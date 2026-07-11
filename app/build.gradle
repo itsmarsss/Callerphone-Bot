@@ -9,8 +9,9 @@ application {
 }
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_11
-    targetCompatibility = JavaVersion.VERSION_11
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
 }
 
 repositories {
@@ -33,10 +34,19 @@ dependencies {
     implementation 'org.jsoup:jsoup:1.15.3'
     implementation 'org.mongodb:mongodb-driver-sync:4.7.2'
     implementation 'org.slf4j:slf4j-api:2.0.16'
+
+    testImplementation platform('org.junit:junit-bom:5.11.4')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
 tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8'
+    options.release = 21
+}
+
+tasks.named('test', Test) {
+    useJUnitPlatform()
 }
 
 shadowJar {
