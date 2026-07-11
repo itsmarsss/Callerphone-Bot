@@ -20,14 +20,15 @@ class ProfileChecklistTest {
         user.setAgeCohort(AgeCohort.AGE_18_PLUS);
         MatchProfile profile = new MatchProfile("1");
         profile.setAgeCohort(AgeCohort.AGE_18_PLUS);
-        assertTrue(ProfileChecklist.nextStep(user, profile).contains("basics"));
+        assertTrue(ProfileChecklist.nextStep(user, profile).toLowerCase().contains("setup")
+                || ProfileChecklist.nextStep(user, profile).toLowerCase().contains("finish"));
         profile.setDisplayName("Alex");
         profile.setBio("hi there friends");
         profile.setInterests(List.of("music"));
         profile.setState(ProfileState.DRAFT);
         assertTrue(ProfileChecklist.readyToSubmit(profile));
         String next = ProfileChecklist.nextStep(user, profile).toLowerCase();
-        assertTrue(next.contains("submit") || next.contains("live") || next.contains("go live"));
+        assertTrue(next.contains("setup") || next.contains("finish"));
         assertFalse(ProfileChecklist.format(user, profile).isBlank());
     }
 }

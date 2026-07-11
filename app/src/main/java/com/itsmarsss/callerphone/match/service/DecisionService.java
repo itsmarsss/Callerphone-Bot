@@ -62,20 +62,20 @@ public final class DecisionService {
     public DecisionResult decide(String actorId, String sessionId, DecisionType type) {
         Optional<BrowseSession> sessionOpt = discovery.session(sessionId);
         if (sessionOpt.isEmpty() || sessionOpt.get().isExpired(Instant.now())) {
-            return DecisionResult.fail("This card expired. Use `/match browse` for a new profile.");
+            return DecisionResult.fail("That card expired. Browse again.");
         }
         BrowseSession session = sessionOpt.get();
         if (!session.viewerId().equals(actorId)) {
-            return DecisionResult.fail("This card is not yours.");
+            return DecisionResult.fail("That card isn't yours.");
         }
         if (safety.isMatchSuspended(actorId) || safety.isBlockedEitherWay(actorId, session.subjectId())) {
             discovery.clearSession(sessionId);
-            return DecisionResult.fail("You cannot act on this profile.");
+            return DecisionResult.fail("You can't act on this profile.");
         }
 
         Optional<MatchProfile> viewerOpt = profiles.find(actorId);
         if (viewerOpt.isEmpty()) {
-            return DecisionResult.fail("Create a profile first.");
+            return DecisionResult.fail("Set up your profile first.");
         }
         MatchProfile viewer = viewerOpt.get();
         profiles.resetDailyCountersIfNeeded(viewer);
@@ -119,8 +119,7 @@ public final class DecisionService {
                     .orElse("your match");
             String opener = Icebreakers.forPair(viewer, profiles.find(session.subjectId()).orElse(null));
             return DecisionResult.mutual(
-                    "It's a match with **" + peerName + "**! Suggested opener: _" + opener
-                            + "_ — open `/match chats` or the Open chat button in your DMs.",
+                    "It's a match with **" + peerName + "**!\n_" + opener + "_",
                     created.match(),
                     created.conversationId()
             );
@@ -130,10 +129,10 @@ public final class DecisionService {
             long used = viewer.getInterestSignalsToday();
             int limit = premium.dailyInterests(actorId);
             analytics.track(actorId, "match_interested", session.subjectId());
-            return DecisionResult.interested("Interest sent (" + used + "/" + limit + " today). Keep browsing!");
+            return DecisionResult.interested("Sent (" + used + "/" + limit + " today).");
         }
         analytics.track(actorId, "match_skip", session.subjectId());
-        return DecisionResult.skipped("Skipped. Use `/match undo` once to undo your last skip.");
+        return DecisionResult.skipped("Skipped.");
     }
 
     public DecisionResult undoLastSkip(String actorId) {
@@ -143,7 +142,7 @@ public final class DecisionService {
         }
         if (user.getLastSkipAt() != null
                 && user.getLastSkipAt().isBefore(Instant.now().minus(Duration.ofHours(1)))) {
-            return DecisionResult.fail("Last skip is too old to undo (1 hour window).");
+            return DecisionResult.fail("Too late to undo that skip.");
         }
         String today = LocalDate.now(ZoneOffset.UTC).toString();
         if (!today.equals(user.getUsageDay())) {
@@ -157,7 +156,7 @@ public final class DecisionService {
         String subjectId = user.getLastSkipSubjectId();
         Optional<MatchDecision> existing = decisions.find(actorId, subjectId);
         if (existing.isEmpty() || existing.get().decision() != DecisionType.SKIP) {
-            return DecisionResult.fail("Last skip is no longer available.");
+            return DecisionResult.fail("Nothing left to undo.");
         }
         decisions.delete(actorId, subjectId);
         user.setUndosToday(user.getUndosToday() + 1);
@@ -167,11 +166,7 @@ public final class DecisionService {
         analytics.track(actorId, "match_undo_skip", subjectId);
         BrowseSession session = discovery.reopenSession(actorId, subjectId);
         String name = profiles.find(subjectId).map(MatchProfile::getDisplayName).orElse("that profile");
-        return DecisionResult.undone(
-                "Undo complete (" + user.getUndosToday() + "/" + limit + " today). "
-                        + "Showing **" + name + "** again — decide now.",
-                session
-        );
+        return DecisionResult.undone("Back to **" + name + "**.", session);
     }
 
     /** Public entry for adjacent features (e.g. call profile share). */

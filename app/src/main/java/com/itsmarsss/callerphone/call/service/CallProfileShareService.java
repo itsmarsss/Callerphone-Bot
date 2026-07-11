@@ -42,28 +42,26 @@ public final class CallProfileShareService {
         }
         CallSession session = opt.get();
         if (!ApplicationContext.isReady()) {
-            return ShareResult.fail("Match is not ready.");
+            return ShareResult.fail("Match isn't ready yet.");
         }
         Optional<MatchProfile> profile = ApplicationContext.get().profiles().find(sharerUserId);
         if (profile.isEmpty() || profile.get().getState() != ProfileState.ACTIVE) {
-            return ShareResult.fail("You need a **live** Match profile first (`/match submit`).");
+            return ShareResult.fail("Go live on Match first with `/match join`.");
         }
         TextChannel other = ToolSet.getTextChannel(session.otherChannelId(fromChannelId));
         if (other == null) {
-            return ShareResult.fail("Other channel unreachable.");
+            return ShareResult.fail("Couldn't reach the other side.");
         }
         session.markProfileShared(sharerUserId);
         MatchProfile p = profile.get();
-        other.sendMessage(ToolSet.CP_EMJ + " Someone in the call shared a **Match profile** "
-                        + "(age group " + (p.getAgeCohort() == null ? "?" : p.getAgeCohort().label()) + "). "
-                        + "Interested only works if you're in the **same** age group and have a live profile.")
+        other.sendMessage(ToolSet.CP_EMJ + " Someone shared a profile.")
                 .addEmbeds(MatchEmbeds.profileCard(p, false))
                 .setComponents(ActionRow.of(
                         Button.success(CallComponentIds.like(sessionId, sharerUserId), "Interested"),
                         Button.secondary(CallComponentIds.pass(sessionId, sharerUserId), "Not now")
                 ))
                 .queue();
-        return ShareResult.ok("Profile shared to the other side.");
+        return ShareResult.ok("Profile shared.");
     }
 
     public ShareResult react(
@@ -78,7 +76,7 @@ public final class CallProfileShareService {
             return ShareResult.fail("Call not found.");
         }
         if (!ApplicationContext.isReady()) {
-            return ShareResult.fail("Match is not ready.");
+            return ShareResult.fail("Match isn't ready yet.");
         }
         if (actorUserId.equals(subjectUserId)) {
             return ShareResult.fail("That's your own profile.");
@@ -86,46 +84,44 @@ public final class CallProfileShareService {
         Optional<MatchProfile> actorProfile = ApplicationContext.get().profiles().find(actorUserId);
         Optional<MatchProfile> subjectProfile = ApplicationContext.get().profiles().find(subjectUserId);
         if (actorProfile.isEmpty() || actorProfile.get().getState() != ProfileState.ACTIVE) {
-            return ShareResult.fail("You need a live Match profile to express interest (`/match join` → submit).");
+            return ShareResult.fail("Go live on Match first with `/match join`.");
         }
         if (subjectProfile.isEmpty()) {
-            return ShareResult.fail("Their Match profile is gone.");
+            return ShareResult.fail("That profile is gone.");
         }
         AgeCohort a = actorProfile.get().getAgeCohort();
         AgeCohort b = subjectProfile.get().getAgeCohort();
         if (a == null || b == null || a != b) {
-            return ShareResult.fail("Age groups don't match — likes only work within the same group.");
+            return ShareResult.fail("You're in different age groups.");
         }
         if (ApplicationContext.get().safety().isBlockedEitherWay(actorUserId, subjectUserId)) {
             return ShareResult.fail("You can't interact with this profile.");
         }
         if (!interested) {
-            return ShareResult.ok("Passed. Keep chatting or share your own profile.");
+            return ShareResult.ok("Passed.");
         }
         if (decisions != null) {
             decisions.upsert(new MatchDecision(actorUserId, subjectUserId, DecisionType.INTERESTED, Instant.now(), null));
-            // mutual?
             Optional<MatchDecision> back = decisions.findReciprocalInterest(subjectUserId, actorUserId);
             if (back.isPresent()) {
                 Optional<String> conversationId = ApplicationContext.get().decisions()
                         .createMutualIfBothLiked(actorUserId, subjectUserId);
                 String opener = Icebreakers.forPair(actorProfile.get(), subjectProfile.get());
                 TextChannel other = ToolSet.getTextChannel(opt.get().otherChannelId(actorChannelId));
-                String note = ToolSet.CP_EMJ + " **Mutual Match!** You both liked each other. "
-                        + "Open `/match chats`. Suggested opener: _" + opener + "_";
+                String note = ToolSet.CP_EMJ + " **It's a match!**\n_" + opener + "_";
                 if (other != null) {
                     other.sendMessage(note).queue();
                 }
                 return ShareResult.ok(conversationId.isPresent()
-                        ? "It's a mutual match! Check `/match chats`. Opener: _" + opener + "_"
-                        : "Mutual interest recorded (chat limit may apply). Opener: _" + opener + "_");
+                        ? "It's a match!\n_" + opener + "_"
+                        : "Mutual like saved. Chat limit may be full.");
             }
         }
         TextChannel other = ToolSet.getTextChannel(opt.get().otherChannelId(actorChannelId));
         if (other != null) {
-            other.sendMessage(ToolSet.CP_EMJ + " Someone in the call liked a shared Match profile.").queue();
+            other.sendMessage(ToolSet.CP_EMJ + " Someone liked the shared profile.").queue();
         }
-        return ShareResult.ok("Interest saved. If they like you back, you'll get a Match connection.");
+        return ShareResult.ok("Interest sent.");
     }
 
     public record ShareResult(boolean success, String message) {

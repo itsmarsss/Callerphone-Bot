@@ -39,72 +39,56 @@ public final class NotificationService {
         MatchProfile profileA = profiles.findByUserId(userA).orElse(null);
         MatchProfile profileB = profiles.findByUserId(userB).orElse(null);
         dmIfEnabled(userA, "It's a match!",
-                "You and **" + nameB + "** both expressed interest.\n\n"
-                        + "Suggested opener: _" + Icebreakers.forPair(profileA, profileB) + "_\n\n"
-                        + "Open `/match chats` and select them to start mediated chat.",
+                "You and **" + nameB + "** both liked each other.\n_"
+                        + Icebreakers.forPair(profileA, profileB) + "_",
                 conversationId);
         dmIfEnabled(userB, "It's a match!",
-                "You and **" + nameA + "** both expressed interest.\n\n"
-                        + "Suggested opener: _" + Icebreakers.forPair(profileB, profileA) + "_\n\n"
-                        + "Open `/match chats` and select them to start mediated chat.",
+                "You and **" + nameA + "** both liked each other.\n_"
+                        + Icebreakers.forPair(profileB, profileA) + "_",
                 conversationId);
     }
 
     public void notifyProfileLive(String userId) {
-        dmIfEnabled(userId, "You're live on Match",
-                "Your profile is in discovery for your age group. Use `/match browse` to meet people.",
-                null);
+        dmIfEnabled(userId, "You're live", "People in your age group can find you now.", null);
     }
 
     public void notifyProfileRestricted(String userId, String reason) {
-        dmIfEnabled(userId, "Profile paused",
-                "A moderator paused your Match profile after a safety review.\nReason: "
-                        + (reason == null || reason.isBlank() ? "See support if you have questions." : reason)
-                        + "\n\nYou can still use other bot features. Contact support if this looks wrong.",
-                null);
+        String detail = reason == null || reason.isBlank() ? "A moderator paused your profile." : reason;
+        dmIfEnabled(userId, "Profile paused", detail, null);
     }
 
     public void notifyConnectRequest(String recipientId, String requesterId, String conversationId) {
         String name = displayName(requesterId);
         dmWithConnectButtons(recipientId, "Connect request",
-                "**" + name + "** wants to connect (share Discord profiles). "
-                        + "Only accept if you are comfortable. Expires in 48 hours.",
+                "**" + name + "** wants to connect. Expires in 48 hours.",
                 conversationId);
     }
 
     public void notifyConnectAccepted(String requesterId, String acceptorId) {
-        dmIfEnabled(requesterId, "Connect accepted",
-                "**" + displayName(acceptorId) + "** accepted your connect request. "
-                        + "You may share Discord profiles. Their mention: <@" + acceptorId + ">",
+        dmIfEnabled(requesterId, "Connected",
+                "**" + displayName(acceptorId) + "** accepted. <@" + acceptorId + ">",
                 null);
-        dmIfEnabled(acceptorId, "You're connected",
-                "You accepted a connect with **" + displayName(requesterId) + "**. "
-                        + "Their mention: <@" + requesterId + ">",
+        dmIfEnabled(acceptorId, "Connected",
+                "You're connected with **" + displayName(requesterId) + "**. <@" + requesterId + ">",
                 null);
     }
 
     public void notifyConnectDeclined(String requesterId) {
-        dmIfEnabled(requesterId, "Connect declined",
-                "Your connect request was declined. Mediated chat can continue if both of you want.",
-                null);
+        dmIfEnabled(requesterId, "Request declined", "You can keep chatting here if you want.", null);
     }
 
     public void notifyUnmatched(String recipientId, String actorId) {
-        dmIfEnabled(recipientId, "Connection ended",
-                "A Match connection was closed. Mediated chat with that person is no longer available.",
-                null);
+        dmIfEnabled(recipientId, "Chat ended", "That connection was closed.", null);
     }
 
     public void notifyInactivityNudge(String userId, String peerName, String conversationId, String opener) {
-        dmIfEnabled(userId, "Still thinking of " + peerName + "?",
-                "You matched with **" + peerName + "** but the chat went quiet.\n"
-                        + "Suggested opener: _" + opener + "_\n\n"
-                        + "Open `/match chats` to pick up where you left off — one nudge only.",
+        dmIfEnabled(userId, "Still there?",
+                "**" + peerName + "** is waiting.\n_" + opener + "_",
                 conversationId);
     }
 
     public void notifyWeeklyDigest(String userId, String body) {
-        dmIfEnabled(userId, "Your weekly Match digest", body, null);
+        dmIfEnabled(userId, "Your week on Match", body, null);
     }
 
     public void postReportToStaff(Report report) {

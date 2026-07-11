@@ -64,8 +64,7 @@ public final class DeletionService {
         // Keep matches/conversations — retention depends on unfinished chats still being there
         audits.append(AuditEvent.of(userId, "match_leave_pause", userId, "match", "user left discovery"));
         return EnrollmentService.ServiceResult.ok(
-                "You left discovery. Your profile is paused but **not deleted**, and existing chats stay open. "
-                        + "Come back anytime with `/match join` then `/match resume` — no rebuild needed.");
+                "You're out of discovery. Profile and chats are still here when you return.");
     }
 
     /** Hard wipe for explicit GDPR-style delete (staff or future `/match delete`). */

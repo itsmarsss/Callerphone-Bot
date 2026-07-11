@@ -94,12 +94,10 @@ public final class CallSessionService {
 
     public MessageCreateData connectedMessage(CallSession session) {
         return new MessageCreateBuilder()
-                .setContent(ToolSet.CP_EMJ + " **Connected!** You're chatting with another server.\n"
-                        + "Messages here relay to them. Use `/endcall` to hang up.\n\n"
-                        + "Optional: share your **Match profile** so they can express interest "
-                        + "(same Social product — age groups still apply for likes).")
+                .setContent(ToolSet.CP_EMJ + " **Connected.** Messages here go to the other server.\n"
+                        + "`/endcall` to hang up.")
                 .setComponents(ActionRow.of(
-                        Button.primary(CallComponentIds.share(session.getId()), "Share Match profile"),
+                        Button.primary(CallComponentIds.share(session.getId()), "Share profile"),
                         Button.danger(CallComponentIds.report(session.getId()), "Report")
                 ))
                 .build();

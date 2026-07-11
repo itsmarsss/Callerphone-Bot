@@ -56,11 +56,11 @@ public final class MatchConversationService {
     public SelectResult select(String userId, String conversationId) {
         Optional<MatchConversation> opt = conversations.findById(conversationId);
         if (opt.isEmpty() || opt.get().getParticipants() == null || !opt.get().getParticipants().contains(userId)) {
-            return SelectResult.fail("Conversation not found.");
+            return SelectResult.fail("Chat not found.");
         }
         MatchConversation conversation = opt.get();
         if (conversation.getStage() == ConversationStage.ARCHIVED) {
-            return SelectResult.fail("That conversation is archived.");
+            return SelectResult.fail("That chat is closed.");
         }
         // expire stale connect requests on access
         if (conversation.getStage() == ConversationStage.CONNECT_PENDING
@@ -74,7 +74,7 @@ public final class MatchConversationService {
         }
         String other = conversation.otherParticipant(userId);
         if (other != null && safety.isBlockedEitherWay(userId, other)) {
-            return SelectResult.fail("You cannot chat with this connection.");
+            return SelectResult.fail("You can't chat with them.");
         }
         MatchUser user = users.findById(userId).orElseGet(() -> new MatchUser(userId));
         user.setSelectedConversationId(conversationId);
@@ -89,13 +89,9 @@ public final class MatchConversationService {
                 ? peer.getDisplayName()
                 : "your match";
         String icebreaker = Icebreakers.forPair(self, peer);
-        String streak = conversation.getChatStreakDays() > 1
-                ? "\nChat streak: **" + conversation.getChatStreakDays() + "** days."
-                : "";
-        String message = "Now chatting with **" + name + "** (" + conversation.getStage() + ").\n"
-                + "Send a **text DM** to the bot to relay. Idle timeout "
-                + MatchLimits.CHAT_IDLE_MINUTES + " minutes." + streak + "\n\n"
-                + "Suggested opener: _" + icebreaker + "_";
+        String message = "Chatting with **" + name + "**.\n"
+                + "Send a text DM here to talk.\n\n"
+                + "_" + icebreaker + "_";
         return SelectResult.ok(message, conversation, other, icebreaker);
     }
 
@@ -106,12 +102,12 @@ public final class MatchConversationService {
     public EnrollmentService.ServiceResult stopChat(String userId) {
         MatchUser user = users.findById(userId).orElse(null);
         if (user == null) {
-            return EnrollmentService.ServiceResult.fail("Not enrolled.");
+            return EnrollmentService.ServiceResult.fail("Join Match first.");
         }
         user.setSelectedConversationId(null);
         user.setConversationSelectedAt(null);
         users.save(user);
-        return EnrollmentService.ServiceResult.ok("Stopped Match chat context.");
+        return EnrollmentService.ServiceResult.ok("Chat closed.");
     }
 
     public RelayResult relayDm(String senderId, String content, String sourceMessageId) {
@@ -187,7 +183,7 @@ public final class MatchConversationService {
     public EnrollmentService.ServiceResult unmatch(String userId, String conversationId) {
         Optional<MatchConversation> opt = conversations.findById(conversationId);
         if (opt.isEmpty() || !opt.get().getParticipants().contains(userId)) {
-            return EnrollmentService.ServiceResult.fail("Conversation not found.");
+            return EnrollmentService.ServiceResult.fail("Chat not found.");
         }
         MatchConversation conversation = opt.get();
         matches.findById(conversation.getMatchId()).ifPresent(match -> {
@@ -207,7 +203,7 @@ public final class MatchConversationService {
                 notifications.notifyUnmatched(other, userId);
             }
         }
-        return EnrollmentService.ServiceResult.ok("Unmatched. Relay closed.");
+        return EnrollmentService.ServiceResult.ok("Unmatched.");
     }
 
     private void clearSelectionIf(String userId, String conversationId) {

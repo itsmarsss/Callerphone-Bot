@@ -37,13 +37,12 @@ public final class EnrollmentService {
 
     public ServiceResult beginJoin(String userId) {
         if (safety.isMatchSuspended(userId)) {
-            return ServiceResult.fail("Your Match access is currently restricted.");
+            return ServiceResult.fail("Match is paused on your account.");
         }
         MatchUser user = getOrCreate(userId);
         if (user.isEnrolled() && user.getAgeCohort() != null) {
-            return ServiceResult.ok("You are already enrolled. Use `/match profile` or `/match browse`.");
+            return ServiceResult.ok("You're already in.");
         }
-        // Returning after leave: re-enroll without wiping their card
         if (user.getAgeCohort() != null && !user.isEnrolled()) {
             user.setEnrolled(true);
             user.setEnrolledAt(Instant.now());
@@ -51,9 +50,7 @@ public final class EnrollmentService {
             user.touch();
             users.save(user);
             consents.append(ConsentEvent.of(userId, ConsentType.ENROLLMENT, "v1", true, "rejoin"));
-            return ServiceResult.ok(
-                    "Welcome back! Your profile is still here. Use `/match resume` to reappear in discovery, "
-                            + "or `/match profile` to edit.");
+            return ServiceResult.ok("Welcome back.");
         }
         return ServiceResult.ok("START_ONBOARDING");
     }
@@ -67,16 +64,16 @@ public final class EnrollmentService {
         consents.append(ConsentEvent.of(userId, ConsentType.TERMS, MatchLimits.TERMS_VERSION, true, null));
         consents.append(ConsentEvent.of(userId, ConsentType.PRIVACY, MatchLimits.PRIVACY_VERSION, true, null));
         consents.append(ConsentEvent.of(userId, ConsentType.YOUTH_SAFETY, "v1", true, null));
-        return ServiceResult.ok("Policies accepted. Next: choose your age group.");
+        return ServiceResult.ok("Got it.");
     }
 
     public ServiceResult selectAgeCohort(String userId, AgeCohort cohort) {
         if (cohort == null) {
-            return ServiceResult.fail("Choose a valid age group.");
+            return ServiceResult.fail("Pick an age group.");
         }
         MatchUser user = getOrCreate(userId);
         if (user.getTermsVersionAccepted() == null || user.getTermsVersionAccepted().isBlank()) {
-            return ServiceResult.fail("Accept terms and privacy first.");
+            return ServiceResult.fail("Accept the terms first.");
         }
         user.setAgeCohort(cohort);
         user.setAgeSelectedAt(Instant.now());
@@ -95,8 +92,7 @@ public final class EnrollmentService {
         }
         profile.touch();
         profiles.save(profile);
-        return ServiceResult.ok("Age group set to " + cohort.label()
-                + ". Complete your profile next (basics → bio → interests → submit).");
+        return ServiceResult.ok("Age group set to " + cohort.label() + ".");
     }
 
     public ServiceResult leave(String userId) {
@@ -113,7 +109,7 @@ public final class EnrollmentService {
             profile.touch();
             profiles.save(profile);
         });
-        return ServiceResult.ok("You left Match. Your profile is paused. Use `/match join` to return.");
+        return ServiceResult.ok("You've left discovery. Come back anytime.");
     }
 
     public ServiceResult setNotifications(String userId, boolean enabled) {
@@ -122,7 +118,7 @@ public final class EnrollmentService {
         user.touch();
         users.save(user);
         consents.append(ConsentEvent.of(userId, ConsentType.NOTIFICATIONS, "v1", enabled, null));
-        return ServiceResult.ok(enabled ? "Match notifications enabled." : "Match notifications disabled.");
+        return ServiceResult.ok(enabled ? "Notifications on." : "Notifications off.");
     }
 
     public ServiceResult setDigestOptIn(String userId, boolean enabled) {
@@ -133,9 +129,7 @@ public final class EnrollmentService {
         }
         user.touch();
         users.save(user);
-        return ServiceResult.ok(enabled
-                ? "Weekly Match digest enabled (opt-in only)."
-                : "Weekly digest disabled.");
+        return ServiceResult.ok(enabled ? "Weekly digest on." : "Weekly digest off.");
     }
 
     public Optional<AgeCohort> requireCohort(String userId) {

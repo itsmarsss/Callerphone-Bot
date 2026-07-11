@@ -38,18 +38,18 @@ public final class ConnectService {
     public EnrollmentService.ServiceResult request(String userId, String conversationId) {
         Optional<MatchConversation> opt = conversations.findById(conversationId);
         if (opt.isEmpty() || !opt.get().getParticipants().contains(userId)) {
-            return EnrollmentService.ServiceResult.fail("Conversation not found.");
+            return EnrollmentService.ServiceResult.fail("Chat not found.");
         }
         MatchConversation conversation = opt.get();
         if (conversation.getStage() == ConversationStage.CONNECT_PENDING) {
-            return EnrollmentService.ServiceResult.fail("A connect request is already pending.");
+            return EnrollmentService.ServiceResult.fail("A request is already pending.");
         }
         if (conversation.getStage() != ConversationStage.MEDIATED) {
-            return EnrollmentService.ServiceResult.fail("Connect is not available for this conversation.");
+            return EnrollmentService.ServiceResult.fail("Can't connect on this chat.");
         }
         String other = conversation.otherParticipant(userId);
         if (other == null || safety.isBlockedEitherWay(userId, other)) {
-            return EnrollmentService.ServiceResult.fail("Cannot send connect request.");
+            return EnrollmentService.ServiceResult.fail("Can't send that request.");
         }
         Optional<MatchProfile> self = profiles.find(userId);
         Optional<MatchProfile> peer = profiles.find(other);
@@ -63,20 +63,20 @@ public final class ConnectService {
         conversation.setConnectExpiresAt(Instant.now().plus(Duration.ofHours(MatchLimits.CONNECT_EXPIRE_HOURS)));
         conversations.save(conversation);
         notifications.notifyConnectRequest(other, userId, conversationId);
-        return EnrollmentService.ServiceResult.ok("Connect request sent. They have 48 hours to accept.");
+        return EnrollmentService.ServiceResult.ok("Request sent. They have 48 hours.");
     }
 
     public ConnectResult accept(String userId, String conversationId) {
         Optional<MatchConversation> opt = conversations.findById(conversationId);
         if (opt.isEmpty() || !opt.get().getParticipants().contains(userId)) {
-            return ConnectResult.fail("Conversation not found.");
+            return ConnectResult.fail("Chat not found.");
         }
         MatchConversation conversation = opt.get();
         if (conversation.getStage() != ConversationStage.CONNECT_PENDING) {
-            return ConnectResult.fail("No pending connect request.");
+            return ConnectResult.fail("No pending request.");
         }
         if (userId.equals(conversation.getConnectRequestedBy())) {
-            return ConnectResult.fail("You cannot accept your own request.");
+            return ConnectResult.fail("You can't accept your own request.");
         }
         if (conversation.getConnectExpiresAt() != null && conversation.getConnectExpiresAt().isBefore(Instant.now())) {
             conversation.setStage(ConversationStage.MEDIATED);
@@ -84,7 +84,7 @@ public final class ConnectService {
             conversation.setConnectRequestedAt(null);
             conversation.setConnectExpiresAt(null);
             conversations.save(conversation);
-            return ConnectResult.fail("Connect request expired.");
+            return ConnectResult.fail("That request expired.");
         }
         String other = conversation.otherParticipant(userId);
         conversation.setStage(ConversationStage.CONNECTED);
@@ -101,14 +101,14 @@ public final class ConnectService {
     public EnrollmentService.ServiceResult decline(String userId, String conversationId) {
         Optional<MatchConversation> opt = conversations.findById(conversationId);
         if (opt.isEmpty() || !opt.get().getParticipants().contains(userId)) {
-            return EnrollmentService.ServiceResult.fail("Conversation not found.");
+            return EnrollmentService.ServiceResult.fail("Chat not found.");
         }
         MatchConversation conversation = opt.get();
         if (conversation.getStage() != ConversationStage.CONNECT_PENDING) {
             return EnrollmentService.ServiceResult.fail("No pending request.");
         }
         if (userId.equals(conversation.getConnectRequestedBy())) {
-            return EnrollmentService.ServiceResult.fail("Cancel is not available; wait for them to respond or unmatch.");
+            return EnrollmentService.ServiceResult.fail("Wait for them to respond.");
         }
         String requester = conversation.getConnectRequestedBy();
         conversation.setStage(ConversationStage.MEDIATED);
@@ -119,7 +119,7 @@ public final class ConnectService {
         if (requester != null) {
             notifications.notifyConnectDeclined(requester);
         }
-        return EnrollmentService.ServiceResult.ok("Connect request declined.");
+        return EnrollmentService.ServiceResult.ok("Declined.");
     }
 
     public record ConnectResult(boolean success, String message, String otherUserId) {
@@ -128,7 +128,7 @@ public final class ConnectService {
         }
 
         public static ConnectResult connected(String otherUserId) {
-            return new ConnectResult(true, "Connected. You may share Discord profiles with mutual consent.", otherUserId);
+            return new ConnectResult(true, "You're connected.", otherUserId);
         }
     }
 }

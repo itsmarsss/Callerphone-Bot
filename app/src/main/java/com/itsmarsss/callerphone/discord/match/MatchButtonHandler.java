@@ -40,12 +40,11 @@ public final class MatchButtonHandler implements IButtonInteraction {
             case MatchComponentIds.ACTION_JOIN_ACCEPT -> {
                 ctx.enrollment().acceptPolicies(userId);
                 e.replyEmbeds(MatchEmbeds.soft(
-                                "Who can you meet?",
-                                "One tap. This only sets pairing — **groups never mix**.\n"
-                                        + "Next: one short form, then you're live."))
+                                "Age group",
+                                "You'll only meet people in the same group."))
                         .addComponents(ActionRow.of(
-                                Button.primary(MatchComponentIds.of(MatchComponentIds.ACTION_AGE_13_15, userId), "13–15"),
-                                Button.primary(MatchComponentIds.of(MatchComponentIds.ACTION_AGE_16_17, userId), "16–17"),
+                                Button.primary(MatchComponentIds.of(MatchComponentIds.ACTION_AGE_13_15, userId), "13-15"),
+                                Button.primary(MatchComponentIds.of(MatchComponentIds.ACTION_AGE_16_17, userId), "16-17"),
                                 Button.success(MatchComponentIds.of(MatchComponentIds.ACTION_AGE_18_PLUS, userId), "18+")
                         ))
                         .setEphemeral(true)
@@ -94,14 +93,14 @@ public final class MatchButtonHandler implements IButtonInteraction {
                 ctx.profiles().setAvatar(userId, e.getUser().getEffectiveAvatarUrl());
                 EnrollmentService.ServiceResult result = ctx.profiles().publish(userId);
                 if (result.success()) {
-                    e.replyEmbeds(MatchEmbeds.success("You're live ✨", result.message()))
+                    e.replyEmbeds(MatchEmbeds.success("You're live", result.message()))
                             .addComponents(ActionRow.of(
-                                    Button.success(MatchComponentIds.of(MatchComponentIds.ACTION_START_BROWSE, "_"), "✦ Start browsing")
+                                    Button.success(MatchComponentIds.of(MatchComponentIds.ACTION_START_BROWSE, "_"), "Browse")
                             ))
                             .setEphemeral(true)
                             .queue();
                 } else {
-                    e.replyEmbeds(MatchEmbeds.warm("Not quite", result.message()))
+                    e.replyEmbeds(MatchEmbeds.warm("Almost", result.message()))
                             .addComponents(ActionRow.of(
                                     Button.primary(MatchComponentIds.of(MatchComponentIds.ACTION_SETUP, "_"), "Finish setup")
                             ))

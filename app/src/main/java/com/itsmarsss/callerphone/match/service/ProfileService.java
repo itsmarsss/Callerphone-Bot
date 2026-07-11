@@ -68,7 +68,7 @@ public final class ProfileService {
             List<Gender> openToMeeting
     ) {
         if (safety.isMatchSuspended(userId)) {
-            return EnrollmentService.ServiceResult.fail("Your Match access is restricted.");
+            return EnrollmentService.ServiceResult.fail("Match is paused on your account.");
         }
         List<String> errors = ProfileValidator.validateDisplayName(displayName);
         if (!errors.isEmpty()) {
@@ -83,7 +83,7 @@ public final class ProfileService {
         profile.setOnboardingStep(Math.max(profile.getOnboardingStep(), 3));
         profile.touch();
         profiles.save(profile);
-        return EnrollmentService.ServiceResult.ok("Profile basics saved.");
+        return EnrollmentService.ServiceResult.ok("Saved.");
     }
 
     public EnrollmentService.ServiceResult updateBioAndPrompt(String userId, String bio, String promptAnswer) {
@@ -99,7 +99,7 @@ public final class ProfileService {
         profile.setOnboardingStep(Math.max(profile.getOnboardingStep(), 4));
         profile.touch();
         profiles.save(profile);
-        return EnrollmentService.ServiceResult.ok("Bio and prompt saved.");
+        return EnrollmentService.ServiceResult.ok("Saved.");
     }
 
     public EnrollmentService.ServiceResult updateInterests(String userId, List<String> interests) {
@@ -119,7 +119,7 @@ public final class ProfileService {
         profile.setOnboardingStep(Math.max(profile.getOnboardingStep(), 5));
         profile.touch();
         profiles.save(profile);
-        return EnrollmentService.ServiceResult.ok("Interests saved.");
+        return EnrollmentService.ServiceResult.ok("Saved.");
     }
 
     /**
@@ -136,7 +136,7 @@ public final class ProfileService {
             String avatarUrl
     ) {
         if (safety.isMatchSuspended(userId)) {
-            return EnrollmentService.ServiceResult.fail("Your Match access is restricted.");
+            return EnrollmentService.ServiceResult.fail("Match is paused on your account.");
         }
         List<String> errors = new java.util.ArrayList<>();
         errors.addAll(ProfileValidator.validateDisplayName(displayName));
@@ -156,7 +156,7 @@ public final class ProfileService {
         MatchProfile profile = getOrCreateDraft(userId);
         ensureCohort(profile, userId);
         if (profile.getAgeCohort() == null) {
-            return EnrollmentService.ServiceResult.fail("Pick an age group first — use `/match join`.");
+            return EnrollmentService.ServiceResult.fail("Pick an age group first.");
         }
         profile.setDisplayName(displayName);
         profile.setPronouns(pronouns == null ? "" : pronouns.trim());
@@ -178,8 +178,7 @@ public final class ProfileService {
         if (notifications != null) {
             notifications.notifyProfileLive(userId);
         }
-        return EnrollmentService.ServiceResult.ok(
-                "You're live in **" + profile.getAgeCohort().label() + "** — tap browse when you're ready.");
+        return EnrollmentService.ServiceResult.ok("You're live in **" + profile.getAgeCohort().label() + "**.");
     }
 
     public EnrollmentService.ServiceResult setAvatar(String userId, String avatarUrl) {
@@ -199,13 +198,13 @@ public final class ProfileService {
         profile.setOnboardingStep(Math.max(profile.getOnboardingStep(), 6));
         profile.touch();
         profiles.save(profile);
-        return EnrollmentService.ServiceResult.ok("Avatar linked from Discord.");
+        return EnrollmentService.ServiceResult.ok("Photo updated.");
     }
 
     /** Optional extra photo via Discord CDN URL (same for all age groups). */
     public EnrollmentService.ServiceResult addPhotoUrl(String userId, String url) {
         if (url == null || url.isBlank() || !url.startsWith("https://")) {
-            return EnrollmentService.ServiceResult.fail("Provide an https image URL (e.g. Discord attachment).");
+            return EnrollmentService.ServiceResult.fail("Need a valid image link.");
         }
         MatchProfile profile = getOrCreateDraft(userId);
         List<MediaRef> media = profile.getMedia() == null
@@ -220,7 +219,7 @@ public final class ProfileService {
         profile.setMedia(media);
         profile.touch();
         profiles.save(profile);
-        return EnrollmentService.ServiceResult.ok("Photo added (" + media.size() + " media slots).");
+        return EnrollmentService.ServiceResult.ok("Photo added (" + media.size() + ").");
     }
 
     /** Publishes the profile for discovery. No moderator gate — reports handle abuse. */
@@ -228,19 +227,19 @@ public final class ProfileService {
         MatchProfile profile = getOrCreateDraft(userId);
         ensureCohort(profile, userId);
         if (safety.isMatchSuspended(userId)) {
-            return EnrollmentService.ServiceResult.fail("Your Match access is restricted.");
+            return EnrollmentService.ServiceResult.fail("Match is paused on your account.");
         }
         if (profile.getAgeCohort() == null) {
-            return EnrollmentService.ServiceResult.fail("Choose an age group first.");
+            return EnrollmentService.ServiceResult.fail("Pick an age group first.");
         }
         if (profile.getDisplayName() == null || profile.getDisplayName().isBlank()) {
-            return EnrollmentService.ServiceResult.fail("Set a display name first.");
+            return EnrollmentService.ServiceResult.fail("Add a display name.");
         }
         if (profile.getBio() == null || profile.getBio().isBlank()) {
-            return EnrollmentService.ServiceResult.fail("Write a short bio first.");
+            return EnrollmentService.ServiceResult.fail("Add a short bio.");
         }
         if (profile.getInterests() == null || profile.getInterests().isEmpty()) {
-            return EnrollmentService.ServiceResult.fail("Pick interests first.");
+            return EnrollmentService.ServiceResult.fail("Add a few interests.");
         }
         profile.setState(ProfileState.ACTIVE);
         profile.setOnboardingStep(7);
@@ -268,7 +267,7 @@ public final class ProfileService {
             profile.setState(ProfileState.PAUSED);
             profile.touch();
             profiles.save(profile);
-            return EnrollmentService.ServiceResult.ok("Profile paused. Use `/match resume` when you want discovery again.");
+            return EnrollmentService.ServiceResult.ok("Profile paused.");
         }
         return EnrollmentService.ServiceResult.fail("Nothing to pause.");
     }
@@ -276,21 +275,21 @@ public final class ProfileService {
     public EnrollmentService.ServiceResult resume(String userId) {
         MatchProfile profile = getOrCreateDraft(userId);
         if (profile.getState() != ProfileState.PAUSED) {
-            return EnrollmentService.ServiceResult.fail("Profile is not paused.");
+            return EnrollmentService.ServiceResult.fail("You're not paused.");
         }
         if (!ProfileChecklist.readyToSubmit(profile)) {
             profile.setState(ProfileState.DRAFT);
             profile.touch();
             profiles.save(profile);
-            return EnrollmentService.ServiceResult.fail("Finish your profile, then use `/match submit` to go live.");
+            return EnrollmentService.ServiceResult.fail("Finish setup first.");
         }
         if (safety.isMatchSuspended(userId)) {
-            return EnrollmentService.ServiceResult.fail("Your Match access is restricted.");
+            return EnrollmentService.ServiceResult.fail("Match is paused on your account.");
         }
         profile.setState(ProfileState.ACTIVE);
         profile.touch();
         profiles.save(profile);
-        return EnrollmentService.ServiceResult.ok("You're live again. `/match browse` when ready.");
+        return EnrollmentService.ServiceResult.ok("You're live again.");
     }
 
     /** Staff force-activate (rare). Normal users publish themselves. */

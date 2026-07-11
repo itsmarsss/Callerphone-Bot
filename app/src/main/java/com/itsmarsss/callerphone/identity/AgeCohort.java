@@ -9,8 +9,8 @@ import java.util.Optional;
  * Discord presence is treated as 13+; users only choose a cohort for matching.
  */
 public enum AgeCohort {
-    AGE_13_15("13_15", "13–15"),
-    AGE_16_17("16_17", "16–17"),
+    AGE_13_15("13_15", "13-15"),
+    AGE_16_17("16_17", "16-17"),
     AGE_18_PLUS("18_plus", "18+");
 
     private final String code;

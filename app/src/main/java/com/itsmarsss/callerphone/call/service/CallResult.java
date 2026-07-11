@@ -13,12 +13,12 @@ public record CallResult(Status status, CallSession session, int queuePosition, 
 
     public static CallResult queued(int pos, int size) {
         return new CallResult(Status.QUEUED, null, pos, size,
-                "Queued for a random chat — position **" + pos + "** of **" + size + "**.");
+                "In queue · **" + pos + "** of **" + size + "**");
     }
 
     public static CallResult alreadyQueued(int pos, int size) {
         return new CallResult(Status.ALREADY_QUEUED, null, pos, size,
-                "Already waiting — position **" + pos + "** of **" + size + "**.");
+                "Still waiting · **" + pos + "** of **" + size + "**");
     }
 
     public static CallResult matched(CallSession session) {

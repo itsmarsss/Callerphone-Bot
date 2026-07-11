@@ -28,8 +28,7 @@ public final class CallCommand implements ISlashCommand {
 
     @Override
     public String getHelp() {
-        return "`/call` — random chat with another server (single mode).\n"
-                + "Share your Match profile during a call so they can like you.";
+        return "`/call` random chat with another server\nShare your Match profile if you want.";
     }
 
     @Override

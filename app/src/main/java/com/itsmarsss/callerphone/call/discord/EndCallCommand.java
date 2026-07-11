@@ -17,7 +17,7 @@ public final class EndCallCommand implements ISlashCommand {
 
     @Override
     public String getHelp() {
-        return "`/endcall` — end the current random call or leave the queue.";
+        return "`/endcall` hang up or leave the queue";
     }
 
     @Override

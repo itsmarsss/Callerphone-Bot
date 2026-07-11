@@ -4,25 +4,18 @@ import com.itsmarsss.callerphone.identity.MatchUser;
 import com.itsmarsss.callerphone.match.model.MatchProfile;
 import com.itsmarsss.callerphone.match.model.ProfileState;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public final class ProfileChecklist {
     private ProfileChecklist() {
     }
 
     public static String format(MatchUser user, MatchProfile profile) {
-        List<String> lines = new ArrayList<>();
-        lines.add(check(user != null && user.getTermsVersionAccepted() != null && !user.getTermsVersionAccepted().isBlank(),
-                "Accepted terms & privacy"));
-        lines.add(check(user != null && user.getAgeCohort() != null, "Chose age group"));
-        lines.add(check(profile != null && profile.getDisplayName() != null && !profile.getDisplayName().isBlank(),
-                "Display name"));
-        lines.add(check(profile != null && profile.getBio() != null && !profile.getBio().isBlank(), "Bio"));
-        lines.add(check(profile != null && profile.getPrompts() != null && !profile.getPrompts().isEmpty(), "Prompt"));
-        lines.add(check(profile != null && profile.getInterests() != null && !profile.getInterests().isEmpty(), "Interests"));
-        lines.add(check(profile != null && profile.getState() == ProfileState.ACTIVE, "Live in discovery"));
-        return String.join("\n", lines);
+        return String.join("\n",
+                check(user != null && user.getAgeCohort() != null, "Age group"),
+                check(profile != null && profile.getDisplayName() != null && !profile.getDisplayName().isBlank(), "Name"),
+                check(profile != null && profile.getBio() != null && !profile.getBio().isBlank(), "Bio"),
+                check(profile != null && profile.getInterests() != null && !profile.getInterests().isEmpty(), "Interests"),
+                check(profile != null && profile.getState() == ProfileState.ACTIVE, "Live")
+        );
     }
 
     public static boolean readyToSubmit(MatchProfile profile) {
@@ -35,10 +28,7 @@ public final class ProfileChecklist {
 
     public static int completionPercent(MatchUser user, MatchProfile profile) {
         int score = 0;
-        int total = 7;
-        if (user != null && user.getTermsVersionAccepted() != null && !user.getTermsVersionAccepted().isBlank()) {
-            score++;
-        }
+        int total = 5;
         if (user != null && user.getAgeCohort() != null) {
             score++;
         }
@@ -46,9 +36,6 @@ public final class ProfileChecklist {
             score++;
         }
         if (profile != null && profile.getBio() != null && !profile.getBio().isBlank()) {
-            score++;
-        }
-        if (profile != null && profile.getPrompts() != null && !profile.getPrompts().isEmpty()) {
             score++;
         }
         if (profile != null && profile.getInterests() != null && !profile.getInterests().isEmpty()) {
@@ -61,28 +48,16 @@ public final class ProfileChecklist {
     }
 
     public static String nextStep(MatchUser user, MatchProfile profile) {
-        if (user == null || user.getTermsVersionAccepted() == null || user.getTermsVersionAccepted().isBlank()) {
-            return "Use `/match join` and accept the notices.";
+        if (user == null || user.getAgeCohort() == null) {
+            return "Pick an age group.";
         }
-        if (user.getAgeCohort() == null) {
-            return "Choose your age group from the join buttons.";
-        }
-        if (profile == null || profile.getDisplayName() == null || profile.getDisplayName().isBlank()) {
-            return "Set basics with `/match edit field:basics`.";
-        }
-        if (profile.getBio() == null || profile.getBio().isBlank()) {
-            return "Add a bio with `/match edit field:bio`.";
-        }
-        if (profile.getInterests() == null || profile.getInterests().isEmpty()) {
-            return "Pick interests with `/match edit field:interests`.";
+        if (profile == null || !readyToSubmit(profile) || profile.getState() != ProfileState.ACTIVE) {
+            return "Finish setup.";
         }
         if (profile.getState() == ProfileState.PAUSED) {
-            return "Profile paused — `/match resume` to reappear in discovery.";
+            return "Resume when you're ready.";
         }
-        if (profile.getState() != ProfileState.ACTIVE) {
-            return "Tap **Finish setup** / **Continue setup** — one form and you're live.";
-        }
-        return "You're live — tap **Browse** or `/match browse`.";
+        return "Browse when you want.";
     }
 
     private static String check(boolean done, String label) {

@@ -14,16 +14,15 @@ public final class ReportCallCommand implements ISlashCommand {
     @Override
     public void runSlash(SlashCommandInteractionEvent e) {
         if (calls.reportActive(e.getChannel().getId())) {
-            e.reply(ToolSet.CP_EMJ + " Call marked for report. Transcript is saved when the call ends "
-                    + "(or use the Report button after hang-up).").setEphemeral(true).queue();
+            e.reply(ToolSet.CP_EMJ + " Call flagged. Thanks.").setEphemeral(true).queue();
         } else {
-            e.reply(ToolSet.CP_EMJ + " No active call to report in this channel.").setEphemeral(true).queue();
+            e.reply(ToolSet.CP_EMJ + " No active call here.").setEphemeral(true).queue();
         }
     }
 
     @Override
     public String getHelp() {
-        return "`/reportcall` — flag the current call for staff review.";
+        return "`/reportcall` report the current call";
     }
 
     @Override

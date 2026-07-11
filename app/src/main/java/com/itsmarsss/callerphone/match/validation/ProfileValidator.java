@@ -73,7 +73,7 @@ public final class ProfileValidator {
         }
         for (String interest : interests) {
             if (interest == null || interest.isBlank() || interest.length() > 24) {
-                errors.add("Each interest must be 1–24 characters.");
+                errors.add("Each interest must be 1-24 characters.");
                 break;
             }
         }

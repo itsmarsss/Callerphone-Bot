@@ -59,10 +59,7 @@ public final class MatchDmListener extends ListenerAdapter {
             }
             event.getJDA().retrieveUserById(result.recipientId()).queue(recipient -> {
                 recipient.openPrivateChannel().queue(channel -> {
-                    String body = "💬 **Match message from " + result.senderDisplay() + "**\n"
-                            + result.content()
-                            + "\n\n_Reply after selecting this chat in `/match chats`. "
-                            + "Report: `/match safety action:report`_";
+                    String body = "**" + result.senderDisplay() + "**\n" + result.content();
                     channel.sendMessage(body)
                             .queue(
                                     ok -> {

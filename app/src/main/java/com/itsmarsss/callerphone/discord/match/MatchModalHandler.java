@@ -46,11 +46,10 @@ public final class MatchModalHandler implements IModalInteraction {
 
         // Legacy partial modals: if only basics fields, keep old path
         if (!name.isBlank() && bio.isBlank() && prompt.isBlank() && interestsRaw.isBlank()) {
-            var result = ctx.profiles().updateBasics(userId, name, null, pronouns, List.of());
-            e.replyEmbeds(MatchEmbeds.warm("Almost there", result.message()
-                    + "\n\nUse **Continue setup** for the full form (bio + interests)."))
+            ctx.profiles().updateBasics(userId, name, null, pronouns, List.of());
+            e.replyEmbeds(MatchEmbeds.soft("Saved", "A bit more and you're done."))
                     .addComponents(ActionRow.of(
-                            Button.primary(MatchComponentIds.of(MatchComponentIds.ACTION_SETUP, "_"), "Continue setup")
+                            Button.primary(MatchComponentIds.of(MatchComponentIds.ACTION_SETUP, "_"), "Continue")
                     ))
                     .setEphemeral(true)
                     .queue();
@@ -73,9 +72,9 @@ public final class MatchModalHandler implements IModalInteraction {
         );
 
         if (!result.success()) {
-            e.replyEmbeds(MatchEmbeds.warm("Couldn't save that", result.message() + "\n\nTap below to try again."))
+            e.replyEmbeds(MatchEmbeds.warm("Try again", result.message()))
                     .addComponents(ActionRow.of(
-                            Button.primary(MatchComponentIds.of(MatchComponentIds.ACTION_SETUP, "_"), "Fix & retry")
+                            Button.primary(MatchComponentIds.of(MatchComponentIds.ACTION_SETUP, "_"), "Retry")
                     ))
                     .setEphemeral(true)
                     .queue();
@@ -84,13 +83,13 @@ public final class MatchModalHandler implements IModalInteraction {
 
         MatchProfile profile = ctx.profiles().find(userId).orElse(null);
         var reply = e.replyEmbeds(
-                MatchEmbeds.success("You're live ✨", result.message()),
+                MatchEmbeds.success("You're live", result.message()),
                 profile != null ? MatchEmbeds.profileCard(profile, true) : MatchEmbeds.soft("Profile", "Saved.")
         ).setEphemeral(true);
 
         if (profile != null && profile.getState() == ProfileState.ACTIVE) {
             reply = reply.addComponents(ActionRow.of(
-                    Button.success(MatchComponentIds.of(MatchComponentIds.ACTION_START_BROWSE, "_"), "✦ Start browsing"),
+                    Button.success(MatchComponentIds.of(MatchComponentIds.ACTION_START_BROWSE, "_"), "Browse"),
                     Button.secondary(MatchComponentIds.of(MatchComponentIds.ACTION_SETUP, "_"), "Edit")
             ));
         }

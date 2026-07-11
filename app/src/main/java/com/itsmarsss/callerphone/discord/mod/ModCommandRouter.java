@@ -219,15 +219,15 @@ public final class ModCommandRouter extends ListenerAdapter {
                 `%sblacklist <id>` / `%srblacklist <id>`
                 `%sprefix <id> <prefix>` / `%srprefix <id>`
 
-                **Match** (users self-publish; you review **reports**)
-                `%smreports` — open reports
-                `%smresolve <reportId> <status>` — resolve report
-                `%smpause <id> [reason]` — force-pause profile after report
-                `%smapprove <id>` — force-active if wrongly paused
-                `%smsuspend <id> [reason]` — Match suspension
-                `%smrestore <id>` — clear Match sanctions
-                `%smreview` — sample live profiles
-                `%smpremium <id>` — test-grant Premium entitlements
+                **Match**
+                `%smreports` open reports
+                `%smresolve <id> <status>` resolve
+                `%smpause <id> [reason]` pause profile
+                `%smapprove <id>` force live
+                `%smsuspend <id> [reason]` suspend
+                `%smrestore <id>` restore
+                `%smreview` sample profiles
+                `%smpremium <id>` grant premium
                 """.formatted(p, p, p, p, p, p, p, p, p, p, p, p, p, p);
         EmbedBuilder help = new EmbedBuilder()
                 .setTitle("Mod")

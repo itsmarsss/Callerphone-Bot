@@ -5,32 +5,26 @@ public final class EmptyStates {
     }
 
     public static String noCandidates() {
-        return "No more profiles right now in your age group.\n"
-                + "• Check back later — new people join often\n"
-                + "• Skips expire after " + MatchLimits.SKIP_EXPIRE_DAYS + " days\n"
-                + "• Complete your profile to rank better: `/match profile`";
+        return "No one new right now. Check back later.";
     }
 
     public static String notActive() {
-        return "Your profile isn't live yet.\n"
-                + "Finish basics → bio → interests, then `/match submit` to go live.";
+        return "Finish your profile first. Try `/match join`.";
     }
 
     public static String notEnrolled() {
-        return "Join Match first with `/match join` and pick your age group.";
+        return "Start with `/match join`.";
     }
 
     public static String restricted() {
-        return "Your Match access is restricted. Contact support if this looks wrong.";
+        return "Match is paused on your account.";
     }
 
     public static String noChats() {
-        return "No connections yet.\n"
-                + "Browse with `/match browse`, express interest, and wait for a mutual match.";
+        return "No chats yet. Browse and say interested when you vibe.";
     }
 
     public static String noLikes() {
-        return "No incoming interest yet.\n"
-                + "Stay active in discovery — people who liked you show up here.";
+        return "No likes yet. Keep browsing.";
     }
 }

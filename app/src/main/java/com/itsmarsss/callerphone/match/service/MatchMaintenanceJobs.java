@@ -191,13 +191,11 @@ public final class MatchMaintenanceJobs {
             MatchProfile profile = profiles.findByUserId(user.getUserId()).orElse(null);
             String state = profile == null ? "none" : String.valueOf(profile.getState());
             int completion = ProfileChecklist.completionPercent(user, profile);
-            String body = "Weekly snapshot for your age group:\n"
-                    + "• Profile: `" + state + "` (" + completion + "% complete)\n"
-                    + "• Active chats: **" + activeChats + "**\n"
-                    + "• Browse streak: **" + user.getBrowseStreakDays() + "** days\n\n"
+            String body = "Chats open: **" + activeChats + "**\n"
+                    + "Browse streak: **" + user.getBrowseStreakDays() + "** days\n"
                     + (profile != null && profile.getState() == ProfileState.ACTIVE
-                    ? "Keep browsing with `/match browse`."
-                    : "Finish and go live with `/match profile`.");
+                    ? "You're live."
+                    : "Finish setup when you're free.");
             notifications.notifyWeeklyDigest(user.getUserId(), body);
             user.setLastDigestAt(Instant.now());
             users.save(user);
