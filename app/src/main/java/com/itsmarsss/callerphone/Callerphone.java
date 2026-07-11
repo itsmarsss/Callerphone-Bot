@@ -16,13 +16,19 @@ import com.itsmarsss.ICommand;
 import com.itsmarsss.callerphone.channelpool.commands.*;
 import com.itsmarsss.callerphone.channelpool.modals.SettingsModal;
 import com.itsmarsss.callerphone.minigames.commands.PlayMiniGame;
+import com.itsmarsss.callerphone.minigames.commands.ShowMiniGames;
+import com.itsmarsss.callerphone.minigames.handlers.BattleShipHandler;
+import com.itsmarsss.callerphone.minigames.handlers.Connect4Handler;
 import com.itsmarsss.callerphone.minigames.handlers.TicTacToeHandler;
+import com.itsmarsss.callerphone.minigames.handlers.WordSearchHandler;
 import com.itsmarsss.callerphone.msginbottle.commands.FindBottle;
 import com.itsmarsss.callerphone.msginbottle.commands.SendBottle;
+import com.itsmarsss.callerphone.msginbottle.commands.ViewBottle;
 import com.itsmarsss.callerphone.msginbottle.handlers.*;
 import com.itsmarsss.callerphone.msginbottle.modals.SendModal;
 import com.itsmarsss.callerphone.tccallerphone.handlers.ReportChatHandler;
 import com.itsmarsss.callerphone.users.commands.DeductCredits;
+import com.itsmarsss.callerphone.users.commands.Leaderboard;
 import com.itsmarsss.callerphone.users.commands.Profile;
 import com.itsmarsss.callerphone.users.commands.RewardCredits;
 import com.itsmarsss.callerphone.tccallerphone.TCCallerphoneListener;
@@ -93,7 +99,7 @@ public class Callerphone {
         logger.info("Parent directory: {}", parent);
 
         if (!readConfigYML()) {
-            logger.error("Invalid config.yml — ensure the template exists and values are set");
+            logger.error("Invalid config.yml — require botToken and databaseURL (and ensure the file exists)");
             System.exit(1);
         }
 
@@ -167,15 +173,15 @@ public class Callerphone {
 
     private static void registerCommands() {
         ICommand[] commands = {
-                new About(), new BotInfo(), new Donate(), new Invite(), new Profile(),
+                new About(), new BotInfo(), new Donate(), new Invite(), new Profile(), new Leaderboard(),
                 new ChannelInfo(), new Colour(), new Help(), new RoleInfo(), new Search(),
                 new ServerInfo(), new UserInfo(),
                 new Chat(), new EndChat(), new Prefix(), new ReportChat(),
                 new HostPool(), new JoinPool(), new EndPool(), new LeavePool(),
                 new PoolParticipants(), new PoolSettings(), new KickPool(),
                 new DeductCredits(), new RewardCredits(),
-                new PlayMiniGame(),
-                new FindBottle(), new SendBottle()
+                new PlayMiniGame(), new ShowMiniGames(),
+                new FindBottle(), new SendBottle(), new ViewBottle()
         };
 
         for (ICommand cmd : commands) {
@@ -197,7 +203,8 @@ public class Callerphone {
 
     private static void registerButtons() {
         IButtonInteraction[] buttons = {
-                new TicTacToeHandler(), new AddPageHandler(), new NextHandler(),
+                new TicTacToeHandler(), new Connect4Handler(), new BattleShipHandler(),
+                new WordSearchHandler(), new AddPageHandler(), new NextHandler(),
                 new PreviousHandler(), new ReportHandler(), new SaveHandler(),
                 new ReportChatHandler()
         };

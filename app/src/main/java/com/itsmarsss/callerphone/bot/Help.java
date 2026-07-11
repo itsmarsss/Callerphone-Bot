@@ -17,6 +17,9 @@ import com.itsmarsss.callerphone.tccallerphone.commands.Chat;
 import com.itsmarsss.callerphone.tccallerphone.commands.EndChat;
 import com.itsmarsss.callerphone.tccallerphone.commands.Prefix;
 import com.itsmarsss.callerphone.tccallerphone.commands.ReportChat;
+import com.itsmarsss.callerphone.minigames.commands.PlayMiniGame;
+import com.itsmarsss.callerphone.minigames.commands.ShowMiniGames;
+import com.itsmarsss.callerphone.users.commands.Leaderboard;
 import com.itsmarsss.callerphone.users.commands.Profile;
 import com.itsmarsss.callerphone.utils.ChannelInfo;
 import com.itsmarsss.callerphone.utils.Colour;
@@ -58,7 +61,13 @@ public class Help implements ISlashCommand {
         switch (name) {
             case "bot":
                 title = "Bot Commands";
-                desc = joinHelp(new About(), new BotInfo(), new Donate(), new Help(), new Invite(), new Profile());
+                desc = joinHelp(new About(), new BotInfo(), new Donate(), new Help(), new Invite(),
+                        new Profile(), new Leaderboard());
+                break;
+            case "games":
+            case "minigames":
+                title = "MiniGames";
+                desc = joinHelp(new ShowMiniGames(), new PlayMiniGame());
                 break;
             case "utils":
                 title = "Util Commands";
@@ -136,6 +145,7 @@ public class Help implements ISlashCommand {
                 .addField("Pooling", "Channel pooling — `/help pooling`", false)
                 .addField("TC Callerphone", "Text call commands — `/help tccall`", false)
                 .addField("Msg Bottles", "Message in bottle — `/help msgbottle`", false)
+                .addField("MiniGames", "Playable games — `/help games`", false)
                 .addField("Music", "Callerphone no longer plays music", false)
                 .setFooter("Type `/help <category name>` to see category commands");
         if (admin) {

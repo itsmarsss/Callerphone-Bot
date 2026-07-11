@@ -4,12 +4,19 @@ import com.itsmarsss.callerphone.Callerphone;
 import com.itsmarsss.callerphone.users.BotUser;
 import com.mongodb.MongoException;
 import com.mongodb.client.MongoCollection;
+import com.mongodb.client.model.Aggregates;
+import com.mongodb.client.model.Filters;
+import com.mongodb.client.model.Projections;
+import com.mongodb.client.model.Sorts;
 import com.mongodb.client.result.InsertOneResult;
 import com.mongodb.client.result.UpdateResult;
 import org.bson.Document;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static com.itsmarsss.database.DatabaseUtil.getOrDefault;
@@ -228,6 +235,31 @@ public class Users {
 
     public static boolean hasUser(String id) {
         return loadUser(id).exists;
+    }
+
+    /**
+     * Top users by credits (descending). Each document has {@code id} and {@code credits}.
+     */
+    public static List<Document> topByCredits(int limit) {
+        int safeLimit = Math.max(1, Math.min(limit, 25));
+        MongoCollection<Document> usersCollection = Callerphone.dbConnector.getUsersCollection();
+        try {
+            return usersCollection.aggregate(Arrays.asList(
+                    Aggregates.match(Filters.and(
+                            Filters.exists("credits", true),
+                            Filters.gt("credits", 0)
+                    )),
+                    Aggregates.sort(Sorts.descending("credits")),
+                    Aggregates.limit(safeLimit),
+                    Aggregates.project(Projections.fields(
+                            Projections.include("id", "credits", "prefix"),
+                            Projections.excludeId()
+                    ))
+            )).into(new ArrayList<>());
+        } catch (MongoException me) {
+            logger.error("Unable to load credits leaderboard: {}", me.getMessage());
+            return new ArrayList<>();
+        }
     }
 
     /** In-memory session state (minigames, etc.). */
