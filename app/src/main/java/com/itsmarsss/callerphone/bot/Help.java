@@ -13,11 +13,11 @@ import com.itsmarsss.callerphone.channelpool.commands.PoolSettings;
 import com.itsmarsss.callerphone.msginbottle.commands.FindBottle;
 import com.itsmarsss.callerphone.msginbottle.commands.SendBottle;
 import com.itsmarsss.callerphone.msginbottle.commands.ViewBottle;
+import com.itsmarsss.callerphone.call.discord.CallCommand;
+import com.itsmarsss.callerphone.call.discord.EndCallCommand;
+import com.itsmarsss.callerphone.call.discord.ReportCallCommand;
 import com.itsmarsss.callerphone.discord.match.MatchCommand;
-import com.itsmarsss.callerphone.tccallerphone.commands.Chat;
-import com.itsmarsss.callerphone.tccallerphone.commands.EndChat;
 import com.itsmarsss.callerphone.tccallerphone.commands.Prefix;
-import com.itsmarsss.callerphone.tccallerphone.commands.ReportChat;
 import com.itsmarsss.callerphone.minigames.commands.PlayMiniGame;
 import com.itsmarsss.callerphone.minigames.commands.ShowMiniGames;
 import com.itsmarsss.callerphone.users.commands.Leaderboard;
@@ -80,8 +80,11 @@ public class Help implements ISlashCommand {
                         new KickPool(), new PoolParticipants(), new PoolSettings());
                 break;
             case "tccall":
-                title = "TCCall Commands";
-                desc = joinHelp(new Chat(), new EndChat(), new ReportChat(), new Prefix());
+            case "call":
+                title = "Random Call";
+                desc = joinHelp(new CallCommand(), new EndCallCommand(), new ReportCallCommand(), new Prefix())
+                        + "\n\nSingle mode only (anon / family-friendly removed). "
+                        + "Share Match profiles during a call to like each other.";
                 break;
             case "match":
             case "social":
@@ -149,7 +152,7 @@ public class Help implements ISlashCommand {
                 .addField("Bot", "Bot commands — `/help bot`", false)
                 .addField("Utils", "Utility commands — `/help utils`", false)
                 .addField("Pooling", "Channel pooling — `/help pooling`", false)
-                .addField("TC Callerphone", "Text call commands — `/help tccall`", false)
+                .addField("Random Call", "Cross-server chat — `/help call`", false)
                 .addField("Match / Social", "Discover & connect — `/help match`", false)
                 .addField("Msg Bottles", "Message in bottle — `/help msgbottle`", false)
                 .addField("MiniGames", "Playable games — `/help games`", false)

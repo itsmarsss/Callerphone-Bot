@@ -1,28 +1,24 @@
 package com.itsmarsss.callerphone.tccallerphone.handlers;
 
 import com.itsmarsss.callerphone.ToolSet;
-import com.itsmarsss.callerphone.tccallerphone.services.ConversationService;
+import com.itsmarsss.callerphone.call.service.CallSessionService;
 import com.itsmarsss.commandType.IButtonInteraction;
 import net.dv8tion.jda.api.components.buttons.Button;
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonInteraction;
 
+/** Legacy reportchat-* buttons; new buttons use c-v1-report-*. */
 public class ReportChatHandler implements IButtonInteraction {
-    private final ConversationService conversationService = ConversationService.getInstance();
-
     @Override
     public void runClick(ButtonInteraction e) {
-        String[] reportData = e.getButton().getCustomId().split("-");
+        String[] reportData = e.getButton().getCustomId().split("-", 2);
         if (reportData.length < 2) {
-            e.reply(ToolSet.CP_EMJ + "Error with reporting, you can also report during a chat with </reportchat:1075168978189692948>!")
+            e.reply(ToolSet.CP_EMJ + "Error reporting. Use `/reportcall` during a call.")
                     .setEphemeral(true).queue();
             return;
         }
-
-        String id = reportData[1];
-        conversationService.reportById(id);
-
+        CallSessionService.get().reportById(reportData[1]);
         e.editButton(Button.danger("reportchat", "Chat Reported").asDisabled()).queue();
-        e.getMessage().reply(ToolSet.CP_EMJ + "Chat Reported, you can also report during a chat with </reportchat:1075168978189692948>!").queue();
+        e.getMessage().reply(ToolSet.CP_EMJ + " Call reported.").queue();
     }
 
     @Override

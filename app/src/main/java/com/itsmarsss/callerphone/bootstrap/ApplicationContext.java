@@ -221,6 +221,10 @@ public final class ApplicationContext {
     public java.util.List<com.itsmarsss.callerphone.match.model.MatchDecision> incomingLikes(String userId) {
         return decisionRepository.findIncomingInterested(userId, 20);
     }
+
+    public com.itsmarsss.callerphone.match.repository.MatchDecisionRepository decisionRepository() {
+        return decisionRepository;
+    }
 }
 
 

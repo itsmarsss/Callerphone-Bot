@@ -174,6 +174,28 @@ public final class DecisionService {
         );
     }
 
+    /** Public entry for adjacent features (e.g. call profile share). */
+    public Optional<String> createMutualIfBothLiked(String a, String b) {
+        if (decisions.findReciprocalInterest(a, b).isEmpty()
+                || decisions.findReciprocalInterest(b, a).isEmpty()) {
+            return Optional.empty();
+        }
+        if (conversations.countActiveByUserId(a) >= premium.activeConversations(a)
+                || conversations.countActiveByUserId(b) >= premium.activeConversations(b)) {
+            return Optional.empty();
+        }
+        // already have active match?
+        Optional<Match> existing = matches.findByPairKey(Match.pairKeyFor(a, b));
+        if (existing.isPresent() && existing.get().getStatus() == MatchStatus.ACTIVE) {
+            return conversations.findByMatchId(existing.get().getMatchId()).map(MatchConversation::getConversationId);
+        }
+        MutualCreate created = createMutualMatch(a, b);
+        notifications.notifyMutualMatch(a, b, created.conversationId());
+        analytics.track(a, "match_mutual", b);
+        analytics.track(b, "match_mutual", a);
+        return Optional.of(created.conversationId());
+    }
+
     private MutualCreate createMutualMatch(String a, String b) {
         Match match = new Match();
         match.setPairKey(Match.pairKeyFor(a, b));

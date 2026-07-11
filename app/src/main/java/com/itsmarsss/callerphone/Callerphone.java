@@ -32,13 +32,18 @@ import com.itsmarsss.callerphone.discord.match.MatchCommand;
 import com.itsmarsss.callerphone.discord.match.MatchDmListener;
 import com.itsmarsss.callerphone.discord.match.MatchModalHandler;
 import com.itsmarsss.callerphone.discord.mod.ModCommandRouter;
+import com.itsmarsss.callerphone.call.discord.CallButtonHandler;
+import com.itsmarsss.callerphone.call.discord.CallCommand;
+import com.itsmarsss.callerphone.call.discord.CallListener;
+import com.itsmarsss.callerphone.call.discord.EndCallCommand;
+import com.itsmarsss.callerphone.call.discord.ReportCallCommand;
+import com.itsmarsss.callerphone.call.service.CallSessionService;
+import com.itsmarsss.callerphone.tccallerphone.commands.Prefix;
 import com.itsmarsss.callerphone.tccallerphone.handlers.ReportChatHandler;
 import com.itsmarsss.callerphone.users.commands.DeductCredits;
 import com.itsmarsss.callerphone.users.commands.Leaderboard;
 import com.itsmarsss.callerphone.users.commands.Profile;
 import com.itsmarsss.callerphone.users.commands.RewardCredits;
-import com.itsmarsss.callerphone.tccallerphone.TCCallerphoneListener;
-import com.itsmarsss.callerphone.tccallerphone.commands.*;
 import com.itsmarsss.commandType.IButtonInteraction;
 import com.itsmarsss.commandType.IModalInteraction;
 import com.itsmarsss.database.MongoConnector;
@@ -194,7 +199,7 @@ public class Callerphone {
                 new About(), new BotInfo(), new Donate(), new Invite(), new Profile(), new Leaderboard(),
                 new ChannelInfo(), new Colour(), new Help(), new RoleInfo(), new Search(),
                 new ServerInfo(), new UserInfo(),
-                new Chat(), new EndChat(), new Prefix(), new ReportChat(),
+                new CallCommand(), new EndCallCommand(), new ReportCallCommand(), new Prefix(),
                 new MatchCommand(),
                 new HostPool(), new JoinPool(), new EndPool(), new LeavePool(),
                 new PoolParticipants(), new PoolSettings(), new KickPool(),
@@ -225,7 +230,7 @@ public class Callerphone {
                 new TicTacToeHandler(), new Connect4Handler(), new BattleShipHandler(),
                 new WordSearchHandler(), new AddPageHandler(), new NextHandler(),
                 new PreviousHandler(), new ReportHandler(), new SaveHandler(),
-                new ReportChatHandler(), new MatchButtonHandler()
+                new ReportChatHandler(), new CallButtonHandler(), new MatchButtonHandler()
         };
         for (IButtonInteraction button : buttons) {
             btnMap.put(button.getID(), button);
@@ -242,8 +247,10 @@ public class Callerphone {
                 new OnModalEvent(),
                 new OnOtherEvent(),
                 new OnSlashCommand(),
-                new TCCallerphoneListener(),
+                new CallListener(),
                 new ChannelPoolListener()
         );
+        // ensure call service is constructed
+        CallSessionService.get();
     }
 }
