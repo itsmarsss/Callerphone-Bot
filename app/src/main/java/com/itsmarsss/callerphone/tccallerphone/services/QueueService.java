@@ -67,9 +67,16 @@ public class QueueService {
         return false;
     }
 
-    public int getQueuePosition(String channelId) {
+    /**
+ * 1-based position in queue, or -1 if not present.
+ * Skips expired entries without removing them (call {@link #cleanupExpiredEntries()} first for accuracy).
+ */
+public int getQueuePosition(String channelId) {
         int position = 1;
         for (QueueEntry entry : queue) {
+            if (entry.isExpired(queueTimeout)) {
+                continue;
+            }
             if (entry.getChannelId().equals(channelId)) {
                 return position;
             }
@@ -78,8 +85,15 @@ public class QueueService {
         return -1;
     }
 
+    /** Number of non-expired entries currently waiting. */
     public int size() {
-        return queue.size();
+        int count = 0;
+        for (QueueEntry entry : queue) {
+            if (!entry.isExpired(queueTimeout)) {
+                count++;
+            }
+        }
+        return count;
     }
 
     public void cleanupExpiredEntries() {

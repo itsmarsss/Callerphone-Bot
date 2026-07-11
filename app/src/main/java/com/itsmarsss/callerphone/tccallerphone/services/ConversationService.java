@@ -43,14 +43,28 @@ public class ConversationService {
     }
 
     public synchronized ChatResult startChat(String channelId, ChatMode mode) {
-        if (isInConversation(channelId) || queueService.isQueued(channelId)) {
+        if (isInConversation(channelId)) {
             return ChatResult.conflict();
+        }
+
+        if (queueService.isQueued(channelId)) {
+            queueService.cleanupExpiredEntries();
+            int position = queueService.getQueuePosition(channelId);
+            int size = Math.max(queueService.size(), 1);
+            if (position < 1) {
+                // Expired between checks; re-enqueue
+                queueService.enqueue(channelId, mode);
+                return ChatResult.queued(queueService.getQueuePosition(channelId), queueService.size());
+            }
+            return ChatResult.alreadyQueued(position, size);
         }
 
         Optional<QueueEntry> match = queueService.dequeueMatch(channelId);
         if (!match.isPresent()) {
             queueService.enqueue(channelId, mode);
-            return ChatResult.queued();
+            int position = queueService.getQueuePosition(channelId);
+            int size = queueService.size();
+            return ChatResult.queued(position > 0 ? position : size, size);
         }
 
         QueueEntry waiting = match.get();
@@ -90,7 +104,7 @@ public class ConversationService {
         if (convo == null) {
             // Cancel queue if waiting
             if (queueService.removeFromQueue(channelId)) {
-                return new MessageCreateBuilder().setContent(ChatResponse.HUNG_UP.toString()).build();
+                return new MessageCreateBuilder().setContent(ChatResponse.LEFT_QUEUE.toString()).build();
             }
             return new MessageCreateBuilder().setContent(ChatResponse.NO_CALL.toString()).build();
         }

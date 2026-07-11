@@ -29,6 +29,12 @@ public class Chat implements ISlashCommand {
             case CONFLICT:
                 e.reply(ChatResponse.ALREADY_CALL.toString()).setEphemeral(true).queue();
                 break;
+            case ALREADY_QUEUED:
+                e.reply(ChatResponse.ALREADY_QUEUED.format(
+                        result.getQueuePosition(),
+                        result.getQueueSize()
+                )).setEphemeral(true).queue();
+                break;
             case NON_EXISTENT:
                 e.reply(ChatResponse.NO_PORT.toString()).setEphemeral(true).queue();
                 break;
@@ -37,7 +43,10 @@ public class Chat implements ISlashCommand {
                 e.getChannel().sendMessage(ChatResponse.PICKED_UP.toString()).queue();
                 break;
             case SUCCESS_CALLER:
-                e.reply(ChatResponse.CALLING.toString()).queue();
+                e.reply(ChatResponse.QUEUED.format(
+                        result.getQueuePosition(),
+                        result.getQueueSize()
+                )).queue();
                 break;
             default:
                 e.reply(Response.ERROR.toString()).setEphemeral(true).queue();
