@@ -26,7 +26,8 @@ class ProfileChecklistTest {
         profile.setInterests(List.of("music"));
         profile.setState(ProfileState.DRAFT);
         assertTrue(ProfileChecklist.readyToSubmit(profile));
-        assertTrue(ProfileChecklist.nextStep(user, profile).toLowerCase().contains("submit"));
+        String next = ProfileChecklist.nextStep(user, profile).toLowerCase();
+        assertTrue(next.contains("submit") || next.contains("live") || next.contains("go live"));
         assertFalse(ProfileChecklist.format(user, profile).isBlank());
     }
 }

@@ -43,6 +43,18 @@ public final class EnrollmentService {
         if (user.isEnrolled() && user.getAgeCohort() != null) {
             return ServiceResult.ok("You are already enrolled. Use `/match profile` or `/match browse`.");
         }
+        // Returning after leave: re-enroll without wiping their card
+        if (user.getAgeCohort() != null && !user.isEnrolled()) {
+            user.setEnrolled(true);
+            user.setEnrolledAt(Instant.now());
+            user.setLeftAt(null);
+            user.touch();
+            users.save(user);
+            consents.append(ConsentEvent.of(userId, ConsentType.ENROLLMENT, "v1", true, "rejoin"));
+            return ServiceResult.ok(
+                    "Welcome back! Your profile is still here. Use `/match resume` to reappear in discovery, "
+                            + "or `/match profile` to edit.");
+        }
         return ServiceResult.ok("START_ONBOARDING");
     }
 

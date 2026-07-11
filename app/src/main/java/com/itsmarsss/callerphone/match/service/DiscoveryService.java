@@ -122,10 +122,7 @@ public final class DiscoveryService {
     }
 
     private static boolean preferencesCompatible(MatchProfile viewer, MatchProfile candidate) {
-        // Gender filters only apply when both parties are 18+ age group
-        if (viewer.getAgeCohort() != AgeCohort.AGE_18_PLUS || candidate.getAgeCohort() != AgeCohort.AGE_18_PLUS) {
-            return true;
-        }
+        // Optional open-to-meeting prefs apply the same way for every age group
         if (viewer.getOpenToMeeting() != null && !viewer.getOpenToMeeting().isEmpty() && candidate.getGender() != null) {
             if (!viewer.getOpenToMeeting().contains(candidate.getGender())
                     && !viewer.getOpenToMeeting().contains(Gender.OTHER)) {

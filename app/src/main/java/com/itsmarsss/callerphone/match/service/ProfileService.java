@@ -81,9 +81,6 @@ public final class ProfileService {
         profile.setPronouns(pronouns == null ? "" : pronouns);
         profile.setOpenToMeeting(openToMeeting == null ? List.of() : openToMeeting);
         profile.setOnboardingStep(Math.max(profile.getOnboardingStep(), 3));
-        if (profile.getState() == ProfileState.ACTIVE) {
-            profile.setState(ProfileState.PENDING_REVIEW);
-        }
         profile.touch();
         profiles.save(profile);
         return EnrollmentService.ServiceResult.ok("Profile basics saved.");
@@ -100,9 +97,6 @@ public final class ProfileService {
         profile.setBio(bio);
         profile.setPrompts(List.of(new ProfilePrompt("ideal_sunday", promptAnswer)));
         profile.setOnboardingStep(Math.max(profile.getOnboardingStep(), 4));
-        if (profile.getState() == ProfileState.ACTIVE) {
-            profile.setState(ProfileState.PENDING_REVIEW);
-        }
         profile.touch();
         profiles.save(profile);
         return EnrollmentService.ServiceResult.ok("Bio and prompt saved.");
@@ -123,9 +117,6 @@ public final class ProfileService {
         ensureCohort(profile, userId);
         profile.setInterests(cleaned);
         profile.setOnboardingStep(Math.max(profile.getOnboardingStep(), 5));
-        if (profile.getState() == ProfileState.ACTIVE) {
-            profile.setState(ProfileState.PENDING_REVIEW);
-        }
         profile.touch();
         profiles.save(profile);
         return EnrollmentService.ServiceResult.ok("Interests saved.");
@@ -134,7 +125,7 @@ public final class ProfileService {
     public EnrollmentService.ServiceResult setAvatar(String userId, String avatarUrl) {
         MatchProfile profile = getOrCreateDraft(userId);
         ensureCohort(profile, userId);
-        // All age groups use Discord avatar in MVP; custom uploads optional only for 18+
+        // Discord avatar for everyone — age group is pairing only, not feature tiers
         profile.setMedia(List.of(MediaRef.avatar(UUID.randomUUID().toString(), avatarUrl)));
         profile.setOnboardingStep(Math.max(profile.getOnboardingStep(), 6));
         profile.touch();
@@ -142,9 +133,13 @@ public final class ProfileService {
         return EnrollmentService.ServiceResult.ok("Avatar linked from Discord.");
     }
 
-    public EnrollmentService.ServiceResult submitForReview(String userId) {
+    /** Publishes the profile for discovery. No moderator gate — reports handle abuse. */
+    public EnrollmentService.ServiceResult publish(String userId) {
         MatchProfile profile = getOrCreateDraft(userId);
         ensureCohort(profile, userId);
+        if (safety.isMatchSuspended(userId)) {
+            return EnrollmentService.ServiceResult.fail("Your Match access is restricted.");
+        }
         if (profile.getAgeCohort() == null) {
             return EnrollmentService.ServiceResult.fail("Choose an age group first.");
         }
@@ -157,78 +152,95 @@ public final class ProfileService {
         if (profile.getInterests() == null || profile.getInterests().isEmpty()) {
             return EnrollmentService.ServiceResult.fail("Pick interests first.");
         }
-        profile.setState(ProfileState.PENDING_REVIEW);
+        profile.setState(ProfileState.ACTIVE);
         profile.setOnboardingStep(7);
         profile.touch();
         profiles.save(profile);
-        if (notifications != null) {
-            notifications.postPendingReviewAlert(userId, profile.getDisplayName());
-        }
         if (analytics != null) {
-            analytics.track(userId, "match_profile_submit", profile.getAgeCohort() == null
-                    ? ""
-                    : profile.getAgeCohort().code());
+            analytics.track(userId, "match_profile_live", profile.getAgeCohort().code());
+        }
+        if (notifications != null) {
+            notifications.notifyProfileLive(userId);
         }
         return EnrollmentService.ServiceResult.ok(
-                "Profile submitted for review. You'll get a DM when it's approved (if notifications are on).");
+                "You're live! Use `/match browse` to discover people in your age group.");
+    }
+
+    /** @deprecated use {@link #publish(String)} */
+    @Deprecated
+    public EnrollmentService.ServiceResult submitForReview(String userId) {
+        return publish(userId);
     }
 
     public EnrollmentService.ServiceResult pause(String userId) {
         MatchProfile profile = getOrCreateDraft(userId);
-        if (profile.getState() == ProfileState.ACTIVE || profile.getState() == ProfileState.PENDING_REVIEW) {
+        if (profile.getState() == ProfileState.ACTIVE) {
             profile.setState(ProfileState.PAUSED);
             profile.touch();
             profiles.save(profile);
-            return EnrollmentService.ServiceResult.ok("Profile paused. Use `/match profile` then resume to return.");
+            return EnrollmentService.ServiceResult.ok("Profile paused. Use `/match resume` when you want discovery again.");
         }
         return EnrollmentService.ServiceResult.fail("Nothing to pause.");
     }
 
     public EnrollmentService.ServiceResult resume(String userId) {
         MatchProfile profile = getOrCreateDraft(userId);
-        if (profile.getState() == ProfileState.PAUSED) {
-            profile.setState(ProfileState.PENDING_REVIEW);
+        if (profile.getState() != ProfileState.PAUSED) {
+            return EnrollmentService.ServiceResult.fail("Profile is not paused.");
+        }
+        if (!ProfileChecklist.readyToSubmit(profile)) {
+            profile.setState(ProfileState.DRAFT);
             profile.touch();
             profiles.save(profile);
-            return EnrollmentService.ServiceResult.ok("Profile resumed and queued for review.");
+            return EnrollmentService.ServiceResult.fail("Finish your profile, then use `/match submit` to go live.");
         }
-        return EnrollmentService.ServiceResult.fail("Profile is not paused.");
-    }
-
-    public EnrollmentService.ServiceResult approve(String moderatorId, String userId) {
-        MatchProfile profile = profiles.findByUserId(userId)
-                .orElse(null);
-        if (profile == null) {
-            return EnrollmentService.ServiceResult.fail("No profile found.");
-        }
-        if (profile.getAgeCohort() == null) {
-            return EnrollmentService.ServiceResult.fail("Profile missing age group.");
+        if (safety.isMatchSuspended(userId)) {
+            return EnrollmentService.ServiceResult.fail("Your Match access is restricted.");
         }
         profile.setState(ProfileState.ACTIVE);
         profile.touch();
         profiles.save(profile);
-        if (notifications != null) {
-            notifications.notifyProfileApproved(userId);
-        }
-        return EnrollmentService.ServiceResult.ok("Profile approved for " + userId);
+        return EnrollmentService.ServiceResult.ok("You're live again. `/match browse` when ready.");
     }
 
-    public EnrollmentService.ServiceResult reject(String moderatorId, String userId, String reason) {
+    /** Staff force-activate (rare). Normal users publish themselves. */
+    public EnrollmentService.ServiceResult forceActive(String moderatorId, String userId) {
         MatchProfile profile = profiles.findByUserId(userId).orElse(null);
         if (profile == null) {
             return EnrollmentService.ServiceResult.fail("No profile found.");
         }
-        profile.setState(ProfileState.DRAFT);
+        profile.setState(ProfileState.ACTIVE);
+        profile.touch();
+        profiles.save(profile);
+        return EnrollmentService.ServiceResult.ok("Forced active for " + userId);
+    }
+
+    /** Staff force-pause after a report (not a pre-publish review). */
+    public EnrollmentService.ServiceResult forcePause(String moderatorId, String userId, String reason) {
+        MatchProfile profile = profiles.findByUserId(userId).orElse(null);
+        if (profile == null) {
+            return EnrollmentService.ServiceResult.fail("No profile found.");
+        }
+        profile.setState(ProfileState.PAUSED);
         profile.touch();
         profiles.save(profile);
         if (notifications != null) {
-            notifications.notifyProfileRejected(userId, reason);
+            notifications.notifyProfileRestricted(userId, reason);
         }
-        return EnrollmentService.ServiceResult.ok("Profile rejected: " + reason);
+        return EnrollmentService.ServiceResult.ok("Profile paused for " + userId + ": " + reason);
+    }
+
+    public EnrollmentService.ServiceResult approve(String moderatorId, String userId) {
+        return forceActive(moderatorId, userId);
+    }
+
+    public EnrollmentService.ServiceResult reject(String moderatorId, String userId, String reason) {
+        return forcePause(moderatorId, userId, reason);
     }
 
     public List<MatchProfile> pendingReview(int limit) {
-        return profiles.findByState(ProfileState.PENDING_REVIEW, limit);
+        // Legacy name: list recently active/paused for staff tooling if needed
+        return profiles.findByState(ProfileState.ACTIVE, limit);
     }
 
     public void bumpDiscoveryView(MatchProfile profile) {

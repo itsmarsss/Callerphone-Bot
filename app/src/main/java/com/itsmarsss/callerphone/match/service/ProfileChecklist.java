@@ -21,8 +21,7 @@ public final class ProfileChecklist {
         lines.add(check(profile != null && profile.getBio() != null && !profile.getBio().isBlank(), "Bio"));
         lines.add(check(profile != null && profile.getPrompts() != null && !profile.getPrompts().isEmpty(), "Prompt"));
         lines.add(check(profile != null && profile.getInterests() != null && !profile.getInterests().isEmpty(), "Interests"));
-        lines.add(check(profile != null && profile.getState() == ProfileState.PENDING_REVIEW, "Submitted for review"));
-        lines.add(check(profile != null && profile.getState() == ProfileState.ACTIVE, "Approved & active"));
+        lines.add(check(profile != null && profile.getState() == ProfileState.ACTIVE, "Live in discovery"));
         return String.join("\n", lines);
     }
 
@@ -50,16 +49,13 @@ public final class ProfileChecklist {
         if (profile.getInterests() == null || profile.getInterests().isEmpty()) {
             return "Pick interests with `/match edit field:interests`.";
         }
-        if (profile.getState() == ProfileState.DRAFT || profile.getState() == ProfileState.PAUSED) {
-            return "Submit with `/match submit` for review.";
+        if (profile.getState() == ProfileState.PAUSED) {
+            return "Profile paused — `/match resume` to reappear in discovery.";
         }
-        if (profile.getState() == ProfileState.PENDING_REVIEW) {
-            return "Waiting on moderator approval. Hang tight!";
+        if (profile.getState() != ProfileState.ACTIVE) {
+            return "Go live with `/match submit` — no approval wait, you can browse right after.";
         }
-        if (profile.getState() == ProfileState.ACTIVE) {
-            return "You're live — `/match browse` to discover people.";
-        }
-        return "Use `/match profile` to see your status.";
+        return "You're live — `/match browse` to discover people.";
     }
 
     private static String check(boolean done, String label) {

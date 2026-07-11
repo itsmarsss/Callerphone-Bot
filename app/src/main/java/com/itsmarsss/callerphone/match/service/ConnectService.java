@@ -1,6 +1,5 @@
 package com.itsmarsss.callerphone.match.service;
 
-import com.itsmarsss.callerphone.identity.AgeCohort;
 import com.itsmarsss.callerphone.identity.ConsentEvent;
 import com.itsmarsss.callerphone.identity.ConsentRepository;
 import com.itsmarsss.callerphone.identity.ConsentType;
@@ -57,11 +56,7 @@ public final class ConnectService {
         if (self.isEmpty() || peer.isEmpty()) {
             return EnrollmentService.ServiceResult.fail("Profiles missing.");
         }
-        if (self.get().getAgeCohort() != AgeCohort.AGE_18_PLUS
-                || peer.get().getAgeCohort() != AgeCohort.AGE_18_PLUS) {
-            return EnrollmentService.ServiceResult.fail(
-                    "Identity connect is only available when both profiles are in the 18+ age group. Stay in mediated chat.");
-        }
+        // Age group is pairing isolation only — connect is available for every cohort the same way
         conversation.setStage(ConversationStage.CONNECT_PENDING);
         conversation.setConnectRequestedBy(userId);
         conversation.setConnectRequestedAt(Instant.now());

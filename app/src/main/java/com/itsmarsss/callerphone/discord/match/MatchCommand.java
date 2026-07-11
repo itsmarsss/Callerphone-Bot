@@ -67,7 +67,7 @@ public final class MatchCommand implements ISlashCommand {
             case "safety" -> handleSafety(e, ctx, userId);
             case "submit" -> {
                 ctx.profiles().setAvatar(userId, e.getUser().getEffectiveAvatarUrl());
-                reply(e, ctx.profiles().submitForReview(userId));
+                reply(e, ctx.profiles().publish(userId));
             }
             default -> e.reply(ToolSet.CP_EMJ + " Unknown Match subcommand.").setEphemeral(true).queue();
         }
@@ -96,10 +96,11 @@ public final class MatchCommand implements ISlashCommand {
 
                                 You will:
                                 1. Accept terms, privacy, and safety notices
-                                2. Choose your **age group** (used only for pairing isolation)
-                                3. Build a short profile for review
+                                2. Choose your **age group** (pairing only — groups never mix)
+                                3. Build a short profile and go live (no approval wait)
 
-                                Age groups never mix. Mediated chat never exposes Discord IDs until both people in the 18+ group explicitly connect.
+                                Everyone gets the same product. Report abuse anytime; mods review reports.
+                                Mediated chat hides Discord IDs until both people explicitly connect.
                                 """
                 ))
                 .addComponents(ActionRow.of(Button.success(
@@ -126,9 +127,8 @@ public final class MatchCommand implements ISlashCommand {
         row.add(Button.secondary(MatchComponentIds.of(MatchComponentIds.ACTION_EDIT_BIO, "_"), "Edit bio"));
         row.add(Button.secondary(MatchComponentIds.of(MatchComponentIds.ACTION_EDIT_INTERESTS, "_"), "Interests"));
         if (ProfileChecklist.readyToSubmit(p)
-                && p.getState() != com.itsmarsss.callerphone.match.model.ProfileState.ACTIVE
-                && p.getState() != com.itsmarsss.callerphone.match.model.ProfileState.PENDING_REVIEW) {
-            row.add(Button.success(MatchComponentIds.of(MatchComponentIds.ACTION_SUBMIT, "_"), "Submit"));
+                && p.getState() != com.itsmarsss.callerphone.match.model.ProfileState.ACTIVE) {
+            row.add(Button.success(MatchComponentIds.of(MatchComponentIds.ACTION_SUBMIT, "_"), "Go live"));
         }
         e.replyEmbeds(
                         MatchEmbeds.profileCard(p, true),
@@ -279,7 +279,7 @@ public final class MatchCommand implements ISlashCommand {
                                 .setRequired(false).setMaxLength(24).build()),
                         Label.of("Pronouns", TextInput.create("pronouns", TextInputStyle.SHORT)
                                 .setRequired(false).setMaxLength(24).build()),
-                        Label.of("Open to meeting (comma codes, 18+ only)", TextInput.create("openTo", TextInputStyle.SHORT)
+                        Label.of("Open to meeting (optional: woman,man,non_binary,…)", TextInput.create("openTo", TextInputStyle.SHORT)
                                 .setRequired(false).setMaxLength(64).build())
                 )
                 .build();
@@ -356,11 +356,11 @@ public final class MatchCommand implements ISlashCommand {
                                         .addChoice("list", "list")
                                         .addChoice("stop", "stop")),
                         new SubcommandData("pause", "Pause your profile"),
-                        new SubcommandData("resume", "Resume a paused profile (re-review)"),
+                        new SubcommandData("resume", "Resume a paused profile"),
                         new SubcommandData("notify", "Toggle Match DMs")
                                 .addOptions(new OptionData(OptionType.BOOLEAN, "enabled", "Receive Match DMs", true)),
-                        new SubcommandData("leave", "Leave Social and clear Match profile data"),
-                        new SubcommandData("submit", "Submit profile for review"),
+                        new SubcommandData("leave", "Leave discovery (keeps profile & chats)"),
+                        new SubcommandData("submit", "Go live in discovery"),
                         new SubcommandData("safety", "Block, report, or unmatch")
                                 .addOptions(
                                         new OptionData(OptionType.STRING, "action", "block/report/unmatch/help", true)

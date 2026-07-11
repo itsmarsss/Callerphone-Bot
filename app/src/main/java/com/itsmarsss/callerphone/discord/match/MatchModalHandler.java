@@ -67,10 +67,9 @@ public final class MatchModalHandler implements IModalInteraction {
                         + "\n\n**Next:** " + ProfileChecklist.nextStep(user, profile)
         )).setEphemeral(true);
         if (result.success() && ProfileChecklist.readyToSubmit(profile)
-                && profile.getState() != com.itsmarsss.callerphone.match.model.ProfileState.ACTIVE
-                && profile.getState() != com.itsmarsss.callerphone.match.model.ProfileState.PENDING_REVIEW) {
+                && profile.getState() != com.itsmarsss.callerphone.match.model.ProfileState.ACTIVE) {
             reply = reply.addComponents(ActionRow.of(
-                    Button.success(MatchComponentIds.of(MatchComponentIds.ACTION_SUBMIT, "_"), "Submit for review")
+                    Button.success(MatchComponentIds.of(MatchComponentIds.ACTION_SUBMIT, "_"), "Go live")
             ));
         }
         reply.queue();

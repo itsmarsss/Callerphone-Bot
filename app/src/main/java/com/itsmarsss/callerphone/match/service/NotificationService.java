@@ -50,16 +50,17 @@ public final class NotificationService {
                 conversationId);
     }
 
-    public void notifyProfileApproved(String userId) {
-        dmIfEnabled(userId, "Profile approved",
-                "Your Match profile is **active**. Use `/match browse` to discover people in your age group.",
+    public void notifyProfileLive(String userId) {
+        dmIfEnabled(userId, "You're live on Match",
+                "Your profile is in discovery for your age group. Use `/match browse` to meet people.",
                 null);
     }
 
-    public void notifyProfileRejected(String userId, String reason) {
-        dmIfEnabled(userId, "Profile needs changes",
-                "A moderator sent your profile back to draft.\nReason: " + (reason == null || reason.isBlank() ? "Please revise and resubmit." : reason)
-                        + "\n\nUse `/match profile` and `/match submit` when ready.",
+    public void notifyProfileRestricted(String userId, String reason) {
+        dmIfEnabled(userId, "Profile paused",
+                "A moderator paused your Match profile after a safety review.\nReason: "
+                        + (reason == null || reason.isBlank() ? "See support if you have questions." : reason)
+                        + "\n\nYou can still use other bot features. Contact support if this looks wrong.",
                 null);
     }
 
@@ -121,17 +122,7 @@ public final class NotificationService {
         );
     }
 
-    public void postPendingReviewAlert(String userId, String displayName) {
-        if (Callerphone.config == null) {
-            return;
-        }
-        TextChannel channel = ToolSet.getTextChannel(Callerphone.config.getReportChatChannel());
-        if (channel == null) {
-            return;
-        }
-        channel.sendMessage(ToolSet.CP_EMJ + " Match profile pending review: **"
-                + displayName + "** (`" + userId + "`). Staff: `mreview` / `mapprove " + userId + "`").queue();
-    }
+
 
     private void dmIfEnabled(String userId, String title, String body, String conversationId) {
         if (!notificationsOn(userId)) {

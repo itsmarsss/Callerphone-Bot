@@ -85,7 +85,7 @@ public final class MatchButtonHandler implements IButtonInteraction {
             }
             case MatchComponentIds.ACTION_SUBMIT -> {
                 ctx.profiles().setAvatar(userId, e.getUser().getEffectiveAvatarUrl());
-                EnrollmentService.ServiceResult result = ctx.profiles().submitForReview(userId);
+                EnrollmentService.ServiceResult result = ctx.profiles().publish(userId);
                 e.reply(ToolSet.CP_EMJ + " " + result.message()).setEphemeral(true).queue();
             }
             case MatchComponentIds.ACTION_EDIT_BASICS -> e.replyModal(MatchCommand.basicsModal()).queue();

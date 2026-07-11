@@ -106,16 +106,29 @@ public final class ModCommandRouter extends ListenerAdapter {
                         message.reply("Match not ready").queue();
                         return;
                     }
-                    var result = ApplicationContext.get().profiles().approve(author.getId(), id);
+                    // Force-active after a mistaken pause — users publish themselves
+                    var result = ApplicationContext.get().profiles().forceActive(author.getId(), id);
                     message.reply(result.message()).queue();
                 });
-                case "mreject" -> {
+                case "mpause" -> {
                     if (args.length < 2) {
-                        message.reply("`" + prefix + "mreject <id> [reason]`").queue();
+                        message.reply("`" + prefix + "mpause <id> [reason]`").queue();
                         return;
                     }
-                    String reason = args.length > 2 ? String.join(" ", java.util.Arrays.copyOfRange(args, 2, args.length)) : "rejected";
-                    var result = ApplicationContext.get().profiles().reject(author.getId(), args[1], reason);
+                    String reason = args.length > 2
+                            ? String.join(" ", java.util.Arrays.copyOfRange(args, 2, args.length))
+                            : "paused after report";
+                    var result = ApplicationContext.get().profiles().forcePause(author.getId(), args[1], reason);
+                    message.reply(result.message()).queue();
+                }
+                case "mreject" -> {
+                    // alias of mpause for muscle memory
+                    if (args.length < 2) {
+                        message.reply("`" + prefix + "mreject <id> [reason]` (pauses profile)").queue();
+                        return;
+                    }
+                    String reason = args.length > 2 ? String.join(" ", java.util.Arrays.copyOfRange(args, 2, args.length)) : "paused";
+                    var result = ApplicationContext.get().profiles().forcePause(author.getId(), args[1], reason);
                     message.reply(result.message()).queue();
                 }
                 case "msuspend" -> {
@@ -167,9 +180,10 @@ public final class ModCommandRouter extends ListenerAdapter {
             message.reply("Match not ready").queue();
             return;
         }
-        int limit = 10;
-        StringBuilder sb = new StringBuilder("Profiles pending review:\n");
-        for (MatchProfile profile : ApplicationContext.get().profiles().pendingReview(limit)) {
+        // Profiles self-publish; staff queue is reports, not pre-approval
+        StringBuilder sb = new StringBuilder(
+                "Match staff queue = **reports**, not profile approval.\nUse `mreports` / `mresolve`.\n\nSample live profiles:\n");
+        for (MatchProfile profile : ApplicationContext.get().profiles().pendingReview(10)) {
             sb.append("• `").append(profile.getUserId()).append("` ")
                     .append(profile.getDisplayName()).append(" [")
                     .append(profile.getAgeCohort() == null ? "?" : profile.getAgeCohort().label())
@@ -198,14 +212,14 @@ public final class ModCommandRouter extends ListenerAdapter {
                 `%sblacklist <id>` / `%srblacklist <id>`
                 `%sprefix <id> <prefix>` / `%srprefix <id>`
 
-                **Match**
-                `%smreview` — pending profiles
-                `%smapprove <id>` — approve profile
-                `%smreject <id> [reason]` — reject to draft
-                `%smsuspend <id> [reason]` — Match suspension
-                `%smrestore <id>` — clear Match sanctions
+                **Match** (users self-publish; you review **reports**)
                 `%smreports` — open reports
                 `%smresolve <reportId> <status>` — resolve report
+                `%smpause <id> [reason]` — force-pause profile after report
+                `%smapprove <id>` — force-active if wrongly paused
+                `%smsuspend <id> [reason]` — Match suspension
+                `%smrestore <id>` — clear Match sanctions
+                `%smreview` — sample live profiles
                 """.formatted(p, p, p, p, p, p, p, p, p, p, p, p, p);
         EmbedBuilder help = new EmbedBuilder()
                 .setTitle("Mod")
