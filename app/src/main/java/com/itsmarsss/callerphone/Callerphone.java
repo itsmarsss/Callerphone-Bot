@@ -6,7 +6,11 @@ import java.net.URISyntaxException;
 import java.net.URLDecoder;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.EnumSet;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import com.itsmarsss.ICommand;
 import com.itsmarsss.callerphone.channelpool.commands.*;
@@ -53,10 +57,10 @@ public class Callerphone {
     public static String parent;
 
 
-    public static final ArrayList<ICommand> cmdLst = new ArrayList<>();
-    public static final HashMap<String, ICommand> cmdMap = new HashMap<>();
-    public static final HashMap<String, IModalInteraction> mdlMap = new HashMap<>();
-    public static final HashMap<String, IButtonInteraction> btnMap = new HashMap<>();
+    public static final List<ICommand> cmdLst = new ArrayList<>();
+    public static final Map<String, ICommand> cmdMap = new ConcurrentHashMap<>();
+    public static final Map<String, IModalInteraction> mdlMap = new ConcurrentHashMap<>();
+    public static final Map<String, IButtonInteraction> btnMap = new ConcurrentHashMap<>();
 
     public static boolean isQuickStart;
 
@@ -76,47 +80,39 @@ public class Callerphone {
             GatewayIntent.DIRECT_MESSAGES,
             GatewayIntent.MESSAGE_CONTENT);
 
-    public final String version = "5.0.0";
+    public static final String VERSION = "6.0.0";
 
     public static void run() throws InterruptedException, URISyntaxException, UnsupportedEncodingException {
         ToolSet.printWelcome();
 
-        parent = URLDecoder.decode(new File(Callerphone.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getParentFile().getPath(), "UTF-8");
+        parent = URLDecoder.decode(
+                new File(Callerphone.class.getProtectionDomain().getCodeSource().getLocation().toURI())
+                        .getParentFile().getPath(),
+                "UTF-8");
 
-        System.out.println("\nParent - " + parent);
+        logger.info("Parent directory: {}", parent);
 
         if (!readConfigYML()) {
-            System.out.println("______________________________________________________");
-            System.out.println("There was an error with config.yml");
-            System.out.println("\t1. Make sure config.yml template exists");
-            System.out.println("\t2. Make sure config.yml values are correctly inputted");
-            System.exit(0);
+            logger.error("Invalid config.yml — ensure the template exists and values are set");
+            System.exit(1);
         }
 
         if (!dbConnector.init()) {
-            System.out.println("______________________________________________________");
-            System.out.println("Cannot connect to MongoDB via URL");
-            System.out.println("\t1. Make sure databaseURL exists in config.yml");
-            System.out.println("\t2. Make sure databaseURL follows the format: \"mongodb://ip:port\"");
-            System.exit(0);
+            logger.error("Cannot connect to MongoDB — check databaseURL in config.yml (mongodb://host:port)");
+            System.exit(1);
         }
 
         ToolSet.updateToolSet();
-
         new CommandPrompt().startPrompting();
     }
 
     private static boolean readConfigYML() {
-        InputStream is;
-        try {
-            is = Files.newInputStream(Paths.get(parent + "/config.yml"));
-
+        try (InputStream is = Files.newInputStream(Paths.get(parent + "/config.yml"))) {
             Yaml yml = new Yaml(new Constructor(Config.class, new LoaderOptions()));
-
             config = yml.load(is);
-            return config.isValid();
+            return config != null && config.isValid();
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("Failed to read config.yml", e);
             return false;
         }
     }

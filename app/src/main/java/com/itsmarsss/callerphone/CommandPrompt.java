@@ -7,144 +7,171 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
-import net.dv8tion.jda.api.interactions.commands.build.*;
+import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 import net.dv8tion.jda.api.requests.restaction.CommandListUpdateAction;
 import net.dv8tion.jda.api.sharding.ShardManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.awt.*;
-import java.time.OffsetDateTime;
+import java.awt.Color;
 import java.util.Scanner;
 
 public class CommandPrompt {
     public static final Logger logger = LoggerFactory.getLogger(CommandPrompt.class);
 
-    private ShardManager sdMgr;
+    private static final String HELP_TEXT =
+            "Commands:\n" +
+                    "  start <msg>      - Start the bot\n" +
+                    "  quickstart <msg> - Start with reduced caching\n" +
+                    "  shutdown <msg>   - Shutdown the bot\n" +
+                    "  info             - Print bot/shard stats\n" +
+                    "  updateCMD        - Upsert all slash commands\n" +
+                    "  help             - Show this help\n";
 
     public void startPrompting() {
-        Scanner sc = new Scanner(System.in);
-
-        User selfUser;
-
-        while (true) {
-            sdMgr = Callerphone.sdMgr;
-            selfUser = Callerphone.selfUser;
-
-            System.out.print("> ");
-            String cmd = sc.nextLine();
-            if (cmd.startsWith("start")) {
-                logger.info("Starting Bot...");
-                if (sdMgr != null) {
-                    logger.info("Bot Is Already Online.");
-                } else {
-                    Callerphone.isQuickStart = false;
-                    Callerphone.botInit(Callerphone.config.getBotToken(), cmd.replaceFirst("start", ""));
+        try (Scanner sc = new Scanner(System.in)) {
+            while (true) {
+                System.out.print("> ");
+                if (!sc.hasNextLine()) {
+                    break;
                 }
-            } else if (cmd.startsWith("quickstart")) {
-                logger.info("Quick Starting Bot...");
-                if (sdMgr != null) {
-                    logger.info("Bot Is Already Online.");
-                } else {
-                    Callerphone.isQuickStart = true;
-                    Callerphone.botInit(Callerphone.config.getBotToken(), cmd.replaceFirst("quickstart", ""));
-                }
-            } else if (cmd.equals("shutdown")) {
-                logger.info("Shutting Down Bot...");
-                if (sdMgr != null) {
-                    EmbedBuilder embedBuilder = new EmbedBuilder().setTitle("Status")
-                            .setColor(new Color(213, 0, 0))
-                            .setFooter("Goodbye World...")
-                            .setDescription(selfUser.getAsMention() + " is going offline;" + cmd.replaceFirst("shutdown", ""));
-                    final TextChannel LOG_CHANNEL = ToolSet.getTextChannel(Callerphone.config.getLogStatusChannel());
-                    if (LOG_CHANNEL == null) {
-                        logger.error("Error Sending Shutdown Message");
-                    } else {
-                        LOG_CHANNEL.sendMessageEmbeds(embedBuilder.build()).complete();
-                    }
-                    sdMgr.shutdown();
-                    sdMgr = null;
-                }
-                logger.info("Bot Offline");
-                sc.close();
-                System.exit(0);
-            } else if (cmd.equals("info")) {
-                if (sdMgr.getShards().get(0) != null) {
-                    String tag = selfUser.getAsTag();
-                    String avatarUrl = selfUser.getAvatarUrl();
-                    OffsetDateTime timeCreated = selfUser.getTimeCreated();
-                    String id = selfUser.getId();
-                    System.out.println("Tag of the bot: " + tag);
-                    System.out.println("Avatar url: " + avatarUrl);
-                    System.out.println("Time created: " + timeCreated);
-                    System.out.println("Id: " + id);
-                    System.out.println("Shard Info:");
 
-                    long totalServers = 0;
-                    long cachedUsers = 0;
-                    long totalUsers = 0;
-
-                    int i = 0;
-                    for (JDA jda : sdMgr.getShards()) {
-                        totalServers += jda.getGuilds().size();
-                        cachedUsers += jda.getUsers().size();
-
-                        long users = 0;
-
-                        for (Guild g : jda.getGuilds()) {
-                            users += g.getMemberCount();
-                        }
-
-                        totalUsers += users;
-
-                        System.out.println(i);
-                        System.out.println("\tShard info: " + jda.getShardInfo().getShardString());
-                        System.out.println("\tGuilds: " + jda.getGuilds().size());
-                        System.out.println("\tUsers: " + users);
-                        i++;
-                    }
-
-                    System.out.println("Total Guilds: " + totalServers);
-                    System.out.println("Total Cached Users: " + cachedUsers);
-                    System.out.println("Total Users: " + totalUsers);
+                String line = sc.nextLine().trim();
+                if (line.isEmpty()) {
                     continue;
                 }
-                logger.info("Bot Is Offline");
-            } else if (cmd.equals("updateCMD")) {
-                upsert();
-                System.out.println("Done Upserting");
-            } else if (cmd.equals("help")) {
-                System.out.println(
-                        "Option 1: start <msg> = To start the bot\n" +
-                                "Option 2: quickstart <msg> = To start the bot quicker" +
-                                "Option 3: shutdown <msg> = To shutdown the bot\n" +
-                                "Option 4: info = To get info of the bot\n" +
-                                "Option 5: updateCMD = Update all slash commands\n" +
-                                "Option 6: help = CBCL help (this)\n\n");
-            } else {
-                logger.warn("Unknown Command");
+
+                if (line.startsWith("start")) {
+                    startBot(false, line.substring("start".length()).trim());
+                } else if (line.startsWith("quickstart")) {
+                    startBot(true, line.substring("quickstart".length()).trim());
+                } else if (line.startsWith("shutdown")) {
+                    shutdown(line.substring("shutdown".length()).trim());
+                    return;
+                } else if (line.equals("info")) {
+                    printInfo();
+                } else if (line.equals("updateCMD")) {
+                    upsert();
+                    System.out.println("Done upserting slash commands.");
+                } else if (line.equals("help")) {
+                    System.out.println(HELP_TEXT);
+                } else {
+                    logger.warn("Unknown command. Type 'help' for options.");
+                }
             }
         }
     }
 
-    private void upsert() {
+    private void startBot(boolean quick, String startupMsg) {
+        if (Callerphone.sdMgr != null) {
+            logger.info("Bot is already online.");
+            return;
+        }
+        logger.info(quick ? "Quick-starting bot..." : "Starting bot...");
+        Callerphone.isQuickStart = quick;
+        Callerphone.botInit(Callerphone.config.getBotToken(), startupMsg);
+    }
+
+    private void shutdown(String message) {
+        logger.info("Shutting down bot...");
+        ShardManager sdMgr = Callerphone.sdMgr;
+        User selfUser = Callerphone.selfUser;
+
+        if (sdMgr != null) {
+            if (selfUser != null) {
+                TextChannel logChannel = ToolSet.getTextChannel(Callerphone.config.getLogStatusChannel());
+                if (logChannel != null) {
+                    EmbedBuilder embed = new EmbedBuilder()
+                            .setTitle("Status")
+                            .setColor(new Color(213, 0, 0))
+                            .setFooter("Goodbye World...")
+                            .setDescription(selfUser.getAsMention() + " is going offline; " + message);
+                    try {
+                        logChannel.sendMessageEmbeds(embed.build()).complete();
+                    } catch (Exception e) {
+                        logger.error("Failed to send shutdown message", e);
+                    }
+                } else {
+                    logger.error("Invalid log status channel; skip shutdown message");
+                }
+            }
+            sdMgr.shutdown();
+            Callerphone.sdMgr = null;
+            Callerphone.dbConnector.close();
+        }
+
+        logger.info("Bot offline");
+        System.exit(0);
+    }
+
+    private void printInfo() {
+        ShardManager sdMgr = Callerphone.sdMgr;
+        User selfUser = Callerphone.selfUser;
+
+        if (sdMgr == null || selfUser == null || sdMgr.getShards().isEmpty()) {
+            logger.info("Bot is offline");
+            return;
+        }
+
+        System.out.println("Tag: " + selfUser.getAsTag());
+        System.out.println("Id: " + selfUser.getId());
+        System.out.println("Avatar: " + selfUser.getAvatarUrl());
+        System.out.println("Created: " + selfUser.getTimeCreated());
+        System.out.println("Shards:");
+
+        long totalServers = 0;
+        long cachedUsers = 0;
+        long totalUsers = 0;
+        int i = 0;
+
         for (JDA jda : sdMgr.getShards()) {
-            CommandListUpdateAction commands = jda.updateCommands();
-
-            for (ICommand command : Callerphone.cmdLst) {
-                if (!ISlashCommand.class.isAssignableFrom(command.getClass())) {
-                    continue;
-                }
-
-                SlashCommandData commandData = ((ISlashCommand) (command)).getCommandData();
-                if (commandData == null) {
-                    continue;
-                }
-
-                commands.addCommands(commandData);
+            long guildUsers = 0;
+            for (Guild g : jda.getGuilds()) {
+                guildUsers += g.getMemberCount();
             }
 
-            commands.queue();
+            totalServers += jda.getGuilds().size();
+            cachedUsers += jda.getUsers().size();
+            totalUsers += guildUsers;
+
+            System.out.println("  [" + i + "] " + jda.getShardInfo().getShardString()
+                    + " guilds=" + jda.getGuilds().size()
+                    + " users=" + guildUsers
+                    + " status=" + jda.getStatus());
+            i++;
+        }
+
+        System.out.println("Total guilds: " + totalServers);
+        System.out.println("Total cached users: " + cachedUsers);
+        System.out.println("Total members: " + totalUsers);
+    }
+
+    private void upsert() {
+        ShardManager sdMgr = Callerphone.sdMgr;
+        if (sdMgr == null) {
+            logger.warn("Cannot upsert commands while bot is offline");
+            return;
+        }
+
+        for (JDA jda : sdMgr.getShards()) {
+            CommandListUpdateAction commands = jda.updateCommands();
+            int count = 0;
+            for (ICommand command : Callerphone.cmdLst) {
+                if (!(command instanceof ISlashCommand)) {
+                    continue;
+                }
+                SlashCommandData data = ((ISlashCommand) command).getCommandData();
+                if (data == null) {
+                    continue;
+                }
+                commands.addCommands(data);
+                count++;
+            }
+            final int registered = count;
+            commands.queue(
+                    success -> logger.info("Upserted {} commands on shard {}", registered, jda.getShardInfo()),
+                    error -> logger.error("Failed to upsert commands on shard {}", jda.getShardInfo(), error)
+            );
         }
     }
 }
