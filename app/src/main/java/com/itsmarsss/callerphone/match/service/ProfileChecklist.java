@@ -80,9 +80,9 @@ public final class ProfileChecklist {
             return "Profile paused — `/match resume` to reappear in discovery.";
         }
         if (profile.getState() != ProfileState.ACTIVE) {
-            return "Go live with `/match submit` — no approval wait, you can browse right after.";
+            return "Tap **Finish setup** / **Continue setup** — one form and you're live.";
         }
-        return "You're live — `/match browse` to discover people.";
+        return "You're live — tap **Browse** or `/match browse`.";
     }
 
     private static String check(boolean done, String label) {

@@ -99,25 +99,37 @@ public final class MatchCommand implements ISlashCommand {
         if (!"START_ONBOARDING".equals(result.message())) {
             MatchUser user = ctx.enrollment().getOrCreate(userId);
             MatchProfile profile = ctx.profiles().getOrCreateDraft(userId);
-            e.replyEmbeds(MatchEmbeds.simple(
-                    "Already enrolled",
-                    result.message() + "\n\n" + ProfileChecklist.format(user, profile)
-                            + "\n\n**Next:** " + ProfileChecklist.nextStep(user, profile)
+            // Incomplete profile: one button continues setup — no command soup
+            if (!ProfileChecklist.readyToSubmit(profile)
+                    || profile.getState() != com.itsmarsss.callerphone.match.model.ProfileState.ACTIVE) {
+                e.replyEmbeds(MatchEmbeds.soft(
+                        "Pick up where you left off",
+                        "You're already in. Finish your card in **one short form** — no extra commands."
+                )).addComponents(ActionRow.of(
+                        Button.primary(MatchComponentIds.of(MatchComponentIds.ACTION_SETUP, "_"), "Continue setup"),
+                        Button.success(MatchComponentIds.of(MatchComponentIds.ACTION_START_BROWSE, "_"), "Browse")
+                )).setEphemeral(true).queue();
+                return;
+            }
+            e.replyEmbeds(MatchEmbeds.success(
+                    "You're all set",
+                    result.message() + "\n\nJump into discovery anytime."
+            )).addComponents(ActionRow.of(
+                    Button.success(MatchComponentIds.of(MatchComponentIds.ACTION_START_BROWSE, "_"), "✦ Browse")
             )).setEphemeral(true).queue();
             return;
         }
         e.replyEmbeds(MatchEmbeds.soft(
                         "✦  Callerphone Social",
                         """
-                                Meet people who vibe with you — **friendship & community**, not dating apps.
+                                Meet people who vibe with you — **friendship & community**.
 
-                                **How it works**
-                                1. Quick yes to terms & safety
-                                2. Pick your **age group** (pairing only — groups never mix)
-                                3. Tiny profile → **go live** (no approval wait)
-                                4. Browse · interested · match · chat
+                                **About 30 seconds**
+                                1. Agree → pick age group  
+                                2. One form (name, bio, interests)  
+                                3. You're live — start browsing
 
-                                Abuse? Report anytime. Chats stay private until both of you choose to connect.
+                                No approval queue. Age groups never mix.
                                 """
                 ))
                 .addComponents(ActionRow.of(Button.success(
@@ -143,12 +155,12 @@ public final class MatchCommand implements ISlashCommand {
                 + " · Streak: " + mu.getBrowseStreakDays() + "d"
                 + " · Complete: " + ProfileChecklist.completionPercent(mu, p) + "%";
         List<Button> row = new ArrayList<>();
-        row.add(Button.primary(MatchComponentIds.of(MatchComponentIds.ACTION_EDIT_BASICS, "_"), "Edit basics"));
-        row.add(Button.secondary(MatchComponentIds.of(MatchComponentIds.ACTION_EDIT_BIO, "_"), "Edit bio"));
-        row.add(Button.secondary(MatchComponentIds.of(MatchComponentIds.ACTION_EDIT_INTERESTS, "_"), "Interests"));
-        if (ProfileChecklist.readyToSubmit(p)
-                && p.getState() != com.itsmarsss.callerphone.match.model.ProfileState.ACTIVE) {
-            row.add(Button.success(MatchComponentIds.of(MatchComponentIds.ACTION_SUBMIT, "_"), "Go live"));
+        if (p.getState() != com.itsmarsss.callerphone.match.model.ProfileState.ACTIVE
+                || !ProfileChecklist.readyToSubmit(p)) {
+            row.add(Button.primary(MatchComponentIds.of(MatchComponentIds.ACTION_SETUP, "_"), "Finish setup"));
+        } else {
+            row.add(Button.primary(MatchComponentIds.of(MatchComponentIds.ACTION_SETUP, "_"), "Edit profile"));
+            row.add(Button.success(MatchComponentIds.of(MatchComponentIds.ACTION_START_BROWSE, "_"), "Browse"));
         }
         e.replyEmbeds(
                         MatchEmbeds.profileCard(p, true),
@@ -165,13 +177,8 @@ public final class MatchCommand implements ISlashCommand {
     }
 
     private void handleEdit(SlashCommandInteractionEvent e, ApplicationContext ctx, String userId) {
-        String field = e.getOption("field") == null ? "basics" : e.getOption("field").getAsString();
-        switch (field) {
-            case "basics" -> e.replyModal(basicsModal()).queue();
-            case "bio" -> e.replyModal(bioModal()).queue();
-            case "interests" -> e.replyModal(interestsModal()).queue();
-            default -> e.reply(ToolSet.CP_EMJ + " Unknown field.").setEphemeral(true).queue();
-        }
+        // Single setup form — field option kept for compat but ignored for lower friction
+        e.replyModal(setupModal()).queue();
     }
 
     private void handleBrowse(SlashCommandInteractionEvent e, ApplicationContext ctx, String userId) {
@@ -367,47 +374,48 @@ public final class MatchCommand implements ISlashCommand {
         e.reply(ToolSet.CP_EMJ + " " + result.message()).setEphemeral(true).queue();
     }
 
-    static Modal basicsModal() {
-        // Discord Label text max 45 chars — put examples in placeholders
-        return Modal.create("m-v1-modal-basics", "Your basics")
+    /**
+     * One form for the whole profile (Discord max 5 inputs).
+     * Guided join opens this right after age pick — no extra slash commands.
+     */
+    static Modal setupModal() {
+        return Modal.create("m-v1-modal-setup", "Your Match profile")
                 .addComponents(
                         Label.of("Display name", TextInput.create("displayName", TextInputStyle.SHORT)
                                 .setPlaceholder("How you want to show up")
                                 .setRequired(true).setMaxLength(32).build()),
-                        Label.of("Gender (optional)", TextInput.create("gender", TextInputStyle.SHORT)
-                                .setPlaceholder("woman · man · non_binary · other · prefer_not")
-                                .setRequired(false).setMaxLength(24).build()),
-                        Label.of("Pronouns (optional)", TextInput.create("pronouns", TextInputStyle.SHORT)
-                                .setPlaceholder("e.g. she/her, he/him, they/them")
-                                .setRequired(false).setMaxLength(24).build()),
-                        Label.of("Open to meeting (optional)", TextInput.create("openTo", TextInputStyle.SHORT)
-                                .setPlaceholder("comma codes: woman, man, non_binary…")
-                                .setRequired(false).setMaxLength(64).build())
-                )
-                .build();
-    }
-
-    static Modal bioModal() {
-        return Modal.create("m-v1-modal-bio", "Bio & prompt")
-                .addComponents(
                         Label.of("Short bio", TextInput.create("bio", TextInputStyle.PARAGRAPH)
-                                .setPlaceholder("A few sentences about you — keep it friendly")
+                                .setPlaceholder("A few friendly sentences about you")
                                 .setRequired(true).setMaxLength(300).build()),
                         Label.of("Ideal Sunday", TextInput.create("prompt", TextInputStyle.PARAGRAPH)
-                                .setPlaceholder("What does a perfect Sunday look like for you?")
-                                .setRequired(true).setMaxLength(200).build())
+                                .setPlaceholder("What does a perfect Sunday look like?")
+                                .setRequired(true).setMaxLength(200).build()),
+                        Label.of("Interests (up to 5)", TextInput.create("interests", TextInputStyle.SHORT)
+                                .setPlaceholder("gaming, music, art, hiking…")
+                                .setRequired(true).setMaxLength(80).build()),
+                        Label.of("Pronouns (optional)", TextInput.create("pronouns", TextInputStyle.SHORT)
+                                .setPlaceholder("she/her · he/him · they/them")
+                                .setRequired(false).setMaxLength(24).build())
                 )
                 .build();
     }
 
+    /** @deprecated use {@link #setupModal()} */
+    @Deprecated
+    static Modal basicsModal() {
+        return setupModal();
+    }
+
+    /** @deprecated use {@link #setupModal()} */
+    @Deprecated
+    static Modal bioModal() {
+        return setupModal();
+    }
+
+    /** @deprecated use {@link #setupModal()} */
+    @Deprecated
     static Modal interestsModal() {
-        return Modal.create("m-v1-modal-interests", "Your interests")
-                .addComponents(
-                        Label.of("Up to 5 interests", TextInput.create("interests", TextInputStyle.PARAGRAPH)
-                                .setPlaceholder("gaming, music, art, hiking, anime…")
-                                .setRequired(true).setMaxLength(120).build())
-                )
-                .build();
+        return setupModal();
     }
 
     static List<Gender> parseOpenTo(String raw) {
@@ -430,13 +438,10 @@ public final class MatchCommand implements ISlashCommand {
 
     @Override
     public String getHelp() {
-        return "`/match join` — opt into Social\n" +
-                "`/match profile` — view your card\n" +
-                "`/match browse` · `/match likes` · `/match undo`\n" +
-                "`/match chats` — connections (unread badges)\n" +
-                "`/match safety` — block, report, unmatch\n" +
-                "`/match export` · `/match delete` · `/match leave`\n" +
-                "`/match digest` · `/match premium` · `/match photo`\n";
+        return "`/match join` — set up in ~30s (buttons + one form)\n" +
+                "`/match browse` — discover people\n" +
+                "`/match chats` · `/match likes` · `/match profile`\n" +
+                "`/match safety` — block / report / unmatch\n";
     }
 
     @Override
@@ -450,11 +455,7 @@ public final class MatchCommand implements ISlashCommand {
                 .addSubcommands(
                         new SubcommandData("join", "Opt into Social matching"),
                         new SubcommandData("profile", "View your profile card"),
-                        new SubcommandData("edit", "Edit profile fields")
-                                .addOptions(new OptionData(OptionType.STRING, "field", "basics, bio, or interests", true)
-                                        .addChoice("basics", "basics")
-                                        .addChoice("bio", "bio")
-                                        .addChoice("interests", "interests")),
+                        new SubcommandData("edit", "Edit your whole profile (one form)"),
                         new SubcommandData("browse", "Discover one compatible profile"),
                         new SubcommandData("likes", "See who expressed interest in you"),
                         new SubcommandData("undo", "Undo your last skip"),

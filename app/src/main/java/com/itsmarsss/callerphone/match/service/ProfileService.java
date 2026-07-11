@@ -122,6 +122,66 @@ public final class ProfileService {
         return EnrollmentService.ServiceResult.ok("Interests saved.");
     }
 
+    /**
+     * One-shot setup from the guided join flow. Saves name/bio/prompt/interests and goes live.
+     * Gender/open-to stay optional (edit later if wanted).
+     */
+    public EnrollmentService.ServiceResult completeQuickSetup(
+            String userId,
+            String displayName,
+            String pronouns,
+            String bio,
+            String promptAnswer,
+            List<String> interests,
+            String avatarUrl
+    ) {
+        if (safety.isMatchSuspended(userId)) {
+            return EnrollmentService.ServiceResult.fail("Your Match access is restricted.");
+        }
+        List<String> errors = new java.util.ArrayList<>();
+        errors.addAll(ProfileValidator.validateDisplayName(displayName));
+        errors.addAll(ProfileValidator.validateBio(bio));
+        errors.addAll(ProfileValidator.validatePromptAnswer(promptAnswer));
+        List<String> cleaned = interests == null ? List.of() : interests.stream()
+                .map(s -> s == null ? "" : s.trim().toLowerCase())
+                .filter(s -> !s.isBlank())
+                .distinct()
+                .limit(5)
+                .toList();
+        errors.addAll(ProfileValidator.validateInterests(cleaned));
+        if (!errors.isEmpty()) {
+            return EnrollmentService.ServiceResult.fail(String.join(" ", errors));
+        }
+
+        MatchProfile profile = getOrCreateDraft(userId);
+        ensureCohort(profile, userId);
+        if (profile.getAgeCohort() == null) {
+            return EnrollmentService.ServiceResult.fail("Pick an age group first — use `/match join`.");
+        }
+        profile.setDisplayName(displayName);
+        profile.setPronouns(pronouns == null ? "" : pronouns.trim());
+        profile.setBio(bio);
+        profile.setPrompts(List.of(new ProfilePrompt("ideal_sunday", promptAnswer)));
+        profile.setInterests(cleaned);
+        profile.setOnboardingStep(7);
+        if (avatarUrl != null && !avatarUrl.isBlank()) {
+            List<MediaRef> media = new java.util.ArrayList<>();
+            media.add(MediaRef.avatar(UUID.randomUUID().toString(), avatarUrl));
+            profile.setMedia(media);
+        }
+        profile.setState(ProfileState.ACTIVE);
+        profile.touch();
+        profiles.save(profile);
+        if (analytics != null) {
+            analytics.track(userId, "match_profile_live", profile.getAgeCohort().code());
+        }
+        if (notifications != null) {
+            notifications.notifyProfileLive(userId);
+        }
+        return EnrollmentService.ServiceResult.ok(
+                "You're live in **" + profile.getAgeCohort().label() + "** — tap browse when you're ready.");
+    }
+
     public EnrollmentService.ServiceResult setAvatar(String userId, String avatarUrl) {
         MatchProfile profile = getOrCreateDraft(userId);
         ensureCohort(profile, userId);

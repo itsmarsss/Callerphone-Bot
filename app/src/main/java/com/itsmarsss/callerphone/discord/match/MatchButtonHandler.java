@@ -4,16 +4,13 @@ import com.itsmarsss.callerphone.ToolSet;
 import com.itsmarsss.callerphone.bootstrap.ApplicationContext;
 import com.itsmarsss.callerphone.identity.AgeCohort;
 import com.itsmarsss.callerphone.identity.EnrollmentService;
-import com.itsmarsss.callerphone.identity.MatchUser;
 import com.itsmarsss.callerphone.match.component.MatchComponentIds;
 import com.itsmarsss.callerphone.match.model.ConversationStage;
 import com.itsmarsss.callerphone.match.model.DecisionType;
 import com.itsmarsss.callerphone.match.model.MatchConversation;
-import com.itsmarsss.callerphone.match.model.MatchProfile;
 import com.itsmarsss.callerphone.match.service.DecisionService;
 import com.itsmarsss.callerphone.match.service.DiscoveryService;
 import com.itsmarsss.callerphone.match.service.MatchConversationService;
-import com.itsmarsss.callerphone.match.service.ProfileChecklist;
 import com.itsmarsss.commandType.IButtonInteraction;
 import net.dv8tion.jda.api.components.actionrow.ActionRow;
 import net.dv8tion.jda.api.components.buttons.Button;
@@ -43,9 +40,9 @@ public final class MatchButtonHandler implements IButtonInteraction {
             case MatchComponentIds.ACTION_JOIN_ACCEPT -> {
                 ctx.enrollment().acceptPolicies(userId);
                 e.replyEmbeds(MatchEmbeds.soft(
-                                "Pick your age group",
-                                "One tap — this only decides **who you can meet**.\n"
-                                        + "Groups never mix. You can update other profile stuff next."))
+                                "Who can you meet?",
+                                "One tap. This only sets pairing — **groups never mix**.\n"
+                                        + "Next: one short form, then you're live."))
                         .addComponents(ActionRow.of(
                                 Button.primary(MatchComponentIds.of(MatchComponentIds.ACTION_AGE_13_15, userId), "13–15"),
                                 Button.primary(MatchComponentIds.of(MatchComponentIds.ACTION_AGE_16_17, userId), "16–17"),
@@ -57,6 +54,14 @@ public final class MatchButtonHandler implements IButtonInteraction {
             case MatchComponentIds.ACTION_AGE_13_15 -> selectAge(e, ctx, userId, AgeCohort.AGE_13_15);
             case MatchComponentIds.ACTION_AGE_16_17 -> selectAge(e, ctx, userId, AgeCohort.AGE_16_17);
             case MatchComponentIds.ACTION_AGE_18_PLUS -> selectAge(e, ctx, userId, AgeCohort.AGE_18_PLUS);
+            case MatchComponentIds.ACTION_SETUP,
+                 MatchComponentIds.ACTION_EDIT_BASICS,
+                 MatchComponentIds.ACTION_EDIT_BIO,
+                 MatchComponentIds.ACTION_EDIT_INTERESTS -> e.replyModal(MatchCommand.setupModal()).queue();
+            case MatchComponentIds.ACTION_START_BROWSE -> {
+                e.deferReply(true).queue();
+                ctx.dbExecutor().execute(() -> sendBrowse(e, ctx, userId));
+            }
             case MatchComponentIds.ACTION_INTERESTED -> decide(e, ctx, userId, opaque, DecisionType.INTERESTED);
             case MatchComponentIds.ACTION_SKIP -> decide(e, ctx, userId, opaque, DecisionType.SKIP);
             case MatchComponentIds.ACTION_CHAT_SELECT -> replyChatSelect(e, ctx, userId, opaque);
@@ -88,11 +93,22 @@ public final class MatchButtonHandler implements IButtonInteraction {
             case MatchComponentIds.ACTION_SUBMIT -> {
                 ctx.profiles().setAvatar(userId, e.getUser().getEffectiveAvatarUrl());
                 EnrollmentService.ServiceResult result = ctx.profiles().publish(userId);
-                e.reply(ToolSet.CP_EMJ + " " + result.message()).setEphemeral(true).queue();
+                if (result.success()) {
+                    e.replyEmbeds(MatchEmbeds.success("You're live ✨", result.message()))
+                            .addComponents(ActionRow.of(
+                                    Button.success(MatchComponentIds.of(MatchComponentIds.ACTION_START_BROWSE, "_"), "✦ Start browsing")
+                            ))
+                            .setEphemeral(true)
+                            .queue();
+                } else {
+                    e.replyEmbeds(MatchEmbeds.warm("Not quite", result.message()))
+                            .addComponents(ActionRow.of(
+                                    Button.primary(MatchComponentIds.of(MatchComponentIds.ACTION_SETUP, "_"), "Finish setup")
+                            ))
+                            .setEphemeral(true)
+                            .queue();
+                }
             }
-            case MatchComponentIds.ACTION_EDIT_BASICS -> e.replyModal(MatchCommand.basicsModal()).queue();
-            case MatchComponentIds.ACTION_EDIT_BIO -> e.replyModal(MatchCommand.bioModal()).queue();
-            case MatchComponentIds.ACTION_EDIT_INTERESTS -> e.replyModal(MatchCommand.interestsModal()).queue();
             case MatchComponentIds.ACTION_BROWSE_NEXT -> {
                 e.deferReply(true).queue();
                 ctx.dbExecutor().execute(() -> sendBrowse(e, ctx, userId));
@@ -104,19 +120,12 @@ public final class MatchButtonHandler implements IButtonInteraction {
     private void selectAge(ButtonInteraction e, ApplicationContext ctx, String userId, AgeCohort cohort) {
         EnrollmentService.ServiceResult result = ctx.enrollment().selectAgeCohort(userId, cohort);
         ctx.profiles().setAvatar(userId, e.getUser().getEffectiveAvatarUrl());
-        MatchUser user = ctx.enrollment().getOrCreate(userId);
-        MatchProfile profile = ctx.profiles().getOrCreateDraft(userId);
-        e.replyEmbeds(MatchEmbeds.checklist(
-                "You're in · " + cohort.label(),
-                "Age group is only for pairing — you'll only meet people in **" + cohort.label() + "**.\n"
-                        + "Finish the steps below, then go live. No approval wait.",
-                ProfileChecklist.format(user, profile),
-                ProfileChecklist.nextStep(user, profile)
-        )).addComponents(ActionRow.of(
-                Button.primary(MatchComponentIds.of(MatchComponentIds.ACTION_EDIT_BASICS, "_"), "1 · Basics"),
-                Button.secondary(MatchComponentIds.of(MatchComponentIds.ACTION_EDIT_BIO, "_"), "2 · Bio"),
-                Button.secondary(MatchComponentIds.of(MatchComponentIds.ACTION_EDIT_INTERESTS, "_"), "3 · Interests")
-        )).setEphemeral(true).queue();
+        if (!result.success()) {
+            e.replyEmbeds(MatchEmbeds.warm("Hold up", result.message())).setEphemeral(true).queue();
+            return;
+        }
+        // Lowest friction: open the one setup form immediately (no extra commands)
+        e.replyModal(MatchCommand.setupModal()).queue();
     }
 
     private void replyChatSelect(ButtonInteraction e, ApplicationContext ctx, String userId, String conversationId) {

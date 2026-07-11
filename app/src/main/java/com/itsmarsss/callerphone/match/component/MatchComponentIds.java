@@ -26,7 +26,10 @@ public final class MatchComponentIds {
     public static final String ACTION_UNMATCH = "unmatch";
     public static final String ACTION_STOP_CHAT = "stop_chat";
     public static final String ACTION_SUBMIT = "submit";
-
+    /** Opens the one-shot setup modal (guided onboarding). */
+    public static final String ACTION_SETUP = "setup";
+    /** Start browsing after going live. */
+    public static final String ACTION_START_BROWSE = "start_browse";
 
     private MatchComponentIds() {
     }

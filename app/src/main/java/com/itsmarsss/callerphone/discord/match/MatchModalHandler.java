@@ -3,11 +3,9 @@ package com.itsmarsss.callerphone.discord.match;
 import com.itsmarsss.callerphone.ToolSet;
 import com.itsmarsss.callerphone.bootstrap.ApplicationContext;
 import com.itsmarsss.callerphone.identity.EnrollmentService;
-import com.itsmarsss.callerphone.identity.MatchUser;
 import com.itsmarsss.callerphone.match.component.MatchComponentIds;
-import com.itsmarsss.callerphone.match.model.Gender;
 import com.itsmarsss.callerphone.match.model.MatchProfile;
-import com.itsmarsss.callerphone.match.service.ProfileChecklist;
+import com.itsmarsss.callerphone.match.model.ProfileState;
 import com.itsmarsss.commandType.IModalInteraction;
 import net.dv8tion.jda.api.components.actionrow.ActionRow;
 import net.dv8tion.jda.api.components.buttons.Button;
@@ -27,60 +25,84 @@ public final class MatchModalHandler implements IModalInteraction {
         String userId = e.getUser().getId();
         String modalId = e.getModalId();
 
-        EnrollmentService.ServiceResult result;
-        if (modalId.endsWith("basics")) {
-            String name = value(e, "displayName");
-            Gender gender = Gender.fromCode(value(e, "gender")).orElse(null);
-            String pronouns = value(e, "pronouns");
-            List<Gender> openTo = MatchCommand.parseOpenTo(value(e, "openTo"));
-            result = ctx.profiles().updateBasics(userId, name, gender, pronouns, openTo);
-        } else if (modalId.endsWith("bio")) {
-            result = ctx.profiles().updateBioAndPrompt(userId, value(e, "bio"), value(e, "prompt"));
-        } else if (modalId.endsWith("interests")) {
-            List<String> interests = Arrays.stream(value(e, "interests").split(","))
-                    .map(String::trim)
-                    .filter(s -> !s.isEmpty())
-                    .toList();
-            result = ctx.profiles().updateInterests(userId, interests);
-        } else {
-            e.reply(ToolSet.CP_EMJ + " Unknown Match modal.").setEphemeral(true).queue();
+        // One-shot setup (guided join) or legacy modal ids remapped to setup
+        if (modalId.endsWith("setup")
+                || modalId.endsWith("basics")
+                || modalId.endsWith("bio")
+                || modalId.endsWith("interests")) {
+            handleSetup(e, ctx, userId);
             return;
         }
-        replyWithNext(e, ctx, userId, result);
+        e.reply(ToolSet.CP_EMJ + " Unknown Match modal.").setEphemeral(true).queue();
+    }
+
+    private static void handleSetup(ModalInteractionEvent e, ApplicationContext ctx, String userId) {
+        // Prefer combined setup fields; fall back gracefully if old modal only sent some
+        String name = value(e, "displayName");
+        String bio = value(e, "bio");
+        String prompt = value(e, "prompt");
+        String interestsRaw = value(e, "interests");
+        String pronouns = value(e, "pronouns");
+
+        // Legacy partial modals: if only basics fields, keep old path
+        if (!name.isBlank() && bio.isBlank() && prompt.isBlank() && interestsRaw.isBlank()) {
+            var result = ctx.profiles().updateBasics(userId, name, null, pronouns, List.of());
+            e.replyEmbeds(MatchEmbeds.warm("Almost there", result.message()
+                    + "\n\nUse **Continue setup** for the full form (bio + interests)."))
+                    .addComponents(ActionRow.of(
+                            Button.primary(MatchComponentIds.of(MatchComponentIds.ACTION_SETUP, "_"), "Continue setup")
+                    ))
+                    .setEphemeral(true)
+                    .queue();
+            return;
+        }
+
+        List<String> interests = Arrays.stream(interestsRaw.split("[,\\n]"))
+                .map(String::trim)
+                .filter(s -> !s.isEmpty())
+                .toList();
+
+        EnrollmentService.ServiceResult result = ctx.profiles().completeQuickSetup(
+                userId,
+                name,
+                pronouns,
+                bio,
+                prompt,
+                interests,
+                e.getUser().getEffectiveAvatarUrl()
+        );
+
+        if (!result.success()) {
+            e.replyEmbeds(MatchEmbeds.warm("Couldn't save that", result.message() + "\n\nTap below to try again."))
+                    .addComponents(ActionRow.of(
+                            Button.primary(MatchComponentIds.of(MatchComponentIds.ACTION_SETUP, "_"), "Fix & retry")
+                    ))
+                    .setEphemeral(true)
+                    .queue();
+            return;
+        }
+
+        MatchProfile profile = ctx.profiles().find(userId).orElse(null);
+        var reply = e.replyEmbeds(
+                MatchEmbeds.success("You're live ✨", result.message()),
+                profile != null ? MatchEmbeds.profileCard(profile, true) : MatchEmbeds.soft("Profile", "Saved.")
+        ).setEphemeral(true);
+
+        if (profile != null && profile.getState() == ProfileState.ACTIVE) {
+            reply = reply.addComponents(ActionRow.of(
+                    Button.success(MatchComponentIds.of(MatchComponentIds.ACTION_START_BROWSE, "_"), "✦ Start browsing"),
+                    Button.secondary(MatchComponentIds.of(MatchComponentIds.ACTION_SETUP, "_"), "Edit")
+            ));
+        }
+        reply.queue();
     }
 
     private static String value(ModalInteractionEvent e, String id) {
         return e.getValue(id) == null ? "" : e.getValue(id).getAsString();
     }
 
-    private static void replyWithNext(
-            ModalInteractionEvent e,
-            ApplicationContext ctx,
-            String userId,
-            EnrollmentService.ServiceResult result
-    ) {
-        MatchUser user = ctx.enrollment().getOrCreate(userId);
-        MatchProfile profile = ctx.profiles().getOrCreateDraft(userId);
-        var emb = result.success()
-                ? MatchEmbeds.checklist(
-                "Saved ✨",
-                result.message(),
-                ProfileChecklist.format(user, profile),
-                ProfileChecklist.nextStep(user, profile))
-                : MatchEmbeds.warm("Couldn't save that", result.message() + "\n\nTry again — no stress.");
-        var reply = e.replyEmbeds(emb).setEphemeral(true);
-        if (result.success() && ProfileChecklist.readyToSubmit(profile)
-                && profile.getState() != com.itsmarsss.callerphone.match.model.ProfileState.ACTIVE) {
-            reply = reply.addComponents(ActionRow.of(
-                    Button.success(MatchComponentIds.of(MatchComponentIds.ACTION_SUBMIT, "_"), "✦ Go live")
-            ));
-        }
-        reply.queue();
-    }
-
     @Override
     public String getID() {
-        // Modal IDs are m:v1:modal:* — first segment before CUSTOM_ID_DELIMITER
         return "m";
     }
 }
