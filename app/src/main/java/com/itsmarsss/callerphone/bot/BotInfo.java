@@ -4,59 +4,43 @@ import com.itsmarsss.callerphone.ToolSet;
 import com.itsmarsss.commandType.ISlashCommand;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.InteractionContextType;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 
 import java.time.format.DateTimeFormatter;
-import java.util.concurrent.CompletableFuture;
-
 
 public class BotInfo implements ISlashCommand {
+    private static final DateTimeFormatter DATE_FMT = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
+
     @Override
     public void runSlash(SlashCommandInteractionEvent e) {
-        e.replyEmbeds(botInfo(e.getJDA())).setEphemeral(true).queue();
-    }
+        e.deferReply(true).queue();
+        JDA jda = e.getJDA();
 
-    private MessageEmbed botInfo(JDA jda) {
-        StringBuilder description = new StringBuilder()
-                .append("**Tag of the bot:** ").append(jda.getSelfUser().getAsTag())
-                .append("\n**Avatar url:** [link](").append(jda.getSelfUser().getAvatarUrl()).append(")")
-                .append("\n**Time created:** ").append(DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss").format(jda.getSelfUser().getTimeCreated()))
-                .append("\n**Id:** ").append(jda.getSelfUser().getId())
-                .append("\n**Shard info:** [").append(jda.getShardInfo().getShardId() + 1).append("/").append(jda.getShardInfo().getShardTotal()).append("]")
-                .append("\n**Servers:** ").append(jda.getGuilds().size());
-
-        EmbedBuilder botInfo = new EmbedBuilder()
-                .setColor(ToolSet.COLOR)
-                .setTitle("**Bot Info**");
-
-        CompletableFuture<Void> future = new CompletableFuture<>();
+        String base = "**Tag of the bot:** " + jda.getSelfUser().getAsTag()
+                + "\n**Avatar url:** [link](" + jda.getSelfUser().getEffectiveAvatarUrl() + ")"
+                + "\n**Time created:** " + DATE_FMT.format(jda.getSelfUser().getTimeCreated())
+                + "\n**Id:** " + jda.getSelfUser().getId()
+                + "\n**Shard info:** [" + (jda.getShardInfo().getShardId() + 1) + "/"
+                + jda.getShardInfo().getShardTotal() + "]"
+                + "\n**Servers:** " + jda.getGuilds().size()
+                + "\n**WS ping:** " + jda.getGatewayPing() + "ms";
 
         jda.getRestPing().queue(
-                (ping) -> {
-                    botInfo.setDescription(description
-                            .append("\n**Reset ping:** ").append(ping).append("ms")
-                            .append("\n**WS ping:** ").append(jda.getGatewayPing()).append("ms"));
-
-                    future.complete(null);
-                },
-                future::completeExceptionally
+                ping -> e.getHook().editOriginalEmbeds(new EmbedBuilder()
+                        .setColor(ToolSet.COLOR)
+                        .setTitle("**Bot Info**")
+                        .setDescription(base + "\n**Rest ping:** " + ping + "ms")
+                        .build()).queue(),
+                err -> e.getHook().editOriginalEmbeds(new EmbedBuilder()
+                        .setColor(ToolSet.COLOR)
+                        .setTitle("**Bot Info**")
+                        .setDescription(base + "\n**Rest ping:** *Unable to obtain*")
+                        .build()).queue()
         );
-
-        try {
-            future.get();
-        } catch (Exception e) {
-            botInfo.setDescription(description
-                    .append("\n**Reset ping:** ").append("*Unable to obtain*")
-                    .append("\n**WS ping:** ").append(jda.getGatewayPing()));
-        }
-
-        return botInfo.build();
     }
-
 
     @Override
     public String getHelp() {
@@ -70,8 +54,7 @@ public class BotInfo implements ISlashCommand {
 
     @Override
     public SlashCommandData getCommandData() {
-        return Commands.slash(getName(), getHelp().split(" - ")[1])
+        return Commands.slash(getName(), "Get information about the bot")
                 .setContexts(InteractionContextType.GUILD);
     }
-
 }

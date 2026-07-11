@@ -1,8 +1,15 @@
 package com.itsmarsss.callerphone.bot;
 
+import com.itsmarsss.ICommand;
 import com.itsmarsss.callerphone.Callerphone;
 import com.itsmarsss.callerphone.ToolSet;
-import com.itsmarsss.callerphone.channelpool.commands.*;
+import com.itsmarsss.callerphone.channelpool.commands.EndPool;
+import com.itsmarsss.callerphone.channelpool.commands.HostPool;
+import com.itsmarsss.callerphone.channelpool.commands.JoinPool;
+import com.itsmarsss.callerphone.channelpool.commands.KickPool;
+import com.itsmarsss.callerphone.channelpool.commands.LeavePool;
+import com.itsmarsss.callerphone.channelpool.commands.PoolParticipants;
+import com.itsmarsss.callerphone.channelpool.commands.PoolSettings;
 import com.itsmarsss.callerphone.msginbottle.commands.FindBottle;
 import com.itsmarsss.callerphone.msginbottle.commands.SendBottle;
 import com.itsmarsss.callerphone.msginbottle.commands.ViewBottle;
@@ -11,7 +18,12 @@ import com.itsmarsss.callerphone.tccallerphone.commands.EndChat;
 import com.itsmarsss.callerphone.tccallerphone.commands.Prefix;
 import com.itsmarsss.callerphone.tccallerphone.commands.ReportChat;
 import com.itsmarsss.callerphone.users.commands.Profile;
-import com.itsmarsss.callerphone.utils.*;
+import com.itsmarsss.callerphone.utils.ChannelInfo;
+import com.itsmarsss.callerphone.utils.Colour;
+import com.itsmarsss.callerphone.utils.RoleInfo;
+import com.itsmarsss.callerphone.utils.Search;
+import com.itsmarsss.callerphone.utils.ServerInfo;
+import com.itsmarsss.callerphone.utils.UserInfo;
 import com.itsmarsss.commandType.ISlashCommand;
 import com.itsmarsss.database.categories.Users;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -23,95 +35,56 @@ import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 
-import java.util.List;
+import java.util.Arrays;
+import java.util.stream.Collectors;
 
 public class Help implements ISlashCommand {
     @Override
     public void runSlash(SlashCommandInteractionEvent e) {
-        final boolean ADMIN = Users.isModerator(e.getUser().getId());
-        final List<OptionMapping> PARAM = e.getOptions();
-        if (PARAM.isEmpty()) {
-            e.replyEmbeds(help("", ADMIN)).queue();
-            return;
-        }
-        e.replyEmbeds(help(PARAM.get(0).getAsString(), ADMIN)).queue();
+        boolean admin = Users.isModerator(e.getUser().getId());
+        OptionMapping term = e.getOption("term");
+        e.replyEmbeds(help(term != null ? term.getAsString() : "", admin)).queue();
     }
 
     public MessageEmbed help(String name, boolean admin) {
-        if (name.isEmpty()) {
+        if (name == null || name.isEmpty()) {
             return helpCategories(admin);
         }
 
-        String TITLE = "Sorry.";
-
-        String DESC = "I don't recognize that category/command :(";
-        name = name.toLowerCase();
-
-
-        // Categories
+        name = name.toLowerCase().trim();
+        String title = "Sorry.";
+        String desc = "I don't recognize that category/command :(";
 
         switch (name) {
-
-
             case "bot":
-                TITLE = "Bot Commands";
-                DESC = new About().getHelp() + "\n"
-                        + new BotInfo().getHelp() + "\n"
-                        + new Donate().getHelp() + "\n"
-                        + new Help().getHelp() + "\n"
-                        + new Invite().getHelp() + "\n"
-                        + new Profile().getHelp();
+                title = "Bot Commands";
+                desc = joinHelp(new About(), new BotInfo(), new Donate(), new Help(), new Invite(), new Profile());
                 break;
-
-
             case "utils":
-                TITLE = "Util Commands";
-                DESC = new BotInfo().getHelp() + "\n"
-                        + new ServerInfo().getHelp() + "\n"
-                        + new ChannelInfo().getHelp() + "\n"
-                        + new RoleInfo().getHelp() + "\n"
-                        + new UserInfo().getHelp() + "\n"
-                        + new Colour().getHelp() + "\n"
-                        + new Search().getHelp();
+                title = "Util Commands";
+                desc = joinHelp(new ServerInfo(), new ChannelInfo(), new RoleInfo(), new UserInfo(), new Colour(), new Search());
                 break;
-
-
             case "pooling":
-                TITLE = "Channel Pooling Commands";
-                DESC = new HostPool().getHelp() + "\n"
-                        + new JoinPool().getHelp() + "\n"
-                        + new EndPool().getHelp() + "\n"
-                        + new LeavePool().getHelp() + "\n"
-                        + new KickPool().getHelp() + "\n"
-                        + new PoolParticipants().getHelp() + "\n"
-                        + new PoolSettings().getHelp();
+                title = "Channel Pooling Commands";
+                desc = joinHelp(new HostPool(), new JoinPool(), new EndPool(), new LeavePool(),
+                        new KickPool(), new PoolParticipants(), new PoolSettings());
                 break;
-
-
             case "tccall":
-                TITLE = "TCCall Commands";
-                DESC = new Chat().getHelp() + "\n"
-                        + new EndChat().getHelp() + "\n"
-                        + new ReportChat().getHelp() + "\n"
-                        + new Prefix();
+                title = "TCCall Commands";
+                desc = joinHelp(new Chat(), new EndChat(), new ReportChat(), new Prefix());
                 break;
-
             case "msgbottle":
-                TITLE = "Message In Bottle";
-                DESC = new SendBottle().getHelp() + "\n"
-                        + new FindBottle().getHelp() + "\n"
-                        + new ViewBottle().getHelp();
+                title = "Message In Bottle";
+                desc = joinHelp(new SendBottle(), new FindBottle(), new ViewBottle());
                 break;
-
             case "music":
-                TITLE = "Music Commands";
-                DESC = "Callerphone no longer can play music, however I've created a new bot called **Tunes**...\nJoin [this](" + Callerphone.config.getSupportServer() + ") server for more information!";
+                title = "Music Commands";
+                desc = "Callerphone no longer can play music, however I've created a new bot called **Tunes**...\nJoin [this]("
+                        + Callerphone.config.getSupportServer() + ") server for more information!";
                 break;
-
-
             case "creds":
-                TITLE = "**EARN CREDITS**";
-                DESC = "__Commands:__" +
+                title = "**EARN CREDITS**";
+                desc = "__Commands:__" +
                         "\n> Message ~ `\u23E3 1`" +
                         "\n> Slash ~ `\u23E3 2`" +
                         "\n\n__Messages:__" +
@@ -119,50 +92,55 @@ public class Help implements ISlashCommand {
                         "\n> Channel Chat ~ `\u23E3 5`" +
                         "\n\n__Other:__" +
                         "\n> Bug Report ~ `\u23E3 5,000`" +
-                        "\n\n**NOTE:** Channel Pool/Chat can be earned a maximum of once per " + (ToolSet.CREDIT_COOLDOWN / 1000) + " seconds. *(Spam prevention)*";
+                        "\n\n**NOTE:** Channel Pool/Chat can be earned a maximum of once per "
+                        + (ToolSet.CREDIT_COOLDOWN / 1000) + " seconds. *(Spam prevention)*";
                 break;
-
             case "exp":
-                TITLE = "**EARN EXPERIENCE**";
-                DESC = "__**Temporary:**__" +
-                        "\n> Each level required 100 exp, and each command/message transferred are worth 1 exp.";
+                title = "**EARN EXPERIENCE**";
+                desc = "__**Temporary:**__" +
+                        "\n> Each level requires 100 exp, and each command/message transferred is worth 1 exp.";
                 break;
-
-
+            default:
+                ICommand cmd = Callerphone.cmdMap.get(name);
+                if (cmd != null) {
+                    title = cmd.getName();
+                    desc = cmd.getHelp();
+                    if ("search".equals(name)) {
+                        desc += "\nWe use DuckDuckGo, so click [here](https://help.duckduckgo.com/duckduckgo-help-pages/results/syntax/) for searching syntax!";
+                    }
+                }
+                break;
         }
 
+        return new EmbedBuilder()
+                .setTitle(title)
+                .setDescription(desc)
+                .setFooter("Hope you found this useful!",
+                        Callerphone.selfUser != null ? Callerphone.selfUser.getAvatarUrl() : null)
+                .setColor(ToolSet.COLOR)
+                .build();
+    }
 
-        if (Callerphone.cmdMap.containsKey(name)) {
-            TITLE = Callerphone.cmdMap.get(name).getName();
-            DESC = Callerphone.cmdMap.get(name).getHelp();
-
-            if (name.equals("search")) {
-                DESC += "\nWe use Duckduckgo, so click [here](https://help.duckduckgo.com/duckduckgo-help-pages/results/syntax/) for searching syntax!";
-            }
-        }
-
-        EmbedBuilder helpEmbed = new EmbedBuilder()
-                .setTitle(TITLE)
-                .setDescription(DESC)
-                .setFooter("Hope you found this useful!", Callerphone.selfUser.getAvatarUrl())
-                .setColor(ToolSet.COLOR);
-
-        return helpEmbed.build();
+    private static String joinHelp(ICommand... commands) {
+        return Arrays.stream(commands)
+                .map(ICommand::getHelp)
+                .collect(Collectors.joining("\n"));
     }
 
     private MessageEmbed helpCategories(boolean admin) {
         EmbedBuilder categoryEmbed = new EmbedBuilder()
                 .setColor(ToolSet.COLOR)
                 .setTitle("Categories")
-                .addField("Bot", "all commands related to the bot will be here, do `/help bot` for more information", false)
-                .addField("Utils", "all utility commands will be in this category, do `/help utils` for more information", false)
-                .addField("Pooling", "all channel pooling commands will be in this category, do `/help pooling` for more information", false)
-                .addField("TC Callerphone", "all text call commands will be in this category, do `/help tccall` for more information", false)
-                .addField("Msg Bottles", "all message in bottle commands will be in this category, do `/help msgbottle` for more information", false)
-                .addField("Music", "Callerphone no longer can play music", false)
+                .addField("Bot", "Bot commands — `/help bot`", false)
+                .addField("Utils", "Utility commands — `/help utils`", false)
+                .addField("Pooling", "Channel pooling — `/help pooling`", false)
+                .addField("TC Callerphone", "Text call commands — `/help tccall`", false)
+                .addField("Msg Bottles", "Message in bottle — `/help msgbottle`", false)
+                .addField("Music", "Callerphone no longer plays music", false)
                 .setFooter("Type `/help <category name>` to see category commands");
         if (admin) {
-            categoryEmbed.addField("Moderator only", "all moderator commands will be in this category, do `" + Callerphone.config.getPrefix() + "help mod` in dm for more information", false);
+            categoryEmbed.addField("Moderator only",
+                    "Moderator commands — `" + Callerphone.config.getPrefix() + "help mod` in DM", false);
         }
         return categoryEmbed.build();
     }
@@ -179,9 +157,7 @@ public class Help implements ISlashCommand {
 
     @Override
     public SlashCommandData getCommandData() {
-        return Commands.slash(getName(), getHelp().split(" - ")[1])
-                .addOptions(
-                        new OptionData(OptionType.STRING, "term", "Search term")
-                );
+        return Commands.slash(getName(), "Browse help categories and commands")
+                .addOptions(new OptionData(OptionType.STRING, "term", "Category or command name"));
     }
 }

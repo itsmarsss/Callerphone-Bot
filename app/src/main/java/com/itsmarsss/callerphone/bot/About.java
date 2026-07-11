@@ -1,104 +1,123 @@
 package com.itsmarsss.callerphone.bot;
 
-import java.lang.management.ManagementFactory;
-import java.text.CharacterIterator;
-import java.text.StringCharacterIterator;
-import java.util.concurrent.CompletableFuture;
-
-import com.itsmarsss.callerphone.ToolSet;
 import com.itsmarsss.callerphone.Callerphone;
-
+import com.itsmarsss.callerphone.ToolSet;
 import com.itsmarsss.commandType.ISlashCommand;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.InteractionContextType;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
+import net.dv8tion.jda.api.sharding.ShardManager;
+
+import java.lang.management.ManagementFactory;
+import java.text.CharacterIterator;
+import java.text.StringCharacterIterator;
+import java.util.concurrent.TimeUnit;
 
 public class About implements ISlashCommand {
     @Override
     public void runSlash(SlashCommandInteractionEvent e) {
-        e.replyEmbeds(about(e.getJDA())).queue();
+        e.deferReply().queue();
+        JDA jda = e.getJDA();
+
+        jda.retrieveUserById(Callerphone.config.getOwnerID()).queue(
+                owner -> e.getHook().editOriginalEmbeds(buildAbout(jda, owner.getName(), owner.getEffectiveAvatarUrl())).queue(),
+                err -> e.getHook().editOriginalEmbeds(buildAbout(jda, "Unknown", null)).queue()
+        );
     }
 
-    private StringBuilder description = new StringBuilder()
-            .append("[Invite link](").append(Callerphone.config.getBotInviteLink()).append(")")
-            .append("\n[Support server](").append(Callerphone.config.getSupportServer()).append(")")
-            .append("\n[Bot listing (top.gg)](").append(Callerphone.config.getBotListingTopGG()).append(")")
-            .append("\n[Upvote bot (top.gg)](").append(Callerphone.config.getUpvoteBotTopGG()).append(")")
-            .append("\n[Bot listing (dbl)](").append(Callerphone.config.getBotListingDBL()).append(")")
-            .append("\n[Upvote bot (dbl)](").append(Callerphone.config.getUpvoteBotDBL()).append(")")
-            .append("\n[Upvote support server (top.gg)](").append(Callerphone.config.getUpvoteSupportServerTopGG()).append(")")
-            .append("\n[Upvote support server (dbl)](").append(Callerphone.config.getUpvoteSupportServerDBL()).append(")")
-            .append("\n")
-            .append("\n[Privacy Policy](").append(Callerphone.config.getPrivacyPolicy()).append(")")
-            .append("\n[Terms of Service](").append(Callerphone.config.getTermsOfService()).append(")");
-
-    private MessageEmbed about(JDA jda) {
-        EmbedBuilder aboutEmbed = new EmbedBuilder();
-
-        CompletableFuture<Void> future = new CompletableFuture<>();
-
-        jda.retrieveUserById(Callerphone.config.getOwnerID()).queue(u -> {
-                    long totalServers = 0;
-                    long cachedUsers = 0;
-                    long totalUsers = 0;
-
-                    for (JDA shard : Callerphone.sdMgr.getShards()) {
-                        totalServers += shard.getGuilds().size();
-                        cachedUsers += shard.getUsers().size();
-
-                        for (Guild g : shard.getGuilds()) {
-                            totalUsers += g.getMemberCount();
-                        }
-                    }
-
-                    aboutEmbed.setAuthor("Made by " + u.getName(), null, u.getAvatarUrl())
-                            .setColor(ToolSet.COLOR)
-                            .setTitle("**About:**")
-                            .setDescription(description)
-                            .addField("Servers",
-                                    totalServers + " server(s)\n" +
-                                            jda.getShardInfo().getShardTotal() + " shard(s)\n", true)
-
-                            .addField("Channels",
-                                    jda.getTextChannels().size() + jda.getVoiceChannels().size() + " total\n" +
-                                            jda.getTextChannels().size() + " text channel(s)\n" +
-                                            jda.getVoiceChannels().size() + " voice channel(s)", true)
-
-                            .addField("Users",
-                                    totalUsers + " total user(s)\n" +
-                                            cachedUsers + " cached user(s)", true)
-
-                            .addField("CPU Usage",
-                                    (String.valueOf(ManagementFactory.getOperatingSystemMXBean().getSystemLoadAverage()).startsWith("-")) ? ("Unavailable") : (ManagementFactory.getOperatingSystemMXBean().getSystemLoadAverage() + "%") + "\n" +
-                                            ManagementFactory.getOperatingSystemMXBean().getAvailableProcessors() + " processor(s)", true)
-
-                            .addField("Memory Usage",
-                                    convert(Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) + "\n" +
-                                            convert(Runtime.getRuntime().maxMemory()) + " max\n", true)
-
-                            .addField("Uptime",
-                                    upTimeAbt(), true);
-
-                    aboutEmbed.addField("Info",
-                            (Callerphone.isQuickStart ? "QuickStarted Bot\n" : "") +
-                                    "Made in Java <:Java:899050421572739072> with Java Discord Api <:JDA:899083802989695037>", false);
-
-                    future.complete(null);
-                },
-                future::completeExceptionally
+    private EmbedBuilder linksDescription() {
+        return new EmbedBuilder().setDescription(
+                "[Invite link](" + Callerphone.config.getBotInviteLink() + ")"
+                        + "\n[Support server](" + Callerphone.config.getSupportServer() + ")"
+                        + "\n[Bot listing (top.gg)](" + Callerphone.config.getBotListingTopGG() + ")"
+                        + "\n[Upvote bot (top.gg)](" + Callerphone.config.getUpvoteBotTopGG() + ")"
+                        + "\n[Bot listing (dbl)](" + Callerphone.config.getBotListingDBL() + ")"
+                        + "\n[Upvote bot (dbl)](" + Callerphone.config.getUpvoteBotDBL() + ")"
+                        + "\n[Upvote support server (top.gg)](" + Callerphone.config.getUpvoteSupportServerTopGG() + ")"
+                        + "\n[Upvote support server (dbl)](" + Callerphone.config.getUpvoteSupportServerDBL() + ")"
+                        + "\n\n[Privacy Policy](" + Callerphone.config.getPrivacyPolicy() + ")"
+                        + "\n[Terms of Service](" + Callerphone.config.getTermsOfService() + ")"
         );
+    }
 
-        try {
-            future.get();
-        } catch (Exception e) {
+    private net.dv8tion.jda.api.entities.MessageEmbed buildAbout(JDA jda, String ownerName, String ownerAvatar) {
+        long totalServers = 0;
+        long cachedUsers = 0;
+        long totalUsers = 0;
+
+        ShardManager sdMgr = Callerphone.sdMgr;
+        if (sdMgr != null) {
+            for (JDA shard : sdMgr.getShards()) {
+                totalServers += shard.getGuilds().size();
+                cachedUsers += shard.getUsers().size();
+                for (Guild g : shard.getGuilds()) {
+                    totalUsers += g.getMemberCount();
+                }
+            }
         }
 
-        return aboutEmbed.build();
+        double load = ManagementFactory.getOperatingSystemMXBean().getSystemLoadAverage();
+        String cpu = load < 0 ? "Unavailable" : String.format("%.2f", load);
+
+        return linksDescription()
+                .setAuthor("Made by " + ownerName, null, ownerAvatar)
+                .setColor(ToolSet.COLOR)
+                .setTitle("**About:**")
+                .addField("Servers",
+                        totalServers + " server(s)\n" + jda.getShardInfo().getShardTotal() + " shard(s)", true)
+                .addField("Channels",
+                        (jda.getTextChannels().size() + jda.getVoiceChannels().size()) + " total\n"
+                                + jda.getTextChannels().size() + " text\n"
+                                + jda.getVoiceChannels().size() + " voice", true)
+                .addField("Users",
+                        totalUsers + " total\n" + cachedUsers + " cached", true)
+                .addField("CPU Usage",
+                        cpu + "\n" + ManagementFactory.getOperatingSystemMXBean().getAvailableProcessors() + " processor(s)", true)
+                .addField("Memory Usage",
+                        convert(Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) + "\n"
+                                + convert(Runtime.getRuntime().maxMemory()) + " max", true)
+                .addField("Uptime", formatUptime(ManagementFactory.getRuntimeMXBean().getUptime()), true)
+                .addField("Info",
+                        (Callerphone.isQuickStart ? "QuickStarted Bot\n" : "")
+                                + "Made in Java <:Java:899050421572739072> with JDA <:JDA:899083802989695037>\n"
+                                + "Version " + Callerphone.VERSION, false)
+                .build();
+    }
+
+    private static String convert(long bytes) {
+        if (-1000 < bytes && bytes < 1000) {
+            return bytes + " B";
+        }
+        CharacterIterator ci = new StringCharacterIterator("kMGTPE");
+        while (bytes <= -999_950 || bytes >= 999_950) {
+            bytes /= 1000;
+            ci.next();
+        }
+        return String.format("%.1f %cB", bytes / 1000.0, ci.current());
+    }
+
+    public static String formatUptime(long durationMs) {
+        long days = TimeUnit.MILLISECONDS.toDays(durationMs);
+        long hours = TimeUnit.MILLISECONDS.toHours(durationMs) % 24;
+        long minutes = TimeUnit.MILLISECONDS.toMinutes(durationMs) % 60;
+        long seconds = TimeUnit.MILLISECONDS.toSeconds(durationMs) % 60;
+
+        StringBuilder sb = new StringBuilder();
+        if (days > 0) sb.append(days).append("d ");
+        if (hours > 0) sb.append(hours).append("h ");
+        if (minutes > 0) sb.append(minutes).append("m ");
+        sb.append(seconds).append("s");
+        return sb.toString().trim();
+    }
+
+    /** @deprecated use {@link #formatUptime(long)} */
+    @Deprecated
+    public static String upTimeAbt() {
+        return formatUptime(ManagementFactory.getRuntimeMXBean().getUptime());
     }
 
     @Override
@@ -113,56 +132,7 @@ public class About implements ISlashCommand {
 
     @Override
     public SlashCommandData getCommandData() {
-        return Commands.slash(getName(), getHelp().split(" - ")[1])
+        return Commands.slash(getName(), "Introduces you to this bot")
                 .setContexts(InteractionContextType.GUILD);
     }
-
-    // https://programming.guide/java/formatting-byte-size-to-human-readable-format.html {
-
-    private String convert(long bytes) {
-        if (-1000 < bytes && bytes < 1000) {
-            return bytes + " B";
-        }
-        final CharacterIterator ci = new StringCharacterIterator("kMGTPE");
-        while (bytes <= -999_950 || bytes >= 999_950) {
-            bytes /= 1000;
-            ci.next();
-        }
-        return String.format("%.1f %cB", bytes / 1000.0, ci.current());
-    }
-
-    // }
-
-
-    // https://github.com/DV8FromTheWorld/Yui/blob/master/src/main/java/net/dv8tion/discord/commands/UptimeCommand.java {
-
-    public static String upTimeAbt() {
-
-        final long DURATION = ManagementFactory.getRuntimeMXBean().getUptime();
-
-        final long YEARS = DURATION / 31104000000L;
-        final long MONTHS = DURATION / 2592000000L % 12;
-        final long DAYS = DURATION / 86400000L % 30;
-        final long HOURS = DURATION / 3600000L % 24;
-        final long MINUTES = DURATION / 60000L % 60;
-        final long SECONDS = DURATION / 1000L % 60;
-
-        String UPTIME = (YEARS == 0 ? "" : YEARS + "y ") +
-                (MONTHS == 0 ? "" : MONTHS + "M ") +
-                (DAYS == 0 ? "" : DAYS + "d ") +
-                (HOURS == 0 ? "" : HOURS + "h ") +
-                (MINUTES == 0 ? "" : MINUTES + "m ") +
-                (SECONDS == 0 ? "" : SECONDS + "s ");
-
-        UPTIME = replaceLast(UPTIME, ", ", "");
-        UPTIME = replaceLast(UPTIME, ",", " and");
-
-        return UPTIME;
-    }
-
-    private static String replaceLast(final String text, final String regex, final String replacement) {
-        return text.replaceFirst("(?s)(.*)" + regex, "$1" + replacement);
-    }
-
-    // }
 }
