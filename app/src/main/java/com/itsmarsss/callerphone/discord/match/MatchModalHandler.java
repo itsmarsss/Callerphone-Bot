@@ -3,8 +3,14 @@ package com.itsmarsss.callerphone.discord.match;
 import com.itsmarsss.callerphone.ToolSet;
 import com.itsmarsss.callerphone.bootstrap.ApplicationContext;
 import com.itsmarsss.callerphone.identity.EnrollmentService;
+import com.itsmarsss.callerphone.identity.MatchUser;
+import com.itsmarsss.callerphone.match.component.MatchComponentIds;
 import com.itsmarsss.callerphone.match.model.Gender;
+import com.itsmarsss.callerphone.match.model.MatchProfile;
+import com.itsmarsss.callerphone.match.service.ProfileChecklist;
 import com.itsmarsss.commandType.IModalInteraction;
+import net.dv8tion.jda.api.components.actionrow.ActionRow;
+import net.dv8tion.jda.api.components.buttons.Button;
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
 
 import java.util.Arrays;
@@ -21,35 +27,53 @@ public final class MatchModalHandler implements IModalInteraction {
         String userId = e.getUser().getId();
         String modalId = e.getModalId();
 
+        EnrollmentService.ServiceResult result;
         if (modalId.endsWith("basics")) {
             String name = value(e, "displayName");
             Gender gender = Gender.fromCode(value(e, "gender")).orElse(null);
             String pronouns = value(e, "pronouns");
             List<Gender> openTo = MatchCommand.parseOpenTo(value(e, "openTo"));
-            reply(e, ctx.profiles().updateBasics(userId, name, gender, pronouns, openTo));
-            return;
-        }
-        if (modalId.endsWith("bio")) {
-            reply(e, ctx.profiles().updateBioAndPrompt(userId, value(e, "bio"), value(e, "prompt")));
-            return;
-        }
-        if (modalId.endsWith("interests")) {
+            result = ctx.profiles().updateBasics(userId, name, gender, pronouns, openTo);
+        } else if (modalId.endsWith("bio")) {
+            result = ctx.profiles().updateBioAndPrompt(userId, value(e, "bio"), value(e, "prompt"));
+        } else if (modalId.endsWith("interests")) {
             List<String> interests = Arrays.stream(value(e, "interests").split(","))
                     .map(String::trim)
                     .filter(s -> !s.isEmpty())
                     .toList();
-            reply(e, ctx.profiles().updateInterests(userId, interests));
+            result = ctx.profiles().updateInterests(userId, interests);
+        } else {
+            e.reply(ToolSet.CP_EMJ + " Unknown Match modal.").setEphemeral(true).queue();
             return;
         }
-        e.reply(ToolSet.CP_EMJ + " Unknown Match modal.").setEphemeral(true).queue();
+        replyWithNext(e, ctx, userId, result);
     }
 
     private static String value(ModalInteractionEvent e, String id) {
         return e.getValue(id) == null ? "" : e.getValue(id).getAsString();
     }
 
-    private static void reply(ModalInteractionEvent e, EnrollmentService.ServiceResult result) {
-        e.reply(ToolSet.CP_EMJ + " " + result.message()).setEphemeral(true).queue();
+    private static void replyWithNext(
+            ModalInteractionEvent e,
+            ApplicationContext ctx,
+            String userId,
+            EnrollmentService.ServiceResult result
+    ) {
+        MatchUser user = ctx.enrollment().getOrCreate(userId);
+        MatchProfile profile = ctx.profiles().getOrCreateDraft(userId);
+        var reply = e.replyEmbeds(MatchEmbeds.simple(
+                result.success() ? "Saved" : "Could not save",
+                result.message() + "\n\n" + ProfileChecklist.format(user, profile)
+                        + "\n\n**Next:** " + ProfileChecklist.nextStep(user, profile)
+        )).setEphemeral(true);
+        if (result.success() && ProfileChecklist.readyToSubmit(profile)
+                && profile.getState() != com.itsmarsss.callerphone.match.model.ProfileState.ACTIVE
+                && profile.getState() != com.itsmarsss.callerphone.match.model.ProfileState.PENDING_REVIEW) {
+            reply = reply.addComponents(ActionRow.of(
+                    Button.success(MatchComponentIds.of(MatchComponentIds.ACTION_SUBMIT, "_"), "Submit for review")
+            ));
+        }
+        reply.queue();
     }
 
     @Override

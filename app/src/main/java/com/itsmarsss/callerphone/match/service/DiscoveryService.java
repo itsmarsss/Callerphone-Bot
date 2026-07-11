@@ -70,8 +70,11 @@ public final class DiscoveryService {
             return DiscoveryResult.fail("Age group mismatch. Re-select your age group.");
         }
         profileService.resetDailyCountersIfNeeded(viewer);
-        if (viewer.getDiscoveryViewsToday() >= premium.dailyDiscoveries(viewerId)) {
-            return DiscoveryResult.fail("Daily discovery limit reached (" + premium.dailyDiscoveries(viewerId) + ").");
+        int discoveryLimit = premium.dailyDiscoveries(viewerId);
+        if (viewer.getDiscoveryViewsToday() >= discoveryLimit) {
+            return DiscoveryResult.fail(
+                    "Daily discovery limit reached (" + discoveryLimit
+                            + "). Come back tomorrow — Premium will raise this later.");
         }
 
         Set<String> exclude = new HashSet<>(decisions.findSubjectIdsForViewer(viewerId));

@@ -17,6 +17,7 @@ public final class SafetyService {
     private final AuditRepository audits;
     private final MatchRepository matches;
     private final MatchConversationRepository conversations;
+    private ReportAlerter reportAlerter;
 
     public SafetyService(
             BlockRepository blocks,
@@ -32,6 +33,15 @@ public final class SafetyService {
         this.audits = audits;
         this.matches = matches;
         this.conversations = conversations;
+    }
+
+    public void setReportAlerter(ReportAlerter reportAlerter) {
+        this.reportAlerter = reportAlerter;
+    }
+
+    @FunctionalInterface
+    public interface ReportAlerter {
+        void onReport(Report report);
     }
 
     public boolean isBlockedEitherWay(String a, String b) {
@@ -70,6 +80,9 @@ public final class SafetyService {
         }
         reports.save(report);
         audits.append(AuditEvent.of(reporterId, "report", subjectId, Block.PRODUCT_MATCH, category));
+        if (reportAlerter != null) {
+            reportAlerter.onReport(report);
+        }
         return report;
     }
 

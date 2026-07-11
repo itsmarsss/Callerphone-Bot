@@ -4,15 +4,22 @@ import com.itsmarsss.callerphone.ToolSet;
 import com.itsmarsss.callerphone.bootstrap.ApplicationContext;
 import com.itsmarsss.callerphone.identity.AgeCohort;
 import com.itsmarsss.callerphone.identity.EnrollmentService;
+import com.itsmarsss.callerphone.identity.MatchUser;
 import com.itsmarsss.callerphone.match.component.MatchComponentIds;
+import com.itsmarsss.callerphone.match.model.ConversationStage;
 import com.itsmarsss.callerphone.match.model.DecisionType;
+import com.itsmarsss.callerphone.match.model.MatchConversation;
+import com.itsmarsss.callerphone.match.model.MatchProfile;
 import com.itsmarsss.callerphone.match.service.DecisionService;
 import com.itsmarsss.callerphone.match.service.DiscoveryService;
+import com.itsmarsss.callerphone.match.service.MatchConversationService;
+import com.itsmarsss.callerphone.match.service.ProfileChecklist;
 import com.itsmarsss.commandType.IButtonInteraction;
 import net.dv8tion.jda.api.components.actionrow.ActionRow;
 import net.dv8tion.jda.api.components.buttons.Button;
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonInteraction;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public final class MatchButtonHandler implements IButtonInteraction {
@@ -50,8 +57,9 @@ public final class MatchButtonHandler implements IButtonInteraction {
             case MatchComponentIds.ACTION_AGE_18_PLUS -> selectAge(e, ctx, userId, AgeCohort.AGE_18_PLUS);
             case MatchComponentIds.ACTION_INTERESTED -> decide(e, ctx, userId, opaque, DecisionType.INTERESTED);
             case MatchComponentIds.ACTION_SKIP -> decide(e, ctx, userId, opaque, DecisionType.SKIP);
-            case MatchComponentIds.ACTION_CHAT_SELECT -> {
-                EnrollmentService.ServiceResult result = ctx.conversations().select(userId, opaque);
+            case MatchComponentIds.ACTION_CHAT_SELECT -> replyChatSelect(e, ctx, userId, opaque);
+            case MatchComponentIds.ACTION_CONNECT_REQUEST -> {
+                EnrollmentService.ServiceResult result = ctx.connect().request(userId, opaque);
                 e.reply(ToolSet.CP_EMJ + " " + result.message()).setEphemeral(true).queue();
             }
             case MatchComponentIds.ACTION_CONNECT_ACCEPT -> {
@@ -65,6 +73,19 @@ public final class MatchButtonHandler implements IButtonInteraction {
             }
             case MatchComponentIds.ACTION_CONNECT_DECLINE -> {
                 EnrollmentService.ServiceResult result = ctx.connect().decline(userId, opaque);
+                e.reply(ToolSet.CP_EMJ + " " + result.message()).setEphemeral(true).queue();
+            }
+            case MatchComponentIds.ACTION_UNMATCH -> {
+                EnrollmentService.ServiceResult result = ctx.conversations().unmatch(userId, opaque);
+                e.reply(ToolSet.CP_EMJ + " " + result.message()).setEphemeral(true).queue();
+            }
+            case MatchComponentIds.ACTION_STOP_CHAT -> {
+                EnrollmentService.ServiceResult result = ctx.conversations().stopChat(userId);
+                e.reply(ToolSet.CP_EMJ + " " + result.message()).setEphemeral(true).queue();
+            }
+            case MatchComponentIds.ACTION_SUBMIT -> {
+                ctx.profiles().setAvatar(userId, e.getUser().getEffectiveAvatarUrl());
+                EnrollmentService.ServiceResult result = ctx.profiles().submitForReview(userId);
                 e.reply(ToolSet.CP_EMJ + " " + result.message()).setEphemeral(true).queue();
             }
             case MatchComponentIds.ACTION_EDIT_BASICS -> e.replyModal(MatchCommand.basicsModal()).queue();
@@ -81,10 +102,51 @@ public final class MatchButtonHandler implements IButtonInteraction {
     private void selectAge(ButtonInteraction e, ApplicationContext ctx, String userId, AgeCohort cohort) {
         EnrollmentService.ServiceResult result = ctx.enrollment().selectAgeCohort(userId, cohort);
         ctx.profiles().setAvatar(userId, e.getUser().getEffectiveAvatarUrl());
+        MatchUser user = ctx.enrollment().getOrCreate(userId);
+        MatchProfile profile = ctx.profiles().getOrCreateDraft(userId);
         e.replyEmbeds(MatchEmbeds.simple(
-                "Age group saved",
-                result.message() + "\n\nNext: `/match edit field:basics`, then bio, interests, then `/match submit`."
+                "Age group saved — checklist",
+                result.message() + "\n\n"
+                        + ProfileChecklist.format(user, profile)
+                        + "\n\n**Next:** " + ProfileChecklist.nextStep(user, profile)
+        )).addComponents(ActionRow.of(
+                Button.primary(MatchComponentIds.of(MatchComponentIds.ACTION_EDIT_BASICS, "_"), "Edit basics"),
+                Button.secondary(MatchComponentIds.of(MatchComponentIds.ACTION_EDIT_BIO, "_"), "Edit bio"),
+                Button.secondary(MatchComponentIds.of(MatchComponentIds.ACTION_EDIT_INTERESTS, "_"), "Interests")
         )).setEphemeral(true).queue();
+    }
+
+    private void replyChatSelect(ButtonInteraction e, ApplicationContext ctx, String userId, String conversationId) {
+        MatchConversationService.SelectResult result = ctx.conversations().select(userId, conversationId);
+        if (!result.success()) {
+            e.reply(ToolSet.CP_EMJ + " " + result.message()).setEphemeral(true).queue();
+            return;
+        }
+        MatchConversation conversation = result.conversation();
+        List<Button> buttons = new ArrayList<>();
+        buttons.add(Button.secondary(MatchComponentIds.of(MatchComponentIds.ACTION_STOP_CHAT, "_"), "Stop chat"));
+        buttons.add(Button.danger(MatchComponentIds.of(MatchComponentIds.ACTION_UNMATCH, conversationId), "Unmatch"));
+        if (conversation.getStage() == ConversationStage.MEDIATED) {
+            buttons.add(Button.primary(
+                    MatchComponentIds.of(MatchComponentIds.ACTION_CONNECT_REQUEST, conversationId),
+                    "Request connect"
+            ));
+        } else if (conversation.getStage() == ConversationStage.CONNECT_PENDING
+                && conversation.getConnectRequestedBy() != null
+                && !conversation.getConnectRequestedBy().equals(userId)) {
+            buttons.add(Button.success(
+                    MatchComponentIds.of(MatchComponentIds.ACTION_CONNECT_ACCEPT, conversationId),
+                    "Accept connect"
+            ));
+            buttons.add(Button.secondary(
+                    MatchComponentIds.of(MatchComponentIds.ACTION_CONNECT_DECLINE, conversationId),
+                    "Decline"
+            ));
+        }
+        e.replyEmbeds(MatchEmbeds.simple("Chat ready", result.message()))
+                .addComponents(ActionRow.of(buttons))
+                .setEphemeral(true)
+                .queue();
     }
 
     private void decide(ButtonInteraction e, ApplicationContext ctx, String userId, String sessionId, DecisionType type) {
@@ -96,6 +158,18 @@ public final class MatchButtonHandler implements IButtonInteraction {
                 return;
             }
             String note = result.message();
+            if (result.mutual() && result.conversationId() != null) {
+                e.getHook().editOriginal(ToolSet.CP_EMJ + " " + note)
+                        .setEmbeds()
+                        .setComponents(ActionRow.of(
+                                Button.success(
+                                        MatchComponentIds.of(MatchComponentIds.ACTION_CHAT_SELECT, result.conversationId()),
+                                        "Open chat"
+                                )
+                        ))
+                        .queue();
+                return;
+            }
             DiscoveryService.DiscoveryResult next = ctx.discovery().next(userId);
             if (!next.success()) {
                 e.getHook().editOriginal(ToolSet.CP_EMJ + " " + note + "\n" + next.message())

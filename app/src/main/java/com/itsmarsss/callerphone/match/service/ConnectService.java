@@ -20,17 +20,20 @@ public final class ConnectService {
     private final ProfileService profiles;
     private final ConsentRepository consents;
     private final SafetyService safety;
+    private final NotificationService notifications;
 
     public ConnectService(
             MatchConversationRepository conversations,
             ProfileService profiles,
             ConsentRepository consents,
-            SafetyService safety
+            SafetyService safety,
+            NotificationService notifications
     ) {
         this.conversations = conversations;
         this.profiles = profiles;
         this.consents = consents;
         this.safety = safety;
+        this.notifications = notifications;
     }
 
     public EnrollmentService.ServiceResult request(String userId, String conversationId) {
@@ -39,6 +42,9 @@ public final class ConnectService {
             return EnrollmentService.ServiceResult.fail("Conversation not found.");
         }
         MatchConversation conversation = opt.get();
+        if (conversation.getStage() == ConversationStage.CONNECT_PENDING) {
+            return EnrollmentService.ServiceResult.fail("A connect request is already pending.");
+        }
         if (conversation.getStage() != ConversationStage.MEDIATED) {
             return EnrollmentService.ServiceResult.fail("Connect is not available for this conversation.");
         }
@@ -46,7 +52,6 @@ public final class ConnectService {
         if (other == null || safety.isBlockedEitherWay(userId, other)) {
             return EnrollmentService.ServiceResult.fail("Cannot send connect request.");
         }
-        // Youth cohorts remain fully mediated; no identity release path
         Optional<MatchProfile> self = profiles.find(userId);
         Optional<MatchProfile> peer = profiles.find(other);
         if (self.isEmpty() || peer.isEmpty()) {
@@ -62,6 +67,7 @@ public final class ConnectService {
         conversation.setConnectRequestedAt(Instant.now());
         conversation.setConnectExpiresAt(Instant.now().plus(Duration.ofHours(MatchLimits.CONNECT_EXPIRE_HOURS)));
         conversations.save(conversation);
+        notifications.notifyConnectRequest(other, userId, conversationId);
         return EnrollmentService.ServiceResult.ok("Connect request sent. They have 48 hours to accept.");
     }
 
@@ -80,6 +86,8 @@ public final class ConnectService {
         if (conversation.getConnectExpiresAt() != null && conversation.getConnectExpiresAt().isBefore(Instant.now())) {
             conversation.setStage(ConversationStage.MEDIATED);
             conversation.setConnectRequestedBy(null);
+            conversation.setConnectRequestedAt(null);
+            conversation.setConnectExpiresAt(null);
             conversations.save(conversation);
             return ConnectResult.fail("Connect request expired.");
         }
@@ -88,7 +96,10 @@ public final class ConnectService {
         conversation.setConnectedAt(Instant.now());
         conversations.save(conversation);
         consents.append(ConsentEvent.of(userId, ConsentType.CONNECTION, "v1", true, conversationId));
-        consents.append(ConsentEvent.of(other, ConsentType.CONNECTION, "v1", true, conversationId));
+        if (other != null) {
+            consents.append(ConsentEvent.of(other, ConsentType.CONNECTION, "v1", true, conversationId));
+            notifications.notifyConnectAccepted(other, userId);
+        }
         return ConnectResult.connected(other);
     }
 
@@ -101,11 +112,18 @@ public final class ConnectService {
         if (conversation.getStage() != ConversationStage.CONNECT_PENDING) {
             return EnrollmentService.ServiceResult.fail("No pending request.");
         }
+        if (userId.equals(conversation.getConnectRequestedBy())) {
+            return EnrollmentService.ServiceResult.fail("Cancel is not available; wait for them to respond or unmatch.");
+        }
+        String requester = conversation.getConnectRequestedBy();
         conversation.setStage(ConversationStage.MEDIATED);
         conversation.setConnectRequestedBy(null);
         conversation.setConnectRequestedAt(null);
         conversation.setConnectExpiresAt(null);
         conversations.save(conversation);
+        if (requester != null) {
+            notifications.notifyConnectDeclined(requester);
+        }
         return EnrollmentService.ServiceResult.ok("Connect request declined.");
     }
 

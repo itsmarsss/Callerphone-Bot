@@ -1,5 +1,6 @@
 package com.itsmarsss.callerphone.bootstrap;
 
+import com.itsmarsss.callerphone.identity.DeletionService;
 import com.itsmarsss.callerphone.identity.EnrollmentService;
 import com.itsmarsss.callerphone.identity.MongoConsentRepository;
 import com.itsmarsss.callerphone.identity.MongoMatchUserRepository;
@@ -13,6 +14,7 @@ import com.itsmarsss.callerphone.match.service.ConnectService;
 import com.itsmarsss.callerphone.match.service.DecisionService;
 import com.itsmarsss.callerphone.match.service.DiscoveryService;
 import com.itsmarsss.callerphone.match.service.MatchConversationService;
+import com.itsmarsss.callerphone.match.service.NotificationService;
 import com.itsmarsss.callerphone.match.service.PremiumService;
 import com.itsmarsss.callerphone.match.service.ProfileService;
 import com.itsmarsss.callerphone.media.DiscordChannelMediaStorage;
@@ -48,6 +50,8 @@ public final class ApplicationContext {
     private final ConnectService connectService;
     private final SafetyService safetyService;
     private final PremiumService premiumService;
+    private final NotificationService notificationService;
+    private final DeletionService deletionService;
     private final MediaStorage mediaStorage;
     private final BrowseSessionStore browseSessionStore;
 
@@ -71,16 +75,22 @@ public final class ApplicationContext {
         this.safetyService = new SafetyService(blocks, reports, sanctions, audits, matches, conversations);
         this.enrollmentService = new EnrollmentService(matchUsers, consents, profiles, safetyService);
         this.profileService = new ProfileService(profiles, matchUsers, enrollmentService, safetyService);
+        this.notificationService = new NotificationService(matchUsers, profiles);
+        this.profileService.setNotifications(notificationService);
+        this.safetyService.setReportAlerter(notificationService::postReportToStaff);
+
         this.discoveryService = new DiscoveryService(
                 profiles, decisions, matches, matchUsers, safetyService, profileService, premiumService, browseSessionStore
         );
         this.decisionService = new DecisionService(
-                decisions, matches, conversations, discoveryService, profileService, premiumService, safetyService
+                decisions, matches, conversations, discoveryService, profileService, premiumService, safetyService, notificationService
         );
         this.conversationService = new MatchConversationService(
                 conversations, messages, matches, matchUsers, profileService, safetyService
         );
-        this.connectService = new ConnectService(conversations, profileService, consents, safetyService);
+        this.conversationService.setNotifications(notificationService);
+        this.connectService = new ConnectService(conversations, profileService, consents, safetyService, notificationService);
+        this.deletionService = new DeletionService(matchUsers, consents, profiles, matches, conversations, audits);
         this.mediaStorage = jdaOrNull == null
                 ? new MediaStorage() {
             @Override
@@ -124,9 +134,7 @@ public final class ApplicationContext {
         return instance != null;
     }
 
-    /** Attach JDA-backed media storage after shards are online. */
     public void attachJda(ShardManager shardManager, String mediaChannelId) {
-        // media storage is constructed with JDA at init time when available; optional re-bind later
         logger.info("JDA attached for Match media channel={}", mediaChannelId);
     }
 
@@ -168,6 +176,14 @@ public final class ApplicationContext {
 
     public PremiumService premium() {
         return premiumService;
+    }
+
+    public NotificationService notifications() {
+        return notificationService;
+    }
+
+    public DeletionService deletion() {
+        return deletionService;
     }
 
     public MediaStorage media() {

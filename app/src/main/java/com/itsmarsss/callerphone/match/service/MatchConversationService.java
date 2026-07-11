@@ -27,6 +27,7 @@ public final class MatchConversationService {
     private final MatchUserRepository users;
     private final ProfileService profiles;
     private final SafetyService safety;
+    private NotificationService notifications;
 
     public MatchConversationService(
             MatchConversationRepository conversations,
@@ -44,30 +45,57 @@ public final class MatchConversationService {
         this.safety = safety;
     }
 
+    public void setNotifications(NotificationService notifications) {
+        this.notifications = notifications;
+    }
+
     public List<MatchConversation> list(String userId) {
         return conversations.findActiveByUserId(userId);
     }
 
-    public EnrollmentService.ServiceResult select(String userId, String conversationId) {
+    public SelectResult select(String userId, String conversationId) {
         Optional<MatchConversation> opt = conversations.findById(conversationId);
         if (opt.isEmpty() || opt.get().getParticipants() == null || !opt.get().getParticipants().contains(userId)) {
-            return EnrollmentService.ServiceResult.fail("Conversation not found.");
+            return SelectResult.fail("Conversation not found.");
         }
         MatchConversation conversation = opt.get();
         if (conversation.getStage() == ConversationStage.ARCHIVED) {
-            return EnrollmentService.ServiceResult.fail("That conversation is archived.");
+            return SelectResult.fail("That conversation is archived.");
+        }
+        // expire stale connect requests on access
+        if (conversation.getStage() == ConversationStage.CONNECT_PENDING
+                && conversation.getConnectExpiresAt() != null
+                && conversation.getConnectExpiresAt().isBefore(Instant.now())) {
+            conversation.setStage(ConversationStage.MEDIATED);
+            conversation.setConnectRequestedBy(null);
+            conversation.setConnectRequestedAt(null);
+            conversation.setConnectExpiresAt(null);
+            conversations.save(conversation);
         }
         String other = conversation.otherParticipant(userId);
         if (other != null && safety.isBlockedEitherWay(userId, other)) {
-            return EnrollmentService.ServiceResult.fail("You cannot chat with this connection.");
+            return SelectResult.fail("You cannot chat with this connection.");
         }
         MatchUser user = users.findById(userId).orElseGet(() -> new MatchUser(userId));
         user.setSelectedConversationId(conversationId);
         user.setConversationSelectedAt(Instant.now());
         user.touch();
         users.save(user);
-        String name = profiles.find(other).map(MatchProfile::getDisplayName).orElse("your match");
-        return EnrollmentService.ServiceResult.ok("Now chatting with **" + name + "**. Send a text DM to relay. Use `/match chats` to switch.");
+        MatchProfile self = profiles.find(userId).orElse(null);
+        MatchProfile peer = profiles.find(other).orElse(null);
+        String name = peer != null && peer.getDisplayName() != null && !peer.getDisplayName().isBlank()
+                ? peer.getDisplayName()
+                : "your match";
+        String icebreaker = Icebreakers.forPair(self, peer);
+        String message = "Now chatting with **" + name + "** (" + conversation.getStage() + ").\n"
+                + "Send a **text DM** to the bot to relay. Idle timeout "
+                + MatchLimits.CHAT_IDLE_MINUTES + " minutes.\n\n"
+                + "Suggested opener: _" + icebreaker + "_";
+        return SelectResult.ok(message, conversation, other, icebreaker);
+    }
+
+    public Optional<MatchConversation> find(String conversationId) {
+        return conversations.findById(conversationId);
     }
 
     public EnrollmentService.ServiceResult stopChat(String userId) {
@@ -157,6 +185,9 @@ public final class MatchConversationService {
         String other = conversation.otherParticipant(userId);
         if (other != null) {
             clearSelectionIf(other, conversationId);
+            if (notifications != null) {
+                notifications.notifyUnmatched(other, userId);
+            }
         }
         return EnrollmentService.ServiceResult.ok("Unmatched. Relay closed.");
     }
@@ -169,6 +200,22 @@ public final class MatchConversationService {
                 users.save(user);
             }
         });
+    }
+
+    public record SelectResult(
+            boolean success,
+            String message,
+            MatchConversation conversation,
+            String otherUserId,
+            String icebreaker
+    ) {
+        public static SelectResult fail(String message) {
+            return new SelectResult(false, message, null, null, null);
+        }
+
+        public static SelectResult ok(String message, MatchConversation conversation, String otherUserId, String icebreaker) {
+            return new SelectResult(true, message, conversation, otherUserId, icebreaker);
+        }
     }
 
     public record RelayResult(boolean handled, boolean success, String message, String recipientId,

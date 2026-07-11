@@ -1,6 +1,5 @@
 package com.itsmarsss.callerphone.match.service;
 
-import com.itsmarsss.callerphone.identity.EnrollmentService;
 import com.itsmarsss.callerphone.match.model.ConversationStage;
 import com.itsmarsss.callerphone.match.model.DecisionType;
 import com.itsmarsss.callerphone.match.model.Match;
@@ -27,6 +26,7 @@ public final class DecisionService {
     private final ProfileService profiles;
     private final PremiumService premium;
     private final SafetyService safety;
+    private final NotificationService notifications;
 
     public DecisionService(
             MatchDecisionRepository decisions,
@@ -35,7 +35,8 @@ public final class DecisionService {
             DiscoveryService discovery,
             ProfileService profiles,
             PremiumService premium,
-            SafetyService safety
+            SafetyService safety,
+            NotificationService notifications
     ) {
         this.decisions = decisions;
         this.matches = matches;
@@ -44,6 +45,7 @@ public final class DecisionService {
         this.profiles = profiles;
         this.premium = premium;
         this.safety = safety;
+        this.notifications = notifications;
     }
 
     public DecisionResult decide(String actorId, String sessionId, DecisionType type) {
@@ -68,13 +70,10 @@ public final class DecisionService {
         profiles.resetDailyCountersIfNeeded(viewer);
 
         if (type == DecisionType.INTERESTED) {
-            if (viewer.getInterestSignalsToday() >= premium.dailyInterests(actorId)) {
-                return DecisionResult.fail("Daily interest limit reached (" + premium.dailyInterests(actorId) + ").");
-            }
-            if (conversations.countActiveByUserId(actorId) >= premium.activeConversations(actorId)
-                    && decisions.findReciprocalInterest(session.subjectId(), actorId).isPresent()) {
-                // mutual would open a conversation; enforce limit
-                // still allow interested if not mutual yet
+            int limit = premium.dailyInterests(actorId);
+            if (viewer.getInterestSignalsToday() >= limit) {
+                return DecisionResult.fail(
+                        "Daily interest limit reached (" + limit + "). Come back tomorrow — higher limits ship with Premium later.");
             }
         }
 
@@ -87,28 +86,39 @@ public final class DecisionService {
         }
         discovery.clearSession(sessionId);
 
-        boolean mutual = false;
-        Match created = null;
         if (type == DecisionType.INTERESTED
                 && decisions.findReciprocalInterest(session.subjectId(), actorId).isPresent()) {
-            if (conversations.countActiveByUserId(actorId) >= premium.activeConversations(actorId)
-                    || conversations.countActiveByUserId(session.subjectId()) >= premium.activeConversations(session.subjectId())) {
-                return DecisionResult.interested("Interest saved. Conversation limit reached for a mutual connect.");
+            int actorCap = premium.activeConversations(actorId);
+            int peerCap = premium.activeConversations(session.subjectId());
+            if (conversations.countActiveByUserId(actorId) >= actorCap
+                    || conversations.countActiveByUserId(session.subjectId()) >= peerCap) {
+                return DecisionResult.interested(
+                        "Interest saved — it's mutual, but an active-conversation limit was hit. "
+                                + "Unmatch an old chat or wait; Premium will raise this limit later.");
             }
-            mutual = true;
-            created = createMutualMatch(actorId, session.subjectId());
+            MutualCreate created = createMutualMatch(actorId, session.subjectId());
+            notifications.notifyMutualMatch(actorId, session.subjectId(), created.conversationId());
+            String peerName = profiles.find(session.subjectId())
+                    .map(MatchProfile::getDisplayName)
+                    .orElse("your match");
+            String opener = Icebreakers.forPair(viewer, profiles.find(session.subjectId()).orElse(null));
+            return DecisionResult.mutual(
+                    "It's a match with **" + peerName + "**! Suggested opener: _" + opener
+                            + "_ — open `/match chats` or the Open chat button in your DMs.",
+                    created.match(),
+                    created.conversationId()
+            );
         }
 
-        if (mutual && created != null) {
-            return DecisionResult.mutual("It's a match! Open `/match chats` to say hi.", created);
-        }
         if (type == DecisionType.INTERESTED) {
-            return DecisionResult.interested("Interest sent. Keep browsing!");
+            long used = viewer.getInterestSignalsToday();
+            int limit = premium.dailyInterests(actorId);
+            return DecisionResult.interested("Interest sent (" + used + "/" + limit + " today). Keep browsing!");
         }
         return DecisionResult.skipped("Skipped. Next profile coming up.");
     }
 
-    private Match createMutualMatch(String a, String b) {
+    private MutualCreate createMutualMatch(String a, String b) {
         Match match = new Match();
         match.setPairKey(Match.pairKeyFor(a, b));
         match.setUserIds(List.of(a, b));
@@ -117,34 +127,38 @@ public final class DecisionService {
         Match saved = matches.createIfAbsent(match).orElse(match);
 
         Optional<MatchConversation> existing = conversations.findByMatchId(saved.getMatchId());
-        if (existing.isEmpty()) {
-            MatchConversation conversation = new MatchConversation();
-            conversation.setConversationId(UUID.randomUUID().toString());
-            conversation.setMatchId(saved.getMatchId());
-            conversation.setParticipants(List.of(a, b));
-            conversation.setStage(ConversationStage.MEDIATED);
-            conversation.setCreatedAt(Instant.now());
-            conversation.setLastActivityAt(Instant.now());
-            conversations.save(conversation);
+        if (existing.isPresent()) {
+            return new MutualCreate(saved, existing.get().getConversationId());
         }
-        return saved;
+        MatchConversation conversation = new MatchConversation();
+        conversation.setConversationId(UUID.randomUUID().toString());
+        conversation.setMatchId(saved.getMatchId());
+        conversation.setParticipants(List.of(a, b));
+        conversation.setStage(ConversationStage.MEDIATED);
+        conversation.setCreatedAt(Instant.now());
+        conversation.setLastActivityAt(Instant.now());
+        conversations.save(conversation);
+        return new MutualCreate(saved, conversation.getConversationId());
     }
 
-    public record DecisionResult(boolean success, boolean mutual, String message, Match match) {
+    private record MutualCreate(Match match, String conversationId) {
+    }
+
+    public record DecisionResult(boolean success, boolean mutual, String message, Match match, String conversationId) {
         public static DecisionResult fail(String message) {
-            return new DecisionResult(false, false, message, null);
+            return new DecisionResult(false, false, message, null, null);
         }
 
         public static DecisionResult interested(String message) {
-            return new DecisionResult(true, false, message, null);
+            return new DecisionResult(true, false, message, null, null);
         }
 
         public static DecisionResult skipped(String message) {
-            return new DecisionResult(true, false, message, null);
+            return new DecisionResult(true, false, message, null, null);
         }
 
-        public static DecisionResult mutual(String message, Match match) {
-            return new DecisionResult(true, true, message, match);
+        public static DecisionResult mutual(String message, Match match, String conversationId) {
+            return new DecisionResult(true, true, message, match, conversationId);
         }
     }
 }

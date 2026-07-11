@@ -22,6 +22,11 @@ public final class MatchComponentIds {
     public static final String ACTION_EDIT_BASICS = "edit_basics";
     public static final String ACTION_EDIT_BIO = "edit_bio";
     public static final String ACTION_EDIT_INTERESTS = "edit_interests";
+    public static final String ACTION_CONNECT_REQUEST = "connect_req";
+    public static final String ACTION_UNMATCH = "unmatch";
+    public static final String ACTION_STOP_CHAT = "stop_chat";
+    public static final String ACTION_SUBMIT = "submit";
+
 
     private MatchComponentIds() {
     }

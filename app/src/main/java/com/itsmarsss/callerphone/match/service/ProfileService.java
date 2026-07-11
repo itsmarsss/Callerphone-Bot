@@ -24,6 +24,7 @@ public final class ProfileService {
     private final MatchUserRepository users;
     private final EnrollmentService enrollment;
     private final SafetyService safety;
+    private NotificationService notifications;
 
     public ProfileService(
             MatchProfileRepository profiles,
@@ -35,6 +36,10 @@ public final class ProfileService {
         this.users = users;
         this.enrollment = enrollment;
         this.safety = safety;
+    }
+
+    public void setNotifications(NotificationService notifications) {
+        this.notifications = notifications;
     }
 
     public Optional<MatchProfile> find(String userId) {
@@ -151,7 +156,11 @@ public final class ProfileService {
         profile.setOnboardingStep(7);
         profile.touch();
         profiles.save(profile);
-        return EnrollmentService.ServiceResult.ok("Profile submitted for review. You will appear after approval.");
+        if (notifications != null) {
+            notifications.postPendingReviewAlert(userId, profile.getDisplayName());
+        }
+        return EnrollmentService.ServiceResult.ok(
+                "Profile submitted for review. You'll get a DM when it's approved (if notifications are on).");
     }
 
     public EnrollmentService.ServiceResult pause(String userId) {
@@ -188,6 +197,9 @@ public final class ProfileService {
         profile.setState(ProfileState.ACTIVE);
         profile.touch();
         profiles.save(profile);
+        if (notifications != null) {
+            notifications.notifyProfileApproved(userId);
+        }
         return EnrollmentService.ServiceResult.ok("Profile approved for " + userId);
     }
 
@@ -199,6 +211,9 @@ public final class ProfileService {
         profile.setState(ProfileState.DRAFT);
         profile.touch();
         profiles.save(profile);
+        if (notifications != null) {
+            notifications.notifyProfileRejected(userId, reason);
+        }
         return EnrollmentService.ServiceResult.ok("Profile rejected: " + reason);
     }
 

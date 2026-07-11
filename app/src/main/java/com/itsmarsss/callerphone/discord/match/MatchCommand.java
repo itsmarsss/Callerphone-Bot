@@ -3,11 +3,13 @@ package com.itsmarsss.callerphone.discord.match;
 import com.itsmarsss.callerphone.ToolSet;
 import com.itsmarsss.callerphone.bootstrap.ApplicationContext;
 import com.itsmarsss.callerphone.identity.EnrollmentService;
+import com.itsmarsss.callerphone.identity.MatchUser;
 import com.itsmarsss.callerphone.match.component.MatchComponentIds;
 import com.itsmarsss.callerphone.match.model.Gender;
 import com.itsmarsss.callerphone.match.model.MatchConversation;
 import com.itsmarsss.callerphone.match.model.MatchProfile;
 import com.itsmarsss.callerphone.match.service.DiscoveryService;
+import com.itsmarsss.callerphone.match.service.ProfileChecklist;
 import com.itsmarsss.commandType.ISlashCommand;
 import net.dv8tion.jda.api.components.actionrow.ActionRow;
 import net.dv8tion.jda.api.components.buttons.Button;
@@ -53,7 +55,7 @@ public final class MatchCommand implements ISlashCommand {
             case "likes" -> handleLikes(e, ctx, userId);
             case "chats" -> handleChats(e, ctx, userId);
             case "pause" -> reply(e, ctx.profiles().pause(userId));
-            case "leave" -> reply(e, ctx.enrollment().leave(userId));
+            case "leave" -> reply(e, ctx.deletion().leaveAndSoftDelete(userId));
             case "safety" -> handleSafety(e, ctx, userId);
             case "submit" -> {
                 ctx.profiles().setAvatar(userId, e.getUser().getEffectiveAvatarUrl());
@@ -70,7 +72,13 @@ public final class MatchCommand implements ISlashCommand {
             return;
         }
         if (!"START_ONBOARDING".equals(result.message())) {
-            e.reply(ToolSet.CP_EMJ + " " + result.message()).setEphemeral(true).queue();
+            MatchUser user = ctx.enrollment().getOrCreate(userId);
+            MatchProfile profile = ctx.profiles().getOrCreateDraft(userId);
+            e.replyEmbeds(MatchEmbeds.simple(
+                    "Already enrolled",
+                    result.message() + "\n\n" + ProfileChecklist.format(user, profile)
+                            + "\n\n**Next:** " + ProfileChecklist.nextStep(user, profile)
+            )).setEphemeral(true).queue();
             return;
         }
         e.replyEmbeds(MatchEmbeds.simple(
@@ -100,12 +108,27 @@ public final class MatchCommand implements ISlashCommand {
             e.reply(ToolSet.CP_EMJ + " No profile yet. Use `/match join`.").setEphemeral(true).queue();
             return;
         }
-        e.replyEmbeds(MatchEmbeds.profileCard(profile.get(), true))
-                .addComponents(ActionRow.of(
-                        Button.primary(MatchComponentIds.of(MatchComponentIds.ACTION_EDIT_BASICS, "_"), "Edit basics"),
-                        Button.secondary(MatchComponentIds.of(MatchComponentIds.ACTION_EDIT_BIO, "_"), "Edit bio"),
-                        Button.secondary(MatchComponentIds.of(MatchComponentIds.ACTION_EDIT_INTERESTS, "_"), "Edit interests")
-                ))
+        MatchUser user = ctx.enrollment().getOrCreate(userId);
+        MatchProfile p = profile.get();
+        ctx.profiles().resetDailyCountersIfNeeded(p);
+        String limits = "Discoveries today: " + p.getDiscoveryViewsToday() + "/" + ctx.premium().dailyDiscoveries(userId)
+                + " · Interests: " + p.getInterestSignalsToday() + "/" + ctx.premium().dailyInterests(userId);
+        List<Button> row = new ArrayList<>();
+        row.add(Button.primary(MatchComponentIds.of(MatchComponentIds.ACTION_EDIT_BASICS, "_"), "Edit basics"));
+        row.add(Button.secondary(MatchComponentIds.of(MatchComponentIds.ACTION_EDIT_BIO, "_"), "Edit bio"));
+        row.add(Button.secondary(MatchComponentIds.of(MatchComponentIds.ACTION_EDIT_INTERESTS, "_"), "Interests"));
+        if (ProfileChecklist.readyToSubmit(p)
+                && p.getState() != com.itsmarsss.callerphone.match.model.ProfileState.ACTIVE
+                && p.getState() != com.itsmarsss.callerphone.match.model.ProfileState.PENDING_REVIEW) {
+            row.add(Button.success(MatchComponentIds.of(MatchComponentIds.ACTION_SUBMIT, "_"), "Submit"));
+        }
+        e.replyEmbeds(
+                        MatchEmbeds.profileCard(p, true),
+                        MatchEmbeds.simple("Progress", ProfileChecklist.format(user, p)
+                                + "\n\n**Next:** " + ProfileChecklist.nextStep(user, p)
+                                + "\n" + limits)
+                )
+                .addComponents(ActionRow.of(row))
                 .setEphemeral(true)
                 .queue();
     }
@@ -129,7 +152,14 @@ public final class MatchCommand implements ISlashCommand {
                 return;
             }
             String sessionId = result.session().sessionId();
+            Optional<MatchProfile> self = ctx.profiles().find(userId);
+            String remaining = self.map(p -> {
+                ctx.profiles().resetDailyCountersIfNeeded(p);
+                long left = Math.max(0, ctx.premium().dailyDiscoveries(userId) - p.getDiscoveryViewsToday());
+                return left + " discoveries left today";
+            }).orElse("");
             e.getHook().sendMessageEmbeds(MatchEmbeds.profileCard(result.profile(), false))
+                    .setContent(ToolSet.CP_EMJ + " " + remaining)
                     .addComponents(ActionRow.of(
                             Button.success(MatchComponentIds.of(MatchComponentIds.ACTION_INTERESTED, sessionId), "Interested"),
                             Button.secondary(MatchComponentIds.of(MatchComponentIds.ACTION_SKIP, sessionId), "Skip")
