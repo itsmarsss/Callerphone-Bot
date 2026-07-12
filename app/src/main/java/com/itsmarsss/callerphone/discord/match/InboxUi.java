@@ -185,7 +185,7 @@ public final class InboxUi {
         ctx.inbox().markReadBySource(userId, bottleId);
         MessageCreateData bottleMsg = MessageInBottle.createMessage(bottle, Integer.MAX_VALUE);
         if (bottleMsg == null) {
-            return ExperienceRenderer.toMessage(MatchPresenter.warn("Bottle", "Couldn't open that bottle."));
+            return ExperienceRenderer.toMessage(MatchPresenter.serviceFailed("Couldn't open that bottle."));
         }
         return bottleMsg;
     }

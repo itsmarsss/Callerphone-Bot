@@ -170,8 +170,9 @@ public final class MatchButtonHandler implements IButtonInteraction {
             case MatchComponentIds.ACTION_PREVIEW_SELF -> {
                 Optional<MatchProfile> p = ctx.profiles().find(userId);
                 if (p.isEmpty()) {
-                    e.reply(ExperienceRenderer.toMessage(MatchPresenter.warn("No profile", "Start with `/match join`.")))
-                            .setEphemeral(true).queue();
+                    e.reply(ExperienceRenderer.toMessage(MatchPresenter.home(
+                            e.getUser().getName(), 0, 0, false, false
+                    ))).setEphemeral(true).queue();
                 } else {
                     e.replyEmbeds(MatchEmbeds.profileCard(p.get(), true))
                             .addComponents(ActionRow.of(
@@ -328,14 +329,13 @@ public final class MatchButtonHandler implements IButtonInteraction {
                 var result = ctx.connectionGames().proposeTtt(opaque, userId);
                 e.reply(ExperienceRenderer.toMessage(result.success()
                         ? MatchPresenter.gameChallengeSent(opaque, result.message())
-                        : MatchPresenter.warn("Couldn't challenge", result.message())
+                        : MatchPresenter.serviceFailed(result.message())
                 )).setEphemeral(true).queue();
             }
             case MatchComponentIds.ACTION_GAME_ACCEPT -> {
                 String proposerId = ctx.connectionGames().pendingProposer(opaque).orElse(null);
                 if (proposerId == null) {
-                    e.reply(ExperienceRenderer.toMessage(MatchPresenter.warn(
-                            "No challenge",
+                    e.reply(ExperienceRenderer.toMessage(MatchPresenter.serviceFailed(
                             "There's no pending game for this chat."
                     ))).setEphemeral(true).queue();
                     return;
@@ -347,11 +347,10 @@ public final class MatchButtonHandler implements IButtonInteraction {
                             );
                             e.reply(ExperienceRenderer.toMessage(result.success()
                                     ? MatchPresenter.gameStarted(opaque, result.message())
-                                    : MatchPresenter.warn("Couldn't start", result.message())
+                                    : MatchPresenter.serviceFailed(result.message())
                             )).setEphemeral(true).queue();
                         },
-                        err -> e.reply(ExperienceRenderer.toMessage(MatchPresenter.warn(
-                                "Couldn't start",
+                        err -> e.reply(ExperienceRenderer.toMessage(MatchPresenter.serviceFailed(
                                 "Couldn't resolve the other player."
                         ))).setEphemeral(true).queue()
                 );
@@ -364,7 +363,7 @@ public final class MatchButtonHandler implements IButtonInteraction {
                                 result.message() + "\n\nYou can keep chatting.",
                                 opaque
                         )
-                        : MatchPresenter.warn("Couldn't decline", result.message())
+                        : MatchPresenter.serviceFailed(result.message())
                 )).setEphemeral(true).queue();
             }
             case MatchComponentIds.ACTION_BOTTLE_INTEREST -> {
@@ -416,7 +415,7 @@ public final class MatchButtonHandler implements IButtonInteraction {
         EnrollmentService.ServiceResult result = ctx.enrollment().selectAgeCohort(userId, cohort);
         ctx.profiles().setAvatar(userId, e.getUser().getEffectiveAvatarUrl());
         if (!result.success()) {
-            e.reply(ExperienceRenderer.toMessage(MatchPresenter.warn("Couldn't continue", result.message())))
+            e.reply(ExperienceRenderer.toMessage(MatchPresenter.serviceFailed(result.message())))
                     .setEphemeral(true).queue();
             return;
         }
@@ -426,7 +425,7 @@ public final class MatchButtonHandler implements IButtonInteraction {
     private void replyChatSelect(ButtonInteraction e, ApplicationContext ctx, String userId, String conversationId) {
         MatchConversationService.SelectResult result = ctx.conversations().select(userId, conversationId);
         if (!result.success()) {
-            e.reply(ExperienceRenderer.toMessage(MatchPresenter.warn("Chat", result.message())))
+            e.reply(ExperienceRenderer.toMessage(MatchPresenter.serviceFailed(result.message())))
                     .setEphemeral(true).queue();
             return;
         }
@@ -474,7 +473,7 @@ public final class MatchButtonHandler implements IButtonInteraction {
                     return;
                 }
                 e.getHook().sendMessage(ExperienceRenderer.toMessage(
-                        MatchPresenter.warn("Couldn't complete", result.message())
+                        MatchPresenter.serviceFailed(result.message())
                 )).setEphemeral(true).queue();
                 return;
             }

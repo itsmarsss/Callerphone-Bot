@@ -59,7 +59,7 @@ public final class MatchSelectHandler implements IStringSelectInteraction {
     private void openChat(StringSelectInteractionEvent e, ApplicationContext ctx, String userId, String conversationId) {
         MatchConversationService.SelectResult result = ctx.conversations().select(userId, conversationId);
         if (!result.success()) {
-            e.reply(ExperienceRenderer.toMessage(MatchPresenter.warn("Chat", result.message())))
+            e.reply(ExperienceRenderer.toMessage(MatchPresenter.serviceFailed(result.message())))
                     .setEphemeral(true).queue();
             return;
         }
