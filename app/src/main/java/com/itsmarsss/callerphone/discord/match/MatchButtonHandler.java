@@ -276,8 +276,9 @@ public final class MatchButtonHandler implements IButtonInteraction {
             }
             case MatchComponentIds.ACTION_PREMIUM -> {
                 try {
-                    ctx.analytics().track(userId, "premium_view",
-                            ctx.premium().isPremium(userId) ? "entitled" : "free");
+                    String tier = ctx.premium().isPremium(userId) ? "entitled" : "free";
+                    ctx.analytics().track(userId, "premium_view", tier);
+                    ctx.analytics().trackSurface(userId, "premium", "view", tier);
                 } catch (Exception ignored) {
                 }
                 e.reply(ExperienceRenderer.toMessage(
