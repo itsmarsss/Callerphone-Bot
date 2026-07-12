@@ -152,13 +152,12 @@ public final class MatchButtonHandler implements IButtonInteraction {
                 }
             }
             case MatchComponentIds.ACTION_LEAVE_CANCEL -> e.reply(ExperienceRenderer.toMessage(
-                            MatchPresenter.quietSuccess("Still live", "You're still in Discover.")
+                            MatchPresenter.serviceDone("You're still in Discover.")
                     )).setEphemeral(true).queue();
             case MatchComponentIds.ACTION_DELETE_CONFIRM -> {
                 var result = ctx.deletion().hardDeleteProfileContent(userId);
                 if (result.success()) {
-                    e.reply(ExperienceRenderer.toMessage(MatchPresenter.quietSuccess(
-                            "Deleted",
+                    e.reply(ExperienceRenderer.toMessage(MatchPresenter.serviceDone(
                             result.message() + "\n\nYou can start fresh with **Create profile** anytime."
                     ))).setEphemeral(true).queue();
                 } else {
@@ -166,7 +165,7 @@ public final class MatchButtonHandler implements IButtonInteraction {
                 }
             }
             case MatchComponentIds.ACTION_DELETE_CANCEL -> e.reply(ExperienceRenderer.toMessage(
-                            MatchPresenter.quietSuccess("Cancelled", "Nothing was deleted.")
+                            MatchPresenter.serviceDone("Nothing was deleted.")
                     )).setEphemeral(true).queue();
             case MatchComponentIds.ACTION_PREVIEW_SELF -> {
                 Optional<MatchProfile> p = ctx.profiles().find(userId);
