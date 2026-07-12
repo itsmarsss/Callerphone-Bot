@@ -180,6 +180,10 @@ public final class MatchButtonHandler implements IButtonInteraction {
                             MatchPresenter.serviceDone("Nothing was deleted.")
                     )).setEphemeral(true).queue();
             case MatchComponentIds.ACTION_PREVIEW_SELF -> {
+                try {
+                    ctx.analytics().track(userId, "preview_self", null);
+                } catch (Exception ignored) {
+                }
                 Optional<MatchProfile> p = ctx.profiles().find(userId);
                 if (p.isEmpty()) {
                     e.reply(ExperienceRenderer.toMessage(MatchPresenter.home(
