@@ -657,7 +657,8 @@ public final class MatchPresenter {
                         ActionSpec.primary(
                                 MatchComponentIds.of(MatchComponentIds.ACTION_GAME_TTT, conversationId),
                                 "Play a game"
-                        )
+                        ),
+                        ActionSpec.secondary(CallComponentIds.again("_"), "Start a call")
                 )
                 .ephemeral(true)
                 .build();
