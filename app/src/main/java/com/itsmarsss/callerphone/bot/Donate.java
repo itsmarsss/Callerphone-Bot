@@ -32,6 +32,10 @@ public class Donate implements ISlashCommand {
                 ),
                 "Open home"
         ));
+        actions.add(ActionSpec.secondary(
+                com.itsmarsss.callerphone.call.discord.CallComponentIds.again("_"),
+                "Start a call"
+        ));
         e.reply(ExperienceRenderer.toMessage(ExperienceView.builder(ExperienceIntent.NEUTRAL)
                 .title("Support Callerphone")
                 .description(
