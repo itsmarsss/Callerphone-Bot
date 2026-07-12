@@ -372,6 +372,14 @@ public final class MatchButtonHandler implements IButtonInteraction {
         ctx.dbExecutor().execute(() -> {
             DecisionService.DecisionResult result = ctx.decisions().decide(userId, sessionId, type);
             if (!result.success()) {
+                String msg = result.message() == null ? "" : result.message();
+                String lower = msg.toLowerCase();
+                if (lower.contains("interests used") || lower.contains("chat limit") || lower.contains("limit reached")) {
+                    e.getHook().sendMessage(ExperienceRenderer.toMessage(
+                            MatchPresenter.softLimit("Not right now", msg)
+                    )).setEphemeral(true).queue();
+                    return;
+                }
                 e.getHook().sendMessage(ExperienceRenderer.toMessage(
                         MatchPresenter.warn("Couldn't complete", result.message())
                 )).setEphemeral(true).queue();

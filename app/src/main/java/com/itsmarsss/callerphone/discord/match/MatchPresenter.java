@@ -160,13 +160,39 @@ public final class MatchPresenter {
     }
 
     public static ExperienceView emptyDiscoverWithFallback(String message) {
+        String m = message == null ? "" : message;
+        String lower = m.toLowerCase();
         // Daily discovery limit uses premium-aware copy from UpsellCopy
-        if (message != null && message.toLowerCase().contains("discoveries are done")) {
+        if (lower.contains("discoveries are done")) {
             return dailyLimitHome(null);
+        }
+        if (lower.contains("create a profile") || lower.contains("finish your profile")) {
+            return ExperienceView.builder(ExperienceIntent.PROGRESS)
+                    .title("Almost there")
+                    .description(m + "\n\nOr explore Callerphone while you set up.")
+                    .actions(
+                            ActionSpec.success(MatchComponentIds.of(MatchComponentIds.ACTION_JOIN_ACCEPT, "_"), "Create profile"),
+                            ActionSpec.primary(MatchComponentIds.of(MatchComponentIds.ACTION_SETUP, "_"), "Finish setup"),
+                            ActionSpec.secondary(CallComponentIds.again("_"), "Start a call"),
+                            ActionSpec.secondary(BottleComponentIds.of(BottleComponentIds.ACTION_FIND, "_"), "Find a bottle")
+                    )
+                    .ephemeral(true)
+                    .build();
+        }
+        if (lower.contains("paused on your account") || lower.contains("restricted")) {
+            return ExperienceView.builder(ExperienceIntent.SAFETY)
+                    .title("Discover paused")
+                    .description(m)
+                    .actions(
+                            ActionSpec.secondary(MatchComponentIds.of(MatchComponentIds.ACTION_OPEN_CHATS, "_"), "Open chats"),
+                            ActionSpec.secondary(BottleComponentIds.of(BottleComponentIds.ACTION_FIND, "_"), "Find a bottle")
+                    )
+                    .ephemeral(true)
+                    .build();
         }
         return ExperienceView.builder(ExperienceIntent.DISCOVERY)
                 .title("You're caught up")
-                .description((message == null || message.isBlank() ? EmptyStates.noCandidates() : message)
+                .description((m.isBlank() ? EmptyStates.noCandidates() : m)
                         + "\n\nWant something else while you wait?")
                 .actions(
                         ActionSpec.primary(MatchComponentIds.of(MatchComponentIds.ACTION_OPEN_CHATS, "_"), "Open chats"),
@@ -186,6 +212,20 @@ public final class MatchPresenter {
                                 + "Premium (later) raises daily limits — Discover stays free either way.\n\n"
                                 + "Meanwhile: chats, calls, and bottles are still open."
                 )
+                .actions(
+                        ActionSpec.primary(MatchComponentIds.of(MatchComponentIds.ACTION_OPEN_CHATS, "_"), "Open chats"),
+                        ActionSpec.success(BottleComponentIds.of(BottleComponentIds.ACTION_FIND, "_"), "Find a bottle"),
+                        ActionSpec.secondary(CallComponentIds.again("_"), "Start a call"),
+                        ActionSpec.secondary(MatchComponentIds.of(MatchComponentIds.ACTION_PREMIUM, "_"), "About Premium")
+                )
+                .ephemeral(true)
+                .build();
+    }
+
+    public static ExperienceView softLimit(String title, String body) {
+        return ExperienceView.builder(ExperienceIntent.PREMIUM)
+                .title(title == null || title.isBlank() ? "Limit reached" : title)
+                .description(body + "\n\nPremium (later) may raise some limits — free paths stay open.")
                 .actions(
                         ActionSpec.primary(MatchComponentIds.of(MatchComponentIds.ACTION_OPEN_CHATS, "_"), "Open chats"),
                         ActionSpec.success(BottleComponentIds.of(BottleComponentIds.ACTION_FIND, "_"), "Find a bottle"),

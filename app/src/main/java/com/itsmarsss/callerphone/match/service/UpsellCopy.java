@@ -8,8 +8,8 @@ public final class UpsellCopy {
     public static String forLimit(String limitName) {
         return switch (limitName == null ? "" : limitName) {
             case "discovery" -> "Today's discoveries are done. Your free set refreshes tomorrow.";
-            case "interest" -> "Daily interests used up. See you tomorrow.";
-            case "conversations" -> "Chat limit reached. Unmatch someone to free a slot.";
+            case "interest" -> EmptyStates.interestLimit();
+            case "conversations" -> EmptyStates.conversationLimit();
             case "undo" -> "Nothing left to undo today.";
             default -> "Limit reached. Try again later.";
         };

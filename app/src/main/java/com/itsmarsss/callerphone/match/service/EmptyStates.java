@@ -27,4 +27,12 @@ public final class EmptyStates {
     public static String noLikes() {
         return "No new interest yet. Your profile can still appear in Discover.";
     }
+
+    public static String interestLimit() {
+        return "Daily interests used up. See you tomorrow — chats and calls stay open.";
+    }
+
+    public static String conversationLimit() {
+        return "Chat limit reached. Unmatch someone to free a slot, or open an existing chat.";
+    }
 }

@@ -199,6 +199,13 @@ public final class MatchMaintenanceJobs {
             notifications.notifyWeeklyDigest(user.getUserId(), body);
             user.setLastDigestAt(Instant.now());
             users.save(user);
+            try {
+                if (com.itsmarsss.callerphone.bootstrap.ApplicationContext.isReady()) {
+                    com.itsmarsss.callerphone.bootstrap.ApplicationContext.get().analytics()
+                            .track(user.getUserId(), "weekly_digest_sent", "chats:" + activeChats);
+                }
+            } catch (Exception ignored) {
+            }
         }
     }
 }

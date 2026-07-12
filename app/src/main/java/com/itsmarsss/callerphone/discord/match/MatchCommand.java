@@ -301,15 +301,26 @@ public final class MatchCommand implements ISlashCommand {
     }
 
     private void handleExport(SlashCommandInteractionEvent e, ApplicationContext ctx, String userId) {
-        String json = ctx.export().exportJson(userId);
-        byte[] bytes = json.getBytes(java.nio.charset.StandardCharsets.UTF_8);
-        e.reply(ExperienceRenderer.toMessage(MatchPresenter.quietSuccess(
-                        "Your export is ready",
-                        "It includes your profile, settings, and conversations covered by the export policy."
-                )))
-                .addFiles(net.dv8tion.jda.api.utils.FileUpload.fromData(bytes, "callerphone-match-export.json"))
-                .setEphemeral(true)
-                .queue();
+        e.deferReply(true).queue();
+        ctx.dbExecutor().execute(() -> {
+            try {
+                String json = ctx.export().exportJson(userId);
+                byte[] bytes = json.getBytes(java.nio.charset.StandardCharsets.UTF_8);
+                ctx.analytics().track(userId, "match_export", String.valueOf(bytes.length));
+                e.getHook().sendMessage(ExperienceRenderer.toMessage(MatchPresenter.quietSuccess(
+                                "Your export is ready",
+                                "It includes your profile, settings, and conversations covered by the export policy."
+                        )))
+                        .addFiles(net.dv8tion.jda.api.utils.FileUpload.fromData(bytes, "callerphone-match-export.json"))
+                        .setEphemeral(true)
+                        .queue();
+            } catch (Exception ex) {
+                e.getHook().sendMessage(ExperienceRenderer.toMessage(MatchPresenter.warn(
+                        "Export failed",
+                        "Try again in a moment. Nothing was deleted."
+                ))).setEphemeral(true).queue();
+            }
+        });
     }
 
     private void handleSafety(SlashCommandInteractionEvent e, ApplicationContext ctx, String userId) {
