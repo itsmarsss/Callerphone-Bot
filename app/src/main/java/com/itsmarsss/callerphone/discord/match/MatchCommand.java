@@ -116,7 +116,13 @@ public final class MatchCommand implements ISlashCommand {
             case "safety" -> handleSafety(e, ctx, userId);
             case "submit" -> {
                 ctx.profiles().setAvatar(userId, e.getUser().getEffectiveAvatarUrl());
-                reply(e, ctx.profiles().publish(userId));
+                EnrollmentService.ServiceResult result = ctx.profiles().publish(userId);
+                if (result.success()) {
+                    e.reply(ExperienceRenderer.toMessage(MatchPresenter.liveReady())).setEphemeral(true).queue();
+                } else {
+                    e.reply(ExperienceRenderer.toMessage(MatchPresenter.setupRetry(result.message())))
+                            .setEphemeral(true).queue();
+                }
             }
             default -> e.reply(ExperienceRenderer.toMessage(MatchPresenter.warn("Unknown", "That command isn't recognized.")))
                     .setEphemeral(true).queue();
@@ -437,6 +443,7 @@ public final class MatchCommand implements ISlashCommand {
         return "`/match join` get started\n"
                 + "`/match browse` discover people\n"
                 + "`/match chats` · `/match likes` · `/match inbox`\n"
+                + "`/match settings` · `/match premium` · `/match photo`\n"
                 + "`/match safety` block, report, unmatch";
     }
 

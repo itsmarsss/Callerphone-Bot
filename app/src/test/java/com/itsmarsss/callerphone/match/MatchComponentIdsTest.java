@@ -44,4 +44,16 @@ class MatchComponentIdsTest {
         String id = MatchComponentIds.of(MatchComponentIds.ACTION_SAFETY_OPEN, "conversation:abc123");
         assertTrue(id.length() <= 100);
     }
+
+    @Test
+    void parsesNewActions() {
+        String premium = MatchComponentIds.of(MatchComponentIds.ACTION_PREMIUM, "_");
+        MatchComponentIds.Parsed p = MatchComponentIds.parse(premium);
+        assertNotNull(p);
+        assertEquals(MatchComponentIds.ACTION_PREMIUM, p.action());
+
+        String photo = MatchComponentIds.of(MatchComponentIds.ACTION_PHOTO_AVATAR, "_");
+        assertTrue(photo.length() <= 100);
+        assertEquals(MatchComponentIds.ACTION_PHOTO_AVATAR, MatchComponentIds.parse(photo).action());
+    }
 }

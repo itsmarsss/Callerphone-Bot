@@ -26,6 +26,7 @@ public final class CallCommand implements ISlashCommand {
                 : CallEndpoint.guild(channelId, userId);
 
         CallResult result = calls.start(endpoint);
+        track(userId, result);
         switch (result.status()) {
             case CONFLICT -> e.reply(ExperienceRenderer.toMessage(CallPresenter.conflict()))
                     .setEphemeral(true).queue();
@@ -59,6 +60,24 @@ public final class CallCommand implements ISlashCommand {
             case FAILED -> e.reply(ExperienceRenderer.toMessage(
                             CallPresenter.warn("Couldn't connect", result.message())))
                     .setEphemeral(true).queue();
+        }
+    }
+
+    private static void track(String userId, CallResult result) {
+        try {
+            if (!com.itsmarsss.callerphone.bootstrap.ApplicationContext.isReady()) {
+                return;
+            }
+            String meta = switch (result.status()) {
+                case QUEUED -> "queued";
+                case ALREADY_QUEUED -> "already_queued";
+                case MATCHED -> "matched";
+                case CONFLICT -> "conflict";
+                case FAILED -> "failed";
+            };
+            com.itsmarsss.callerphone.bootstrap.ApplicationContext.get().analytics()
+                    .track(userId, "call_start", meta);
+        } catch (Exception ignored) {
         }
     }
 

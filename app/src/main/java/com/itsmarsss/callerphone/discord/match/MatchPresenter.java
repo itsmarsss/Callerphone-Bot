@@ -522,7 +522,9 @@ public final class MatchPresenter {
                 .description("Choose what you want to update. You can change everything later.")
                 .actions(
                         ActionSpec.primary(MatchComponentIds.of(MatchComponentIds.ACTION_SETUP, "_"), "About me"),
-                        ActionSpec.secondary(MatchComponentIds.of(MatchComponentIds.ACTION_PREVIEW_SELF, "_"), "Preview")
+                        ActionSpec.secondary(MatchComponentIds.of(MatchComponentIds.ACTION_PHOTO_MENU, "_"), "Photo"),
+                        ActionSpec.secondary(MatchComponentIds.of(MatchComponentIds.ACTION_PREVIEW_SELF, "_"), "Preview"),
+                        ActionSpec.secondary(MatchComponentIds.of(MatchComponentIds.ACTION_SETTINGS, "_"), "Notifications")
                 )
                 .ephemeral(true)
                 .build();

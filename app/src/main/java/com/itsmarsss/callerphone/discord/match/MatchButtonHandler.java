@@ -123,6 +123,12 @@ public final class MatchButtonHandler implements IButtonInteraction {
             }
             case MatchComponentIds.ACTION_EDIT_MENU -> e.reply(ExperienceRenderer.toMessage(MatchPresenter.editMenu()))
                     .setEphemeral(true).queue();
+            case MatchComponentIds.ACTION_SETTINGS -> {
+                var user = ctx.enrollment().getOrCreate(userId);
+                e.reply(ExperienceRenderer.toMessage(
+                        MatchPresenter.settings(user.isNotificationsEnabled(), user.isDigestOptIn())
+                )).setEphemeral(true).queue();
+            }
             case MatchComponentIds.ACTION_PHOTO_MENU -> e.reply(ExperienceRenderer.toMessage(MatchPresenter.photoMenu()))
                     .setEphemeral(true).queue();
             case MatchComponentIds.ACTION_PHOTO_AVATAR -> {

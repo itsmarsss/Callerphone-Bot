@@ -1,9 +1,14 @@
 package com.itsmarsss.callerphone.bot;
 
 import com.itsmarsss.callerphone.Callerphone;
-import com.itsmarsss.callerphone.ToolSet;
+import com.itsmarsss.callerphone.call.discord.CallComponentIds;
+import com.itsmarsss.callerphone.experience.ActionSpec;
+import com.itsmarsss.callerphone.experience.ExperienceIntent;
+import com.itsmarsss.callerphone.experience.ExperienceRenderer;
+import com.itsmarsss.callerphone.experience.ExperienceView;
+import com.itsmarsss.callerphone.match.component.MatchComponentIds;
+import com.itsmarsss.callerphone.msginbottle.BottleComponentIds;
 import com.itsmarsss.commandType.ISlashCommand;
-import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
@@ -19,7 +24,6 @@ public class About implements ISlashCommand {
     @Override
     public void runSlash(SlashCommandInteractionEvent e) {
         e.deferReply().queue();
-        JDA jda = e.getJDA();
         long servers = 0;
         long users = 0;
         ShardManager sdMgr = Callerphone.sdMgr;
@@ -31,19 +35,22 @@ public class About implements ISlashCommand {
                 }
             }
         }
-        e.getHook().editOriginalEmbeds(new EmbedBuilder()
-                .setColor(ToolSet.COLOR)
-                .setTitle("Callerphone")
-                .setDescription(
-                        "Meet people, connect communities, and start conversations across Discord.\n\n"
-                                + "**" + servers + "** servers · **" + users + "** users\n\n"
-                                + "[Invite](" + Callerphone.config.getBotInviteLink() + ") · "
-                                + "[Support](" + Callerphone.config.getSupportServer() + ") · "
-                                + "[Privacy](" + Callerphone.config.getPrivacyPolicy() + ") · "
-                                + "[Terms](" + Callerphone.config.getTermsOfService() + ")"
+        String desc = "Meet people, connect communities, and start conversations across Discord.\n\n"
+                + "**" + servers + "** servers · **" + users + "** users\n\n"
+                + "[Invite](" + Callerphone.config.getBotInviteLink() + ") · "
+                + "[Support](" + Callerphone.config.getSupportServer() + ") · "
+                + "[Privacy](" + Callerphone.config.getPrivacyPolicy() + ") · "
+                + "[Terms](" + Callerphone.config.getTermsOfService() + ")";
+        e.getHook().editOriginal(ExperienceRenderer.toEdit(ExperienceView.builder(ExperienceIntent.SOCIAL)
+                .title("Callerphone")
+                .description(desc)
+                .footer("Try /help · diagnostics on /botinfo")
+                .actions(
+                        ActionSpec.success(MatchComponentIds.of(MatchComponentIds.ACTION_START_BROWSE, "_"), "Discover people"),
+                        ActionSpec.secondary(CallComponentIds.again("_"), "Start a call"),
+                        ActionSpec.secondary(BottleComponentIds.of(BottleComponentIds.ACTION_FIND, "_"), "Find a bottle")
                 )
-                .setFooter("Try /help · diagnostics on /botinfo")
-                .build()).queue();
+                .build())).queue();
     }
 
     public static String formatUptime(long durationMs) {
