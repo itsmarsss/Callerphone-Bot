@@ -1,12 +1,10 @@
 package com.itsmarsss.callerphone.users.commands;
 
-import com.itsmarsss.callerphone.ToolSet;
 import com.itsmarsss.callerphone.experience.ExperienceIntent;
 import com.itsmarsss.callerphone.experience.ExperienceRenderer;
 import com.itsmarsss.callerphone.experience.ExperienceView;
 import com.itsmarsss.commandType.ISlashCommand;
 import com.itsmarsss.database.categories.Users;
-import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.InteractionContextType;
@@ -105,13 +103,27 @@ public class Leaderboard implements ISlashCommand {
         }
         if (invokerRank > 0) {
             board.append("\nYour rank: **#").append(invokerRank).append("**");
+        } else {
+            board.append("\n_Not in the top ").append(lines.length).append(" yet — keep chatting and calling._");
         }
-        e.getHook().editOriginalEmbeds(new EmbedBuilder()
-                .setColor(ToolSet.COLOR)
-                .setTitle("Activity leaders")
-                .setDescription(board.toString())
-                .setFooter("Top " + lines.length + " by activity credits")
-                .build()).queue();
+        e.getHook().editOriginal(ExperienceRenderer.toEdit(ExperienceView.builder(ExperienceIntent.SOCIAL)
+                .title("Activity leaders")
+                .description(board.toString())
+                .footer("Top " + lines.length + " by activity credits")
+                .actions(
+                        com.itsmarsss.callerphone.experience.ActionSpec.secondary(
+                                com.itsmarsss.callerphone.call.discord.CallComponentIds.again("_"),
+                                "Start a call"
+                        ),
+                        com.itsmarsss.callerphone.experience.ActionSpec.success(
+                                com.itsmarsss.callerphone.match.component.MatchComponentIds.of(
+                                        com.itsmarsss.callerphone.match.component.MatchComponentIds.ACTION_START_BROWSE,
+                                        "_"
+                                ),
+                                "Discover people"
+                        )
+                )
+                .build())).queue();
     }
 
     @Override

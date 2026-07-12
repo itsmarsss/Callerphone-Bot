@@ -121,7 +121,16 @@ public final class CallButtonHandler implements IButtonInteraction {
                             CallPresenter.success("Declined", "You can keep chatting on the call.")
                     ))
                     .setEphemeral(true).queue();
-            case CallComponentIds.AGAIN -> startAgain(e, userId, channelId);
+            case CallComponentIds.AGAIN -> {
+                try {
+                    if (com.itsmarsss.callerphone.bootstrap.ApplicationContext.isReady()) {
+                        com.itsmarsss.callerphone.bootstrap.ApplicationContext.get().analytics()
+                                .track(userId, "call_again", channelId);
+                    }
+                } catch (Exception ignored) {
+                }
+                startAgain(e, userId, channelId);
+            }
             default -> e.replyEmbeds(CallEmbeds.warn("That expired", "Open a fresh screen to continue."))
                     .setEphemeral(true).queue();
         }
