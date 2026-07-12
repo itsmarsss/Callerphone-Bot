@@ -464,6 +464,10 @@ public final class MatchButtonHandler implements IButtonInteraction {
                 String msg = result.message() == null ? "" : result.message();
                 String lower = msg.toLowerCase();
                 if (lower.contains("interests used") || lower.contains("chat limit") || lower.contains("limit reached")) {
+                    try {
+                        ctx.analytics().track(userId, "soft_limit", type.name().toLowerCase());
+                    } catch (Exception ignored) {
+                    }
                     e.getHook().sendMessage(ExperienceRenderer.toMessage(
                             MatchPresenter.softLimit("Not right now", msg)
                     )).setEphemeral(true).queue();
@@ -504,6 +508,11 @@ public final class MatchButtonHandler implements IButtonInteraction {
         if (safety == null) {
             e.reply(ExperienceRenderer.toMessage(MatchPresenter.safetyHelp())).setEphemeral(true).queue();
             return;
+        }
+        try {
+            ctx.analytics().track(userId, "safety_open",
+                    safety.kind() == null ? "unknown" : safety.kind().name().toLowerCase());
+        } catch (Exception ignored) {
         }
         String display = resolveSafetyName(ctx, userId, safety);
         e.reply(ExperienceRenderer.toMessage(MatchPresenter.safetyMenu(display, safety.opaque())))
