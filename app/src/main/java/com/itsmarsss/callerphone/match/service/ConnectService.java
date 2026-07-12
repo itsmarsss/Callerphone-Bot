@@ -119,7 +119,7 @@ public final class ConnectService {
         conversation.setConnectExpiresAt(null);
         conversations.save(conversation);
         if (requester != null) {
-            notifications.notifyConnectDeclined(requester);
+            notifications.notifyConnectDeclined(requester, conversationId);
             track(userId, "connect_decline", conversationId);
         }
         return EnrollmentService.ServiceResult.ok("Declined.");

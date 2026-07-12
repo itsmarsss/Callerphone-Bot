@@ -62,10 +62,12 @@ public class Help implements ISlashCommand {
         }
         // Personalized Match home + navigable command directory (edit-in-place categories)
         var home = MatchCommand.buildHome(ApplicationContext.get(), e.getUser().getId(), e.getUser().getName());
-        e.reply(ExperienceRenderer.toMessage(home))
-                .addEmbeds(ExperienceRenderer.toEmbed(HelpPresenter.directory(admin)))
-                .addComponents(ExperienceRenderer.toComponents(HelpPresenter.directory(admin)))
-                .queue();
+        try {
+            ApplicationContext.get().analytics().track(e.getUser().getId(), "help_open", "home");
+        } catch (Exception ignored) {
+        }
+        // Single product home; directory is one tap via /help commands
+        e.reply(ExperienceRenderer.toMessage(home)).queue();
     }
 
     public MessageEmbed help(String name, boolean admin) {

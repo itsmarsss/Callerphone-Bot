@@ -88,7 +88,17 @@ public final class MatchButtonHandler implements IButtonInteraction {
                     )).setEphemeral(true).queue();
                 }
             }
-            case MatchComponentIds.ACTION_CONNECT_DECLINE -> replyService(e, ctx.connect().decline(userId, opaque));
+            case MatchComponentIds.ACTION_CONNECT_DECLINE -> {
+                var result = ctx.connect().decline(userId, opaque);
+                if (result.success()) {
+                    e.reply(ExperienceRenderer.toMessage(MatchPresenter.quietSuccess(
+                            "Declined",
+                            result.message() + "\n\nYou can keep chatting or open another connection."
+                    ))).setEphemeral(true).queue();
+                } else {
+                    replyService(e, result);
+                }
+            }
             case MatchComponentIds.ACTION_UNMATCH -> replyService(e, ctx.conversations().unmatch(userId, opaque));
             case MatchComponentIds.ACTION_STOP_CHAT -> replyService(e, ctx.conversations().stopChat(userId));
             case MatchComponentIds.ACTION_SUBMIT -> {

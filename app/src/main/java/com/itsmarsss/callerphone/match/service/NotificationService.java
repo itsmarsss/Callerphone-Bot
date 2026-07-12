@@ -90,9 +90,14 @@ public final class NotificationService {
     }
 
     public void notifyConnectDeclined(String requesterId) {
+        notifyConnectDeclined(requesterId, null);
+    }
+
+    public void notifyConnectDeclined(String requesterId, String conversationId) {
+        String source = conversationId != null && !conversationId.isBlank() ? conversationId : requesterId;
         pushInbox(requesterId, SocialInboxService.EntryType.CONNECTION_MESSAGE,
-                requesterId, "Match", "Connect request declined");
-        dmIfEnabled(requesterId, "Request declined", "You can keep chatting here if you want.", null);
+                source, "Match", "Connect request declined");
+        dmIfEnabled(requesterId, "Request declined", "You can keep chatting here if you want.", conversationId);
     }
 
     public void notifyUnmatched(String recipientId, String actorId) {
