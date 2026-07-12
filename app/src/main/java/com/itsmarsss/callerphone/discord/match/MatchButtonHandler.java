@@ -317,6 +317,10 @@ public final class MatchButtonHandler implements IButtonInteraction {
             }
             case MatchComponentIds.ACTION_INBOX_READ_ALL -> {
                 ctx.inbox().markAllRead(userId);
+                try {
+                    ctx.analytics().track(userId, "inbox_read_all", null);
+                } catch (Exception ignored) {
+                }
                 e.reply(ExperienceRenderer.toMessage(MatchPresenter.serviceDone(
                         "Non-safety updates marked read. Open next anytime from your inbox."
                 ))).setEphemeral(true).queue();
