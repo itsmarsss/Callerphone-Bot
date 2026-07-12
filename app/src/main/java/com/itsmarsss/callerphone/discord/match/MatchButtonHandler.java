@@ -500,8 +500,9 @@ public final class MatchButtonHandler implements IButtonInteraction {
                 ctx.dbExecutor().execute(() -> {
                     var result = ctx.decisions().expressInterest(userId, opaque);
                     try {
-                        ctx.analytics().track(userId, "bottle_thread_to_interest",
-                                result.mutual() ? "mutual" : (result.success() ? "sent" : "fail"));
+                        String outcome = result.mutual() ? "mutual" : (result.success() ? "sent" : "fail");
+                        ctx.analytics().track(userId, "bottle_thread_to_interest", outcome);
+                        ctx.analytics().trackSurface(userId, "bottle", "thread_interest", outcome);
                     } catch (Exception ignored) {
                     }
                     if (result.mutual() && result.conversationId() != null) {
