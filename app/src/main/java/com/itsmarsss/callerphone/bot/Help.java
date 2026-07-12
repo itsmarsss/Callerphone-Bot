@@ -46,6 +46,12 @@ public class Help implements ISlashCommand {
         }
         String name = term.getAsString().toLowerCase().trim();
         if ("home".equals(name) || "commands".equals(name) || "all".equals(name) || "directory".equals(name)) {
+            try {
+                if (ApplicationContext.isReady()) {
+                    ApplicationContext.get().analytics().track(e.getUser().getId(), "help_open", "directory");
+                }
+            } catch (Exception ignored) {
+            }
             e.reply(ExperienceRenderer.toMessage(HelpPresenter.directory(admin))).queue();
             return;
         }

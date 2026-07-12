@@ -151,7 +151,7 @@ public final class MatchPresenter {
         // Discord allows 5 buttons/row; renderer wraps to a second row for profile/premium.
         return ExperienceView.builder(ExperienceIntent.SOCIAL)
                 .title(greeting(displayName))
-                .description(String.join(" · ", bits))
+                .description(String.join(" · ", bits) + "\n\n_Need slash commands? `/help commands`_")
                 .actions(
                         ActionSpec.success(MatchComponentIds.of(MatchComponentIds.ACTION_START_BROWSE, "_"), "Discover people"),
                         ActionSpec.secondary(MatchComponentIds.of(MatchComponentIds.ACTION_OPEN_CHATS, "_"), "Open chats"),

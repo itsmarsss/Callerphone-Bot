@@ -36,6 +36,7 @@ public final class ExportService {
     public String exportJson(String userId) {
         JSONObject root = new JSONObject();
         root.put("exportedAt", java.time.Instant.now().toString());
+        root.put("schema", "callerphone-match-export-v1");
         root.put("userId", userId);
 
         Optional<MatchUser> user = users.findById(userId);
