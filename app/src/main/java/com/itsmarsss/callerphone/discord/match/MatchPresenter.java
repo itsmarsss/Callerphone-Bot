@@ -839,7 +839,8 @@ public final class MatchPresenter {
                 .actions(
                         ActionSpec.danger(MatchComponentIds.of(MatchComponentIds.ACTION_DELETE_CONFIRM, "_"), "Delete content"),
                         ActionSpec.secondary(MatchComponentIds.of(MatchComponentIds.ACTION_LEAVE_CONFIRM, "_"), "Leave Discover instead"),
-                        ActionSpec.secondary(MatchComponentIds.of(MatchComponentIds.ACTION_DELETE_CANCEL, "_"), "Cancel")
+                        ActionSpec.secondary(MatchComponentIds.of(MatchComponentIds.ACTION_DELETE_CANCEL, "_"), "Cancel"),
+                        ActionSpec.secondary(CallComponentIds.again("_"), "Start a call")
                 )
                 .ephemeral(true)
                 .build();
