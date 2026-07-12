@@ -204,9 +204,19 @@ public final class MatchButtonHandler implements IButtonInteraction {
                             .setEphemeral(true).queue();
                 }
             }
-            case MatchComponentIds.ACTION_EDIT_MENU -> e.reply(ExperienceRenderer.toMessage(MatchPresenter.editMenu()))
-                    .setEphemeral(true).queue();
+            case MatchComponentIds.ACTION_EDIT_MENU -> {
+                try {
+                    ctx.analytics().track(userId, "edit_menu_open", "button");
+                } catch (Exception ignored) {
+                }
+                e.reply(ExperienceRenderer.toMessage(MatchPresenter.editMenu()))
+                        .setEphemeral(true).queue();
+            }
             case MatchComponentIds.ACTION_SETTINGS -> {
+                try {
+                    ctx.analytics().track(userId, "settings_open", "button");
+                } catch (Exception ignored) {
+                }
                 var user = ctx.enrollment().getOrCreate(userId);
                 e.reply(ExperienceRenderer.toMessage(
                         MatchPresenter.settings(user.isNotificationsEnabled(), user.isDigestOptIn())
