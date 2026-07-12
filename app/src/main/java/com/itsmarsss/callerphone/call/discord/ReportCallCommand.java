@@ -35,10 +35,7 @@ public final class ReportCallCommand implements ISlashCommand {
         for (ReportCategory cat : ReportCategory.values()) {
             menu.addOption(cat.label(), cat.code());
         }
-        e.reply(ExperienceRenderer.toMessage(CallPresenter.warn(
-                        "Report this call",
-                        "Choose the closest reason. Recent messages will be attached for review."
-                )))
+        e.reply(ExperienceRenderer.toMessage(CallPresenter.reportPrompt()))
                 .addComponents(ActionRow.of(menu.build()))
                 .setEphemeral(true)
                 .queue();

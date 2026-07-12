@@ -299,6 +299,14 @@ public final class CallPresenter {
                 .build();
     }
 
+    public static ExperienceView reportPrompt() {
+        return ExperienceView.builder(ExperienceIntent.SAFETY)
+                .title("Report this call")
+                .description("Choose the closest reason. Recent messages will be attached for review.")
+                .ephemeral(true)
+                .build();
+    }
+
     /** Empty/error recovery after a failed or missing call. */
     public static ExperienceView warnRecover(String title, String description) {
         return ExperienceView.builder(ExperienceIntent.WARNING)

@@ -14,9 +14,9 @@ public enum Response {
     DEFAULT_MESSAGE_TEMPLATE("**%s** · %s"),
     MODERATOR_MESSAGE_TEMPLATE("**[Mod] %s** · %s"),
     PREFIX_MESSAGE_TEMPLATE("**[%s] %s** · %s"),
-    MESSAGE_TOO_LONG("Message was too long to send."),
-    ATTEMPTED_PING("Pings aren't allowed in calls."),
-    ATTEMPTED_LINK("Links aren't allowed in calls."),
+    MESSAGE_TOO_LONG("That message was too long to send. Try a shorter one."),
+    ATTEMPTED_PING("Pings aren't allowed in calls. Remove the mention and resend."),
+    ATTEMPTED_LINK("Links aren't allowed in calls. Remove the URL and resend."),
 
     USER_TEMPLATE("\t\t{\n\t\t\t\"id\": \"%s\",\n\t\t\t\"status\": \"%s\",\n\t\t\t\"reason\": \"%s\",\n\t\t\t\"prefix\": \"%s\",\n\t\t\t\"credits\": %s,\n\t\t\t\"executed\": %s,\n\t\t\t\"transmitted\": %s\n\t\t}"),
 
