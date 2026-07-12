@@ -362,12 +362,16 @@ public final class MatchCommand implements ISlashCommand {
             if (!result.success() || result.restoredSession() == null) {
                 String msg = result.message() == null ? "" : result.message();
                 if (msg.toLowerCase().contains("nothing left") || msg.toLowerCase().contains("too late")) {
+                    try {
+                        ctx.analytics().track(userId, "soft_limit", "undo");
+                    } catch (Exception ignored) {
+                    }
                     e.getHook().sendMessage(ExperienceRenderer.toMessage(
                             MatchPresenter.softLimit("Undo unavailable", msg)
                     )).setEphemeral(true).queue();
                 } else {
                     e.getHook().sendMessage(ExperienceRenderer.toMessage(
-                            MatchPresenter.warn("Undo", result.message())
+                            MatchPresenter.serviceFailed(result.message())
                     )).setEphemeral(true).queue();
                 }
                 return;
@@ -375,9 +379,13 @@ public final class MatchCommand implements ISlashCommand {
             Optional<MatchProfile> profile = ctx.profiles().find(result.restoredSession().subjectId());
             if (profile.isEmpty()) {
                 e.getHook().sendMessage(ExperienceRenderer.toMessage(
-                        MatchPresenter.warn("Undo", result.message())
+                        MatchPresenter.serviceFailed(result.message())
                 )).setEphemeral(true).queue();
                 return;
+            }
+            try {
+                ctx.analytics().track(userId, "discover_undo", "ok");
+            } catch (Exception ignored) {
             }
             String remaining = DiscoveryUi.remainingLine(ctx, userId);
             MatchProfile viewer = ctx.profiles().find(userId).orElse(null);
