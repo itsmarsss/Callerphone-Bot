@@ -298,7 +298,13 @@ public final class CallPresenter {
                 .description("This channel is already connected. End it before starting another.")
                 .actions(
                         ActionSpec.danger(CallComponentIds.endConfirm(), "End call"),
-                        ActionSpec.secondary(CallComponentIds.endCancel(), "Keep talking")
+                        ActionSpec.secondary(CallComponentIds.endCancel(), "Keep talking"),
+                        ActionSpec.secondary(
+                                com.itsmarsss.callerphone.msginbottle.BottleComponentIds.of(
+                                        com.itsmarsss.callerphone.msginbottle.BottleComponentIds.ACTION_FIND, "_"
+                                ),
+                                "Find a bottle"
+                        )
                 )
                 .build();
     }
