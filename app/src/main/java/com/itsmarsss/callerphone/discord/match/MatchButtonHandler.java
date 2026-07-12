@@ -279,6 +279,7 @@ public final class MatchButtonHandler implements IButtonInteraction {
                 if (r.success()) {
                     try {
                         ctx.analytics().track(userId, "match_photo_avatar", null);
+                        ctx.analytics().trackSurface(userId, "profile", "photo_avatar", null);
                     } catch (Exception ignored) {
                     }
                     e.reply(ExperienceRenderer.toMessage(MatchPresenter.photoUpdated())).setEphemeral(true).queue();
