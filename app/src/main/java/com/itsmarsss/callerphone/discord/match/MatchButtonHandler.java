@@ -52,10 +52,18 @@ public final class MatchButtonHandler implements IButtonInteraction {
                  MatchComponentIds.ACTION_EDIT_BIO,
                  MatchComponentIds.ACTION_EDIT_INTERESTS -> e.replyModal(MatchCommand.setupModal()).queue();
             case MatchComponentIds.ACTION_START_BROWSE -> {
+                try {
+                    ctx.analytics().track(userId, "discover_open", "button");
+                } catch (Exception ignored) {
+                }
                 e.deferReply(true).queue();
                 ctx.dbExecutor().execute(() -> DiscoveryUi.sendDiscover(e.getHook(), ctx, userId, true));
             }
             case MatchComponentIds.ACTION_OPEN_CHATS -> {
+                try {
+                    ctx.analytics().track(userId, "chats_open", "button");
+                } catch (Exception ignored) {
+                }
                 e.deferReply(true).queue();
                 ctx.dbExecutor().execute(() -> ChatInboxUi.sendInbox(e.getHook(), ctx, userId));
             }
