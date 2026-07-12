@@ -112,6 +112,13 @@ public class Leaderboard implements ISlashCommand {
                 .description(board.toString())
                 .footer("Top " + lines.length + " by activity credits")
                 .actions(
+                        com.itsmarsss.callerphone.experience.ActionSpec.primary(
+                                com.itsmarsss.callerphone.match.component.MatchComponentIds.of(
+                                        com.itsmarsss.callerphone.match.component.MatchComponentIds.ACTION_REWARDS,
+                                        "_"
+                                ),
+                                "View rewards"
+                        ),
                         com.itsmarsss.callerphone.experience.ActionSpec.secondary(
                                 com.itsmarsss.callerphone.call.discord.CallComponentIds.again("_"),
                                 "Start a call"
