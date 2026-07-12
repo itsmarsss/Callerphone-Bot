@@ -177,6 +177,20 @@ public final class MatchConversationService {
         conversations.save(conversation);
         user.setConversationSelectedAt(Instant.now());
         users.save(user);
+        // Unified inbox is source of truth; DM is delivery (plan §10.F)
+        try {
+            if (com.itsmarsss.callerphone.bootstrap.ApplicationContext.isReady()) {
+                String preview = content.length() > 80 ? content.substring(0, 77) + "…" : content;
+                com.itsmarsss.callerphone.bootstrap.ApplicationContext.get().inbox().push(
+                        recipientId,
+                        SocialInboxService.EntryType.CONNECTION_MESSAGE,
+                        conversation.getConversationId(),
+                        display,
+                        preview
+                );
+            }
+        } catch (Exception ignored) {
+        }
         return RelayResult.relay(recipientId, display, content, conversation.getConversationId());
     }
 
