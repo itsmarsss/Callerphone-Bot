@@ -342,6 +342,7 @@ public final class MatchButtonHandler implements IButtonInteraction {
             case MatchComponentIds.ACTION_RESUME -> {
                 try {
                     ctx.analytics().track(userId, "profile_resume", null);
+                    ctx.analytics().trackSurface(userId, "profile", "resume", null);
                 } catch (Exception ignored) {
                 }
                 replyService(e, ctx.profiles().resume(userId));
