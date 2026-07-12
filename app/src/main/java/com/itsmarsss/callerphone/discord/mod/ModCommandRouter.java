@@ -138,6 +138,7 @@ public final class ModCommandRouter extends ListenerAdapter {
                     }
                     String reason = args.length > 2 ? String.join(" ", java.util.Arrays.copyOfRange(args, 2, args.length)) : "suspended";
                     ApplicationContext.get().safety().suspendMatch(author.getId(), args[1], reason);
+                    trackStaff(author.getId(), "staff_suspend", args[1]);
                     message.reply("Match suspended for `" + args[1] + "`").queue();
                 }
                 case "mrestore" -> requireId(message, args, id -> {
@@ -163,6 +164,7 @@ public final class ModCommandRouter extends ListenerAdapter {
                 }
                 case "mpremium" -> requireId(message, args, id -> {
                     ApplicationContext.get().premium().grant(id);
+                    trackStaff(author.getId(), "staff_premium_grant", id);
                     message.reply("Premium entitlement granted for `" + id + "` (test grant).").queue();
                 });
                 case "mresolve" -> {
@@ -171,6 +173,7 @@ public final class ModCommandRouter extends ListenerAdapter {
                         return;
                     }
                     ApplicationContext.get().safety().resolveReport(author.getId(), args[1], args[2]);
+                    trackStaff(author.getId(), "staff_report_resolve", args[1] + ":" + args[2]);
                     message.reply("Report updated.").queue();
                 }
                 default -> {
@@ -234,5 +237,14 @@ public final class ModCommandRouter extends ListenerAdapter {
                 .setDescription(desc)
                 .setColor(ToolSet.COLOR);
         ToolSet.sendPrivateEmbed(member, help.build());
+    }
+
+    private static void trackStaff(String staffId, String name, String meta) {
+        try {
+            if (ApplicationContext.isReady()) {
+                ApplicationContext.get().analytics().track(staffId, name, meta);
+            }
+        } catch (Exception ignored) {
+        }
     }
 }
