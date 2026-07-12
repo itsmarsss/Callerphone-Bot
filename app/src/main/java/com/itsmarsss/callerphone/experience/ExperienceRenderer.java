@@ -64,25 +64,38 @@ public final class ExperienceRenderer {
             if (action == null || action.componentId() == null || action.componentId().isBlank()) {
                 continue;
             }
-            // Link buttons use URLs (up to Discord's URL length); others use custom ids ≤100.
-            if (action.style() != ActionSpec.Style.LINK && !DiscordLimits.isValidCustomId(action.componentId())) {
+            // Link buttons use URLs; Premium uses SKU ids; others use custom ids ≤100.
+            if (action.style() != ActionSpec.Style.LINK
+                    && action.style() != ActionSpec.Style.PREMIUM
+                    && !DiscordLimits.isValidCustomId(action.componentId())) {
                 continue;
             }
             if (action.style() == ActionSpec.Style.LINK && action.componentId().length() > 512) {
                 continue;
             }
-            String label = DiscordLimits.clamp(action.label(), DiscordLimits.BUTTON_LABEL);
-            if (label == null || label.isBlank()) {
-                continue;
+            Button button;
+            if (action.style() == ActionSpec.Style.PREMIUM) {
+                try {
+                    button = Button.premium(net.dv8tion.jda.api.entities.SkuSnowflake.fromId(action.componentId()));
+                } catch (Exception ex) {
+                    continue;
+                }
+            } else {
+                String label = DiscordLimits.clamp(action.label(), DiscordLimits.BUTTON_LABEL);
+                if (label == null || label.isBlank()) {
+                    continue;
+                }
+                button = switch (action.style()) {
+                    case PRIMARY -> Button.primary(action.componentId(), label);
+                    case SECONDARY -> Button.secondary(action.componentId(), label);
+                    case SUCCESS -> Button.success(action.componentId(), label);
+                    case DANGER -> Button.danger(action.componentId(), label);
+                    case LINK -> Button.link(action.componentId(), label);
+                    case PREMIUM -> throw new IllegalStateException("handled above");
+                };
             }
-            Button button = switch (action.style()) {
-                case PRIMARY -> Button.primary(action.componentId(), label);
-                case SECONDARY -> Button.secondary(action.componentId(), label);
-                case SUCCESS -> Button.success(action.componentId(), label);
-                case DANGER -> Button.danger(action.componentId(), label);
-                case LINK -> Button.link(action.componentId(), label);
-            };
-            if (action.disabled() && action.style() != ActionSpec.Style.LINK) {
+            if (action.disabled() && action.style() != ActionSpec.Style.LINK
+                    && action.style() != ActionSpec.Style.PREMIUM) {
                 button = button.asDisabled();
             }
             buttons.add(button);

@@ -16,7 +16,9 @@ public record ActionSpec(
         SECONDARY,
         SUCCESS,
         DANGER,
-        LINK
+        LINK,
+        /** Discord Premium Apps SKU button; {@code componentId} is the SKU snowflake string. */
+        PREMIUM
     }
 
     public static ActionSpec primary(String componentId, String label) {
@@ -38,6 +40,11 @@ public record ActionSpec(
     /** Link button: {@code componentId} is the URL. */
     public static ActionSpec link(String url, String label) {
         return new ActionSpec(url, label, Style.LINK, false, false);
+    }
+
+    /** Premium Apps SKU button; Discord supplies the label. {@code skuId} is the SKU snowflake. */
+    public static ActionSpec premiumSku(String skuId) {
+        return new ActionSpec(skuId, "", Style.PREMIUM, false, false);
     }
 
     public ActionSpec asDisabled() {

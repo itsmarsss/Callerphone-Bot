@@ -20,4 +20,11 @@ class ActionSpecTest {
         assertTrue(disabled.disabled());
         assertEquals(ActionSpec.Style.PRIMARY, disabled.style());
     }
+
+    @Test
+    void premiumSkuUsesSkuAsComponentId() {
+        ActionSpec premium = ActionSpec.premiumSku("123456789012345678");
+        assertEquals(ActionSpec.Style.PREMIUM, premium.style());
+        assertEquals("123456789012345678", premium.componentId());
+    }
 }

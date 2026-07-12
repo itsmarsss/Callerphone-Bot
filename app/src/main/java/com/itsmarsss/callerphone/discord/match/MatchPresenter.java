@@ -851,6 +851,20 @@ public final class MatchPresenter {
                     .ephemeral(true)
                     .build();
         }
+        List<ActionSpec> actions = new ArrayList<>();
+        if (purchasesLive) {
+            try {
+                String sku = com.itsmarsss.callerphone.Callerphone.config != null
+                        ? com.itsmarsss.callerphone.Callerphone.config.getPremiumSkuId().trim()
+                        : "";
+                if (!sku.isBlank()) {
+                    actions.add(ActionSpec.premiumSku(sku));
+                }
+            } catch (Exception ignored) {
+            }
+        }
+        actions.add(ActionSpec.success(MatchComponentIds.of(MatchComponentIds.ACTION_START_BROWSE, "_"), "Keep discovering"));
+        actions.add(ActionSpec.secondary(MatchComponentIds.of(MatchComponentIds.ACTION_OPEN_LIKES, "_"), "Incoming interest"));
         return ExperienceView.builder(ExperienceIntent.PREMIUM)
                 .title("Callerphone Premium")
                 .description(
@@ -867,13 +881,10 @@ public final class MatchPresenter {
                                 + "· Advanced filters · more undos\n\n"
                                 + "Discover stays free either way. "
                                 + (purchasesLive
-                                ? "Native Discord purchase is wired — buy from the app when Discord shows Premium."
+                                ? "Use the Premium button below when Discord shows your SKU."
                                 : "Purchases aren't live yet (set premiumSkuId when the SKU is approved).")
                 )
-                .actions(
-                        ActionSpec.success(MatchComponentIds.of(MatchComponentIds.ACTION_START_BROWSE, "_"), "Keep discovering"),
-                        ActionSpec.secondary(MatchComponentIds.of(MatchComponentIds.ACTION_OPEN_LIKES, "_"), "Incoming interest")
-                )
+                .actions(actions)
                 .ephemeral(true)
                 .build();
     }
