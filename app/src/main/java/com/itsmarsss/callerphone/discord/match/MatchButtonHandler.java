@@ -296,6 +296,7 @@ public final class MatchButtonHandler implements IButtonInteraction {
                 int level = (int) (total / 100);
                 try {
                     ctx.analytics().track(userId, "rewards_view", null);
+                    ctx.analytics().trackSurface(userId, "rewards", "view", null);
                 } catch (Exception ignored) {
                 }
                 e.reply(ExperienceRenderer.toMessage(
