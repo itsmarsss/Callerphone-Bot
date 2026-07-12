@@ -164,7 +164,8 @@ public final class CallPresenter {
         if (sessionId != null && !sessionId.isBlank()) {
             b.actions(
                     ActionSpec.secondary(CallComponentIds.prompt(sessionId), "Another prompt"),
-                    ActionSpec.primary(CallComponentIds.gameShelf(sessionId), "Start a game")
+                    ActionSpec.primary(CallComponentIds.gameShelf(sessionId), "Start a game"),
+                    ActionSpec.success(CallComponentIds.share(sessionId), "Share profile")
             );
         }
         return b.build();
