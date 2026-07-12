@@ -299,6 +299,10 @@ public final class MatchCommand implements ISlashCommand {
     }
 
     private void handleBrowse(SlashCommandInteractionEvent e, ApplicationContext ctx, String userId) {
+        try {
+            ctx.analytics().track(userId, "discover_open", "slash");
+        } catch (Exception ignored) {
+        }
         e.deferReply(true).queue();
         ctx.dbExecutor().execute(() -> DiscoveryUi.sendDiscover(e.getHook(), ctx, userId, true));
     }
@@ -306,15 +310,27 @@ public final class MatchCommand implements ISlashCommand {
     private void handleLikes(SlashCommandInteractionEvent e, ApplicationContext ctx, String userId) {
         List<com.itsmarsss.callerphone.match.model.MatchDecision> incoming = ctx.incomingLikes(userId);
         if (incoming.isEmpty()) {
+            try {
+                ctx.analytics().track(userId, "likes_open", "empty");
+            } catch (Exception ignored) {
+            }
             e.reply(ExperienceRenderer.toMessage(MatchPresenter.incomingInterestEmpty()))
                     .setEphemeral(true).queue();
             return;
         }
         // Plan §7: free path is a teaser; Premium reveals names
         if (!ctx.premium().canSeeIncomingInterestNames(userId)) {
+            try {
+                ctx.analytics().track(userId, "likes_open", "teaser");
+            } catch (Exception ignored) {
+            }
             e.reply(ExperienceRenderer.toMessage(MatchPresenter.incomingInterestFreeTeaser()))
                     .setEphemeral(true).queue();
             return;
+        }
+        try {
+            ctx.analytics().track(userId, "likes_open", "list");
+        } catch (Exception ignored) {
         }
         StringBuilder sb = new StringBuilder();
         int i = 1;
