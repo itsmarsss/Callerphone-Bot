@@ -554,6 +554,11 @@ public final class MatchButtonHandler implements IButtonInteraction {
                     .setEphemeral(true).queue();
             return;
         }
+        try {
+            ctx.analytics().track(userId, "age_select", cohort == null ? "" : cohort.name());
+            ctx.analytics().trackSurface(userId, "match", "age_select", cohort == null ? "" : cohort.name());
+        } catch (Exception ignored) {
+        }
         e.replyModal(MatchCommand.setupModal()).queue();
     }
 
