@@ -1,15 +1,17 @@
 package com.itsmarsss.callerphone.discord.match;
 
 import com.itsmarsss.callerphone.bootstrap.ApplicationContext;
+import com.itsmarsss.callerphone.experience.ExperienceRenderer;
 import com.itsmarsss.callerphone.identity.AgeCohort;
 import com.itsmarsss.callerphone.identity.EnrollmentService;
 import com.itsmarsss.callerphone.match.component.MatchComponentIds;
 import com.itsmarsss.callerphone.match.model.ConversationStage;
 import com.itsmarsss.callerphone.match.model.DecisionType;
 import com.itsmarsss.callerphone.match.model.MatchConversation;
+import com.itsmarsss.callerphone.match.model.MatchProfile;
 import com.itsmarsss.callerphone.match.service.DecisionService;
-import com.itsmarsss.callerphone.match.service.DiscoveryService;
 import com.itsmarsss.callerphone.match.service.MatchConversationService;
+import com.itsmarsss.callerphone.safety.ReportCategory;
 import com.itsmarsss.commandType.IButtonInteraction;
 import net.dv8tion.jda.api.components.actionrow.ActionRow;
 import net.dv8tion.jda.api.components.buttons.Button;
@@ -17,17 +19,19 @@ import net.dv8tion.jda.api.interactions.components.buttons.ButtonInteraction;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public final class MatchButtonHandler implements IButtonInteraction {
     @Override
     public void runClick(ButtonInteraction e) {
         if (!ApplicationContext.isReady()) {
-            e.replyEmbeds(MatchEmbeds.warm("One moment", "Still starting up.")).setEphemeral(true).queue();
+            e.reply(ExperienceRenderer.toMessage(MatchPresenter.warn("One moment", "Still starting up.")))
+                    .setEphemeral(true).queue();
             return;
         }
         MatchComponentIds.Parsed parsed = MatchComponentIds.parse(e.getComponentId());
         if (parsed == null) {
-            e.replyEmbeds(MatchEmbeds.warm("That expired", "Open a fresh screen to continue.")).setEphemeral(true).queue();
+            e.reply(ExperienceRenderer.toMessage(MatchPresenter.expired())).setEphemeral(true).queue();
             return;
         }
         ApplicationContext ctx = ApplicationContext.get();
@@ -38,14 +42,7 @@ public final class MatchButtonHandler implements IButtonInteraction {
         switch (action) {
             case MatchComponentIds.ACTION_JOIN_ACCEPT -> {
                 ctx.enrollment().acceptPolicies(userId);
-                e.replyEmbeds(MatchEmbeds.soft(
-                                "Age group",
-                                "You'll only meet people in the same group."))
-                        .addComponents(ActionRow.of(
-                                Button.primary(MatchComponentIds.of(MatchComponentIds.ACTION_AGE_13_15, userId), "13-15"),
-                                Button.primary(MatchComponentIds.of(MatchComponentIds.ACTION_AGE_16_17, userId), "16-17"),
-                                Button.success(MatchComponentIds.of(MatchComponentIds.ACTION_AGE_18_PLUS, userId), "18+")
-                        ))
+                e.reply(ExperienceRenderer.toMessage(MatchPresenter.ageGroup()))
                         .setEphemeral(true)
                         .queue();
             }
@@ -58,83 +55,92 @@ public final class MatchButtonHandler implements IButtonInteraction {
                  MatchComponentIds.ACTION_EDIT_INTERESTS -> e.replyModal(MatchCommand.setupModal()).queue();
             case MatchComponentIds.ACTION_START_BROWSE -> {
                 e.deferReply(true).queue();
-                ctx.dbExecutor().execute(() -> sendBrowse(e, ctx, userId));
+                ctx.dbExecutor().execute(() -> DiscoveryUi.sendDiscover(e.getHook(), ctx, userId, true));
+            }
+            case MatchComponentIds.ACTION_OPEN_CHATS -> {
+                e.deferReply(true).queue();
+                ctx.dbExecutor().execute(() -> sendChats(e, ctx, userId));
             }
             case MatchComponentIds.ACTION_INTERESTED -> decide(e, ctx, userId, opaque, DecisionType.INTERESTED);
             case MatchComponentIds.ACTION_SKIP -> decide(e, ctx, userId, opaque, DecisionType.SKIP);
             case MatchComponentIds.ACTION_CHAT_SELECT -> replyChatSelect(e, ctx, userId, opaque);
             case MatchComponentIds.ACTION_CONNECT_REQUEST -> {
                 EnrollmentService.ServiceResult result = ctx.connect().request(userId, opaque);
-                e.replyEmbeds(result.success() ? MatchEmbeds.success("Done", result.message()) : MatchEmbeds.warm("Couldn't complete", result.message())).setEphemeral(true).queue();
+                replyService(e, result);
             }
             case MatchComponentIds.ACTION_CONNECT_ACCEPT -> {
                 var result = ctx.connect().accept(userId, opaque);
                 if (result.success() && result.otherUserId() != null) {
-                    e.replyEmbeds(MatchEmbeds.success("Connected", result.message() + "\n\nThey are <@" + result.otherUserId() + ">.")).setEphemeral(true).queue();
+                    e.reply(ExperienceRenderer.toMessage(MatchPresenter.quietSuccess(
+                            "Connected",
+                            result.message() + "\n\nThey are <@" + result.otherUserId() + ">."
+                    ))).setEphemeral(true).queue();
                 } else {
-                    e.replyEmbeds(result.success() ? MatchEmbeds.success("Done", result.message()) : MatchEmbeds.warm("Couldn't complete", result.message())).setEphemeral(true).queue();
+                    e.reply(ExperienceRenderer.toMessage(result.success()
+                            ? MatchPresenter.quietSuccess("Connected", result.message())
+                            : MatchPresenter.warn("Couldn't complete", result.message())
+                    )).setEphemeral(true).queue();
                 }
             }
-            case MatchComponentIds.ACTION_CONNECT_DECLINE -> {
-                EnrollmentService.ServiceResult result = ctx.connect().decline(userId, opaque);
-                e.replyEmbeds(result.success() ? MatchEmbeds.success("Done", result.message()) : MatchEmbeds.warm("Couldn't complete", result.message())).setEphemeral(true).queue();
-            }
-            case MatchComponentIds.ACTION_UNMATCH -> {
-                EnrollmentService.ServiceResult result = ctx.conversations().unmatch(userId, opaque);
-                e.replyEmbeds(result.success() ? MatchEmbeds.success("Done", result.message()) : MatchEmbeds.warm("Couldn't complete", result.message())).setEphemeral(true).queue();
-            }
-            case MatchComponentIds.ACTION_STOP_CHAT -> {
-                EnrollmentService.ServiceResult result = ctx.conversations().stopChat(userId);
-                e.replyEmbeds(result.success() ? MatchEmbeds.success("Done", result.message()) : MatchEmbeds.warm("Couldn't complete", result.message())).setEphemeral(true).queue();
-            }
+            case MatchComponentIds.ACTION_CONNECT_DECLINE -> replyService(e, ctx.connect().decline(userId, opaque));
+            case MatchComponentIds.ACTION_UNMATCH -> replyService(e, ctx.conversations().unmatch(userId, opaque));
+            case MatchComponentIds.ACTION_STOP_CHAT -> replyService(e, ctx.conversations().stopChat(userId));
             case MatchComponentIds.ACTION_SUBMIT -> {
                 ctx.profiles().setAvatar(userId, e.getUser().getEffectiveAvatarUrl());
                 EnrollmentService.ServiceResult result = ctx.profiles().publish(userId);
                 if (result.success()) {
-                    e.replyEmbeds(MatchEmbeds.success("You're live", result.message()))
-                            .addComponents(ActionRow.of(
-                                    Button.success(MatchComponentIds.of(MatchComponentIds.ACTION_START_BROWSE, "_"), "Discover")
-                            ))
-                            .setEphemeral(true)
-                            .queue();
+                    e.reply(ExperienceRenderer.toMessage(MatchPresenter.liveReady())).setEphemeral(true).queue();
                 } else {
-                    e.replyEmbeds(MatchEmbeds.warm("Almost", result.message()))
-                            .addComponents(ActionRow.of(
-                                    Button.primary(MatchComponentIds.of(MatchComponentIds.ACTION_SETUP, "_"), "Finish setup")
-                            ))
-                            .setEphemeral(true)
-                            .queue();
+                    e.reply(ExperienceRenderer.toMessage(MatchPresenter.setupRetry(result.message())))
+                            .setEphemeral(true).queue();
                 }
             }
             case MatchComponentIds.ACTION_BROWSE_NEXT -> {
                 e.deferReply(true).queue();
-                ctx.dbExecutor().execute(() -> sendBrowse(e, ctx, userId));
+                ctx.dbExecutor().execute(() -> DiscoveryUi.sendDiscover(e.getHook(), ctx, userId, true));
             }
-            default -> e.replyEmbeds(MatchEmbeds.warm("That expired", "Open a fresh screen to continue.")).setEphemeral(true).queue();
+            case MatchComponentIds.ACTION_SAFETY_OPEN -> openSafety(e, ctx, userId, opaque);
+            case MatchComponentIds.ACTION_SAFETY_BLOCK -> safetyBlock(e, ctx, userId, opaque);
+            case MatchComponentIds.ACTION_SAFETY_REPORT -> safetyReport(e, ctx, userId, opaque);
+            case MatchComponentIds.ACTION_SAFETY_UNMATCH -> safetyUnmatch(e, ctx, userId, opaque);
+            default -> e.reply(ExperienceRenderer.toMessage(MatchPresenter.expired())).setEphemeral(true).queue();
         }
+    }
+
+    private static void replyService(ButtonInteraction e, EnrollmentService.ServiceResult result) {
+        e.reply(ExperienceRenderer.toMessage(result.success()
+                ? MatchPresenter.quietSuccess("Done", result.message())
+                : MatchPresenter.warn("Couldn't complete", result.message())
+        )).setEphemeral(true).queue();
     }
 
     private void selectAge(ButtonInteraction e, ApplicationContext ctx, String userId, AgeCohort cohort) {
         EnrollmentService.ServiceResult result = ctx.enrollment().selectAgeCohort(userId, cohort);
         ctx.profiles().setAvatar(userId, e.getUser().getEffectiveAvatarUrl());
         if (!result.success()) {
-            e.replyEmbeds(MatchEmbeds.warm("Couldn't continue", result.message())).setEphemeral(true).queue();
+            e.reply(ExperienceRenderer.toMessage(MatchPresenter.warn("Couldn't continue", result.message())))
+                    .setEphemeral(true).queue();
             return;
         }
-        // Lowest friction: open the one setup form immediately (no extra commands)
         e.replyModal(MatchCommand.setupModal()).queue();
     }
 
     private void replyChatSelect(ButtonInteraction e, ApplicationContext ctx, String userId, String conversationId) {
         MatchConversationService.SelectResult result = ctx.conversations().select(userId, conversationId);
         if (!result.success()) {
-            e.replyEmbeds(result.success() ? MatchEmbeds.success("Done", result.message()) : MatchEmbeds.warm("Couldn't complete", result.message())).setEphemeral(true).queue();
+            e.reply(ExperienceRenderer.toMessage(MatchPresenter.warn("Chat", result.message())))
+                    .setEphemeral(true).queue();
             return;
         }
         MatchConversation conversation = result.conversation();
+        String other = conversation.otherParticipant(userId);
+        String name = ctx.profiles().find(other).map(MatchProfile::getDisplayName).orElse("your connection");
         List<Button> buttons = new ArrayList<>();
         buttons.add(Button.secondary(MatchComponentIds.of(MatchComponentIds.ACTION_STOP_CHAT, "_"), "Stop chat"));
-        buttons.add(Button.danger(MatchComponentIds.of(MatchComponentIds.ACTION_UNMATCH, conversationId), "Unmatch"));
+        buttons.add(Button.danger(
+                MatchComponentIds.of(MatchComponentIds.ACTION_SAFETY_OPEN, "conversation:" + conversationId),
+                "Safety"
+        ));
         if (conversation.getStage() == ConversationStage.MEDIATED) {
             buttons.add(Button.primary(
                     MatchComponentIds.of(MatchComponentIds.ACTION_CONNECT_REQUEST, conversationId),
@@ -152,7 +158,7 @@ public final class MatchButtonHandler implements IButtonInteraction {
                     "Decline"
             ));
         }
-        e.replyEmbeds(MatchEmbeds.simple("Chat ready", result.message()))
+        e.replyEmbeds(MatchEmbeds.success("Chatting with " + name, result.message()))
                 .addComponents(ActionRow.of(buttons))
                 .setEphemeral(true)
                 .queue();
@@ -163,53 +169,167 @@ public final class MatchButtonHandler implements IButtonInteraction {
         ctx.dbExecutor().execute(() -> {
             DecisionService.DecisionResult result = ctx.decisions().decide(userId, sessionId, type);
             if (!result.success()) {
-                e.getHook().sendMessageEmbeds(MatchEmbeds.warm("Couldn't complete", result.message())).setEphemeral(true).queue();
+                e.getHook().sendMessage(ExperienceRenderer.toMessage(
+                        MatchPresenter.warn("Couldn't complete", result.message())
+                )).setEphemeral(true).queue();
                 return;
             }
-            String note = result.message();
             if (result.mutual() && result.conversationId() != null) {
-                e.getHook().editOriginalEmbeds(MatchEmbeds.success("You connected", note))
-                        .setContent(null)
-                        .setComponents(ActionRow.of(
-                                Button.success(
-                                        MatchComponentIds.of(MatchComponentIds.ACTION_CHAT_SELECT, result.conversationId()),
-                                        "Open chat"
-                                )
-                        ))
-                        .queue();
+                String peerName = "your connection";
+                String opener = null;
+                if (result.match() != null) {
+                    String peerId = result.match().otherUserId(userId);
+                    if (peerId != null) {
+                        peerName = ctx.profiles().find(peerId).map(MatchProfile::getDisplayName).orElse(peerName);
+                        opener = com.itsmarsss.callerphone.match.service.Icebreakers.forPair(
+                                ctx.profiles().find(userId).orElse(null),
+                                ctx.profiles().find(peerId).orElse(null)
+                        );
+                    }
+                }
+                e.getHook().editOriginal(ExperienceRenderer.toEdit(
+                        MatchPresenter.connected(peerName, opener, result.conversationId())
+                )).queue();
                 return;
             }
-            DiscoveryService.DiscoveryResult next = ctx.discovery().next(userId);
-            if (!next.success()) {
-                e.getHook().editOriginalEmbeds(MatchEmbeds.soft(note, next.message()))
-                        .setContent(null)
-                        .setComponents(List.of())
-                        .queue();
-                return;
-            }
-            e.getHook().editOriginalEmbeds(MatchEmbeds.profileCard(next.profile(), false))
-                    .setContent(note)
-                    .setComponents(ActionRow.of(
-                            Button.success(MatchComponentIds.of(MatchComponentIds.ACTION_INTERESTED, next.session().sessionId()), "Interested"),
-                            Button.secondary(MatchComponentIds.of(MatchComponentIds.ACTION_SKIP, next.session().sessionId()), "Next")
-                    ))
-                    .queue();
+            String note = result.message() == null || result.message().isBlank()
+                    ? (type == DecisionType.INTERESTED ? "Interest sent privately" : "Next")
+                    : result.message();
+            DiscoveryUi.editDiscoverCard(e.getHook(), ctx, userId, note);
         });
     }
 
-    private void sendBrowse(ButtonInteraction e, ApplicationContext ctx, String userId) {
-        DiscoveryService.DiscoveryResult next = ctx.discovery().next(userId);
-        if (!next.success()) {
-            e.getHook().sendMessageEmbeds(MatchEmbeds.soft("Discover", next.message())).setEphemeral(true).queue();
+    private void openSafety(ButtonInteraction e, ApplicationContext ctx, String userId, String opaque) {
+        MatchComponentIds.SafetyContext safety = MatchComponentIds.parseSafetyContext(opaque);
+        if (safety == null) {
+            e.reply(ExperienceRenderer.toMessage(MatchPresenter.safetyHelp())).setEphemeral(true).queue();
             return;
         }
-        e.getHook().sendMessageEmbeds(MatchEmbeds.profileCard(next.profile(), false))
-                .addComponents(ActionRow.of(
-                        Button.success(MatchComponentIds.of(MatchComponentIds.ACTION_INTERESTED, next.session().sessionId()), "Interested"),
-                        Button.secondary(MatchComponentIds.of(MatchComponentIds.ACTION_SKIP, next.session().sessionId()), "Next")
-                ))
+        String display = resolveSafetyName(ctx, userId, safety);
+        e.reply(ExperienceRenderer.toMessage(MatchPresenter.safetyMenu(display, safety.opaque())))
+                .setEphemeral(true).queue();
+    }
+
+    private void safetyBlock(ButtonInteraction e, ApplicationContext ctx, String userId, String opaque) {
+        MatchComponentIds.SafetyContext safety = MatchComponentIds.parseSafetyContext(opaque);
+        String target = resolveTargetUserId(ctx, userId, safety);
+        if (target == null) {
+            e.reply(ExperienceRenderer.toMessage(MatchPresenter.safetyHelp())).setEphemeral(true).queue();
+            return;
+        }
+        ctx.safety().block(userId, target, "user_block");
+        if (safety != null && safety.kind() == MatchComponentIds.SafetyKind.CONVERSATION) {
+            ctx.conversations().unmatch(userId, safety.referenceId());
+        }
+        String name = ctx.profiles().find(target).map(MatchProfile::getDisplayName).orElse("That person");
+        e.reply(ExperienceRenderer.toMessage(MatchPresenter.safetyBlocked(name))).setEphemeral(true).queue();
+    }
+
+    private void safetyReport(ButtonInteraction e, ApplicationContext ctx, String userId, String opaque) {
+        MatchComponentIds.SafetyContext safety = MatchComponentIds.parseSafetyContext(opaque);
+        String target = resolveTargetUserId(ctx, userId, safety);
+        if (target == null) {
+            e.reply(ExperienceRenderer.toMessage(MatchPresenter.safetyHelp())).setEphemeral(true).queue();
+            return;
+        }
+        String evidenceType = safety != null && safety.kind() == MatchComponentIds.SafetyKind.CONVERSATION
+                ? "conversation"
+                : "user";
+        String evidenceId = safety != null ? safety.referenceId() : target;
+        ctx.safety().report(
+                userId,
+                target,
+                ReportCategory.OTHER.code(),
+                ReportCategory.OTHER.label(),
+                evidenceType,
+                evidenceId
+        );
+        e.reply(ExperienceRenderer.toMessage(MatchPresenter.safetyReported())).setEphemeral(true).queue();
+    }
+
+    private void safetyUnmatch(ButtonInteraction e, ApplicationContext ctx, String userId, String opaque) {
+        MatchComponentIds.SafetyContext safety = MatchComponentIds.parseSafetyContext(opaque);
+        if (safety == null || safety.kind() != MatchComponentIds.SafetyKind.CONVERSATION) {
+            e.reply(ExperienceRenderer.toMessage(MatchPresenter.warn(
+                    "Unmatch",
+                    "Open Safety from a chat to unmatch that connection."
+            ))).setEphemeral(true).queue();
+            return;
+        }
+        replyService(e, ctx.conversations().unmatch(userId, safety.referenceId()));
+    }
+
+    private static String resolveTargetUserId(
+            ApplicationContext ctx,
+            String actorId,
+            MatchComponentIds.SafetyContext safety
+    ) {
+        if (safety == null) {
+            return null;
+        }
+        if (safety.kind() == MatchComponentIds.SafetyKind.PROFILE) {
+            return safety.referenceId();
+        }
+        return ctx.conversations().find(safety.referenceId())
+                .filter(c -> c.getParticipants() != null && c.getParticipants().contains(actorId))
+                .map(c -> c.otherParticipant(actorId))
+                .orElse(null);
+    }
+
+    private static String resolveSafetyName(
+            ApplicationContext ctx,
+            String actorId,
+            MatchComponentIds.SafetyContext safety
+    ) {
+        String target = resolveTargetUserId(ctx, actorId, safety);
+        if (target == null) {
+            return "this person";
+        }
+        return ctx.profiles().find(target).map(MatchProfile::getDisplayName).orElse("this person");
+    }
+
+    private void sendChats(ButtonInteraction e, ApplicationContext ctx, String userId) {
+        List<MatchConversation> chats = ctx.conversations().list(userId);
+        if (chats.isEmpty()) {
+            e.getHook().sendMessage(ExperienceRenderer.toMessage(MatchPresenter.chatsEmpty()))
+                    .setEphemeral(true).queue();
+            return;
+        }
+        StringBuilder sb = new StringBuilder();
+        List<ActionRow> rows = new ArrayList<>();
+        List<Button> buttons = new ArrayList<>();
+        for (MatchConversation chat : chats) {
+            String other = chat.otherParticipant(userId);
+            String name = ctx.profiles().find(other).map(MatchProfile::getDisplayName).orElse("Connection");
+            int unread = chat.unreadFor(userId);
+            String badge = unread > 0 ? " · " + unread + " new" : "";
+            String preview = chat.getLastMessagePreview() == null || chat.getLastMessagePreview().isBlank()
+                    ? ""
+                    : "\n_" + truncate(chat.getLastMessagePreview(), 50) + "_";
+            sb.append("**").append(name).append("**").append(badge).append(preview).append("\n\n");
+            buttons.add(Button.primary(
+                    MatchComponentIds.of(MatchComponentIds.ACTION_CHAT_SELECT, chat.getConversationId()),
+                    truncate(name, 20)
+            ));
+            if (buttons.size() == 5) {
+                rows.add(ActionRow.of(buttons));
+                buttons = new ArrayList<>();
+            }
+        }
+        if (!buttons.isEmpty()) {
+            rows.add(ActionRow.of(buttons));
+        }
+        e.getHook().sendMessageEmbeds(MatchEmbeds.soft("Your chats", sb.toString().trim()))
+                .setComponents(rows)
                 .setEphemeral(true)
                 .queue();
+    }
+
+    private static String truncate(String s, int max) {
+        if (s == null) {
+            return "";
+        }
+        return s.length() <= max ? s : s.substring(0, max - 1) + "…";
     }
 
     @Override

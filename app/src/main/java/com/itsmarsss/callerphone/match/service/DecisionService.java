@@ -62,7 +62,7 @@ public final class DecisionService {
     public DecisionResult decide(String actorId, String sessionId, DecisionType type) {
         Optional<BrowseSession> sessionOpt = discovery.session(sessionId);
         if (sessionOpt.isEmpty() || sessionOpt.get().isExpired(Instant.now())) {
-            return DecisionResult.fail("That card expired. Browse again.");
+            return DecisionResult.fail("That card expired. Open a fresh profile to continue.");
         }
         BrowseSession session = sessionOpt.get();
         if (!session.viewerId().equals(actorId)) {
@@ -75,7 +75,7 @@ public final class DecisionService {
 
         Optional<MatchProfile> viewerOpt = profiles.find(actorId);
         if (viewerOpt.isEmpty()) {
-            return DecisionResult.fail("Set up your profile first.");
+            return DecisionResult.fail("Finish your profile first.");
         }
         MatchProfile viewer = viewerOpt.get();
         profiles.resetDailyCountersIfNeeded(viewer);
@@ -126,13 +126,11 @@ public final class DecisionService {
         }
 
         if (type == DecisionType.INTERESTED) {
-            long used = viewer.getInterestSignalsToday();
-            int limit = premium.dailyInterests(actorId);
             analytics.track(actorId, "match_interested", session.subjectId());
-            return DecisionResult.interested("Sent (" + used + "/" + limit + " today).");
+            return DecisionResult.interested("Interest sent privately");
         }
         analytics.track(actorId, "match_skip", session.subjectId());
-        return DecisionResult.skipped("Skipped.");
+        return DecisionResult.skipped("Next");
     }
 
     public DecisionResult undoLastSkip(String actorId) {

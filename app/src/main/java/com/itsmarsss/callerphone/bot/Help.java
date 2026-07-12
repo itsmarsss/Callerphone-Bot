@@ -3,16 +3,23 @@ package com.itsmarsss.callerphone.bot;
 import com.itsmarsss.ICommand;
 import com.itsmarsss.callerphone.Callerphone;
 import com.itsmarsss.callerphone.ToolSet;
-import com.itsmarsss.callerphone.msginbottle.commands.FindBottle;
-import com.itsmarsss.callerphone.msginbottle.commands.SendBottle;
-import com.itsmarsss.callerphone.msginbottle.commands.ViewBottle;
+import com.itsmarsss.callerphone.bootstrap.ApplicationContext;
 import com.itsmarsss.callerphone.call.discord.CallCommand;
 import com.itsmarsss.callerphone.call.discord.EndCallCommand;
 import com.itsmarsss.callerphone.call.discord.PrefixCommand;
 import com.itsmarsss.callerphone.call.discord.ReportCallCommand;
 import com.itsmarsss.callerphone.discord.match.MatchCommand;
+import com.itsmarsss.callerphone.discord.match.MatchPresenter;
+import com.itsmarsss.callerphone.experience.ExperienceRenderer;
+import com.itsmarsss.callerphone.match.model.MatchConversation;
+import com.itsmarsss.callerphone.match.model.MatchProfile;
+import com.itsmarsss.callerphone.match.model.ProfileState;
+import com.itsmarsss.callerphone.match.service.ProfileChecklist;
 import com.itsmarsss.callerphone.minigames.commands.PlayMiniGame;
 import com.itsmarsss.callerphone.minigames.commands.ShowMiniGames;
+import com.itsmarsss.callerphone.msginbottle.commands.FindBottle;
+import com.itsmarsss.callerphone.msginbottle.commands.SendBottle;
+import com.itsmarsss.callerphone.msginbottle.commands.ViewBottle;
 import com.itsmarsss.callerphone.users.commands.Leaderboard;
 import com.itsmarsss.callerphone.users.commands.Profile;
 import com.itsmarsss.commandType.ISlashCommand;
@@ -27,22 +34,63 @@ import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 
 import java.util.Arrays;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
+/**
+ * Product home by default; pass a term for the command directory.
+ */
 public class Help implements ISlashCommand {
     @Override
     public void runSlash(SlashCommandInteractionEvent e) {
         boolean admin = Users.isModerator(e.getUser().getId());
         OptionMapping term = e.getOption("term");
-        e.replyEmbeds(help(term != null ? term.getAsString() : "", admin)).queue();
+        if (term == null || term.getAsString().isBlank()) {
+            replyHome(e, admin);
+            return;
+        }
+        e.replyEmbeds(help(term.getAsString(), admin)).queue();
+    }
+
+    private void replyHome(SlashCommandInteractionEvent e, boolean admin) {
+        if (!ApplicationContext.isReady()) {
+            e.replyEmbeds(directoryEmbed(admin)).queue();
+            return;
+        }
+        ApplicationContext ctx = ApplicationContext.get();
+        String userId = e.getUser().getId();
+        var user = ctx.enrollment().getOrCreate(userId);
+        Optional<MatchProfile> profile = ctx.profiles().find(userId);
+        boolean enrolled = user.isEnrolled();
+        boolean live = profile.isPresent()
+                && profile.get().getState() == ProfileState.ACTIVE
+                && ProfileChecklist.readyToSubmit(profile.get());
+        String name = profile.map(MatchProfile::getDisplayName).orElse(e.getUser().getName());
+        int unread = 0;
+        long left = 0;
+        if (live) {
+            MatchProfile p = profile.get();
+            ctx.profiles().resetDailyCountersIfNeeded(p);
+            left = Math.max(0, ctx.premium().dailyDiscoveries(userId) - p.getDiscoveryViewsToday());
+            for (MatchConversation chat : ctx.conversations().list(userId)) {
+                unread += chat.unreadFor(userId);
+            }
+        }
+        e.reply(ExperienceRenderer.toMessage(MatchPresenter.home(name, unread, left, live, enrolled)))
+                .addEmbeds(directoryEmbed(admin))
+                .queue();
     }
 
     public MessageEmbed help(String name, boolean admin) {
         if (name == null || name.isEmpty()) {
-            return helpCategories(admin);
+            return directoryEmbed(admin);
         }
 
         name = name.toLowerCase().trim();
+        if ("home".equals(name) || "commands".equals(name) || "all".equals(name)) {
+            return directoryEmbed(admin);
+        }
+
         String title;
         String desc;
 
@@ -93,7 +141,7 @@ public class Help implements ISlashCommand {
                     desc = cmd.getHelp();
                 } else {
                     title = "Not found";
-                    desc = "I don't recognize `" + name + "`.\nTry `/help` for categories.";
+                    desc = "I don't recognize `" + name + "`.\nTry `/help` for home, or `/help commands` for the directory.";
                 }
             }
         }
@@ -119,17 +167,16 @@ public class Help implements ISlashCommand {
         return Character.toUpperCase(s.charAt(0)) + s.substring(1);
     }
 
-    private MessageEmbed helpCategories(boolean admin) {
+    private MessageEmbed directoryEmbed(boolean admin) {
         EmbedBuilder emb = new EmbedBuilder()
                 .setColor(ToolSet.COLOR)
-                .setTitle("Callerphone help")
-                .setDescription("Pick a category, or pass a command name.")
+                .setTitle("All commands")
+                .setDescription("Shortcuts if you prefer slash commands over buttons.")
                 .addField("Match", "Discover people · `/help match`", false)
                 .addField("Call", "Chat across servers · `/help call`", false)
                 .addField("Message in a bottle", "Cast & find bottles · `/help msgbottle`", false)
                 .addField("Mini games", "Play together · `/help games`", false)
                 .addField("Bot", "Profile, invite, about · `/help bot`", false)
-                .addField("Credits & exp", "`/help credits` · `/help exp`", false)
                 .setFooter("Callerphone");
         if (admin) {
             emb.addField("Moderator", "DM `" + Callerphone.config.getPrefix() + "help mod`", false);
@@ -139,7 +186,7 @@ public class Help implements ISlashCommand {
 
     @Override
     public String getHelp() {
-        return "`/help` browse commands";
+        return "`/help` home · `/help commands` directory";
     }
 
     @Override
@@ -149,7 +196,7 @@ public class Help implements ISlashCommand {
 
     @Override
     public SlashCommandData getCommandData() {
-        return Commands.slash(getName(), "Browse help categories and commands")
+        return Commands.slash(getName(), "Home screen and command directory")
                 .addOptions(new OptionData(OptionType.STRING, "term", "Category or command name"));
     }
 }

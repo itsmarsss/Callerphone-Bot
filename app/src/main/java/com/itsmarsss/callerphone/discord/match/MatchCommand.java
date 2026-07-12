@@ -8,12 +8,11 @@ import com.itsmarsss.callerphone.match.model.Gender;
 import com.itsmarsss.callerphone.match.model.MatchConversation;
 import com.itsmarsss.callerphone.match.model.MatchProfile;
 import com.itsmarsss.callerphone.match.service.DecisionService;
-import com.itsmarsss.callerphone.match.service.DiscoveryService;
-import com.itsmarsss.callerphone.match.service.EmptyStates;
 import com.itsmarsss.callerphone.match.service.ProfileChecklist;
 import com.itsmarsss.callerphone.match.service.UpsellCopy;
 import com.itsmarsss.callerphone.safety.ReportCategory;
 import com.itsmarsss.commandType.ISlashCommand;
+import com.itsmarsss.database.categories.Users;
 import net.dv8tion.jda.api.components.actionrow.ActionRow;
 import net.dv8tion.jda.api.components.buttons.Button;
 import net.dv8tion.jda.api.components.label.Label;
@@ -38,17 +37,17 @@ public final class MatchCommand implements ISlashCommand {
     @Override
     public void runSlash(SlashCommandInteractionEvent e) {
         if (!ApplicationContext.isReady()) {
-            e.replyEmbeds(MatchEmbeds.warm("One moment", "Still starting up. Try again shortly."))
+            e.reply(ExperienceRenderer.toMessage(MatchPresenter.warn("One moment", "Still starting up. Try again shortly.")))
                     .setEphemeral(true).queue();
-            return;
-        }
-        String sub = e.getSubcommandName();
-        if (sub == null) {
-            e.replyEmbeds(MatchEmbeds.soft("Discover", "Try `/match join` or `/match browse`.")).setEphemeral(true).queue();
             return;
         }
         ApplicationContext ctx = ApplicationContext.get();
         String userId = e.getUser().getId();
+        String sub = e.getSubcommandName();
+        if (sub == null) {
+            handleHome(e, ctx, userId);
+            return;
+        }
 
         switch (sub) {
             case "join" -> handleJoin(e, ctx, userId);
@@ -74,7 +73,8 @@ public final class MatchCommand implements ISlashCommand {
             case "leave" -> reply(e, ctx.deletion().leaveAndSoftDelete(userId));
             case "delete" -> reply(e, ctx.deletion().hardDeleteProfileContent(userId));
             case "export" -> handleExport(e, ctx, userId);
-            case "premium" -> e.replyEmbeds(MatchEmbeds.simple("Premium", UpsellCopy.premiumPitch()))
+            case "premium" -> e.reply(ExperienceRenderer.toMessage(
+                            MatchPresenter.quietSuccess("Premium", UpsellCopy.premiumPitch())))
                     .setEphemeral(true).queue();
             case "photo" -> {
                 String url = e.getOption("url") == null ? "" : e.getOption("url").getAsString();
@@ -85,8 +85,31 @@ public final class MatchCommand implements ISlashCommand {
                 ctx.profiles().setAvatar(userId, e.getUser().getEffectiveAvatarUrl());
                 reply(e, ctx.profiles().publish(userId));
             }
-            default -> e.replyEmbeds(MatchEmbeds.warm("Unknown", "That command isn't recognized.")).setEphemeral(true).queue();
+            default -> e.reply(ExperienceRenderer.toMessage(MatchPresenter.warn("Unknown", "That command isn't recognized.")))
+                    .setEphemeral(true).queue();
         }
+    }
+
+    private void handleHome(SlashCommandInteractionEvent e, ApplicationContext ctx, String userId) {
+        var user = ctx.enrollment().getOrCreate(userId);
+        Optional<MatchProfile> profile = ctx.profiles().find(userId);
+        boolean enrolled = user.isEnrolled();
+        boolean live = profile.isPresent()
+                && profile.get().getState() == com.itsmarsss.callerphone.match.model.ProfileState.ACTIVE
+                && ProfileChecklist.readyToSubmit(profile.get());
+        String name = profile.map(MatchProfile::getDisplayName).orElse(e.getUser().getName());
+        int unread = 0;
+        long left = 0;
+        if (live) {
+            MatchProfile p = profile.get();
+            ctx.profiles().resetDailyCountersIfNeeded(p);
+            left = Math.max(0, ctx.premium().dailyDiscoveries(userId) - p.getDiscoveryViewsToday());
+            for (MatchConversation chat : ctx.conversations().list(userId)) {
+                unread += chat.unreadFor(userId);
+            }
+        }
+        e.reply(ExperienceRenderer.toMessage(MatchPresenter.home(name, unread, left, live, enrolled)))
+                .setEphemeral(true).queue();
     }
 
     private void handleJoin(SlashCommandInteractionEvent e, ApplicationContext ctx, String userId) {
@@ -115,7 +138,8 @@ public final class MatchCommand implements ISlashCommand {
     private void handleProfile(SlashCommandInteractionEvent e, ApplicationContext ctx, String userId) {
         Optional<MatchProfile> profile = ctx.profiles().find(userId);
         if (profile.isEmpty()) {
-            e.replyEmbeds(MatchEmbeds.warm("No profile yet", "Start with `/match join`.")).setEphemeral(true).queue();
+            e.reply(ExperienceRenderer.toMessage(MatchPresenter.warn("No profile yet", "Start with `/match join`.")))
+                    .setEphemeral(true).queue();
             return;
         }
         MatchProfile p = profile.get();
@@ -135,61 +159,33 @@ public final class MatchCommand implements ISlashCommand {
     }
 
     private void handleEdit(SlashCommandInteractionEvent e, ApplicationContext ctx, String userId) {
-        // Single setup form — field option kept for compat but ignored for lower friction
         e.replyModal(setupModal()).queue();
     }
 
     private void handleBrowse(SlashCommandInteractionEvent e, ApplicationContext ctx, String userId) {
         e.deferReply(true).queue();
-        ctx.dbExecutor().execute(() -> {
-            DiscoveryService.DiscoveryResult result = ctx.discovery().next(userId);
-            if (!result.success()) {
-                e.getHook().sendMessageEmbeds(MatchEmbeds.soft("Discover", result.message())).setEphemeral(true).queue();
-                return;
-            }
-            String sessionId = result.session().sessionId();
-            Optional<MatchProfile> self = ctx.profiles().find(userId);
-            String remaining = self.map(p -> {
-                ctx.profiles().resetDailyCountersIfNeeded(p);
-                long left = Math.max(0, ctx.premium().dailyDiscoveries(userId) - p.getDiscoveryViewsToday());
-                return left + " left today";
-            }).orElse("");
-            e.getHook().sendMessageEmbeds(MatchEmbeds.profileCard(result.profile(), false))
-                    .setContent(remaining.isBlank() ? null : remaining)
-                    .addComponents(ActionRow.of(
-                            Button.success(MatchComponentIds.of(MatchComponentIds.ACTION_INTERESTED, sessionId), "Interested"),
-                            Button.secondary(MatchComponentIds.of(MatchComponentIds.ACTION_SKIP, sessionId), "Next")
-                    ))
-                    .setEphemeral(true)
-                    .queue();
-        });
+        ctx.dbExecutor().execute(() -> DiscoveryUi.sendDiscover(e.getHook(), ctx, userId, true));
     }
 
     private void handleLikes(SlashCommandInteractionEvent e, ApplicationContext ctx, String userId) {
-        // Free for everyone — uses decision repository via discovery path
-        var decisions = ctx.decisions();
-        // pull via reflection-free: use profile service + a thin path on Discovery/Decision
-        List<com.itsmarsss.callerphone.match.model.MatchDecision> incoming =
-                findIncoming(ctx, userId);
+        List<com.itsmarsss.callerphone.match.model.MatchDecision> incoming = ctx.incomingLikes(userId);
         if (incoming.isEmpty()) {
-            e.replyEmbeds(MatchEmbeds.soft("Incoming interest", EmptyStates.noLikes())).setEphemeral(true).queue();
+            e.reply(ExperienceRenderer.toMessage(MatchPresenter.incomingInterestEmpty()))
+                    .setEphemeral(true).queue();
             return;
         }
-        StringBuilder sb = new StringBuilder("People who expressed interest in you:\n");
+        StringBuilder sb = new StringBuilder();
         int i = 1;
         for (var d : incoming) {
-            String name = ctx.profiles().find(d.viewerId()).map(MatchProfile::getDisplayName).orElse(d.viewerId());
-            sb.append(i++).append(". **").append(name).append("**\n");
+            String name = ctx.profiles().find(d.viewerId()).map(MatchProfile::getDisplayName).orElse("Someone");
+            sb.append("**").append(i++).append(".** ").append(name).append("\n");
             if (i > 15) {
                 break;
             }
         }
-        e.replyEmbeds(MatchEmbeds.soft("Incoming interest", sb + "\nDiscover to express interest back.")).setEphemeral(true).queue();
-    }
-
-    private static List<com.itsmarsss.callerphone.match.model.MatchDecision> findIncoming(ApplicationContext ctx, String userId) {
-        // Access via Mongo repo is not exposed; use Safety/Decision through a package helper on ApplicationContext
-        return ctx.incomingLikes(userId);
+        sb.append("\nDiscover to express interest back.");
+        e.reply(ExperienceRenderer.toMessage(MatchPresenter.incomingInterestList(sb.toString())))
+                .setEphemeral(true).queue();
     }
 
     private void handleChats(SlashCommandInteractionEvent e, ApplicationContext ctx, String userId) {
@@ -200,7 +196,7 @@ public final class MatchCommand implements ISlashCommand {
         }
         List<MatchConversation> chats = ctx.conversations().list(userId);
         if (chats.isEmpty()) {
-            e.replyEmbeds(MatchEmbeds.soft("Chats", EmptyStates.noChats())).setEphemeral(true).queue();
+            e.reply(ExperienceRenderer.toMessage(MatchPresenter.chatsEmpty())).setEphemeral(true).queue();
             return;
         }
         StringBuilder sb = new StringBuilder();
@@ -208,7 +204,7 @@ public final class MatchCommand implements ISlashCommand {
         List<Button> buttons = new ArrayList<>();
         for (MatchConversation chat : chats) {
             String other = chat.otherParticipant(userId);
-            String name = ctx.profiles().find(other).map(MatchProfile::getDisplayName).orElse("Match");
+            String name = ctx.profiles().find(other).map(MatchProfile::getDisplayName).orElse("Connection");
             int unread = chat.unreadFor(userId);
             String badge = unread > 0 ? " · " + unread + " new" : "";
             String preview = chat.getLastMessagePreview() == null || chat.getLastMessagePreview().isBlank()
@@ -227,7 +223,7 @@ public final class MatchCommand implements ISlashCommand {
         if (!buttons.isEmpty()) {
             rows.add(ActionRow.of(buttons));
         }
-        e.replyEmbeds(MatchEmbeds.soft("Chats", sb.toString().trim()))
+        e.replyEmbeds(MatchEmbeds.soft("Your chats", sb.toString().trim()))
                 .setComponents(rows)
                 .setEphemeral(true)
                 .queue();
@@ -238,20 +234,24 @@ public final class MatchCommand implements ISlashCommand {
         ctx.dbExecutor().execute(() -> {
             DecisionService.DecisionResult result = ctx.decisions().undoLastSkip(userId);
             if (!result.success() || result.restoredSession() == null) {
-                e.getHook().sendMessageEmbeds(MatchEmbeds.soft("Discover", result.message())).setEphemeral(true).queue();
+                e.getHook().sendMessage(ExperienceRenderer.toMessage(
+                        MatchPresenter.warn("Undo", result.message())
+                )).setEphemeral(true).queue();
                 return;
             }
             Optional<MatchProfile> profile = ctx.profiles().find(result.restoredSession().subjectId());
             if (profile.isEmpty()) {
-                e.getHook().sendMessageEmbeds(MatchEmbeds.soft("Discover", result.message())).setEphemeral(true).queue();
+                e.getHook().sendMessage(ExperienceRenderer.toMessage(
+                        MatchPresenter.warn("Undo", result.message())
+                )).setEphemeral(true).queue();
                 return;
             }
-            String sessionId = result.restoredSession().sessionId();
-            e.getHook().sendMessageEmbeds(MatchEmbeds.profileCard(profile.get(), false))
-                    .setContent(result.message())
-                    .addComponents(ActionRow.of(
-                            Button.success(MatchComponentIds.of(MatchComponentIds.ACTION_INTERESTED, sessionId), "Interested"),
-                            Button.secondary(MatchComponentIds.of(MatchComponentIds.ACTION_SKIP, sessionId), "Next")
+            String remaining = DiscoveryUi.remainingLine(ctx, userId);
+            e.getHook().sendMessage(DiscoveryUi.cardMessage(
+                            profile.get(),
+                            result.restoredSession(),
+                            remaining,
+                            result.message()
                     ))
                     .setEphemeral(true)
                     .queue();
@@ -274,18 +274,33 @@ public final class MatchCommand implements ISlashCommand {
         String conversationId = e.getOption("conversation_id") == null
                 ? null
                 : e.getOption("conversation_id").getAsString();
+        boolean staff = Users.isModerator(userId);
         switch (action) {
             case "block" -> {
                 if (target == null) {
-                    e.reply("Provide user_id to block.").setEphemeral(true).queue();
+                    e.reply(ExperienceRenderer.toMessage(staff
+                            ? MatchPresenter.warn("Block", "Add a user id (staff only).")
+                            : MatchPresenter.safetyHelp()
+                    )).setEphemeral(true).queue();
+                    return;
+                }
+                if (!staff) {
+                    e.reply(ExperienceRenderer.toMessage(MatchPresenter.safetyHelp())).setEphemeral(true).queue();
                     return;
                 }
                 ctx.safety().block(userId, target, reason);
-                e.replyEmbeds(MatchEmbeds.success("Blocked", "They won't show up for you here.")).setEphemeral(true).queue();
+                e.reply(ExperienceRenderer.toMessage(MatchPresenter.safetyBlocked(null))).setEphemeral(true).queue();
             }
             case "report" -> {
                 if (target == null) {
-                    e.reply("Provide user_id to report.").setEphemeral(true).queue();
+                    e.reply(ExperienceRenderer.toMessage(staff
+                            ? MatchPresenter.warn("Report", "Add a user id (staff only).")
+                            : MatchPresenter.safetyHelp()
+                    )).setEphemeral(true).queue();
+                    return;
+                }
+                if (!staff) {
+                    e.reply(ExperienceRenderer.toMessage(MatchPresenter.safetyHelp())).setEphemeral(true).queue();
                     return;
                 }
                 ReportCategory cat = ReportCategory.from(category).orElse(ReportCategory.OTHER);
@@ -297,24 +312,24 @@ public final class MatchCommand implements ISlashCommand {
                         conversationId != null ? "conversation" : "user",
                         conversationId != null ? conversationId : target
                 );
-                e.replyEmbeds(MatchEmbeds.success("Report received", "Thanks. They haven't been notified.")).setEphemeral(true).queue();
+                e.reply(ExperienceRenderer.toMessage(MatchPresenter.safetyReported())).setEphemeral(true).queue();
             }
             case "unmatch" -> {
-                if (target == null && conversationId == null) {
-                    e.reply("Need a conversation id.").setEphemeral(true).queue();
+                if (conversationId == null && target == null) {
+                    e.reply(ExperienceRenderer.toMessage(MatchPresenter.safetyHelp())).setEphemeral(true).queue();
                     return;
                 }
                 reply(e, ctx.conversations().unmatch(userId, conversationId != null ? conversationId : target));
             }
-            default -> e.replyEmbeds(MatchEmbeds.soft(
-                    "Safety",
-                    "Block, report, or unmatch from here.\nPick an action and fill the fields Discord shows."
-            )).setEphemeral(true).queue();
+            default -> e.reply(ExperienceRenderer.toMessage(MatchPresenter.safetyHelp())).setEphemeral(true).queue();
         }
     }
 
     private static void reply(SlashCommandInteractionEvent e, EnrollmentService.ServiceResult result) {
-        e.replyEmbeds(result.success() ? MatchEmbeds.success("Done", result.message()) : MatchEmbeds.warm("Couldn't complete", result.message())).setEphemeral(true).queue();
+        e.reply(ExperienceRenderer.toMessage(result.success()
+                ? MatchPresenter.quietSuccess("Done", result.message())
+                : MatchPresenter.warn("Couldn't complete", result.message())
+        )).setEphemeral(true).queue();
     }
 
     /**

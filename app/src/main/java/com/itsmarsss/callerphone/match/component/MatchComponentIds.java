@@ -30,8 +30,51 @@ public final class MatchComponentIds {
     public static final String ACTION_SETUP = "setup";
     /** Start browsing after going live. */
     public static final String ACTION_START_BROWSE = "start_browse";
+    /** Open chats list from home / empty states. */
+    public static final String ACTION_OPEN_CHATS = "open_chats";
+    /**
+     * Contextual safety menu. Opaque: {@code profile:{userId}} or {@code conversation:{id}}.
+     */
+    public static final String ACTION_SAFETY_OPEN = "safety_open";
+    public static final String ACTION_SAFETY_BLOCK = "safety_block";
+    public static final String ACTION_SAFETY_REPORT = "safety_report";
+    public static final String ACTION_SAFETY_UNMATCH = "safety_unmatch";
 
     private MatchComponentIds() {
+    }
+
+    public static SafetyContext parseSafetyContext(String opaque) {
+        if (opaque == null || opaque.isBlank() || "_".equals(opaque)) {
+            return null;
+        }
+        int colon = opaque.indexOf(':');
+        if (colon <= 0 || colon >= opaque.length() - 1) {
+            return null;
+        }
+        String kind = opaque.substring(0, colon);
+        String id = opaque.substring(colon + 1);
+        if (id.isBlank()) {
+            return null;
+        }
+        return switch (kind) {
+            case "profile" -> new SafetyContext(SafetyKind.PROFILE, id, id);
+            case "conversation" -> new SafetyContext(SafetyKind.CONVERSATION, id, null);
+            default -> null;
+        };
+    }
+
+    public enum SafetyKind {
+        PROFILE,
+        CONVERSATION
+    }
+
+    public record SafetyContext(SafetyKind kind, String referenceId, String subjectUserId) {
+        public String opaque() {
+            return switch (kind) {
+                case PROFILE -> "profile:" + referenceId;
+                case CONVERSATION -> "conversation:" + referenceId;
+            };
+        }
     }
 
     public static String of(String action, String opaqueId) {

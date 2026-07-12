@@ -53,6 +53,10 @@ public final class MatchConversationService {
         return conversations.findActiveByUserId(userId);
     }
 
+    public Optional<MatchConversation> find(String conversationId) {
+        return conversations.findById(conversationId);
+    }
+
     public SelectResult select(String userId, String conversationId) {
         Optional<MatchConversation> opt = conversations.findById(conversationId);
         if (opt.isEmpty() || opt.get().getParticipants() == null || !opt.get().getParticipants().contains(userId)) {
@@ -93,10 +97,6 @@ public final class MatchConversationService {
                 + "Send a text DM here to talk.\n\n"
                 + "_" + icebreaker + "_";
         return SelectResult.ok(message, conversation, other, icebreaker);
-    }
-
-    public Optional<MatchConversation> find(String conversationId) {
-        return conversations.findById(conversationId);
     }
 
     public EnrollmentService.ServiceResult stopChat(String userId) {
