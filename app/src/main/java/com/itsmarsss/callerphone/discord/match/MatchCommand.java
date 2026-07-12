@@ -171,7 +171,9 @@ public final class MatchCommand implements ISlashCommand {
     private void handleHome(SlashCommandInteractionEvent e, ApplicationContext ctx, String userId) {
         var home = buildHome(ctx, userId, e.getUser().getName());
         try {
-            ctx.analytics().track(userId, "home_open", homeStateMeta(home));
+            String state = homeStateMeta(home);
+            ctx.analytics().track(userId, "home_open", state);
+            ctx.analytics().trackSurface(userId, "home", "open", state);
         } catch (Exception ignored) {
         }
         e.reply(ExperienceRenderer.toMessage(home)).setEphemeral(true).queue();
