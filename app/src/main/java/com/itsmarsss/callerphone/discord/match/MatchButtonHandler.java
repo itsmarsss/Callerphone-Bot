@@ -140,6 +140,7 @@ public final class MatchButtonHandler implements IButtonInteraction {
             case MatchComponentIds.ACTION_UNMATCH -> {
                 try {
                     ctx.analytics().track(userId, "unmatch", opaque);
+                    ctx.analytics().trackSurface(userId, "chat", "unmatch", null);
                 } catch (Exception ignored) {
                 }
                 replyService(e, ctx.conversations().unmatch(userId, opaque));
@@ -147,6 +148,7 @@ public final class MatchButtonHandler implements IButtonInteraction {
             case MatchComponentIds.ACTION_STOP_CHAT -> {
                 try {
                     ctx.analytics().track(userId, "chat_stop", "button");
+                    ctx.analytics().trackSurface(userId, "chat", "stop", "button");
                 } catch (Exception ignored) {
                 }
                 replyService(e, ctx.conversations().stopChat(userId));
