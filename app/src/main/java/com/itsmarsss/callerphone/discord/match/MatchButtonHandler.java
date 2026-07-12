@@ -248,6 +248,7 @@ public final class MatchButtonHandler implements IButtonInteraction {
             case MatchComponentIds.ACTION_EDIT_MENU -> {
                 try {
                     ctx.analytics().track(userId, "edit_menu_open", "button");
+                    ctx.analytics().trackSurface(userId, "profile", "edit_menu", "button");
                 } catch (Exception ignored) {
                 }
                 e.reply(ExperienceRenderer.toMessage(MatchPresenter.editMenu()))
@@ -256,6 +257,7 @@ public final class MatchButtonHandler implements IButtonInteraction {
             case MatchComponentIds.ACTION_SETTINGS -> {
                 try {
                     ctx.analytics().track(userId, "settings_open", "button");
+                    ctx.analytics().trackSurface(userId, "settings", "open", "button");
                 } catch (Exception ignored) {
                 }
                 var user = ctx.enrollment().getOrCreate(userId);
