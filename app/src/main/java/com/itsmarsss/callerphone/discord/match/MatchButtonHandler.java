@@ -614,8 +614,9 @@ public final class MatchButtonHandler implements IButtonInteraction {
             return;
         }
         try {
-            ctx.analytics().track(userId, "safety_open",
-                    safety.kind() == null ? "unknown" : safety.kind().name().toLowerCase());
+            String kind = safety.kind() == null ? "unknown" : safety.kind().name().toLowerCase();
+            ctx.analytics().track(userId, "safety_open", kind);
+            ctx.analytics().trackSurface(userId, "safety", "open", kind);
         } catch (Exception ignored) {
         }
         String display = resolveSafetyName(ctx, userId, safety);
