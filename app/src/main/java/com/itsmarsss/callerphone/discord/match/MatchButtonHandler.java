@@ -207,6 +207,20 @@ public final class MatchButtonHandler implements IButtonInteraction {
             case MatchComponentIds.ACTION_PREMIUM -> e.reply(ExperienceRenderer.toMessage(
                     MatchPresenter.premiumOverview(ctx.premium().isPremium(userId))
             )).setEphemeral(true).queue();
+            case MatchComponentIds.ACTION_REWARDS -> {
+                long credits = com.itsmarsss.database.categories.Users.getCredits(userId);
+                String prefix = com.itsmarsss.database.categories.Users.getPrefix(userId);
+                long total = com.itsmarsss.database.categories.Users.getExecuted(userId)
+                        + com.itsmarsss.database.categories.Users.getTransmitted(userId);
+                int level = (int) (total / 100);
+                try {
+                    ctx.analytics().track(userId, "rewards_view", null);
+                } catch (Exception ignored) {
+                }
+                e.reply(ExperienceRenderer.toMessage(
+                        MatchPresenter.rewardsCatalog(level, credits, prefix)
+                )).setEphemeral(true).queue();
+            }
             case MatchComponentIds.ACTION_TOGGLE_NOTIFY -> {
                 var user = ctx.enrollment().getOrCreate(userId);
                 boolean next = !user.isNotificationsEnabled();

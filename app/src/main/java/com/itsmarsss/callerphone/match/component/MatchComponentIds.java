@@ -67,6 +67,8 @@ public final class MatchComponentIds {
     public static final String ACTION_PHOTO_AVATAR = "photo_av";
     public static final String ACTION_PHOTO_MENU = "photo_mn";
     public static final String ACTION_PREMIUM = "premium";
+    /** Honest progress / rewards catalog (philosophy §H). */
+    public static final String ACTION_REWARDS = "rewards";
     public static final String ACTION_TOGGLE_NOTIFY = "tog_ntfy";
     public static final String ACTION_TOGGLE_DIGEST = "tog_dgst";
     /** Suggest icebreaker for a conversation. Opaque: conversationId. */

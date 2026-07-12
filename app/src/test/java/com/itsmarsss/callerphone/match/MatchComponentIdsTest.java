@@ -55,5 +55,9 @@ class MatchComponentIdsTest {
         String photo = MatchComponentIds.of(MatchComponentIds.ACTION_PHOTO_AVATAR, "_");
         assertTrue(photo.length() <= 100);
         assertEquals(MatchComponentIds.ACTION_PHOTO_AVATAR, MatchComponentIds.parse(photo).action());
+
+        String rewards = MatchComponentIds.of(MatchComponentIds.ACTION_REWARDS, "_");
+        assertTrue(rewards.length() <= 100);
+        assertEquals(MatchComponentIds.ACTION_REWARDS, MatchComponentIds.parse(rewards).action());
     }
 }

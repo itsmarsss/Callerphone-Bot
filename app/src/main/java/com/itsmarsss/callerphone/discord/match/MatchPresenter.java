@@ -921,14 +921,54 @@ public final class MatchPresenter {
         } else if (!matchLive) {
             body.append("\n\n_No Match profile yet — `/match join` to meet people._");
         }
-        body.append("\n\n_Levels unlock call flair over time. Credits stay secondary until rewards ship._");
+        int nextUnlockLevel = ((level / 5) + 1) * 5;
+        int xpToNext = 100 - exp;
+        body.append("\n\nNext milestone · Level **").append(nextUnlockLevel)
+                .append("** (~").append(xpToNext + (nextUnlockLevel - level - 1) * 100L).append(" XP)");
+        body.append("\n_Open rewards to see what's live vs coming later._");
         return ExperienceView.builder(ExperienceIntent.SOCIAL)
                 .title((displayName == null || displayName.isBlank() ? "You" : displayName) + " · Level " + level)
                 .description(body.toString())
                 .actions(
+                        ActionSpec.primary(MatchComponentIds.of(MatchComponentIds.ACTION_REWARDS, "_"), "View rewards"),
                         ActionSpec.success(MatchComponentIds.of(MatchComponentIds.ACTION_START_BROWSE, "_"), "Discover"),
                         ActionSpec.secondary(MatchComponentIds.of(MatchComponentIds.ACTION_OPEN_CHATS, "_"), "Open chats"),
                         ActionSpec.secondary(MatchComponentIds.of(MatchComponentIds.ACTION_EDIT_MENU, "_"), "Edit Match")
+                )
+                .ephemeral(true)
+                .build();
+    }
+
+    /**
+     * Honest rewards catalog (philosophy §H): only claim live benefits;
+     * keep credits/cosmetics secondary until spendable.
+     */
+    public static ExperienceView rewardsCatalog(int level, long credits, String prefix) {
+        StringBuilder body = new StringBuilder();
+        body.append("**Level ").append(level).append("** · progress from calls and commands.\n\n");
+        body.append("**Live today**\n");
+        body.append("· Call & command XP (levels)\n");
+        body.append("· Match Discover — free, not gated by level\n");
+        body.append("· Tic-Tac-Toe in calls and Match chats\n");
+        if (prefix != null && !prefix.isBlank()) {
+            body.append("· Your call prefix `").append(prefix).append("`\n");
+        } else {
+            body.append("· Optional call prefix (when you set one)\n");
+        }
+        body.append("\n**Credits · ◉ ").append(credits).append("**\n");
+        body.append("Tracked for a future cosmetics shop. Nothing to spend yet — no paid lottery, no fake scarcity.\n\n");
+        body.append("**Coming later**\n");
+        body.append("· Profile accents / themes\n");
+        body.append("· Cosmetic catalog spent with credits\n");
+        body.append("· Premium SKUs (purchases not live)\n");
+        return ExperienceView.builder(ExperienceIntent.NEUTRAL)
+                .title("Rewards")
+                .description(body.toString())
+                .footer("No fabricated rewards · honesty first")
+                .actions(
+                        ActionSpec.secondary(MatchComponentIds.of(MatchComponentIds.ACTION_PREMIUM, "_"), "About Premium"),
+                        ActionSpec.success(MatchComponentIds.of(MatchComponentIds.ACTION_START_BROWSE, "_"), "Discover"),
+                        ActionSpec.secondary(CallComponentIds.again("_"), "Start a call")
                 )
                 .ephemeral(true)
                 .build();
