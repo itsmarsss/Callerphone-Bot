@@ -129,6 +129,12 @@ public class Leaderboard implements ISlashCommand {
                                         "_"
                                 ),
                                 "Discover people"
+                        ),
+                        com.itsmarsss.callerphone.experience.ActionSpec.secondary(
+                                com.itsmarsss.callerphone.msginbottle.BottleComponentIds.of(
+                                        com.itsmarsss.callerphone.msginbottle.BottleComponentIds.ACTION_FIND, "_"
+                                ),
+                                "Find a bottle"
                         )
                 )
                 .build())).queue();
