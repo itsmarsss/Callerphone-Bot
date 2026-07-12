@@ -27,4 +27,11 @@ class ActionSpecTest {
         assertEquals(ActionSpec.Style.PREMIUM, premium.style());
         assertEquals("123456789012345678", premium.componentId());
     }
+
+    @Test
+    void premiumStyleDoesNotNeedLabel() {
+        ActionSpec premium = ActionSpec.premiumSku("999");
+        assertTrue(premium.label() == null || premium.label().isBlank());
+        assertFalse(premium.disabled());
+    }
 }
