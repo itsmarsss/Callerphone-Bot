@@ -73,6 +73,11 @@ public final class MatchModalHandler implements IModalInteraction {
             return;
         }
 
+        try {
+            ctx.analytics().track(userId, "match_setup_save", "ok");
+        } catch (Exception ignored) {
+        }
+
         MatchProfile profile = ctx.profiles().find(userId).orElse(null);
         if (profile != null && profile.getState() == ProfileState.ACTIVE) {
             e.reply(ExperienceRenderer.toMessage(MatchPresenter.previewLive(profile)))
@@ -81,10 +86,7 @@ public final class MatchModalHandler implements IModalInteraction {
             return;
         }
 
-        e.replyEmbeds(MatchEmbeds.success("Saved", result.message()))
-                .addComponents(ActionRow.of(
-                        Button.primary(MatchComponentIds.of(MatchComponentIds.ACTION_SETUP, "_"), "Continue")
-                ))
+        e.reply(ExperienceRenderer.toMessage(MatchPresenter.incompleteWelcome()))
                 .setEphemeral(true)
                 .queue();
     }
