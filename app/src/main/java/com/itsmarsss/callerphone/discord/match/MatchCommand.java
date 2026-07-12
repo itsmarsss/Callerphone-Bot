@@ -182,7 +182,14 @@ public final class MatchCommand implements ISlashCommand {
             }
             incoming = ctx.incomingLikes(userId).size();
         }
-        return MatchPresenter.home(name, unread, left, live, enrolled, paused, incoming, inboxUnread);
+        var view = MatchPresenter.home(name, unread, left, live, enrolled, paused, incoming, inboxUnread);
+        // Enrich incomplete home description with checklist when available
+        if (enrolled && !live && !paused && profile.isPresent()) {
+            String checklist = ProfileChecklist.format(user, profile.get());
+            String next = ProfileChecklist.nextStep(user, profile.get());
+            return MatchPresenter.incompleteWelcome(checklist + "\n\n_Next:_ " + next);
+        }
+        return view;
     }
 
     private void handleJoin(SlashCommandInteractionEvent e, ApplicationContext ctx, String userId) {
