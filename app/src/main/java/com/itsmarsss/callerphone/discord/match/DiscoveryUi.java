@@ -126,7 +126,17 @@ public final class DiscoveryUi {
     ) {
         DiscoveryService.DiscoveryResult next = ctx.discovery().next(userId);
         if (!next.success()) {
-            hook.editOriginal(ExperienceRenderer.toEdit(MatchPresenter.emptyDiscoverAfterAction(note, next.message())))
+            try {
+                String msg = next.message() == null ? "" : next.message();
+                String event = msg.toLowerCase().contains("discoveries are done")
+                        ? "discover_daily_limit"
+                        : "discover_empty";
+                ctx.analytics().track(userId, event, "after_action");
+            } catch (Exception ignored) {
+            }
+            String combined = (note == null || note.isBlank() ? "" : note + "\n\n")
+                    + (next.message() == null ? "" : next.message());
+            hook.editOriginal(ExperienceRenderer.toEdit(MatchPresenter.emptyDiscoverWithFallback(combined)))
                     .queue();
             return;
         }
