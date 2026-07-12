@@ -88,12 +88,30 @@ public final class MatchCommand implements ISlashCommand {
             case "delete" -> e.reply(ExperienceRenderer.toMessage(MatchPresenter.deleteConfirm()))
                     .setEphemeral(true).queue();
             case "export" -> handleExport(e, ctx, userId);
-            case "premium" -> e.reply(ExperienceRenderer.toMessage(
-                            MatchPresenter.quietSuccess("Premium", UpsellCopy.premiumPitch())))
-                    .setEphemeral(true).queue();
+            case "premium" -> {
+                ctx.analytics().track(userId, "premium_view", ctx.premium().isPremium(userId) ? "entitled" : "free");
+                e.reply(ExperienceRenderer.toMessage(
+                                MatchPresenter.premiumOverview(ctx.premium().isPremium(userId))))
+                        .setEphemeral(true).queue();
+            }
             case "photo" -> {
-                String url = e.getOption("url") == null ? "" : e.getOption("url").getAsString();
-                reply(e, ctx.profiles().addPhotoUrl(userId, url));
+                String url = e.getOption("url") == null ? "" : e.getOption("url").getAsString().trim();
+                if (url.isEmpty()) {
+                    e.reply(ExperienceRenderer.toMessage(MatchPresenter.photoMenu())).setEphemeral(true).queue();
+                    return;
+                }
+                EnrollmentService.ServiceResult r = ctx.profiles().addPhotoUrl(userId, url);
+                if (r.success()) {
+                    e.reply(ExperienceRenderer.toMessage(MatchPresenter.photoUpdated())).setEphemeral(true).queue();
+                } else {
+                    reply(e, r);
+                }
+            }
+            case "settings" -> {
+                var user = ctx.enrollment().getOrCreate(userId);
+                e.reply(ExperienceRenderer.toMessage(
+                                MatchPresenter.settings(user.isNotificationsEnabled(), user.isDigestOptIn())))
+                        .setEphemeral(true).queue();
             }
             case "safety" -> handleSafety(e, ctx, userId);
             case "submit" -> {
@@ -451,9 +469,10 @@ public final class MatchCommand implements ISlashCommand {
                         new SubcommandData("leave", "Leave discovery (keeps profile & chats)"),
                         new SubcommandData("delete", "Hard-wipe Match profile content"),
                         new SubcommandData("export", "Export your Match data as JSON"),
-                        new SubcommandData("premium", "Premium (not available yet)"),
-                        new SubcommandData("photo", "Add optional profile photo URL")
-                                .addOptions(new OptionData(OptionType.STRING, "url", "https image URL", true)),
+                        new SubcommandData("premium", "Premium overview"),
+                        new SubcommandData("photo", "Profile image (avatar or https URL)")
+                                .addOptions(new OptionData(OptionType.STRING, "url", "https image URL", false)),
+                        new SubcommandData("settings", "Notification settings"),
                         new SubcommandData("submit", "Go live in discovery"),
                         new SubcommandData("safety", "Block, report, or unmatch")
                                 .addOptions(

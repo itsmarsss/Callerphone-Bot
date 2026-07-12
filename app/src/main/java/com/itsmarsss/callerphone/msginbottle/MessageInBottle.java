@@ -27,7 +27,7 @@ public class MessageInBottle {
     public static final Logger logger = LoggerFactory.getLogger(MessageInBottle.class);
 
     /**
-     * @param signed whether the page should show the author's identity (param was historically misnamed {@code anon})
+     * @param signed whether the page should show the author's identity
      */
     public static MIBStatus sendBottle(String id, String message, boolean signed, String mibId) {
         if (mibId != null) {
@@ -37,6 +37,11 @@ public class MessageInBottle {
             }
             if (existing.getPages() != null && existing.getPages().size() >= Constants.MIB_MAX_PAGES) {
                 return MIBStatus.THREAD_FULL;
+            }
+            // Plan §10.E — once you've posted on a thread, identity mode is locked for you
+            Boolean locked = identityLockForAuthor(existing, id);
+            if (locked != null) {
+                signed = locked;
             }
         }
         Bottle bottle = mibId == null
@@ -57,6 +62,21 @@ public class MessageInBottle {
         return bottle != null
                 && bottle.getPages() != null
                 && bottle.getPages().size() >= Constants.MIB_MAX_PAGES;
+    }
+
+    /**
+     * If the author already has a page on this bottle, return their prior signed flag; otherwise null.
+     */
+    public static Boolean identityLockForAuthor(Bottle bottle, String authorId) {
+        if (bottle == null || bottle.getPages() == null || authorId == null) {
+            return null;
+        }
+        for (Page page : bottle.getPages()) {
+            if (authorId.equals(page.getAuthor())) {
+                return page.isSigned();
+            }
+        }
+        return null;
     }
 
     public static MessageCreateData createMessage(Bottle bottle, int pageNum) {

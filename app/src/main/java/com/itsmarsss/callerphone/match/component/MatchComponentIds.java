@@ -64,6 +64,11 @@ public final class MatchComponentIds {
     public static final String ACTION_INBOX_OPEN = "inbox_open";
     public static final String ACTION_INBOX_READ_ALL = "inbox_read";
     public static final String ACTION_BACK_INBOX = "back_inbox";
+    public static final String ACTION_PHOTO_AVATAR = "photo_av";
+    public static final String ACTION_PHOTO_MENU = "photo_mn";
+    public static final String ACTION_PREMIUM = "premium";
+    public static final String ACTION_TOGGLE_NOTIFY = "tog_ntfy";
+    public static final String ACTION_TOGGLE_DIGEST = "tog_dgst";
 
     private MatchComponentIds() {
     }

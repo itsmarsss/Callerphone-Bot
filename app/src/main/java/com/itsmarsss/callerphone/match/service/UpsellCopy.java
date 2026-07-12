@@ -19,9 +19,9 @@ public final class UpsellCopy {
         return """
                 Premium is planned for later.
 
-                Higher daily Discover limits, more open chats, and extra undos.
+                Higher daily Discover limits, more open chats, incoming interest names, and extra undos.
 
-                Discover stays free either way.
+                Discover stays free either way. Use `/match premium` for the comparison.
                 """;
     }
 }

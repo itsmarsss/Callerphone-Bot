@@ -123,6 +123,39 @@ public final class MatchButtonHandler implements IButtonInteraction {
             }
             case MatchComponentIds.ACTION_EDIT_MENU -> e.reply(ExperienceRenderer.toMessage(MatchPresenter.editMenu()))
                     .setEphemeral(true).queue();
+            case MatchComponentIds.ACTION_PHOTO_MENU -> e.reply(ExperienceRenderer.toMessage(MatchPresenter.photoMenu()))
+                    .setEphemeral(true).queue();
+            case MatchComponentIds.ACTION_PHOTO_AVATAR -> {
+                var r = ctx.profiles().setAvatar(userId, e.getUser().getEffectiveAvatarUrl());
+                if (r.success()) {
+                    e.reply(ExperienceRenderer.toMessage(MatchPresenter.photoUpdated())).setEphemeral(true).queue();
+                } else {
+                    replyService(e, r);
+                }
+            }
+            case MatchComponentIds.ACTION_PREMIUM -> e.reply(ExperienceRenderer.toMessage(
+                    MatchPresenter.premiumOverview(ctx.premium().isPremium(userId))
+            )).setEphemeral(true).queue();
+            case MatchComponentIds.ACTION_TOGGLE_NOTIFY -> {
+                var user = ctx.enrollment().getOrCreate(userId);
+                boolean next = !user.isNotificationsEnabled();
+                var r = ctx.enrollment().setNotifications(userId, next);
+                user = ctx.enrollment().getOrCreate(userId);
+                e.reply(ExperienceRenderer.toMessage(r.success()
+                        ? MatchPresenter.settings(user.isNotificationsEnabled(), user.isDigestOptIn())
+                        : MatchPresenter.warn("Couldn't update", r.message())
+                )).setEphemeral(true).queue();
+            }
+            case MatchComponentIds.ACTION_TOGGLE_DIGEST -> {
+                var user = ctx.enrollment().getOrCreate(userId);
+                boolean next = !user.isDigestOptIn();
+                var r = ctx.enrollment().setDigestOptIn(userId, next);
+                user = ctx.enrollment().getOrCreate(userId);
+                e.reply(ExperienceRenderer.toMessage(r.success()
+                        ? MatchPresenter.settings(user.isNotificationsEnabled(), user.isDigestOptIn())
+                        : MatchPresenter.warn("Couldn't update", r.message())
+                )).setEphemeral(true).queue();
+            }
             case MatchComponentIds.ACTION_RESUME -> replyService(e, ctx.profiles().resume(userId));
             case MatchComponentIds.ACTION_OPEN_LIKES -> {
                 e.deferReply(true).queue();

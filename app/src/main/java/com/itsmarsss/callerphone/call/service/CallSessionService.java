@@ -170,6 +170,21 @@ public final class CallSessionService {
         String sessionId = session.getId();
         String otherId = session.otherChannelId(channelId);
 
+        try {
+            if (com.itsmarsss.callerphone.bootstrap.ApplicationContext.isReady()) {
+                var analytics = com.itsmarsss.callerphone.bootstrap.ApplicationContext.get().analytics();
+                String starter = session.getSideA().starterUserId();
+                if (starter != null) {
+                    analytics.track(starter, "call_end", sessionId + ":" + minutes + "m:" + messageCount);
+                }
+                String otherStarter = session.getSideB().starterUserId();
+                if (otherStarter != null && !otherStarter.equals(starter)) {
+                    analytics.track(otherStarter, "call_end", sessionId + ":" + minutes + "m:" + messageCount);
+                }
+            }
+        } catch (Exception ignored) {
+        }
+
         ExperienceView selfEnded = CallPresenter.ended(sessionId, minutes, messageCount);
         ExperienceView peerEnded = CallPresenter.peerHungUp(sessionId, minutes, messageCount);
 

@@ -10,6 +10,7 @@ import com.itsmarsss.callerphone.identity.AgeCohort;
 import com.itsmarsss.callerphone.match.component.MatchComponentIds;
 import com.itsmarsss.callerphone.match.model.MatchProfile;
 import com.itsmarsss.callerphone.match.service.EmptyStates;
+import com.itsmarsss.callerphone.match.service.MatchLimits;
 import com.itsmarsss.callerphone.msginbottle.BottleComponentIds;
 
 import java.util.ArrayList;
@@ -184,11 +185,20 @@ public final class MatchPresenter {
     public static ExperienceView incomingInterestFreeTeaser() {
         return ExperienceView.builder(ExperienceIntent.SOCIAL)
                 .title("Someone is interested")
-                .description("Keep discovering — if you're interested too, you'll connect instantly.")
-                .actions(ActionSpec.success(
-                        MatchComponentIds.of(MatchComponentIds.ACTION_START_BROWSE, "_"),
-                        "Keep discovering"
-                ))
+                .description(
+                        "Keep discovering — if you're interested too, you'll connect instantly.\n\n"
+                                + "Seeing **who** is interested is a Premium feature (not for sale yet)."
+                )
+                .actions(
+                        ActionSpec.success(
+                                MatchComponentIds.of(MatchComponentIds.ACTION_START_BROWSE, "_"),
+                                "Keep discovering"
+                        ),
+                        ActionSpec.secondary(
+                                MatchComponentIds.of(MatchComponentIds.ACTION_PREMIUM, "_"),
+                                "About Premium"
+                        )
+                )
                 .ephemeral(true)
                 .build();
     }
@@ -522,9 +532,125 @@ public final class MatchPresenter {
         return ExperienceView.builder(ExperienceIntent.NEUTRAL)
                 .title("Notifications")
                 .description(
-                        "Connection alerts · " + (notifications ? "On" : "Off") + "\n"
-                                + "Weekly discovery digest · " + (digest ? "On" : "Off") + "\n\n"
-                                + "Use `/match notify` and `/match digest` to change these."
+                        "Connection alerts · **" + (notifications ? "On" : "Off") + "**\n"
+                                + "Weekly discovery digest · **" + (digest ? "On" : "Off") + "**\n\n"
+                                + "Toggle below. Changes apply immediately."
+                )
+                .actions(
+                        ActionSpec.primary(
+                                MatchComponentIds.of(MatchComponentIds.ACTION_TOGGLE_NOTIFY, "_"),
+                                notifications ? "Turn alerts off" : "Turn alerts on"
+                        ),
+                        ActionSpec.secondary(
+                                MatchComponentIds.of(MatchComponentIds.ACTION_TOGGLE_DIGEST, "_"),
+                                digest ? "Turn digest off" : "Turn digest on"
+                        ),
+                        ActionSpec.secondary(MatchComponentIds.of(MatchComponentIds.ACTION_HOME, "_"), "Inbox")
+                )
+                .ephemeral(true)
+                .build();
+    }
+
+    public static ExperienceView premiumOverview(boolean isPremium) {
+        if (isPremium) {
+            return ExperienceView.builder(ExperienceIntent.PREMIUM)
+                    .title("Callerphone Premium")
+                    .description(
+                            "You're on Premium.\n\n"
+                                    + "· " + MatchLimits.PREMIUM_DAILY_DISCOVERIES + " discoveries / day\n"
+                                    + "· " + MatchLimits.PREMIUM_DAILY_INTERESTS + " interests / day\n"
+                                    + "· " + MatchLimits.PREMIUM_ACTIVE_CONVERSATIONS + " open chats\n"
+                                    + "· Incoming interest names\n"
+                                    + "· Extra undos"
+                    )
+                    .actions(
+                            ActionSpec.success(MatchComponentIds.of(MatchComponentIds.ACTION_START_BROWSE, "_"), "Discover"),
+                            ActionSpec.secondary(MatchComponentIds.of(MatchComponentIds.ACTION_OPEN_CHATS, "_"), "Open chats")
+                    )
+                    .ephemeral(true)
+                    .build();
+        }
+        return ExperienceView.builder(ExperienceIntent.PREMIUM)
+                .title("Callerphone Premium")
+                .description(
+                        "More control over who you discover and how often you connect.\n\n"
+                                + "**Free**\n"
+                                + "· " + MatchLimits.FREE_DAILY_DISCOVERIES + " discoveries\n"
+                                + "· " + MatchLimits.FREE_DAILY_INTERESTS + " interests\n"
+                                + "· " + MatchLimits.FREE_ACTIVE_CONVERSATIONS + " open chats\n"
+                                + "· Basic filters\n\n"
+                                + "**Premium** *(coming later)*\n"
+                                + "· " + MatchLimits.PREMIUM_DAILY_DISCOVERIES + " discoveries\n"
+                                + "· " + MatchLimits.PREMIUM_DAILY_INTERESTS + " interests\n"
+                                + "· Incoming interest names\n"
+                                + "· Advanced filters · more undos\n\n"
+                                + "Discover stays free either way. Purchases aren't live yet."
+                )
+                .actions(
+                        ActionSpec.success(MatchComponentIds.of(MatchComponentIds.ACTION_START_BROWSE, "_"), "Keep discovering"),
+                        ActionSpec.secondary(MatchComponentIds.of(MatchComponentIds.ACTION_OPEN_LIKES, "_"), "Incoming interest")
+                )
+                .ephemeral(true)
+                .build();
+    }
+
+    public static ExperienceView photoMenu() {
+        return ExperienceView.builder(ExperienceIntent.PROGRESS)
+                .title("Profile image")
+                .description(
+                        "Use your Discord avatar (recommended) or attach a public **https** image URL with "
+                                + "`/match photo url:`."
+                )
+                .actions(
+                        ActionSpec.success(
+                                MatchComponentIds.of(MatchComponentIds.ACTION_PHOTO_AVATAR, "_"),
+                                "Use Discord avatar"
+                        ),
+                        ActionSpec.secondary(MatchComponentIds.of(MatchComponentIds.ACTION_PREVIEW_SELF, "_"), "Preview profile")
+                )
+                .ephemeral(true)
+                .build();
+    }
+
+    public static ExperienceView photoUpdated() {
+        return ExperienceView.builder(ExperienceIntent.SUCCESS)
+                .title("Image added")
+                .description("Review how it looks on your profile.")
+                .actions(
+                        ActionSpec.primary(MatchComponentIds.of(MatchComponentIds.ACTION_PREVIEW_SELF, "_"), "Preview"),
+                        ActionSpec.secondary(MatchComponentIds.of(MatchComponentIds.ACTION_PHOTO_MENU, "_"), "Change image"),
+                        ActionSpec.success(MatchComponentIds.of(MatchComponentIds.ACTION_START_BROWSE, "_"), "Discover")
+                )
+                .ephemeral(true)
+                .build();
+    }
+
+    public static ExperienceView activityProfile(
+            String displayName,
+            int level,
+            int exp,
+            String bar,
+            long callMessages,
+            long commands,
+            boolean matchLive,
+            String matchSummary
+    ) {
+        StringBuilder body = new StringBuilder();
+        body.append(bar).append(" **").append(exp).append("/100** XP · Level **").append(level).append("**\n");
+        body.append(callMessages).append(" call messages · ").append(commands).append(" commands");
+        if (matchSummary != null && !matchSummary.isBlank()) {
+            body.append("\n\n**Match**\n").append(matchSummary);
+        } else if (!matchLive) {
+            body.append("\n\n_No Match profile yet — `/match join` to meet people._");
+        }
+        body.append("\n\n_Levels unlock call flair over time. Credits stay secondary until rewards ship._");
+        return ExperienceView.builder(ExperienceIntent.SOCIAL)
+                .title((displayName == null || displayName.isBlank() ? "You" : displayName) + " · Level " + level)
+                .description(body.toString())
+                .actions(
+                        ActionSpec.success(MatchComponentIds.of(MatchComponentIds.ACTION_START_BROWSE, "_"), "Discover"),
+                        ActionSpec.secondary(MatchComponentIds.of(MatchComponentIds.ACTION_OPEN_CHATS, "_"), "Open chats"),
+                        ActionSpec.secondary(MatchComponentIds.of(MatchComponentIds.ACTION_EDIT_MENU, "_"), "Edit Match")
                 )
                 .ephemeral(true)
                 .build();

@@ -27,9 +27,22 @@ public class Leaderboard implements ISlashCommand {
         e.deferReply().queue();
         List<Document> top = Users.topByCredits(TOP_N);
         if (top.isEmpty()) {
-            e.getHook().editOriginalEmbeds(ExperienceRenderer.toEmbed(ExperienceView.builder(ExperienceIntent.SOCIAL)
+            e.getHook().editOriginal(ExperienceRenderer.toEdit(ExperienceView.builder(ExperienceIntent.SOCIAL)
                     .title("The board is open")
                     .description("Start a call or conversation to earn the first activity points.")
+                    .actions(
+                            com.itsmarsss.callerphone.experience.ActionSpec.secondary(
+                                    com.itsmarsss.callerphone.call.discord.CallComponentIds.again("_"),
+                                    "Start a call"
+                            ),
+                            com.itsmarsss.callerphone.experience.ActionSpec.success(
+                                    com.itsmarsss.callerphone.match.component.MatchComponentIds.of(
+                                            com.itsmarsss.callerphone.match.component.MatchComponentIds.ACTION_START_BROWSE,
+                                            "_"
+                                    ),
+                                    "Discover people"
+                            )
+                    )
                     .build())).queue();
             return;
         }

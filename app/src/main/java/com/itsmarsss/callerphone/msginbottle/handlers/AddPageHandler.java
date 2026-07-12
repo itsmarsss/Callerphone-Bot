@@ -42,7 +42,17 @@ public class AddPageHandler implements IButtonInteraction {
             return;
         }
 
-        // Identity picker then message-only modal (plan §25 / §10.E)
+        String authorId = e.getUser().getId();
+        Boolean locked = com.itsmarsss.callerphone.msginbottle.MessageInBottle.identityLockForAuthor(bottle, authorId);
+        if (locked != null) {
+            // Already posted on this thread — skip identity picker
+            e.replyModal(locked
+                    ? com.itsmarsss.callerphone.msginbottle.BottleModals.replySigned(bottleId)
+                    : com.itsmarsss.callerphone.msginbottle.BottleModals.replyAnonymous(bottleId)
+            ).queue();
+            return;
+        }
+        // First page on this bottle — identity picker (plan §25 / §10.E)
         e.reply(ExperienceRenderer.toMessage(BottlePresenter.replyIdentity(bottleId)))
                 .setEphemeral(true)
                 .queue();

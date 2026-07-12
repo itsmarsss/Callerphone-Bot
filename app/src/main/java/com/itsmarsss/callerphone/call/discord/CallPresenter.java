@@ -158,6 +158,12 @@ public final class CallPresenter {
         if (sessionId != null && !sessionId.isBlank()) {
             b.actions(
                     ActionSpec.primary(CallComponentIds.again(sessionId), "Call again"),
+                    ActionSpec.success(
+                            com.itsmarsss.callerphone.msginbottle.BottleComponentIds.of(
+                                    com.itsmarsss.callerphone.msginbottle.BottleComponentIds.ACTION_FIND, "_"
+                            ),
+                            "Find a bottle"
+                    ),
                     ActionSpec.danger(CallComponentIds.report(sessionId), "Report")
             );
         }
@@ -179,6 +185,12 @@ public final class CallPresenter {
         if (sessionId != null && !sessionId.isBlank()) {
             b.actions(
                     ActionSpec.primary(CallComponentIds.again(sessionId), "Call again"),
+                    ActionSpec.success(
+                            com.itsmarsss.callerphone.msginbottle.BottleComponentIds.of(
+                                    com.itsmarsss.callerphone.msginbottle.BottleComponentIds.ACTION_FIND, "_"
+                            ),
+                            "Find a bottle"
+                    ),
                     ActionSpec.danger(CallComponentIds.report(sessionId), "Report")
             );
         }
