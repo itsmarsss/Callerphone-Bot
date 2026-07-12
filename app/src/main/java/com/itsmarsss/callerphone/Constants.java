@@ -15,6 +15,8 @@ public final class Constants {
     // Message in Bottle limits
     public static final int MIB_MIN_PAGE_LENGTH = 10;
     public static final int MIB_MAX_PAGE_LENGTH = 1500;
+    /** Max pages per bottle thread (launch + replies). At cap, continue via Match. */
+    public static final int MIB_MAX_PAGES = 8;
 
     // User limits
     public static final int USER_MAX_GAMES = 10;

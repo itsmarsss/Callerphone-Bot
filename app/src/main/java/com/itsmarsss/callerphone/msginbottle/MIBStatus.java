@@ -6,6 +6,8 @@ public enum MIBStatus {
     SENT,
     DELETED,
     RATE_LIMITED,
-    NOT_FOUND
+    NOT_FOUND,
+    /** Bottle already has {@link com.itsmarsss.callerphone.Constants#MIB_MAX_PAGES} pages. */
+    THREAD_FULL
 
 }

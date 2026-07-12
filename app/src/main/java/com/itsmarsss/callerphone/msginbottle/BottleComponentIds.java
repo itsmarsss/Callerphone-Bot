@@ -12,6 +12,20 @@ public final class BottleComponentIds {
     public static final String ACTION_THREAD_MENU = "th_menu";
     public static final String ACTION_SAVED_MENU = "sv_menu";
     public static final String ACTION_OPEN = "open";
+    /** Start compose as anonymous. */
+    public static final String ACTION_ID_ANON = "id_anon";
+    /** Start compose as signed. */
+    public static final String ACTION_ID_SIGN = "id_sign";
+    /** Open find flow (cooldown / recovery). */
+    public static final String ACTION_FIND = "find";
+    /** Open identity picker for a new bottle. */
+    public static final String ACTION_SEND = "send";
+    /** Reply identity: anonymous. Opaque = bottle id. */
+    public static final String ACTION_REPLY_ANON = "rp_anon";
+    /** Reply identity: signed. Opaque = bottle id. */
+    public static final String ACTION_REPLY_SIGN = "rp_sign";
+    /** Keep anonymous / dismiss connect CTA. Opaque = bottle id. */
+    public static final String ACTION_KEEP_ANON = "keep_an";
 
     private BottleComponentIds() {
     }

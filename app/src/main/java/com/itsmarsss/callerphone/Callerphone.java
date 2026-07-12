@@ -218,7 +218,8 @@ public class Callerphone {
                 new WordSearchHandler(), new AddPageHandler(), new NextHandler(),
                 new PreviousHandler(), new ReportHandler(), new SaveHandler(),
                 new CallButtonHandler(), new MatchButtonHandler(),
-                new com.itsmarsss.callerphone.bot.HelpButtonHandler()
+                new com.itsmarsss.callerphone.bot.HelpButtonHandler(),
+                new com.itsmarsss.callerphone.msginbottle.BottleButtonHandler()
         };
         for (IButtonInteraction button : buttons) {
             btnMap.put(button.getID(), button);

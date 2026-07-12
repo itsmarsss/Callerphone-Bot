@@ -1,22 +1,19 @@
 package com.itsmarsss.callerphone.msginbottle.commands;
 
 import com.itsmarsss.ICommand;
-import com.itsmarsss.callerphone.Constants;
 import com.itsmarsss.callerphone.Response;
 import com.itsmarsss.callerphone.ToolSet;
 import com.itsmarsss.callerphone.bootstrap.ApplicationContext;
-import com.itsmarsss.callerphone.experience.ExperienceIntent;
 import com.itsmarsss.callerphone.experience.ExperienceRenderer;
 import com.itsmarsss.callerphone.experience.ExperienceView;
+import com.itsmarsss.callerphone.experience.ExperienceIntent;
 import com.itsmarsss.callerphone.msginbottle.BottleListUi;
+import com.itsmarsss.callerphone.msginbottle.BottlePresenter;
 import com.itsmarsss.callerphone.msginbottle.MessageInBottle;
 import com.itsmarsss.callerphone.msginbottle.entities.Bottle;
 import com.itsmarsss.commandType.ISlashCommand;
 import com.itsmarsss.database.categories.Cooldown;
 import com.itsmarsss.database.categories.MIB;
-import net.dv8tion.jda.api.components.label.Label;
-import net.dv8tion.jda.api.components.textinput.TextInput;
-import net.dv8tion.jda.api.components.textinput.TextInputStyle;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.InteractionContextType;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
@@ -25,7 +22,6 @@ import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
-import net.dv8tion.jda.api.modals.Modal;
 import net.dv8tion.jda.api.utils.messages.MessageCreateData;
 
 import java.util.ArrayList;
@@ -45,6 +41,20 @@ public final class BottleCommand implements ISlashCommand, ICommand {
                     .description(
                             "Send something into the sea, find what others cast, "
                                     + "or reopen threads you're part of."
+                    )
+                    .actions(
+                            com.itsmarsss.callerphone.experience.ActionSpec.primary(
+                                    com.itsmarsss.callerphone.msginbottle.BottleComponentIds.of(
+                                            com.itsmarsss.callerphone.msginbottle.BottleComponentIds.ACTION_SEND, "_"
+                                    ),
+                                    "Send a bottle"
+                            ),
+                            com.itsmarsss.callerphone.experience.ActionSpec.success(
+                                    com.itsmarsss.callerphone.msginbottle.BottleComponentIds.of(
+                                            com.itsmarsss.callerphone.msginbottle.BottleComponentIds.ACTION_FIND, "_"
+                                    ),
+                                    "Find a bottle"
+                            )
                     )
                     .build())).setEphemeral(true).queue();
             return;
@@ -67,30 +77,11 @@ public final class BottleCommand implements ISlashCommand, ICommand {
         long elapsed = System.currentTimeMillis() - Cooldown.getMIBSendCoolDown(userId);
         if (elapsed < ToolSet.SENDBOTTLE_COOLDOWN) {
             long minutes = Math.max(1, (ToolSet.SENDBOTTLE_COOLDOWN - elapsed) / 60_000);
-            e.reply(ExperienceRenderer.toMessage(ExperienceView.builder(ExperienceIntent.WARNING)
-                    .title("Not yet")
-                    .description("Your next bottle can launch in **" + minutes + "** minute(s).")
-                    .build())).setEphemeral(true).queue();
+            e.reply(ExperienceRenderer.toMessage(BottlePresenter.sendCooldown(minutes)))
+                    .setEphemeral(true).queue();
             return;
         }
-
-        TextInput message = TextInput.create("message", TextInputStyle.PARAGRAPH)
-                .setPlaceholder("Write something another Callerphone user can discover later")
-                .setMinLength(Constants.MIB_MIN_PAGE_LENGTH)
-                .setMaxLength(Constants.MIB_MAX_PAGE_LENGTH)
-                .build();
-        TextInput signed = TextInput.create("signed", TextInputStyle.SHORT)
-                .setPlaceholder("true = signed, false = anonymous")
-                .setMinLength(4)
-                .setMaxLength(5)
-                .setValue("false")
-                .build();
-        e.replyModal(Modal.create("sendMIB", "Send a bottle")
-                .addComponents(
-                        Label.of("Message", message),
-                        Label.of("Signed? (true / false)", signed)
-                )
-                .build()).queue();
+        e.reply(ExperienceRenderer.toMessage(BottlePresenter.identityPick())).setEphemeral(true).queue();
     }
 
     private void find(SlashCommandInteractionEvent e) {
@@ -98,21 +89,13 @@ public final class BottleCommand implements ISlashCommand, ICommand {
         long elapsed = System.currentTimeMillis() - Cooldown.getMIBFindCoolDown(userId);
         if (elapsed < ToolSet.FINDBOTTLE_COOLDOWN) {
             long minutes = Math.max(1, (ToolSet.FINDBOTTLE_COOLDOWN - elapsed) / 60_000);
-            e.reply(ExperienceRenderer.toMessage(ExperienceView.builder(ExperienceIntent.WARNING)
-                    .title("Cooldown")
-                    .description("Try finding another bottle in **" + minutes + "** minute(s).")
-                    .build())).setEphemeral(true).queue();
+            e.reply(ExperienceRenderer.toMessage(BottlePresenter.findCooldown(minutes)))
+                    .setEphemeral(true).queue();
             return;
         }
         Bottle bottle = MessageInBottle.findBottle();
         if (bottle == null) {
-            e.reply(ExperienceRenderer.toMessage(ExperienceView.builder(ExperienceIntent.DISCOVERY)
-                    .title("The water is quiet")
-                    .description(
-                            "No new bottles are available right now.\n\n"
-                                    + "Cast one with `/bottle send`, or try again later."
-                    )
-                    .build())).setEphemeral(true).queue();
+            e.reply(ExperienceRenderer.toMessage(BottlePresenter.emptySea())).setEphemeral(true).queue();
             return;
         }
         MessageCreateData message = MessageInBottle.createMessage(bottle, Integer.MAX_VALUE);
@@ -144,7 +127,6 @@ public final class BottleCommand implements ISlashCommand, ICommand {
             return;
         }
 
-        // List saved bookmarks
         if (!ApplicationContext.isReady()) {
             e.reply(ExperienceRenderer.toMessage(ExperienceView.builder(ExperienceIntent.NEUTRAL)
                     .title("Saved bottles")
@@ -157,7 +139,6 @@ public final class BottleCommand implements ISlashCommand, ICommand {
         ctx.dbExecutor().execute(() -> {
             List<String> ids = ctx.bottleSaves().listBottleIds(e.getUser().getId(), 25);
             List<Bottle> bottles = new ArrayList<>();
-            // preserve save order
             for (String id : ids) {
                 Bottle b = MIB.getBottle(id);
                 if (b != null) {
@@ -171,7 +152,6 @@ public final class BottleCommand implements ISlashCommand, ICommand {
     private void threads(SlashCommandInteractionEvent e) {
         e.deferReply(true).queue();
         String userId = e.getUser().getId();
-        // MIB queries are sync Mongo — run off the event thread when possible
         if (ApplicationContext.isReady()) {
             ApplicationContext.get().dbExecutor().execute(() -> {
                 List<Bottle> bottles = MIB.findThreadsForUser(userId, 25);
