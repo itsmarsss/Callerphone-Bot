@@ -90,7 +90,10 @@ public final class CallButtonHandler implements IButtonInteraction {
                     ))
                     .setEphemeral(true).queue();
             case CallComponentIds.PROMPT -> e.reply(ExperienceRenderer.toMessage(
-                            CallPresenter.conversationPrompt(CallPresenter.randomPrompt())
+                            CallPresenter.conversationPrompt(
+                                    CallPresenter.randomPrompt(),
+                                    parsed.sessionId()
+                            )
                     ))
                     .setEphemeral(true).queue();
             case CallComponentIds.GAME_SHELF -> e.reply(ExperienceRenderer.toMessage(

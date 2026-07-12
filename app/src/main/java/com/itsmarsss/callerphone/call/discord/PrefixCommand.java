@@ -26,7 +26,23 @@ public final class PrefixCommand implements ISlashCommand {
             long need = Constants.PREFIX_MIN_LEVEL - level;
             e.reply(ExperienceRenderer.toMessage(ExperienceView.builder(ExperienceIntent.PROGRESS)
                     .title("Prefix unlocks at Level " + Constants.PREFIX_MIN_LEVEL)
-                    .description("You're Level **" + level + "** · **" + need + "** levels to go.")
+                    .description(
+                            "You're Level **" + level + "** · **" + need + "** levels to go.\n\n"
+                                    + "Earn XP from calls and commands — hang out, then come back."
+                    )
+                    .actions(
+                            com.itsmarsss.callerphone.experience.ActionSpec.primary(
+                                    CallComponentIds.again("_"),
+                                    "Start a call"
+                            ),
+                            com.itsmarsss.callerphone.experience.ActionSpec.success(
+                                    com.itsmarsss.callerphone.match.component.MatchComponentIds.of(
+                                            com.itsmarsss.callerphone.match.component.MatchComponentIds.ACTION_START_BROWSE,
+                                            "_"
+                                    ),
+                                    "Discover people"
+                            )
+                    )
                     .build())).setEphemeral(true).queue();
             return;
         }

@@ -128,11 +128,21 @@ public final class CallPresenter {
     }
 
     public static ExperienceView conversationPrompt(String prompt) {
-        return ExperienceView.builder(ExperienceIntent.SOCIAL)
+        return conversationPrompt(prompt, null);
+    }
+
+    public static ExperienceView conversationPrompt(String prompt, String sessionId) {
+        ExperienceView.Builder b = ExperienceView.builder(ExperienceIntent.SOCIAL)
                 .title("Conversation prompt")
                 .description("_" + prompt + "_")
-                .footer("Optional — say anything you like")
-                .build();
+                .footer("Optional — say anything you like");
+        if (sessionId != null && !sessionId.isBlank()) {
+            b.actions(
+                    ActionSpec.secondary(CallComponentIds.prompt(sessionId), "Another prompt"),
+                    ActionSpec.primary(CallComponentIds.gameShelf(sessionId), "Start a game")
+            );
+        }
+        return b.build();
     }
 
     public static final String[] PROMPTS = {
