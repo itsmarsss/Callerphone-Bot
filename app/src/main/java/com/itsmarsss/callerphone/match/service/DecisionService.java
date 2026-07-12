@@ -201,6 +201,7 @@ public final class DecisionService {
         user.setLastSkipAt(null);
         users.save(user);
         analytics.track(actorId, "match_undo_skip", subjectId);
+        analytics.trackSurface(actorId, "discover", "undo_skip", subjectId);
         BrowseSession session = discovery.reopenSession(actorId, subjectId);
         String name = profiles.find(subjectId).map(MatchProfile::getDisplayName).orElse("that profile");
         return DecisionResult.undone("Back to **" + name + "**. Decide again.", session);
