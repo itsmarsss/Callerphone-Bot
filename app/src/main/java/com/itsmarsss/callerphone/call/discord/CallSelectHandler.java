@@ -2,6 +2,7 @@ package com.itsmarsss.callerphone.call.discord;
 
 import com.itsmarsss.callerphone.call.service.CallSessionService;
 import com.itsmarsss.callerphone.experience.ExperienceRenderer;
+import com.itsmarsss.callerphone.experience.ExperienceView;
 import com.itsmarsss.callerphone.safety.ReportCategory;
 import com.itsmarsss.commandType.IStringSelectInteraction;
 import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent;
@@ -36,10 +37,28 @@ public final class CallSelectHandler implements IStringSelectInteraction {
             }
         } catch (Exception ignored) {
         }
-        e.reply(ExperienceRenderer.toMessage(CallPresenter.success(
-                "Report received",
-                "Category: **" + cat.label() + "**. Recent transcript was preserved for review."
-        ))).setEphemeral(true).queue();
+        e.reply(ExperienceRenderer.toMessage(ExperienceView.builder(
+                        com.itsmarsss.callerphone.experience.ExperienceIntent.SAFETY)
+                .title("Report received")
+                .description(
+                        "Category: **" + cat.label() + "**. Recent transcript was preserved for review.\n\n"
+                                + "They have not been notified."
+                )
+                .actions(
+                        com.itsmarsss.callerphone.experience.ActionSpec.primary(
+                                CallComponentIds.again("_"),
+                                "Call again"
+                        ),
+                        com.itsmarsss.callerphone.experience.ActionSpec.success(
+                                com.itsmarsss.callerphone.msginbottle.BottleComponentIds.of(
+                                        com.itsmarsss.callerphone.msginbottle.BottleComponentIds.ACTION_FIND, "_"
+                                ),
+                                "Find a bottle"
+                        )
+                )
+                .ephemeral(true)
+                .build()
+        )).setEphemeral(true).queue();
     }
 
     @Override
