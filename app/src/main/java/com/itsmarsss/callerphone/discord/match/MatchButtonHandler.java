@@ -214,12 +214,19 @@ public final class MatchButtonHandler implements IButtonInteraction {
                     replyService(e, r);
                 }
             }
-            case MatchComponentIds.ACTION_PREMIUM -> e.reply(ExperienceRenderer.toMessage(
-                    MatchPresenter.premiumOverview(
-                            ctx.premium().isPremium(userId),
-                            ctx.premium().purchasesLive()
-                    )
-            )).setEphemeral(true).queue();
+            case MatchComponentIds.ACTION_PREMIUM -> {
+                try {
+                    ctx.analytics().track(userId, "premium_view",
+                            ctx.premium().isPremium(userId) ? "entitled" : "free");
+                } catch (Exception ignored) {
+                }
+                e.reply(ExperienceRenderer.toMessage(
+                        MatchPresenter.premiumOverview(
+                                ctx.premium().isPremium(userId),
+                                ctx.premium().purchasesLive()
+                        )
+                )).setEphemeral(true).queue();
+            }
             case MatchComponentIds.ACTION_REWARDS -> {
                 long credits = com.itsmarsss.database.categories.Users.getCredits(userId);
                 String prefix = com.itsmarsss.database.categories.Users.getPrefix(userId);
