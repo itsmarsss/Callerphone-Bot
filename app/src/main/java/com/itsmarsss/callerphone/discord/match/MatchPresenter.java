@@ -319,6 +319,10 @@ public final class MatchPresenter {
                         ActionSpec.secondary(
                                 BottleComponentIds.of(BottleComponentIds.ACTION_FIND, "_"),
                                 "Find a bottle"
+                        ),
+                        ActionSpec.secondary(
+                                MatchComponentIds.of(MatchComponentIds.ACTION_HOME, "_"),
+                                "Inbox"
                         )
                 )
                 .ephemeral(true)
