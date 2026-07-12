@@ -18,4 +18,14 @@ public final class AnalyticsService {
             logger.debug("Analytics write failed: {}", e.getMessage());
         }
     }
+
+    /**
+     * Plan §10.J — surface transitions: {@code surface:action} with optional reason/meta.
+     */
+    public void trackSurface(String userId, String surface, String action, String reason) {
+        String name = (surface == null || surface.isBlank() ? "app" : surface)
+                + "_" + (action == null || action.isBlank() ? "event" : action);
+        String meta = reason == null ? "" : reason;
+        track(userId, name, meta);
+    }
 }

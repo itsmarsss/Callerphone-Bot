@@ -119,17 +119,7 @@ public final class MatchPresenter {
                     .build();
         }
         if (discoveriesLeft <= 0) {
-            return ExperienceView.builder(ExperienceIntent.DISCOVERY)
-                    .title(greeting(displayName))
-                    .description("Today's discoveries are done. Your free set refreshes tomorrow.")
-                    .actions(
-                            ActionSpec.primary(MatchComponentIds.of(MatchComponentIds.ACTION_OPEN_CHATS, "_"), "Open chats"),
-                            ActionSpec.success(BottleComponentIds.of(BottleComponentIds.ACTION_FIND, "_"), "Find a bottle"),
-                            ActionSpec.secondary(CallComponentIds.again("_"), "Start a call"),
-                            ActionSpec.secondary(MatchComponentIds.of(MatchComponentIds.ACTION_HOME, "_"), "Inbox")
-                    )
-                    .ephemeral(true)
-                    .build();
+            return dailyLimitHome(displayName);
         }
 
         List<String> bits = new ArrayList<>();
@@ -170,6 +160,10 @@ public final class MatchPresenter {
     }
 
     public static ExperienceView emptyDiscoverWithFallback(String message) {
+        // Daily discovery limit uses premium-aware copy from UpsellCopy
+        if (message != null && message.toLowerCase().contains("discoveries are done")) {
+            return dailyLimitHome(null);
+        }
         return ExperienceView.builder(ExperienceIntent.DISCOVERY)
                 .title("You're caught up")
                 .description((message == null || message.isBlank() ? EmptyStates.noCandidates() : message)
@@ -179,6 +173,24 @@ public final class MatchPresenter {
                         ActionSpec.success(BottleComponentIds.of(BottleComponentIds.ACTION_FIND, "_"), "Find a bottle"),
                         ActionSpec.secondary(CallComponentIds.again("_"), "Start a call"),
                         ActionSpec.secondary(MatchComponentIds.of(MatchComponentIds.ACTION_SETUP, "_"), "Edit profile")
+                )
+                .ephemeral(true)
+                .build();
+    }
+
+    public static ExperienceView dailyLimitHome(String displayName) {
+        return ExperienceView.builder(ExperienceIntent.PREMIUM)
+                .title(displayName == null || displayName.isBlank() ? "Today's discoveries are done" : greeting(displayName))
+                .description(
+                        "Your free Discover set refreshes tomorrow.\n\n"
+                                + "Premium (later) raises daily limits — Discover stays free either way.\n\n"
+                                + "Meanwhile: chats, calls, and bottles are still open."
+                )
+                .actions(
+                        ActionSpec.primary(MatchComponentIds.of(MatchComponentIds.ACTION_OPEN_CHATS, "_"), "Open chats"),
+                        ActionSpec.success(BottleComponentIds.of(BottleComponentIds.ACTION_FIND, "_"), "Find a bottle"),
+                        ActionSpec.secondary(CallComponentIds.again("_"), "Start a call"),
+                        ActionSpec.secondary(MatchComponentIds.of(MatchComponentIds.ACTION_PREMIUM, "_"), "About Premium")
                 )
                 .ephemeral(true)
                 .build();

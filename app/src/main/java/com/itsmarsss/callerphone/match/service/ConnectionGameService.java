@@ -158,16 +158,27 @@ public final class ConnectionGameService {
         }
         if (expected.equals(userId)) {
             pending.remove(conversationId);
+            track(userId, "connection_game_cancel", conversationId);
             return Result.ok("Challenge cancelled.");
         }
         if (ApplicationContext.isReady()) {
             Optional<MatchConversation> opt = ApplicationContext.get().conversations().find(conversationId);
             if (opt.isPresent() && opt.get().getParticipants().contains(userId)) {
                 pending.remove(conversationId);
+                track(userId, "connection_game_decline", conversationId);
                 return Result.ok("Declined. You can keep chatting.");
             }
         }
         return Result.fail("No pending challenge for you.");
+    }
+
+    private static void track(String userId, String name, String meta) {
+        try {
+            if (ApplicationContext.isReady()) {
+                ApplicationContext.get().analytics().track(userId, name, meta);
+            }
+        } catch (Exception ignored) {
+        }
     }
 
     public record Result(boolean success, String message) {

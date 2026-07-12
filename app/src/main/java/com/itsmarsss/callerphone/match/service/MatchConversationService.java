@@ -224,6 +224,18 @@ public final class MatchConversationService {
                 notifications.notifyUnmatched(other, userId);
             }
         }
+        try {
+            if (com.itsmarsss.callerphone.bootstrap.ApplicationContext.isReady()) {
+                var inbox = com.itsmarsss.callerphone.bootstrap.ApplicationContext.get().inbox();
+                inbox.clearSource(userId, conversationId);
+                if (other != null) {
+                    inbox.clearSource(other, conversationId);
+                }
+                com.itsmarsss.callerphone.bootstrap.ApplicationContext.get().analytics()
+                        .track(userId, "match_unmatch", conversationId);
+            }
+        } catch (Exception ignored) {
+        }
         return EnrollmentService.ServiceResult.ok("Unmatched.");
     }
 

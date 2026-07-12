@@ -179,6 +179,24 @@ public final class SocialInboxService {
         );
     }
 
+    /** Archive actionable entries for a source (e.g. unmatched conversation). Keeps safety rows. */
+    public void clearSource(String userId, String sourceId) {
+        if (userId == null || sourceId == null || sourceId.isBlank()) {
+            return;
+        }
+        collection.updateMany(
+                Filters.and(
+                        Filters.eq("userId", userId),
+                        Filters.eq("sourceId", sourceId),
+                        Filters.ne("type", EntryType.SAFETY_UPDATE.name())
+                ),
+                Updates.combine(
+                        Updates.set("unread", false),
+                        Updates.set("preview", "Archived")
+                )
+        );
+    }
+
     /** Lightweight optional without java.util.Optional for simple call sites. */
     public record OptionalInboxEntry(InboxEntry entry) {
         public static OptionalInboxEntry empty() {

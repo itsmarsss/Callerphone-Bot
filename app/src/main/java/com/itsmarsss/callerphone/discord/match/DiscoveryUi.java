@@ -96,8 +96,11 @@ public final class DiscoveryUi {
         DiscoveryService.DiscoveryResult next = ctx.discovery().next(userId);
         if (!next.success()) {
             try {
-                ctx.analytics().track(userId, "discover_empty",
-                        next.message() == null ? "" : next.message().substring(0, Math.min(40, next.message().length())));
+                String msg = next.message() == null ? "" : next.message();
+                String event = msg.toLowerCase().contains("discoveries are done")
+                        ? "discover_daily_limit"
+                        : "discover_empty";
+                ctx.analytics().track(userId, event, msg.substring(0, Math.min(40, msg.length())));
             } catch (Exception ignored) {
             }
             hook.sendMessage(ExperienceRenderer.toMessage(MatchPresenter.emptyDiscoverWithFallback(next.message())))
