@@ -184,6 +184,7 @@ public final class MatchButtonHandler implements IButtonInteraction {
                 if (result.success()) {
                     try {
                         ctx.analytics().track(userId, "match_leave", "confirm");
+                        ctx.analytics().trackSurface(userId, "match", "leave", "confirm");
                     } catch (Exception ignored) {
                     }
                     e.reply(ExperienceRenderer.toMessage(MatchPresenter.home(
@@ -201,6 +202,7 @@ public final class MatchButtonHandler implements IButtonInteraction {
                 if (result.success()) {
                     try {
                         ctx.analytics().track(userId, "match_delete", "confirm");
+                        ctx.analytics().trackSurface(userId, "match", "delete", "confirm");
                     } catch (Exception ignored) {
                     }
                     e.reply(ExperienceRenderer.toMessage(MatchPresenter.serviceDone(
