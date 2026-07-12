@@ -537,6 +537,10 @@ public final class MatchButtonHandler implements IButtonInteraction {
         if (safety != null && safety.kind() == MatchComponentIds.SafetyKind.CONVERSATION) {
             ctx.conversations().unmatch(userId, safety.referenceId());
         }
+        try {
+            ctx.analytics().track(userId, "safety_block", target);
+        } catch (Exception ignored) {
+        }
         String name = ctx.profiles().find(target).map(MatchProfile::getDisplayName).orElse("That person");
         e.reply(ExperienceRenderer.toMessage(MatchPresenter.safetyBlocked(name))).setEphemeral(true).queue();
     }

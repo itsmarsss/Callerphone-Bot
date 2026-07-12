@@ -107,6 +107,10 @@ public final class MatchSelectHandler implements IStringSelectInteraction {
                 evidenceType,
                 evidenceId
         );
+        try {
+            ctx.analytics().track(userId, "safety_report", cat.code());
+        } catch (Exception ignored) {
+        }
         e.reply(ExperienceRenderer.toMessage(MatchPresenter.safetyReported())).setEphemeral(true).queue();
     }
 
