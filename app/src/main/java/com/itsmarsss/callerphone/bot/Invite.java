@@ -30,7 +30,17 @@ public class Invite implements ISlashCommand {
                 .actions(
                         ActionSpec.link(invite, "Invite bot"),
                         ActionSpec.link(support, "Support server"),
-                        ActionSpec.link(donate, "Donate")
+                        ActionSpec.link(donate, "Donate"),
+                        ActionSpec.secondary(
+                                com.itsmarsss.callerphone.call.discord.CallComponentIds.again("_"),
+                                "Start a call"
+                        ),
+                        ActionSpec.success(
+                                com.itsmarsss.callerphone.match.component.MatchComponentIds.of(
+                                        com.itsmarsss.callerphone.match.component.MatchComponentIds.ACTION_START_BROWSE, "_"
+                                ),
+                                "Discover people"
+                        )
                 )
                 .build())).setEphemeral(true).queue();
     }
