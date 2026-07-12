@@ -119,7 +119,7 @@ public final class CallPresenter {
     public static ExperienceView endConfirm() {
         return ExperienceView.builder(ExperienceIntent.WARNING)
                 .title("End this call?")
-                .description("Both sides will disconnect.")
+                .description("Both sides will disconnect. You can start another call right after.")
                 .actions(
                         ActionSpec.danger(CallComponentIds.endConfirm(), "End call"),
                         ActionSpec.secondary(CallComponentIds.endCancel(), "Keep talking")

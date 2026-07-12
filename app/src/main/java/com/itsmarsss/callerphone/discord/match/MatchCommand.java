@@ -98,10 +98,16 @@ public final class MatchCommand implements ISlashCommand {
                         ))
                         .setEphemeral(true).queue();
             }
-            case "leave" -> e.reply(ExperienceRenderer.toMessage(MatchPresenter.leaveConfirm()))
-                    .setEphemeral(true).queue();
-            case "delete" -> e.reply(ExperienceRenderer.toMessage(MatchPresenter.deleteConfirm()))
-                    .setEphemeral(true).queue();
+            case "leave" -> {
+                ctx.analytics().track(userId, "match_leave_prompt", null);
+                e.reply(ExperienceRenderer.toMessage(MatchPresenter.leaveConfirm()))
+                        .setEphemeral(true).queue();
+            }
+            case "delete" -> {
+                ctx.analytics().track(userId, "match_delete_prompt", null);
+                e.reply(ExperienceRenderer.toMessage(MatchPresenter.deleteConfirm()))
+                        .setEphemeral(true).queue();
+            }
             case "export" -> handleExport(e, ctx, userId);
             case "premium" -> {
                 ctx.analytics().track(userId, "premium_view", ctx.premium().isPremium(userId) ? "entitled" : "free");
