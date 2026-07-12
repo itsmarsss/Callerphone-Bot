@@ -612,7 +612,10 @@ public final class MatchPresenter {
     public static ExperienceView leaveConfirm() {
         return ExperienceView.builder(ExperienceIntent.WARNING)
                 .title("Leave Discover?")
-                .description("Your profile will stop appearing, but your profile and chats will remain.")
+                .description(
+                        "Your profile will stop appearing, but your profile and chats will remain.\n\n"
+                                + "You can rejoin anytime with **Create profile** / **Resume**."
+                )
                 .actions(
                         ActionSpec.danger(MatchComponentIds.of(MatchComponentIds.ACTION_LEAVE_CONFIRM, "_"), "Leave Discover"),
                         ActionSpec.secondary(MatchComponentIds.of(MatchComponentIds.ACTION_LEAVE_CANCEL, "_"), "Keep profile live")

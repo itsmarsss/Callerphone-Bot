@@ -40,7 +40,9 @@ public final class BottleCommand implements ISlashCommand, ICommand {
                     .title("Message in a bottle")
                     .description(
                             "Send something into the sea, find what others cast, "
-                                    + "or reopen threads you're part of."
+                                    + "or reopen threads you're part of.\n\n"
+                                    + "`/bottle threads` · your replies\n"
+                                    + "`/bottle saved` · bookmarks"
                     )
                     .actions(
                             com.itsmarsss.callerphone.experience.ActionSpec.primary(

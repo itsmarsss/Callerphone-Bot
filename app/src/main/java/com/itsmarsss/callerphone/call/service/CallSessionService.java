@@ -276,6 +276,16 @@ public final class CallSessionService {
             if (!byChannel.containsValue(s)) {
                 repository.markReported(sessionId);
             }
+            try {
+                if (com.itsmarsss.callerphone.bootstrap.ApplicationContext.isReady()) {
+                    String reporter = s.getSideA().starterUserId();
+                    if (reporter != null) {
+                        com.itsmarsss.callerphone.bootstrap.ApplicationContext.get().analytics()
+                                .track(reporter, "call_report_session", sessionId);
+                    }
+                }
+            } catch (Exception ignored) {
+            }
         });
     }
 
