@@ -2,8 +2,8 @@ package com.itsmarsss.callerphone.discord.match;
 
 import com.itsmarsss.callerphone.bootstrap.ApplicationContext;
 import com.itsmarsss.callerphone.identity.EnrollmentService;
-import com.itsmarsss.callerphone.identity.MatchUser;
 import com.itsmarsss.callerphone.match.component.MatchComponentIds;
+import com.itsmarsss.callerphone.experience.ExperienceRenderer;
 import com.itsmarsss.callerphone.match.model.Gender;
 import com.itsmarsss.callerphone.match.model.MatchConversation;
 import com.itsmarsss.callerphone.match.model.MatchProfile;
@@ -96,32 +96,18 @@ public final class MatchCommand implements ISlashCommand {
             return;
         }
         if (!"START_ONBOARDING".equals(result.message())) {
-            MatchUser user = ctx.enrollment().getOrCreate(userId);
             MatchProfile profile = ctx.profiles().getOrCreateDraft(userId);
             if (!ProfileChecklist.readyToSubmit(profile)
                     || profile.getState() != com.itsmarsss.callerphone.match.model.ProfileState.ACTIVE) {
-                e.replyEmbeds(MatchEmbeds.soft("Welcome back", "Finish your profile to go live."))
-                        .addComponents(ActionRow.of(
-                                Button.primary(MatchComponentIds.of(MatchComponentIds.ACTION_SETUP, "_"), "Continue"),
-                                Button.secondary(MatchComponentIds.of(MatchComponentIds.ACTION_START_BROWSE, "_"), "Discover")
-                        )).setEphemeral(true).queue();
+                e.reply(ExperienceRenderer.toMessage(MatchPresenter.incompleteWelcome()))
+                        .setEphemeral(true).queue();
                 return;
             }
-            e.replyEmbeds(MatchEmbeds.success("You're in", "Ready when you are."))
-                    .addComponents(ActionRow.of(
-                            Button.success(MatchComponentIds.of(MatchComponentIds.ACTION_START_BROWSE, "_"), "Discover")
-                    )).setEphemeral(true).queue();
+            e.reply(ExperienceRenderer.toMessage(MatchPresenter.liveReady()))
+                    .setEphemeral(true).queue();
             return;
         }
-        e.replyEmbeds(MatchEmbeds.soft(
-                        "Create your profile",
-                        "Meet people your age. Friendship first.\n\n"
-                                + "Agree, pick an age group, then one short form. You can change everything later."
-                ))
-                .addComponents(ActionRow.of(Button.success(
-                        MatchComponentIds.of(MatchComponentIds.ACTION_JOIN_ACCEPT, userId),
-                        "Let's go"
-                )))
+        e.reply(ExperienceRenderer.toMessage(MatchPresenter.joinIntro(userId)))
                 .setEphemeral(true)
                 .queue();
     }
@@ -132,7 +118,6 @@ public final class MatchCommand implements ISlashCommand {
             e.replyEmbeds(MatchEmbeds.warm("No profile yet", "Start with `/match join`.")).setEphemeral(true).queue();
             return;
         }
-        MatchUser user = ctx.enrollment().getOrCreate(userId);
         MatchProfile p = profile.get();
         ctx.profiles().resetDailyCountersIfNeeded(p);
         List<Button> row = new ArrayList<>();

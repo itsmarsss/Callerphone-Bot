@@ -1,118 +1,72 @@
 package com.itsmarsss.callerphone.call.discord;
 
-import com.itsmarsss.callerphone.ToolSet;
-import net.dv8tion.jda.api.EmbedBuilder;
+import com.itsmarsss.callerphone.experience.ExperienceIntent;
+import com.itsmarsss.callerphone.experience.ExperienceRenderer;
+import com.itsmarsss.callerphone.experience.ExperienceView;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 
-import java.awt.Color;
-
-/** Call lifecycle embeds (will migrate to ExperienceView). */
+/** Compatibility facade — delegates to {@link CallPresenter} + {@link ExperienceRenderer}. */
 public final class CallEmbeds {
-    private static final Color SOCIAL = new Color(88, 101, 242);
-    private static final Color SUCCESS = new Color(87, 242, 135);
-    private static final Color PROGRESS = new Color(59, 130, 246);
-    private static final Color WARNING = new Color(255, 183, 77);
-    private static final Color NEUTRAL = new Color(155, 163, 175);
-
     private CallEmbeds() {
     }
 
     public static MessageEmbed connected() {
-        return new EmbedBuilder()
-                .setColor(SUCCESS)
-                .setTitle("Call connected")
-                .setDescription(
+        return ExperienceRenderer.toEmbed(ExperienceView.builder(ExperienceIntent.SUCCESS)
+                .title("Call connected")
+                .description(
                         "Another server picked up. Messages in this channel go to them.\n\n"
                                 + "Share your profile if you want to keep talking later."
                 )
-                .setFooter("End anytime with /endcall")
-                .build();
+                .footer("End anytime with /endcall")
+                .build());
     }
 
     public static MessageEmbed queued(int pos, int size) {
-        return new EmbedBuilder()
-                .setColor(PROGRESS)
-                .setTitle("Finding a call")
-                .setDescription("You're in line. We'll connect this channel automatically.")
-                .addField("Queue", "#" + pos + " of " + size, true)
-                .setFooter("Leave with /endcall")
-                .build();
+        return ExperienceRenderer.toEmbed(CallPresenter.queued(pos, size));
     }
 
     public static MessageEmbed waiting(int pos, int size) {
-        return new EmbedBuilder()
-                .setColor(PROGRESS)
-                .setTitle("Still finding a call")
-                .setDescription("You're still in line. We'll update this channel when someone connects.")
-                .addField("Queue", "#" + pos + " of " + size, true)
-                .setFooter("Leave with /endcall")
-                .build();
+        return ExperienceRenderer.toEmbed(CallPresenter.waiting(pos, size));
     }
 
     public static MessageEmbed ended() {
-        return new EmbedBuilder()
-                .setColor(NEUTRAL)
-                .setTitle("Call ended")
-                .setDescription("Thanks for chatting.")
-                .build();
+        return ExperienceRenderer.toEmbed(CallPresenter.ended());
     }
 
     public static MessageEmbed peerHungUp() {
-        return new EmbedBuilder()
-                .setColor(NEUTRAL)
-                .setTitle("Call ended")
-                .setDescription("The other side hung up.")
-                .build();
+        return ExperienceRenderer.toEmbed(ExperienceView.builder(ExperienceIntent.NEUTRAL)
+                .title("Call ended")
+                .description("The other side hung up.")
+                .build());
     }
 
     public static MessageEmbed leftQueue() {
-        return new EmbedBuilder()
-                .setColor(NEUTRAL)
-                .setTitle("Left the queue")
-                .setDescription("This channel is no longer waiting for a call.")
-                .build();
+        return ExperienceRenderer.toEmbed(CallPresenter.leftQueue());
     }
 
     public static MessageEmbed noCall() {
-        return new EmbedBuilder()
-                .setColor(WARNING)
-                .setTitle("No active call")
-                .setDescription("Start a random conversation with another server.")
-                .build();
+        return ExperienceRenderer.toEmbed(CallPresenter.noCall());
     }
 
     public static MessageEmbed conflict() {
-        return new EmbedBuilder()
-                .setColor(WARNING)
-                .setTitle("Already on a call")
-                .setDescription("This channel is already connected. End it before starting another.")
-                .build();
+        return ExperienceRenderer.toEmbed(CallPresenter.conflict());
     }
 
     public static MessageEmbed info(String title, String description) {
-        return base(SOCIAL, title, description);
+        return ExperienceRenderer.toEmbed(CallPresenter.info(title, description));
     }
 
     public static MessageEmbed warn(String title, String description) {
-        return base(WARNING, title, description);
+        return ExperienceRenderer.toEmbed(CallPresenter.warn(title, description));
     }
 
     public static MessageEmbed success(String title, String description) {
-        return base(SUCCESS, title, description);
+        return ExperienceRenderer.toEmbed(CallPresenter.success(title, description));
     }
 
     public static MessageEmbed soft(String message) {
-        return new EmbedBuilder()
-                .setColor(ToolSet.COLOR)
-                .setDescription(message)
-                .build();
-    }
-
-    private static MessageEmbed base(Color color, String title, String description) {
-        EmbedBuilder emb = new EmbedBuilder().setColor(color).setTitle(title);
-        if (description != null && !description.isBlank()) {
-            emb.setDescription(description);
-        }
-        return emb.build();
+        return ExperienceRenderer.toEmbed(ExperienceView.builder(ExperienceIntent.NEUTRAL)
+                .description(message)
+                .build());
     }
 }

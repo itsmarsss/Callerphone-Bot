@@ -2,6 +2,7 @@ package com.itsmarsss.callerphone.call.discord;
 
 import com.itsmarsss.callerphone.call.service.CallResult;
 import com.itsmarsss.callerphone.call.service.CallSessionService;
+import com.itsmarsss.callerphone.experience.ExperienceRenderer;
 import com.itsmarsss.commandType.ISlashCommand;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.InteractionContextType;
@@ -14,13 +15,24 @@ public final class CallCommand implements ISlashCommand {
 
     @Override
     public void runSlash(SlashCommandInteractionEvent e) {
-        CallResult result = calls.start(e.getChannel().getId(), e.getUser().getId());
+        String channelId = e.getChannel().getId();
+        CallResult result = calls.start(channelId, e.getUser().getId());
         switch (result.status()) {
-            case CONFLICT -> e.replyEmbeds(CallEmbeds.conflict()).setEphemeral(true).queue();
-            case QUEUED -> e.replyEmbeds(CallEmbeds.queued(result.queuePosition(), result.queueSize())).queue();
-            case ALREADY_QUEUED -> e.replyEmbeds(CallEmbeds.waiting(result.queuePosition(), result.queueSize())).queue();
-            case MATCHED -> e.reply(calls.connectedMessage(result.session())).queue();
-            case FAILED -> e.replyEmbeds(CallEmbeds.warn("Couldn't connect", result.message()))
+            case CONFLICT -> e.reply(ExperienceRenderer.toMessage(CallPresenter.conflict()))
+                    .setEphemeral(true).queue();
+            case QUEUED -> e.reply(ExperienceRenderer.toMessage(
+                            CallPresenter.queued(result.queuePosition(), result.queueSize())))
+                    .queue(hook -> hook.retrieveOriginal().queue(msg ->
+                            calls.rememberLobbyMessage(channelId, msg.getId())));
+            case ALREADY_QUEUED -> e.reply(ExperienceRenderer.toMessage(
+                            CallPresenter.waiting(result.queuePosition(), result.queueSize())))
+                    .queue(hook -> hook.retrieveOriginal().queue(msg ->
+                            calls.rememberLobbyMessage(channelId, msg.getId())));
+            case MATCHED -> e.reply(calls.connectedMessage(result.session()))
+                    .queue(hook -> hook.retrieveOriginal().queue(msg ->
+                            calls.rememberLobbyMessage(channelId, msg.getId())));
+            case FAILED -> e.reply(ExperienceRenderer.toMessage(
+                            CallPresenter.warn("Couldn't connect", result.message())))
                     .setEphemeral(true).queue();
         }
     }

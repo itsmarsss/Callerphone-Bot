@@ -3,19 +3,17 @@ package com.itsmarsss.callerphone.call.service;
 import com.itsmarsss.callerphone.Callerphone;
 import com.itsmarsss.callerphone.Response;
 import com.itsmarsss.callerphone.ToolSet;
-import com.itsmarsss.callerphone.call.discord.CallComponentIds;
-import com.itsmarsss.callerphone.call.discord.CallEmbeds;
+import com.itsmarsss.callerphone.call.discord.CallPresenter;
 import com.itsmarsss.callerphone.call.model.CallEndpoint;
 import com.itsmarsss.callerphone.call.model.CallMatchSource;
 import com.itsmarsss.callerphone.call.model.CallMessage;
 import com.itsmarsss.callerphone.call.model.CallQueueEntry;
 import com.itsmarsss.callerphone.call.model.CallSession;
 import com.itsmarsss.callerphone.call.repository.CallSessionRepository;
-import net.dv8tion.jda.api.components.actionrow.ActionRow;
-import net.dv8tion.jda.api.components.buttons.Button;
+import com.itsmarsss.callerphone.experience.ControlMessageStore;
+import com.itsmarsss.callerphone.experience.ExperienceRenderer;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
-import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder;
 import net.dv8tion.jda.api.utils.messages.MessageCreateData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,10 +21,7 @@ import org.slf4j.LoggerFactory;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
-/**
- * Random live call (single mode). Injectable singleton via ApplicationContext later;
- * static accessor kept for gradual migration from legacy TCCall.
- */
+/** Random live call between two guild channels. */
 public final class CallSessionService {
     private static final Logger logger = LoggerFactory.getLogger(CallSessionService.class);
     private static volatile CallSessionService instance;
@@ -87,46 +82,48 @@ public final class CallSessionService {
         byChannel.put(b.channelId(), session);
 
         MessageCreateData connected = connectedMessage(session);
-        chA.sendMessage(connected).queue();
-        // receiver already gets slash reply as matched
+        sendLobby(chA, a.channelId(), connected);
+        // receiver already gets slash reply as matched; store lobby id when they reply
         logger.info("Call matched {} <-> {} source={}", a.channelId(), b.channelId(), session.getSource());
         return CallResult.matched(session);
     }
 
     public MessageCreateData connectedMessage(CallSession session) {
-        return new MessageCreateBuilder()
-                .setEmbeds(CallEmbeds.connected())
-                .setComponents(ActionRow.of(
-                        Button.primary(CallComponentIds.share(session.getId()), "Share profile"),
-                        Button.danger(CallComponentIds.report(session.getId()), "Report")
-                ))
-                .build();
+        return ExperienceRenderer.toMessage(CallPresenter.connected(session));
+    }
+
+    /** Remember the public lobby message for later edit-in-place transitions. */
+    public void rememberLobbyMessage(String channelId, String messageId) {
+        ControlMessageStore.get().put(ControlMessageStore.callLobbyKey(channelId), messageId);
     }
 
     public synchronized MessageCreateData end(String channelId) {
         CallSession session = byChannel.get(channelId);
         if (session == null) {
             if (queue.remove(channelId)) {
-                return new MessageCreateBuilder()
-                        .setEmbeds(CallEmbeds.leftQueue())
-                        .build();
+                ControlMessageStore.get().remove(ControlMessageStore.callLobbyKey(channelId));
+                return ExperienceRenderer.toMessage(CallPresenter.leftQueue());
             }
-            return new MessageCreateBuilder()
-                    .setEmbeds(CallEmbeds.noCall())
-                    .build();
+            return ExperienceRenderer.toMessage(CallPresenter.noCall());
         }
         TextChannel other = ToolSet.getTextChannel(session.otherChannelId(channelId));
-        Button report = Button.danger(CallComponentIds.report(session.getId()), "Report");
         if (other != null) {
-            other.sendMessageEmbeds(CallEmbeds.peerHungUp())
-                    .setComponents(ActionRow.of(report))
-                    .queue();
+            sendLobby(other, other.getId(), ExperienceRenderer.toMessage(CallPresenter.peerHungUp(session.getId())));
         }
+        MessageCreateData ended = ExperienceRenderer.toMessage(CallPresenter.ended(session.getId()));
         finalize(session);
-        return new MessageCreateBuilder()
-                .setEmbeds(CallEmbeds.ended())
-                .setComponents(ActionRow.of(report))
-                .build();
+        ControlMessageStore.get().remove(ControlMessageStore.callLobbyKey(channelId));
+        if (other != null) {
+            ControlMessageStore.get().remove(ControlMessageStore.callLobbyKey(other.getId()));
+        }
+        return ended;
+    }
+
+    private void sendLobby(TextChannel channel, String channelId, MessageCreateData data) {
+        if (channel == null) {
+            return;
+        }
+        channel.sendMessage(data).queue(msg -> rememberLobbyMessage(channelId, msg.getId()));
     }
 
     public boolean isInCall(String channelId) {
