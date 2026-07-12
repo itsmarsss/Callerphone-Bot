@@ -63,41 +63,60 @@ public class TicTacToeHandler implements IButtonInteraction {
         MiniGameStatus stat;
         if ("to".equals(side)) {
             stat = game.toMove(row, col);
-            if (stat == MiniGameStatus.INVALID_MOVE) {
-                e.reply("Invalid move.").setEphemeral(true).queue();
-                return;
-            }
-            notifyOpponent(game.getFromChannelId(), game.getFromMessageId(), game.getMessageForFrom());
         } else if ("from".equals(side)) {
             stat = game.fromMove(row, col);
-            if (stat == MiniGameStatus.INVALID_MOVE) {
-                e.reply("Invalid move.").setEphemeral(true).queue();
-                return;
-            }
-            notifyOpponent(game.getToChannelId(), game.getToMessageId(), game.getMessageForTo());
         } else {
             e.reply("Invalid game button.").setEphemeral(true).queue();
+            return;
+        }
+        if (stat == MiniGameStatus.INVALID_MOVE) {
+            e.reply("Invalid move.").setEphemeral(true).queue();
             return;
         }
 
         int win = game.checkForWin();
         if (win != -1) {
+            MessageCreateData winnerBoard = game.getBoardWithMessage(
+                    "**You won.** Good game — rematch from chat or call controls."
+            );
+            MessageCreateData loserBoard = game.getBoardWithMessage(
+                    "**They won.** The call or chat stays open."
+            );
             if (win == 0) {
-                updateBoard(game.getFromChannelId(), game.getFromMessageId(), game.getMessageForFrom());
-            } else if (win == 1) {
-                updateBoard(game.getToChannelId(), game.getToMessageId(), game.getMessageForTo());
+                updateBoard(game.getFromChannelId(), game.getFromMessageId(), winnerBoard);
+                updateBoard(game.getToChannelId(), game.getToMessageId(), loserBoard);
+            } else {
+                updateBoard(game.getToChannelId(), game.getToMessageId(), winnerBoard);
+                updateBoard(game.getFromChannelId(), game.getFromMessageId(), loserBoard);
             }
+            e.getMessage().editMessage(MessageEditData.fromCreateData(
+                    e.getUser().getId().equals(win == 0 ? game.getFromUserId() : game.getToUserId())
+                            ? winnerBoard
+                            : loserBoard
+            )).queue();
             endGame(game);
+            return;
         }
 
         game.incrementStage();
 
-        if (game.getStage() == 9) {
-            e.getMessage().editMessage(MessageEditData.fromCreateData(game.getBoardWithMessage("Tie Game!"))).queue();
+        if (game.getStage() >= 9) {
+            MessageCreateData tie = game.getBoardWithMessage("**Tie.** Good game — challenge again anytime.");
+            e.getMessage().editMessage(MessageEditData.fromCreateData(tie)).queue();
+            updateBoard(game.getFromChannelId(), game.getFromMessageId(), tie);
+            updateBoard(game.getToChannelId(), game.getToMessageId(), tie);
             endGame(game);
-        } else {
-            e.getMessage().editMessage(MessageEditData.fromCreateData(game.getBoardWithMessage("Game Sent!"))).queue();
+            return;
         }
+
+        if ("to".equals(side)) {
+            notifyOpponent(game.getFromChannelId(), game.getFromMessageId(), game.getMessageForFrom());
+        } else {
+            notifyOpponent(game.getToChannelId(), game.getToMessageId(), game.getMessageForTo());
+        }
+        e.getMessage().editMessage(MessageEditData.fromCreateData(
+                game.getBoardWithMessage("Move sent — waiting on them.")
+        )).queue();
     }
 
     private void notifyOpponent(String channelId, String messageId, MessageCreateData board) {
