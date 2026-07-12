@@ -186,6 +186,7 @@ public final class MatchMaintenanceJobs {
                 }
                 c.setLastNudgeAt(Instant.now());
                 conversations.save(c);
+                trackSystem("match_nudge_batch", conversationId);
             });
         }
     }

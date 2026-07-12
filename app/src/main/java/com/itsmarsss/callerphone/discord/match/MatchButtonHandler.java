@@ -112,10 +112,18 @@ public final class MatchButtonHandler implements IButtonInteraction {
                 ctx.profiles().setAvatar(userId, e.getUser().getEffectiveAvatarUrl());
                 EnrollmentService.ServiceResult result = ctx.profiles().publish(userId);
                 if (result.success()) {
+                    try {
+                        ctx.analytics().track(userId, "match_go_live", "button");
+                    } catch (Exception ignored) {
+                    }
                     e.reply(ExperienceRenderer.toMessage(MatchPresenter.liveReady())).setEphemeral(true).queue();
                 } else {
-                    e.reply(ExperienceRenderer.toMessage(MatchPresenter.setupRetry(result.message())))
-                            .setEphemeral(true).queue();
+                    var user = ctx.enrollment().getOrCreate(userId);
+                    var profile = ctx.profiles().find(userId).orElse(null);
+                    e.reply(ExperienceRenderer.toMessage(MatchPresenter.incompleteWelcome(
+                            com.itsmarsss.callerphone.match.service.ProfileChecklist.format(user, profile)
+                                    + "\n\n_" + result.message() + "_"
+                    ))).setEphemeral(true).queue();
                 }
             }
             case MatchComponentIds.ACTION_BROWSE_NEXT -> {
