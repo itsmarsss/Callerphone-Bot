@@ -157,7 +157,7 @@ public final class MatchCommand implements ISlashCommand {
                     ))).setEphemeral(true).queue();
                 }
             }
-            default -> e.reply(ExperienceRenderer.toMessage(MatchPresenter.warn("Unknown", "That command isn't recognized.")))
+            default -> e.reply(ExperienceRenderer.toMessage(MatchPresenter.expired()))
                     .setEphemeral(true).queue();
         }
     }
@@ -240,7 +240,7 @@ public final class MatchCommand implements ISlashCommand {
     private void handleJoin(SlashCommandInteractionEvent e, ApplicationContext ctx, String userId) {
         EnrollmentService.ServiceResult result = ctx.enrollment().beginJoin(userId);
         if (!result.success()) {
-            e.reply(ExperienceRenderer.toMessage(MatchPresenter.warn("Can't continue", result.message())))
+            e.reply(ExperienceRenderer.toMessage(MatchPresenter.serviceFailed(result.message())))
                     .setEphemeral(true).queue();
             return;
         }
@@ -267,8 +267,9 @@ public final class MatchCommand implements ISlashCommand {
     private void handleProfile(SlashCommandInteractionEvent e, ApplicationContext ctx, String userId) {
         Optional<MatchProfile> profile = ctx.profiles().find(userId);
         if (profile.isEmpty()) {
-            e.reply(ExperienceRenderer.toMessage(MatchPresenter.warn("No profile yet", "Start with `/match join`.")))
-                    .setEphemeral(true).queue();
+            e.reply(ExperienceRenderer.toMessage(MatchPresenter.home(
+                    e.getUser().getName(), 0, 0, false, false
+            ))).setEphemeral(true).queue();
             return;
         }
         MatchProfile p = profile.get();
