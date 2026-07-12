@@ -40,6 +40,11 @@ public final class MatchButtonHandler implements IButtonInteraction {
         switch (action) {
             case MatchComponentIds.ACTION_JOIN_ACCEPT -> {
                 ctx.enrollment().acceptPolicies(userId);
+                try {
+                    ctx.analytics().track(userId, "join_accept", null);
+                    ctx.analytics().trackSurface(userId, "match", "join_accept", null);
+                } catch (Exception ignored) {
+                }
                 e.reply(ExperienceRenderer.toMessage(MatchPresenter.ageGroup()))
                         .setEphemeral(true)
                         .queue();
