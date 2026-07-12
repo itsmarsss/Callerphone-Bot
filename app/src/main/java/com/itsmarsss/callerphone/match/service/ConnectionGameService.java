@@ -50,6 +50,7 @@ public final class ConnectionGameService {
         pending.put(conversationId, proposerUserId);
         try {
             ctx.analytics().track(proposerUserId, "connection_game_propose", conversationId);
+            ctx.analytics().trackSurface(proposerUserId, "chat", "game_propose", conversationId);
         } catch (Exception ignored) {
         }
         ctx.inbox().push(
@@ -135,6 +136,7 @@ public final class ConnectionGameService {
         pending.remove(conversationId);
         try {
             ctx.analytics().track(acceptorUserId, "connection_game_accept", conversationId);
+            ctx.analytics().trackSurface(acceptorUserId, "chat", "game_accept", conversationId);
         } catch (Exception ignored) {
         }
 
