@@ -69,7 +69,13 @@ public final class MatchButtonHandler implements IButtonInteraction {
             }
             case MatchComponentIds.ACTION_INTERESTED -> decide(e, ctx, userId, opaque, DecisionType.INTERESTED);
             case MatchComponentIds.ACTION_SKIP -> decide(e, ctx, userId, opaque, DecisionType.SKIP);
-            case MatchComponentIds.ACTION_CHAT_SELECT -> replyChatSelect(e, ctx, userId, opaque);
+            case MatchComponentIds.ACTION_CHAT_SELECT -> {
+                try {
+                    ctx.analytics().track(userId, "chat_select", opaque);
+                } catch (Exception ignored) {
+                }
+                replyChatSelect(e, ctx, userId, opaque);
+            }
             case MatchComponentIds.ACTION_CONNECT_REQUEST -> {
                 EnrollmentService.ServiceResult result = ctx.connect().request(userId, opaque);
                 if (result.success()) {
