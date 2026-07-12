@@ -201,7 +201,17 @@ public final class BottlePresenter {
                 .description("Nothing was used. Try finding another, or cast one of your own.")
                 .actions(
                         ActionSpec.success(BottleComponentIds.of(BottleComponentIds.ACTION_FIND, "_"), "Find a bottle"),
-                        ActionSpec.primary(BottleComponentIds.of(BottleComponentIds.ACTION_SEND, "_"), "Send a bottle")
+                        ActionSpec.primary(BottleComponentIds.of(BottleComponentIds.ACTION_SEND, "_"), "Send a bottle"),
+                        ActionSpec.secondary(
+                                com.itsmarsss.callerphone.call.discord.CallComponentIds.again("_"),
+                                "Start a call"
+                        ),
+                        ActionSpec.secondary(
+                                com.itsmarsss.callerphone.match.component.MatchComponentIds.of(
+                                        com.itsmarsss.callerphone.match.component.MatchComponentIds.ACTION_START_BROWSE, "_"
+                                ),
+                                "Discover people"
+                        )
                 )
                 .ephemeral(true)
                 .build();
