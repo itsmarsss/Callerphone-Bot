@@ -256,7 +256,9 @@ public final class MatchPresenter {
                 .description("Finish your profile so you can appear in Discover.")
                 .actions(
                         ActionSpec.primary(MatchComponentIds.of(MatchComponentIds.ACTION_SETUP, "_"), "Continue setup"),
-                        ActionSpec.secondary(MatchComponentIds.of(MatchComponentIds.ACTION_START_BROWSE, "_"), "Discover")
+                        ActionSpec.secondary(MatchComponentIds.of(MatchComponentIds.ACTION_PHOTO_MENU, "_"), "Add photo"),
+                        ActionSpec.secondary(CallComponentIds.again("_"), "Start a call"),
+                        ActionSpec.secondary(BottleComponentIds.of(BottleComponentIds.ACTION_FIND, "_"), "Find a bottle")
                 )
                 .ephemeral(true)
                 .build();
