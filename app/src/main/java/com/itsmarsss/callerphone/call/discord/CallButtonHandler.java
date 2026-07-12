@@ -44,7 +44,7 @@ public final class CallButtonHandler implements IButtonInteraction {
                 var result = share.share(parsed.sessionId(), userId, channelId);
                 e.reply(ExperienceRenderer.toMessage(result.success()
                                 ? CallPresenter.success("Profile shared", result.message())
-                                : CallPresenter.warn("Can't share", result.message())
+                                : callShareFail(result.message())
                         ))
                         .setEphemeral(true).queue();
             }
@@ -52,7 +52,7 @@ public final class CallButtonHandler implements IButtonInteraction {
                 var result = share.react(parsed.sessionId(), userId, parsed.subjectUserId(), true, channelId);
                 e.reply(ExperienceRenderer.toMessage(result.success()
                                 ? CallPresenter.success("Interest sent", result.message())
-                                : CallPresenter.warn("Couldn't send", result.message())
+                                : callShareFail(result.message())
                         ))
                         .setEphemeral(true).queue();
             }
@@ -170,12 +170,7 @@ public final class CallButtonHandler implements IButtonInteraction {
         for (ReportCategory cat : ReportCategory.values()) {
             menu.addOption(cat.label(), cat.code());
         }
-        e.reply(ExperienceRenderer.toMessage(
-                        CallPresenter.warn(
-                                "Report this call",
-                                "Choose the closest reason. Recent messages will be attached for review."
-                        )
-                ))
+        e.reply(ExperienceRenderer.toMessage(CallPresenter.reportPrompt()))
                 .addComponents(ActionRow.of(menu.build()))
                 .setEphemeral(true)
                 .queue();
@@ -210,6 +205,32 @@ public final class CallButtonHandler implements IButtonInteraction {
                     ))
                     .setEphemeral(true).queue();
         }
+    }
+
+    private static com.itsmarsss.callerphone.experience.ExperienceView callShareFail(String message) {
+        String msg = message == null ? "" : message;
+        if (msg.toLowerCase().contains("go live") || msg.toLowerCase().contains("match join")) {
+            return com.itsmarsss.callerphone.experience.ExperienceView.builder(
+                            com.itsmarsss.callerphone.experience.ExperienceIntent.WARNING)
+                    .title("Go live first")
+                    .description(msg)
+                    .actions(
+                            com.itsmarsss.callerphone.experience.ActionSpec.success(
+                                    com.itsmarsss.callerphone.match.component.MatchComponentIds.of(
+                                            com.itsmarsss.callerphone.match.component.MatchComponentIds.ACTION_JOIN_ACCEPT,
+                                            "_"
+                                    ),
+                                    "Create profile"
+                            ),
+                            com.itsmarsss.callerphone.experience.ActionSpec.primary(
+                                    CallComponentIds.prompt("_"),
+                                    "Keep talking"
+                            )
+                    )
+                    .ephemeral(true)
+                    .build();
+        }
+        return CallPresenter.warnRecover("Can't complete", msg);
     }
 
     private void wireShare() {
