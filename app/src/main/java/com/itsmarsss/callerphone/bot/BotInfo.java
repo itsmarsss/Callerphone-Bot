@@ -53,6 +53,24 @@ public class BotInfo implements ISlashCommand {
                 .description("Online · product surfaces healthy")
                 .fields(fields)
                 .footer(footer)
+                .actions(
+                        com.itsmarsss.callerphone.experience.ActionSpec.success(
+                                com.itsmarsss.callerphone.match.component.MatchComponentIds.of(
+                                        com.itsmarsss.callerphone.match.component.MatchComponentIds.ACTION_START_BROWSE, "_"
+                                ),
+                                "Discover people"
+                        ),
+                        com.itsmarsss.callerphone.experience.ActionSpec.secondary(
+                                com.itsmarsss.callerphone.call.discord.CallComponentIds.again("_"),
+                                "Start a call"
+                        ),
+                        com.itsmarsss.callerphone.experience.ActionSpec.secondary(
+                                com.itsmarsss.callerphone.msginbottle.BottleComponentIds.of(
+                                        com.itsmarsss.callerphone.msginbottle.BottleComponentIds.ACTION_FIND, "_"
+                                ),
+                                "Find a bottle"
+                        )
+                )
                 .build();
     }
 
