@@ -5,11 +5,12 @@ import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Centralized capability checks.
- * Purchases disabled until Discord Premium Apps is approved;
- * entitlements can be force-granted for testing via {@link #grant(String)}.
+ * Discord Premium Apps SKU id is optional in config ({@code premiumSkuId}).
+ * Entitlements can also be force-granted for testing via {@link #grant(String)}.
  */
 public final class PremiumService {
     private final Map<String, Boolean> entitlements = new ConcurrentHashMap<>();
+    private final Map<String, String> entitledSkuByUser = new ConcurrentHashMap<>();
 
     public boolean isPremium(String userId) {
         return Boolean.TRUE.equals(entitlements.get(userId));
@@ -22,15 +23,50 @@ public final class PremiumService {
 
     public void revoke(String userId) {
         entitlements.remove(userId);
+        entitledSkuByUser.remove(userId);
     }
 
-    /** Sync hook for future Discord Premium Apps SKUs. */
+    /**
+     * Sync Discord Premium Apps entitlement for the configured SKU.
+     * Unknown SKUs are ignored so test SKUs don't grant incorrectly.
+     */
     public void syncEntitlement(String userId, String skuId, boolean active) {
+        if (userId == null || userId.isBlank()) {
+            return;
+        }
+        String configured = configuredSkuId();
+        if (configured.isBlank()) {
+            // No SKU configured yet — still honor explicit grants for staff testing.
+            if (active) {
+                grant(userId);
+            } else {
+                revoke(userId);
+            }
+            return;
+        }
+        if (skuId == null || !configured.equals(skuId.trim())) {
+            return;
+        }
         if (active) {
             grant(userId);
+            entitledSkuByUser.put(userId, configured);
         } else {
             revoke(userId);
         }
+    }
+
+    public String configuredSkuId() {
+        try {
+            if (com.itsmarsss.callerphone.Callerphone.config != null) {
+                return com.itsmarsss.callerphone.Callerphone.config.getPremiumSkuId().trim();
+            }
+        } catch (Exception ignored) {
+        }
+        return "";
+    }
+
+    public boolean purchasesLive() {
+        return !configuredSkuId().isBlank();
     }
 
     public int dailyDiscoveries(String userId) {

@@ -205,7 +205,10 @@ public final class MatchButtonHandler implements IButtonInteraction {
                 }
             }
             case MatchComponentIds.ACTION_PREMIUM -> e.reply(ExperienceRenderer.toMessage(
-                    MatchPresenter.premiumOverview(ctx.premium().isPremium(userId))
+                    MatchPresenter.premiumOverview(
+                            ctx.premium().isPremium(userId),
+                            ctx.premium().purchasesLive()
+                    )
             )).setEphemeral(true).queue();
             case MatchComponentIds.ACTION_REWARDS -> {
                 long credits = com.itsmarsss.database.categories.Users.getCredits(userId);

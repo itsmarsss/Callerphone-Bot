@@ -250,7 +250,8 @@ public class Callerphone {
                 new OnModalEvent(),
                 new OnOtherEvent(),
                 new OnSlashCommand(),
-                new CallListener()
+                new CallListener(),
+                new com.itsmarsss.callerphone.listeners.OnEntitlementEvent()
         );
         CallSessionService.get();
     }

@@ -115,7 +115,9 @@ public final class MatchCommand implements ISlashCommand {
             case "premium" -> {
                 ctx.analytics().track(userId, "premium_view", ctx.premium().isPremium(userId) ? "entitled" : "free");
                 e.reply(ExperienceRenderer.toMessage(
-                                MatchPresenter.premiumOverview(ctx.premium().isPremium(userId))))
+                                MatchPresenter.premiumOverview(
+                                        ctx.premium().isPremium(userId),
+                                        ctx.premium().purchasesLive())))
                         .setEphemeral(true).queue();
             }
             case "photo" -> {

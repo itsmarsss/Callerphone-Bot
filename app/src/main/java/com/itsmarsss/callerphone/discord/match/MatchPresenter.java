@@ -829,6 +829,10 @@ public final class MatchPresenter {
     }
 
     public static ExperienceView premiumOverview(boolean isPremium) {
+        return premiumOverview(isPremium, false);
+    }
+
+    public static ExperienceView premiumOverview(boolean isPremium, boolean purchasesLive) {
         if (isPremium) {
             return ExperienceView.builder(ExperienceIntent.PREMIUM)
                     .title("Callerphone Premium")
@@ -856,12 +860,15 @@ public final class MatchPresenter {
                                 + "· " + MatchLimits.FREE_DAILY_INTERESTS + " interests\n"
                                 + "· " + MatchLimits.FREE_ACTIVE_CONVERSATIONS + " open chats\n"
                                 + "· Basic filters\n\n"
-                                + "**Premium** *(coming later)*\n"
+                                + "**Premium**\n"
                                 + "· " + MatchLimits.PREMIUM_DAILY_DISCOVERIES + " discoveries\n"
                                 + "· " + MatchLimits.PREMIUM_DAILY_INTERESTS + " interests\n"
                                 + "· Incoming interest names\n"
                                 + "· Advanced filters · more undos\n\n"
-                                + "Discover stays free either way. Purchases aren't live yet."
+                                + "Discover stays free either way. "
+                                + (purchasesLive
+                                ? "Native Discord purchase is wired — buy from the app when Discord shows Premium."
+                                : "Purchases aren't live yet (set premiumSkuId when the SKU is approved).")
                 )
                 .actions(
                         ActionSpec.success(MatchComponentIds.of(MatchComponentIds.ACTION_START_BROWSE, "_"), "Keep discovering"),

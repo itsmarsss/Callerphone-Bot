@@ -30,6 +30,11 @@ public class Config {
     private String databaseURL = "";
     /** Private channel for re-hosting Match photos (optional). */
     private String matchMediaChannel = "";
+    /**
+     * Discord Premium Apps SKU id for Callerphone Premium (optional).
+     * When set, entitlement create/delete events grant/revoke Premium.
+     */
+    private String premiumSkuId = "";
 
     private StartType startUpType;
 
@@ -230,5 +235,13 @@ public class Config {
 
     public void setMatchMediaChannel(String matchMediaChannel) {
         this.matchMediaChannel = matchMediaChannel;
+    }
+
+    public String getPremiumSkuId() {
+        return nz(premiumSkuId);
+    }
+
+    public void setPremiumSkuId(String premiumSkuId) {
+        this.premiumSkuId = premiumSkuId;
     }
 }
