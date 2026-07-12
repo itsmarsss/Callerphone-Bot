@@ -115,6 +115,8 @@ public final class DecisionService {
             notifications.notifyMutualMatch(actorId, session.subjectId(), created.conversationId());
             analytics.track(actorId, "match_mutual", session.subjectId());
             analytics.track(session.subjectId(), "match_mutual", actorId);
+            analytics.trackSurface(actorId, "discover", "mutual", session.subjectId());
+            analytics.trackSurface(session.subjectId(), "discover", "mutual", actorId);
             String peerName = profiles.find(session.subjectId())
                     .map(MatchProfile::getDisplayName)
                     .orElse("your match");
@@ -141,6 +143,7 @@ public final class DecisionService {
 
         if (type == DecisionType.INTERESTED) {
             analytics.track(actorId, "match_interested", session.subjectId());
+            analytics.trackSurface(actorId, "discover", "interest", session.subjectId());
             String actorName = viewer.getDisplayName() == null || viewer.getDisplayName().isBlank()
                     ? "Someone"
                     : viewer.getDisplayName();
@@ -165,6 +168,7 @@ public final class DecisionService {
             return DecisionResult.interested("Interest sent privately");
         }
         analytics.track(actorId, "match_skip", session.subjectId());
+        analytics.trackSurface(actorId, "discover", "skip", session.subjectId());
         return DecisionResult.skipped("Next");
     }
 
