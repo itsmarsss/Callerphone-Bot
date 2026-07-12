@@ -1000,6 +1000,72 @@ public final class MatchPresenter {
                 .build();
     }
 
+    public static ExperienceView icebreakerPrompt(String opener, String conversationId) {
+        return ExperienceView.builder(ExperienceIntent.SOCIAL)
+                .title("Conversation prompt")
+                .description("_" + opener + "_\n\nSend a text DM here to talk.")
+                .actions(
+                        ActionSpec.secondary(
+                                MatchComponentIds.of(MatchComponentIds.ACTION_ICEBREAKER, conversationId),
+                                "Another prompt"
+                        ),
+                        ActionSpec.primary(
+                                MatchComponentIds.of(MatchComponentIds.ACTION_GAME_TTT, conversationId),
+                                "Play a game"
+                        ),
+                        ActionSpec.success(
+                                MatchComponentIds.of(MatchComponentIds.ACTION_CHAT_SELECT, conversationId),
+                                "Open chat"
+                        )
+                )
+                .ephemeral(true)
+                .build();
+    }
+
+    public static ExperienceView gameChallengeSent(String conversationId, String message) {
+        return ExperienceView.builder(ExperienceIntent.SUCCESS)
+                .title("Challenge sent")
+                .description(message == null || message.isBlank()
+                        ? "Waiting for them to accept. The chat stays open."
+                        : message)
+                .actions(
+                        ActionSpec.secondary(
+                                MatchComponentIds.of(MatchComponentIds.ACTION_GAME_DECLINE, conversationId),
+                                "Cancel game"
+                        ),
+                        ActionSpec.primary(
+                                MatchComponentIds.of(MatchComponentIds.ACTION_CHAT_SELECT, conversationId),
+                                "Open chat"
+                        ),
+                        ActionSpec.secondary(
+                                MatchComponentIds.of(MatchComponentIds.ACTION_ICEBREAKER, conversationId),
+                                "Icebreaker"
+                        )
+                )
+                .ephemeral(true)
+                .build();
+    }
+
+    public static ExperienceView gameStarted(String conversationId, String message) {
+        return ExperienceView.builder(ExperienceIntent.SUCCESS)
+                .title("Game on")
+                .description(message == null || message.isBlank()
+                        ? "Boards are in DMs. This chat stays open."
+                        : message)
+                .actions(
+                        ActionSpec.primary(
+                                MatchComponentIds.of(MatchComponentIds.ACTION_CHAT_SELECT, conversationId),
+                                "Open chat"
+                        ),
+                        ActionSpec.secondary(
+                                MatchComponentIds.of(MatchComponentIds.ACTION_ICEBREAKER, conversationId),
+                                "Icebreaker"
+                        )
+                )
+                .ephemeral(true)
+                .build();
+    }
+
     public static ExperienceView warn(String title, String description) {
         return ExperienceView.builder(ExperienceIntent.WARNING)
                 .title(title)

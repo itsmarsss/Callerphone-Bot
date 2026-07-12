@@ -308,15 +308,13 @@ public final class MatchButtonHandler implements IButtonInteraction {
                     ctx.analytics().track(userId, "match_icebreaker", opaque);
                 } catch (Exception ignored) {
                 }
-                e.reply(ExperienceRenderer.toMessage(MatchPresenter.quietSuccess(
-                        "Conversation prompt",
-                        "_" + opener + "_\n\nSend a text DM here to talk."
-                ))).setEphemeral(true).queue();
+                e.reply(ExperienceRenderer.toMessage(MatchPresenter.icebreakerPrompt(opener, opaque)))
+                        .setEphemeral(true).queue();
             }
             case MatchComponentIds.ACTION_GAME_TTT -> {
                 var result = ctx.connectionGames().proposeTtt(opaque, userId);
                 e.reply(ExperienceRenderer.toMessage(result.success()
-                        ? MatchPresenter.quietSuccess("Challenge sent", result.message())
+                        ? MatchPresenter.gameChallengeSent(opaque, result.message())
                         : MatchPresenter.warn("Couldn't challenge", result.message())
                 )).setEphemeral(true).queue();
             }
@@ -335,7 +333,7 @@ public final class MatchButtonHandler implements IButtonInteraction {
                                     opaque, userId, e.getUser(), proposer
                             );
                             e.reply(ExperienceRenderer.toMessage(result.success()
-                                    ? MatchPresenter.quietSuccess("Game on", result.message())
+                                    ? MatchPresenter.gameStarted(opaque, result.message())
                                     : MatchPresenter.warn("Couldn't start", result.message())
                             )).setEphemeral(true).queue();
                         },
@@ -348,7 +346,11 @@ public final class MatchButtonHandler implements IButtonInteraction {
             case MatchComponentIds.ACTION_GAME_DECLINE -> {
                 var result = ctx.connectionGames().decline(opaque, userId);
                 e.reply(ExperienceRenderer.toMessage(result.success()
-                        ? MatchPresenter.quietSuccess("Declined", result.message())
+                        ? MatchPresenter.chatSelected(
+                                "your connection",
+                                result.message() + "\n\nYou can keep chatting.",
+                                opaque
+                        )
                         : MatchPresenter.warn("Couldn't decline", result.message())
                 )).setEphemeral(true).queue();
             }
