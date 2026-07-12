@@ -303,14 +303,26 @@ public final class MatchButtonHandler implements IButtonInteraction {
                 ctx.dbExecutor().execute(() -> {
                     var incoming = ctx.incomingLikes(userId);
                     if (incoming.isEmpty()) {
+                        try {
+                            ctx.analytics().track(userId, "likes_open", "empty");
+                        } catch (Exception ignored) {
+                        }
                         e.getHook().sendMessage(ExperienceRenderer.toMessage(MatchPresenter.incomingInterestEmpty()))
                                 .setEphemeral(true).queue();
                         return;
                     }
                     if (!ctx.premium().canSeeIncomingInterestNames(userId)) {
+                        try {
+                            ctx.analytics().track(userId, "likes_open", "teaser");
+                        } catch (Exception ignored) {
+                        }
                         e.getHook().sendMessage(ExperienceRenderer.toMessage(MatchPresenter.incomingInterestFreeTeaser()))
                                 .setEphemeral(true).queue();
                         return;
+                    }
+                    try {
+                        ctx.analytics().track(userId, "likes_open", "list");
+                    } catch (Exception ignored) {
                     }
                     StringBuilder sb = new StringBuilder();
                     int i = 1;
