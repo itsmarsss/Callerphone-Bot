@@ -38,13 +38,14 @@ public final class NotificationService {
         String nameB = displayName(userB);
         MatchProfile profileA = profiles.findByUserId(userA).orElse(null);
         MatchProfile profileB = profiles.findByUserId(userB).orElse(null);
+        String openerA = Icebreakers.forPair(profileA, profileB);
+        String openerB = Icebreakers.forPair(profileB, profileA);
+        // DecisionService also writes connection inbox rows for mutual; keep DM delivery here
         dmIfEnabled(userA, "You connected",
-                "You and **" + nameB + "** are both interested.\n_"
-                        + Icebreakers.forPair(profileA, profileB) + "_",
+                "You and **" + nameB + "** are both interested.\n_" + openerA + "_",
                 conversationId);
         dmIfEnabled(userB, "You connected",
-                "You and **" + nameA + "** are both interested.\n_"
-                        + Icebreakers.forPair(profileB, profileA) + "_",
+                "You and **" + nameA + "** are both interested.\n_" + openerB + "_",
                 conversationId);
     }
 
@@ -59,6 +60,8 @@ public final class NotificationService {
 
     public void notifyConnectRequest(String recipientId, String requesterId, String conversationId) {
         String name = displayName(requesterId);
+        pushInbox(recipientId, SocialInboxService.EntryType.CONNECTION_MESSAGE,
+                conversationId, name, "Wants to connect (48h)");
         dmWithConnectButtons(recipientId, "Connect request",
                 "**" + name + "** wants to connect. Expires in 48 hours.",
                 conversationId);
@@ -78,10 +81,21 @@ public final class NotificationService {
     }
 
     public void notifyUnmatched(String recipientId, String actorId) {
+        notifyUnmatched(recipientId, actorId, null);
+    }
+
+    public void notifyUnmatched(String recipientId, String actorId, String conversationId) {
+        String source = conversationId != null && !conversationId.isBlank()
+                ? conversationId
+                : (actorId == null ? "system" : actorId);
+        pushInbox(recipientId, SocialInboxService.EntryType.CONNECTION_MESSAGE,
+                source, "Someone", "That connection was closed.");
         dmIfEnabled(recipientId, "Chat ended", "That connection was closed.", null);
     }
 
     public void notifyInactivityNudge(String userId, String peerName, String conversationId, String opener) {
+        pushInbox(userId, SocialInboxService.EntryType.CONNECTION_MESSAGE,
+                conversationId, peerName, "Still waiting for you");
         dmIfEnabled(userId, "Still there?",
                 "**" + peerName + "** is waiting.\n_" + opener + "_",
                 conversationId);
@@ -198,6 +212,23 @@ public final class NotificationService {
         return profile.map(MatchProfile::getDisplayName)
                 .filter(n -> n != null && !n.isBlank())
                 .orElse("someone");
+    }
+
+    private static void pushInbox(
+            String userId,
+            SocialInboxService.EntryType type,
+            String sourceId,
+            String actorDisplay,
+            String preview
+    ) {
+        try {
+            if (com.itsmarsss.callerphone.bootstrap.ApplicationContext.isReady()) {
+                com.itsmarsss.callerphone.bootstrap.ApplicationContext.get().inbox()
+                        .push(userId, type, sourceId, actorDisplay, preview);
+            }
+        } catch (Exception e) {
+            logger.debug("Inbox push failed: {}", e.getMessage());
+        }
     }
 
     private static String nullSafe(String s) {

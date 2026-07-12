@@ -221,7 +221,7 @@ public final class MatchConversationService {
         if (other != null) {
             clearSelectionIf(other, conversationId);
             if (notifications != null) {
-                notifications.notifyUnmatched(other, userId);
+                notifications.notifyUnmatched(other, userId, conversationId);
             }
         }
         try {
