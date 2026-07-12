@@ -311,6 +311,12 @@ public final class CallPresenter {
                                         com.itsmarsss.callerphone.msginbottle.BottleComponentIds.ACTION_FIND, "_"
                                 ),
                                 "Find a bottle"
+                        ),
+                        ActionSpec.secondary(
+                                com.itsmarsss.callerphone.match.component.MatchComponentIds.of(
+                                        com.itsmarsss.callerphone.match.component.MatchComponentIds.ACTION_START_BROWSE, "_"
+                                ),
+                                "Discover people"
                         )
                 )
                 .ephemeral(true)

@@ -230,7 +230,7 @@ public final class MatchPresenter {
                 .title(displayName == null || displayName.isBlank() ? "Today's discoveries are done" : greeting(displayName))
                 .description(
                         "Your free Discover set refreshes tomorrow.\n\n"
-                                + "Premium (later) raises daily limits — Discover stays free either way.\n\n"
+                                + "Premium raises daily limits when available — Discover stays free either way.\n\n"
                                 + "Meanwhile: chats, calls, and bottles are still open."
                 )
                 .actions(
@@ -246,7 +246,7 @@ public final class MatchPresenter {
     public static ExperienceView softLimit(String title, String body) {
         return ExperienceView.builder(ExperienceIntent.PREMIUM)
                 .title(title == null || title.isBlank() ? "Limit reached" : title)
-                .description(body + "\n\nPremium (later) may raise some limits — free paths stay open.")
+                .description(body + "\n\nPremium may raise some limits when available — free paths stay open.")
                 .actions(
                         ActionSpec.primary(MatchComponentIds.of(MatchComponentIds.ACTION_OPEN_CHATS, "_"), "Open chats"),
                         ActionSpec.success(BottleComponentIds.of(BottleComponentIds.ACTION_FIND, "_"), "Find a bottle"),
