@@ -73,6 +73,10 @@ public final class MatchButtonHandler implements IButtonInteraction {
             case MatchComponentIds.ACTION_CONNECT_REQUEST -> {
                 EnrollmentService.ServiceResult result = ctx.connect().request(userId, opaque);
                 if (result.success()) {
+                    try {
+                        ctx.analytics().track(userId, "connect_request", opaque);
+                    } catch (Exception ignored) {
+                    }
                     e.reply(ExperienceRenderer.toMessage(MatchPresenter.chatSelected(
                             "your connection",
                             result.message() + "\n\nKeep chatting while you wait — they have 48 hours.",
@@ -85,6 +89,10 @@ public final class MatchButtonHandler implements IButtonInteraction {
             case MatchComponentIds.ACTION_CONNECT_ACCEPT -> {
                 var result = ctx.connect().accept(userId, opaque);
                 if (result.success()) {
+                    try {
+                        ctx.analytics().track(userId, "connect_accept", opaque);
+                    } catch (Exception ignored) {
+                    }
                     String peerName = result.otherUserId() == null
                             ? "your connection"
                             : ctx.profiles().find(result.otherUserId())
@@ -104,6 +112,10 @@ public final class MatchButtonHandler implements IButtonInteraction {
             case MatchComponentIds.ACTION_CONNECT_DECLINE -> {
                 var result = ctx.connect().decline(userId, opaque);
                 if (result.success()) {
+                    try {
+                        ctx.analytics().track(userId, "connect_decline", opaque);
+                    } catch (Exception ignored) {
+                    }
                     e.reply(ExperienceRenderer.toMessage(MatchPresenter.chatSelected(
                             "your connection",
                             result.message() + "\n\nYou can keep chatting or open another connection.",
