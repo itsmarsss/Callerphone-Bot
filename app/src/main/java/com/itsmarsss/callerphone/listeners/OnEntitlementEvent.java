@@ -43,11 +43,10 @@ public final class OnEntitlementEvent extends ListenerAdapter {
             ApplicationContext.get().premium().syncEntitlement(userId, skuId, active);
             logger.info("Premium entitlement {} for user {} sku {}",
                     active ? "grant" : "revoke", userId, skuId);
-            ApplicationContext.get().analytics().track(
-                    userId,
-                    active ? "premium_entitlement_grant" : "premium_entitlement_revoke",
-                    skuId
-            );
+            var analytics = ApplicationContext.get().analytics();
+            String action = active ? "premium_entitlement_grant" : "premium_entitlement_revoke";
+            analytics.track(userId, action, skuId);
+            analytics.trackSurface(userId, "premium", active ? "grant" : "revoke", skuId);
         } catch (Exception e) {
             logger.warn("Failed to sync entitlement for {}: {}", userId, e.getMessage());
         }
