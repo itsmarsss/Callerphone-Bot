@@ -168,4 +168,34 @@ public final class BottlePresenter {
                 .ephemeral(true)
                 .build();
     }
+
+    public static ExperienceView messageFlagged() {
+        return ExperienceView.builder(ExperienceIntent.WARNING)
+                .title("Message needs a tweak")
+                .description(
+                        "Remove links, pings, or blocked language, then try again.\n"
+                                + "Your bottle wasn't sent."
+                )
+                .actions(
+                        ActionSpec.primary(BottleComponentIds.of(BottleComponentIds.ACTION_SEND, "_"), "Try again"),
+                        ActionSpec.secondary(BottleComponentIds.of(BottleComponentIds.ACTION_FIND, "_"), "Find a bottle")
+                )
+                .ephemeral(true)
+                .build();
+    }
+
+    public static ExperienceView sendRateLimited() {
+        return ExperienceView.builder(ExperienceIntent.WARNING)
+                .title("Send limit reached")
+                .description("You've sent as many bottles as you can for now. Find one while you wait.")
+                .actions(
+                        ActionSpec.success(BottleComponentIds.of(BottleComponentIds.ACTION_FIND, "_"), "Find a bottle"),
+                        ActionSpec.secondary(
+                                com.itsmarsss.callerphone.call.discord.CallComponentIds.again("_"),
+                                "Start a call"
+                        )
+                )
+                .ephemeral(true)
+                .build();
+    }
 }

@@ -2,10 +2,12 @@ package com.itsmarsss.callerphone.msginbottle.modals;
 
 import com.itsmarsss.callerphone.ToolSet;
 import com.itsmarsss.callerphone.bootstrap.ApplicationContext;
+import com.itsmarsss.callerphone.experience.ActionSpec;
 import com.itsmarsss.callerphone.experience.ExperienceRenderer;
+import com.itsmarsss.callerphone.experience.ExperienceView;
 import com.itsmarsss.callerphone.match.service.SocialInboxService;
+import com.itsmarsss.callerphone.msginbottle.BottleComponentIds;
 import com.itsmarsss.callerphone.msginbottle.BottlePresenter;
-import com.itsmarsss.callerphone.msginbottle.MIBResponse;
 import com.itsmarsss.callerphone.msginbottle.MIBStatus;
 import com.itsmarsss.callerphone.msginbottle.MessageInBottle;
 import com.itsmarsss.callerphone.msginbottle.entities.Bottle;
@@ -32,7 +34,7 @@ public class SendModal implements IModalInteraction {
         String messageFiltered = ToolSet.filterMessage(message);
 
         if (!message.equals(messageFiltered)) {
-            e.reply(MIBResponse.MESSAGE_FLAGGED.toString()).setEphemeral(true).queue();
+            e.reply(ExperienceRenderer.toMessage(BottlePresenter.messageFlagged())).setEphemeral(true).queue();
             return;
         }
 
@@ -42,7 +44,22 @@ public class SendModal implements IModalInteraction {
         } else {
             Boolean fromField = InteractionUtils.parseBooleanFromModal(e, "signed");
             if (fromField == null) {
-                e.reply(MIBResponse.INVALID_SIGNED.toString()).setEphemeral(true).queue();
+                e.reply(ExperienceRenderer.toMessage(ExperienceView.builder(
+                                com.itsmarsss.callerphone.experience.ExperienceIntent.WARNING)
+                        .title("Choose how to sign")
+                        .description("Pick Anonymous or Signed from the buttons, then try again.")
+                        .actions(
+                                ActionSpec.secondary(
+                                        BottleComponentIds.of(BottleComponentIds.ACTION_ID_ANON, "_"),
+                                        "Anonymous"
+                                ),
+                                ActionSpec.success(
+                                        BottleComponentIds.of(BottleComponentIds.ACTION_ID_SIGN, "_"),
+                                        "Signed"
+                                )
+                        )
+                        .build()
+                )).setEphemeral(true).queue();
                 return;
             }
             signed = fromField;
@@ -57,7 +74,8 @@ public class SendModal implements IModalInteraction {
         );
 
         switch (stat) {
-            case RATE_LIMITED -> e.reply(MIBResponse.SEND_MAX.toString()).setEphemeral(true).queue();
+            case RATE_LIMITED -> e.reply(ExperienceRenderer.toMessage(BottlePresenter.sendRateLimited()))
+                    .setEphemeral(true).queue();
             case NOT_FOUND -> e.reply(ExperienceRenderer.toMessage(
                     com.itsmarsss.callerphone.experience.ExperienceView.builder(
                                     com.itsmarsss.callerphone.experience.ExperienceIntent.WARNING)
