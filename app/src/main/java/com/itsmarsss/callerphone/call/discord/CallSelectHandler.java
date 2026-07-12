@@ -32,8 +32,9 @@ public final class CallSelectHandler implements IStringSelectInteraction {
         sessions.reportById(sessionId);
         try {
             if (com.itsmarsss.callerphone.bootstrap.ApplicationContext.isReady()) {
-                com.itsmarsss.callerphone.bootstrap.ApplicationContext.get().analytics()
-                        .track(e.getUser().getId(), "call_report", cat.code());
+                var analytics = com.itsmarsss.callerphone.bootstrap.ApplicationContext.get().analytics();
+                analytics.track(e.getUser().getId(), "call_report", cat.code());
+                analytics.trackSurface(e.getUser().getId(), "call", "report", cat.code());
             }
         } catch (Exception ignored) {
         }
