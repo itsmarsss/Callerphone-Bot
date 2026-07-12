@@ -191,9 +191,11 @@ public final class InboxUi {
     }
 
     private static MessageCreateData fallbackEntry(SocialInboxService.InboxEntry entry) {
-        return ExperienceRenderer.toMessage(MatchPresenter.quietSuccess(
-                entry.actorDisplay(),
-                entry.preview() + "\n\nSource could not be opened."
+        return ExperienceRenderer.toMessage(MatchPresenter.serviceFailed(
+                (entry.actorDisplay() == null ? "Update" : entry.actorDisplay())
+                        + "\n\n"
+                        + (entry.preview() == null ? "" : entry.preview())
+                        + "\n\nSource could not be opened."
         ));
     }
 
