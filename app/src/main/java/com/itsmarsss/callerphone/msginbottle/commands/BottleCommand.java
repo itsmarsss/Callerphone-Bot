@@ -104,6 +104,12 @@ public final class BottleCommand implements ISlashCommand, ICommand {
             return;
         }
         Cooldown.setMIBFindCoolDown(userId);
+        try {
+            if (ApplicationContext.isReady()) {
+                ApplicationContext.get().analytics().track(userId, "bottle_find", bottle.getId());
+            }
+        } catch (Exception ignored) {
+        }
         e.reply(message).setEphemeral(true).queue();
     }
 

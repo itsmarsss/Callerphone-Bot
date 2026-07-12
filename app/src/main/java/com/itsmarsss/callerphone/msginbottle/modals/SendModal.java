@@ -77,8 +77,10 @@ public class SendModal implements IModalInteraction {
                 Cooldown.setMIBSendCoolDown(e.getUser().getId());
                 if (parsed.bottleId() != null) {
                     notifyThreadParticipants(e.getUser().getId(), parsed.bottleId(), messageFiltered);
+                    track(e.getUser().getId(), "bottle_reply", parsed.bottleId());
                     e.reply(ExperienceRenderer.toMessage(BottlePresenter.replySent())).setEphemeral(true).queue();
                 } else {
+                    track(e.getUser().getId(), "bottle_send", signed ? "signed" : "anonymous");
                     e.reply(ExperienceRenderer.toMessage(BottlePresenter.sent())).setEphemeral(true).queue();
                 }
             }
@@ -169,6 +171,15 @@ public class SendModal implements IModalInteraction {
             }
         } catch (Exception ignored) {
             // non-fatal
+        }
+    }
+
+    private static void track(String userId, String name, String meta) {
+        try {
+            if (ApplicationContext.isReady()) {
+                ApplicationContext.get().analytics().track(userId, name, meta);
+            }
+        } catch (Exception ignored) {
         }
     }
 

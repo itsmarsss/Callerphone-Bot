@@ -1,5 +1,6 @@
 package com.itsmarsss.callerphone.discord.match;
 
+import com.itsmarsss.callerphone.call.discord.CallComponentIds;
 import com.itsmarsss.callerphone.experience.ActionSpec;
 import com.itsmarsss.callerphone.experience.CopyCatalog;
 import com.itsmarsss.callerphone.experience.ExperienceIntent;
@@ -9,6 +10,7 @@ import com.itsmarsss.callerphone.identity.AgeCohort;
 import com.itsmarsss.callerphone.match.component.MatchComponentIds;
 import com.itsmarsss.callerphone.match.model.MatchProfile;
 import com.itsmarsss.callerphone.match.service.EmptyStates;
+import com.itsmarsss.callerphone.msginbottle.BottleComponentIds;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -121,6 +123,8 @@ public final class MatchPresenter {
                     .description("Today's discoveries are done. Your free set refreshes tomorrow.")
                     .actions(
                             ActionSpec.primary(MatchComponentIds.of(MatchComponentIds.ACTION_OPEN_CHATS, "_"), "Open chats"),
+                            ActionSpec.success(BottleComponentIds.of(BottleComponentIds.ACTION_FIND, "_"), "Find a bottle"),
+                            ActionSpec.secondary(CallComponentIds.again("_"), "Start a call"),
                             ActionSpec.secondary(MatchComponentIds.of(MatchComponentIds.ACTION_HOME, "_"), "Inbox")
                     )
                     .ephemeral(true)
@@ -132,13 +136,15 @@ public final class MatchPresenter {
         if (inboxUnread > 0) {
             bits.add(inboxUnread + " inbox");
         }
+        // Plan §10.G — explore modes without becoming a stats dashboard
         return ExperienceView.builder(ExperienceIntent.SOCIAL)
                 .title(greeting(displayName))
                 .description(String.join(" · ", bits))
                 .actions(
                         ActionSpec.success(MatchComponentIds.of(MatchComponentIds.ACTION_START_BROWSE, "_"), "Discover people"),
                         ActionSpec.secondary(MatchComponentIds.of(MatchComponentIds.ACTION_OPEN_CHATS, "_"), "Open chats"),
-                        ActionSpec.secondary(MatchComponentIds.of(MatchComponentIds.ACTION_HOME, "_"), "Inbox")
+                        ActionSpec.secondary(CallComponentIds.again("_"), "Start a call"),
+                        ActionSpec.secondary(BottleComponentIds.of(BottleComponentIds.ACTION_FIND, "_"), "Find a bottle")
                 )
                 .ephemeral(true)
                 .build();
@@ -167,6 +173,8 @@ public final class MatchPresenter {
                         + "\n\nWant something else while you wait?")
                 .actions(
                         ActionSpec.primary(MatchComponentIds.of(MatchComponentIds.ACTION_OPEN_CHATS, "_"), "Open chats"),
+                        ActionSpec.success(BottleComponentIds.of(BottleComponentIds.ACTION_FIND, "_"), "Find a bottle"),
+                        ActionSpec.secondary(CallComponentIds.again("_"), "Start a call"),
                         ActionSpec.secondary(MatchComponentIds.of(MatchComponentIds.ACTION_SETUP, "_"), "Edit profile")
                 )
                 .ephemeral(true)
@@ -248,7 +256,8 @@ public final class MatchPresenter {
                 .description(message == null || message.isBlank() ? EmptyStates.noCandidates() : message)
                 .actions(
                         ActionSpec.primary(MatchComponentIds.of(MatchComponentIds.ACTION_OPEN_CHATS, "_"), "Open chats"),
-                        ActionSpec.secondary(MatchComponentIds.of(MatchComponentIds.ACTION_SETUP, "_"), "Edit profile")
+                        ActionSpec.success(BottleComponentIds.of(BottleComponentIds.ACTION_FIND, "_"), "Find a bottle"),
+                        ActionSpec.secondary(CallComponentIds.again("_"), "Start a call")
                 )
                 .ephemeral(true)
                 .build();
@@ -262,9 +271,45 @@ public final class MatchPresenter {
                 .description(body)
                 .actions(
                         ActionSpec.primary(MatchComponentIds.of(MatchComponentIds.ACTION_OPEN_CHATS, "_"), "Open chats"),
-                        ActionSpec.secondary(MatchComponentIds.of(MatchComponentIds.ACTION_SETUP, "_"), "Edit profile")
+                        ActionSpec.success(BottleComponentIds.of(BottleComponentIds.ACTION_FIND, "_"), "Find a bottle"),
+                        ActionSpec.secondary(CallComponentIds.again("_"), "Start a call")
                 )
                 .ephemeral(true)
+                .build();
+    }
+
+    public static ExperienceView connectionGameShelf(String conversationId) {
+        return ExperienceView.builder(ExperienceIntent.SOCIAL)
+                .title("Play with your connection")
+                .description("Only ready games are listed.\n\n**Tic-Tac-Toe** · Ready")
+                .actions(
+                        ActionSpec.success(
+                                MatchComponentIds.of(MatchComponentIds.ACTION_GAME_TTT, conversationId),
+                                "Play Tic-Tac-Toe"
+                        ),
+                        ActionSpec.secondary(
+                                MatchComponentIds.of(MatchComponentIds.ACTION_CHAT_SELECT, conversationId),
+                                "Back to chat"
+                        )
+                )
+                .ephemeral(true)
+                .build();
+    }
+
+    public static ExperienceView generalGameShelf() {
+        return ExperienceView.builder(ExperienceIntent.SOCIAL)
+                .title("Mini games")
+                .description(
+                        "Games work best **during a call** or inside a Match chat.\n\n"
+                                + "**Ready**\n"
+                                + "• Tic-Tac-Toe\n\n"
+                                + "Start a call or open a chat, then challenge from there."
+                )
+                .actions(
+                        ActionSpec.secondary(CallComponentIds.again("_"), "Start a call"),
+                        ActionSpec.success(MatchComponentIds.of(MatchComponentIds.ACTION_OPEN_CHATS, "_"), "Open chats"),
+                        ActionSpec.secondary(MatchComponentIds.of(MatchComponentIds.ACTION_START_BROWSE, "_"), "Discover")
+                )
                 .build();
     }
 

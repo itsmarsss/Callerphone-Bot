@@ -214,6 +214,11 @@ public final class MatchButtonHandler implements IButtonInteraction {
                 e.deferReply(true).queue();
                 ctx.dbExecutor().execute(() -> {
                     var result = ctx.decisions().expressInterest(userId, opaque);
+                    try {
+                        ctx.analytics().track(userId, "bottle_thread_to_interest",
+                                result.mutual() ? "mutual" : (result.success() ? "sent" : "fail"));
+                    } catch (Exception ignored) {
+                    }
                     if (result.mutual() && result.conversationId() != null) {
                         String peerName = "your connection";
                         if (result.match() != null) {

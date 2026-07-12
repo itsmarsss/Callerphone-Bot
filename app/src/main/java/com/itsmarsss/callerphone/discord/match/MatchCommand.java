@@ -106,6 +106,10 @@ public final class MatchCommand implements ISlashCommand {
     }
 
     private void handleHome(SlashCommandInteractionEvent e, ApplicationContext ctx, String userId) {
+        try {
+            ctx.analytics().track(userId, "home_open", "match");
+        } catch (Exception ignored) {
+        }
         e.reply(ExperienceRenderer.toMessage(buildHome(ctx, userId, e.getUser().getName())))
                 .setEphemeral(true).queue();
     }

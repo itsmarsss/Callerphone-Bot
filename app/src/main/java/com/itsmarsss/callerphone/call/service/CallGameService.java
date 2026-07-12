@@ -38,6 +38,13 @@ public final class CallGameService {
         other.sendMessage(ExperienceRenderer.toMessage(
                 CallPresenter.gameProposal(sessionId, proposerUserId)
         )).queue();
+        try {
+            if (com.itsmarsss.callerphone.bootstrap.ApplicationContext.isReady()) {
+                com.itsmarsss.callerphone.bootstrap.ApplicationContext.get().analytics()
+                        .track(proposerUserId, "call_game_propose", sessionId);
+            }
+        } catch (Exception ignored) {
+        }
         return Result.ok("Challenge sent. Waiting for them to accept.");
     }
 
@@ -97,6 +104,13 @@ public final class CallGameService {
                         .build(),
                 ttt);
         ToolSet.sendPrivateGameMessageTo(acceptorUser, ttt.getMessageForTo(), ttt);
+        try {
+            if (com.itsmarsss.callerphone.bootstrap.ApplicationContext.isReady()) {
+                com.itsmarsss.callerphone.bootstrap.ApplicationContext.get().analytics()
+                        .track(acceptorUserId, "call_game_accept", sessionId);
+            }
+        } catch (Exception ignored) {
+        }
         return Result.ok("Game started. Check your DMs for the board.");
     }
 

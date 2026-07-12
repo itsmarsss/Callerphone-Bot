@@ -49,6 +49,10 @@ public final class ConnectionGameService {
                 .map(MatchProfile::getDisplayName)
                 .orElse("Someone");
         pending.put(conversationId, proposerUserId);
+        try {
+            ctx.analytics().track(proposerUserId, "connection_game_propose", conversationId);
+        } catch (Exception ignored) {
+        }
         ctx.inbox().push(
                 otherId,
                 SocialInboxService.EntryType.GAME_INVITE,
@@ -130,6 +134,10 @@ public final class ConnectionGameService {
         }
 
         pending.remove(conversationId);
+        try {
+            ctx.analytics().track(acceptorUserId, "connection_game_accept", conversationId);
+        } catch (Exception ignored) {
+        }
 
         ToolSet.sendPrivateGameMessageFrom(proposer,
                 new MessageCreateBuilder()
