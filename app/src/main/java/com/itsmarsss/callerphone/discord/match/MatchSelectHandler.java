@@ -109,10 +109,7 @@ public final class MatchSelectHandler implements IStringSelectInteraction {
             ));
         } else if (conversation.getStage() == ConversationStage.CONNECT_PENDING
                 && userId.equals(conversation.getConnectRequestedBy())) {
-            row1.add(Button.secondary(
-                    MatchComponentIds.of(MatchComponentIds.ACTION_STOP_CHAT, "_"),
-                    "Waiting for connect…"
-            ).asDisabled());
+            row1.add(Button.secondary("m-v1-wait-_", "Waiting for connect…").asDisabled());
         }
         e.replyEmbeds(MatchEmbeds.success("Chatting with " + name, result.message()))
                 .addComponents(ActionRow.of(row1), ActionRow.of(row2))
