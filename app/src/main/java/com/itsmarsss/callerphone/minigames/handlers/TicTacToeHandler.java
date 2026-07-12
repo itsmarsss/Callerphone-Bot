@@ -1,6 +1,10 @@
 package com.itsmarsss.callerphone.minigames.handlers;
 
 import com.itsmarsss.callerphone.ToolSet;
+import com.itsmarsss.callerphone.discord.match.MatchPresenter;
+import com.itsmarsss.callerphone.experience.ExperienceRenderer;
+import com.itsmarsss.callerphone.experience.ExperienceView;
+import com.itsmarsss.callerphone.experience.ExperienceIntent;
 import com.itsmarsss.callerphone.minigames.MiniGameStatus;
 import com.itsmarsss.callerphone.minigames.games.TicTacToe;
 import com.itsmarsss.callerphone.users.BotUser;
@@ -25,25 +29,28 @@ public class TicTacToeHandler implements IButtonInteraction {
     public void runClick(ButtonInteraction e) {
         String customId = e.getButton().getCustomId();
         if (customId == null || !customId.startsWith("ttt-")) {
-            e.reply("Invalid game button.").setEphemeral(true).queue();
+            replyGameExpired(e);
             return;
         }
 
         String[] param = customId.substring("ttt-".length()).split("-");
         if (param.length < 4) {
-            e.reply("Invalid game button.").setEphemeral(true).queue();
+            replyGameExpired(e);
             return;
         }
 
         BotUser botUser = Users.getUser(e.getUser().getId());
         if (botUser == null) {
-            e.reply("User session not found.").setEphemeral(true).queue();
+            e.reply(ExperienceRenderer.toMessage(ExperienceView.builder(ExperienceIntent.WARNING)
+                    .title("Accept terms first")
+                    .description("Run `/match join` once so games can track your session.")
+                    .build())).setEphemeral(true).queue();
             return;
         }
 
         TicTacToe game = (TicTacToe) botUser.getGame(param[1]);
         if (game == null) {
-            e.reply("Game not found.").setEphemeral(true).queue();
+            e.reply(ExperienceRenderer.toMessage(MatchPresenter.generalGameShelf())).setEphemeral(true).queue();
             e.getMessage().delete().queue(null, err -> {
             });
             return;
@@ -55,7 +62,7 @@ public class TicTacToeHandler implements IButtonInteraction {
             row = Integer.parseInt(param[2]);
             col = Integer.parseInt(param[3]);
         } catch (NumberFormatException ex) {
-            e.reply("Invalid move coordinates.").setEphemeral(true).queue();
+            replyGameExpired(e);
             return;
         }
 
@@ -66,11 +73,14 @@ public class TicTacToeHandler implements IButtonInteraction {
         } else if ("from".equals(side)) {
             stat = game.fromMove(row, col);
         } else {
-            e.reply("Invalid game button.").setEphemeral(true).queue();
+            replyGameExpired(e);
             return;
         }
         if (stat == MiniGameStatus.INVALID_MOVE) {
-            e.reply("Invalid move.").setEphemeral(true).queue();
+            e.reply(ExperienceRenderer.toMessage(ExperienceView.builder(ExperienceIntent.WARNING)
+                    .title("That square is taken")
+                    .description("Pick an empty cell on your board.")
+                    .build())).setEphemeral(true).queue();
             return;
         }
 
@@ -174,6 +184,13 @@ public class TicTacToeHandler implements IButtonInteraction {
         if (to != null) {
             to.removeGame(game.getID());
         }
+    }
+
+    private static void replyGameExpired(ButtonInteraction e) {
+        e.reply(ExperienceRenderer.toMessage(ExperienceView.builder(ExperienceIntent.WARNING)
+                .title("That game expired")
+                .description("Start a fresh board from a call or Match chat.")
+                .build())).setEphemeral(true).queue();
     }
 
     @Override
