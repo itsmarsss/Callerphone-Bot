@@ -252,6 +252,15 @@ public final class CallPresenter {
         return ExperienceView.builder(ExperienceIntent.WARNING)
                 .title(title)
                 .description(description)
+                .actions(
+                        ActionSpec.primary(CallComponentIds.again("_"), "Try a call"),
+                        ActionSpec.success(
+                                com.itsmarsss.callerphone.msginbottle.BottleComponentIds.of(
+                                        com.itsmarsss.callerphone.msginbottle.BottleComponentIds.ACTION_FIND, "_"
+                                ),
+                                "Find a bottle"
+                        )
+                )
                 .ephemeral(true)
                 .build();
     }

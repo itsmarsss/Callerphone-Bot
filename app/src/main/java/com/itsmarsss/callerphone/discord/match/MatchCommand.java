@@ -64,9 +64,8 @@ public final class MatchCommand implements ISlashCommand {
             case "pause" -> {
                 EnrollmentService.ServiceResult r = ctx.profiles().pause(userId);
                 if (r.success()) {
-                    e.reply(ExperienceRenderer.toMessage(MatchPresenter.home(
-                            e.getUser().getName(), 0, 0, false, true, true, 0, 0
-                    ))).setEphemeral(true).queue();
+                    e.reply(ExperienceRenderer.toMessage(buildHome(ctx, userId, e.getUser().getName())))
+                            .setEphemeral(true).queue();
                 } else {
                     reply(e, r);
                 }
