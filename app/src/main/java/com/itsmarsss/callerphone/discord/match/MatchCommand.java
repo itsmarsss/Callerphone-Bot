@@ -400,17 +400,15 @@ public final class MatchCommand implements ISlashCommand {
                 String json = ctx.export().exportJson(userId);
                 byte[] bytes = json.getBytes(java.nio.charset.StandardCharsets.UTF_8);
                 ctx.analytics().track(userId, "match_export", String.valueOf(bytes.length));
-                e.getHook().sendMessage(ExperienceRenderer.toMessage(MatchPresenter.quietSuccess(
-                                "Your export is ready",
-                                "It includes your profile, settings, and conversations covered by the export policy."
+                e.getHook().sendMessage(ExperienceRenderer.toMessage(MatchPresenter.serviceDone(
+                                "Your export is ready. It includes your profile, settings, and conversations covered by the export policy."
                         )))
                         .addFiles(net.dv8tion.jda.api.utils.FileUpload.fromData(bytes, "callerphone-match-export.json"))
                         .setEphemeral(true)
                         .queue();
             } catch (Exception ex) {
-                e.getHook().sendMessage(ExperienceRenderer.toMessage(MatchPresenter.warn(
-                        "Export failed",
-                        "Try again in a moment. Nothing was deleted."
+                e.getHook().sendMessage(ExperienceRenderer.toMessage(MatchPresenter.serviceFailed(
+                        "Export failed. Try again in a moment. Nothing was deleted."
                 ))).setEphemeral(true).queue();
             }
         });

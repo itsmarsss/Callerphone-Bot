@@ -120,8 +120,7 @@ public final class InboxUi {
     public static MessageCreateData openNext(ApplicationContext ctx, String userId) {
         var next = ctx.inbox().firstUnread(userId);
         if (!next.isPresent()) {
-            return ExperienceRenderer.toMessage(MatchPresenter.quietSuccess(
-                    "All caught up",
+            return ExperienceRenderer.toMessage(MatchPresenter.serviceDone(
                     "No unread updates. Discover someone new when you're ready."
             ));
         }
