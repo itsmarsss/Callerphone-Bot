@@ -746,10 +746,21 @@ public final class MatchPresenter {
                         "Open **Safety** from a chat, Discover card, or shared profile.\n\n"
                                 + "That attaches the right person automatically. Manual IDs are for moderators only."
                 )
-                .actions(ActionSpec.success(
-                        MatchComponentIds.of(MatchComponentIds.ACTION_OPEN_CHATS, "_"),
-                        "Open chats"
-                ))
+                .actions(
+                        ActionSpec.success(
+                                MatchComponentIds.of(MatchComponentIds.ACTION_OPEN_CHATS, "_"),
+                                "Open chats"
+                        ),
+                        ActionSpec.secondary(
+                                MatchComponentIds.of(MatchComponentIds.ACTION_START_BROWSE, "_"),
+                                "Discover"
+                        ),
+                        ActionSpec.secondary(CallComponentIds.again("_"), "Start a call"),
+                        ActionSpec.secondary(
+                                BottleComponentIds.of(BottleComponentIds.ACTION_FIND, "_"),
+                                "Find a bottle"
+                        )
+                )
                 .ephemeral(true)
                 .build();
     }
