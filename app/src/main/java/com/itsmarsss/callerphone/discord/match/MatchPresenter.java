@@ -1033,7 +1033,11 @@ public final class MatchPresenter {
                 .actions(
                         ActionSpec.secondary(MatchComponentIds.of(MatchComponentIds.ACTION_PREMIUM, "_"), "About Premium"),
                         ActionSpec.success(MatchComponentIds.of(MatchComponentIds.ACTION_START_BROWSE, "_"), "Discover"),
-                        ActionSpec.secondary(CallComponentIds.again("_"), "Start a call")
+                        ActionSpec.secondary(CallComponentIds.again("_"), "Start a call"),
+                        ActionSpec.secondary(
+                                BottleComponentIds.of(BottleComponentIds.ACTION_FIND, "_"),
+                                "Find a bottle"
+                        )
                 )
                 .ephemeral(true)
                 .build();
