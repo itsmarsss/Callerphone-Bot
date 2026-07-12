@@ -441,7 +441,8 @@ public final class MatchPresenter {
                         ActionSpec.secondary(
                                 MatchComponentIds.of(MatchComponentIds.ACTION_CHAT_SELECT, conversationId),
                                 "Back to chat"
-                        )
+                        ),
+                        ActionSpec.secondary(CallComponentIds.again("_"), "Start a call")
                 )
                 .ephemeral(true)
                 .build();
