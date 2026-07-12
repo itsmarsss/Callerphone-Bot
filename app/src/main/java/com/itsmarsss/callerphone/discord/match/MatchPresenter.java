@@ -671,9 +671,14 @@ public final class MatchPresenter {
     public static ExperienceView deleteConfirm() {
         return ExperienceView.builder(ExperienceIntent.SAFETY)
                 .title("Delete your Social data?")
-                .description("This permanently removes your profile content and discovery history. Safety records may be retained where required.")
+                .description(
+                        "This permanently removes your profile content and discovery history.\n\n"
+                                + "Safety records may be retained where required. "
+                                + "Prefer **Leave Discover** if you only want to stop appearing."
+                )
                 .actions(
-                        ActionSpec.danger(MatchComponentIds.of(MatchComponentIds.ACTION_DELETE_CONFIRM, "_"), "Continue"),
+                        ActionSpec.danger(MatchComponentIds.of(MatchComponentIds.ACTION_DELETE_CONFIRM, "_"), "Delete content"),
+                        ActionSpec.secondary(MatchComponentIds.of(MatchComponentIds.ACTION_LEAVE_CONFIRM, "_"), "Leave Discover instead"),
                         ActionSpec.secondary(MatchComponentIds.of(MatchComponentIds.ACTION_DELETE_CANCEL, "_"), "Cancel")
                 )
                 .ephemeral(true)
