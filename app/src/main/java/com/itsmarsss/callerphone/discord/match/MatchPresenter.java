@@ -954,7 +954,8 @@ public final class MatchPresenter {
                         ActionSpec.primary(MatchComponentIds.of(MatchComponentIds.ACTION_PREVIEW_SELF, "_"), "Preview"),
                         ActionSpec.secondary(MatchComponentIds.of(MatchComponentIds.ACTION_PHOTO_MENU, "_"), "Change image"),
                         ActionSpec.success(MatchComponentIds.of(MatchComponentIds.ACTION_START_BROWSE, "_"), "Discover"),
-                        ActionSpec.secondary(MatchComponentIds.of(MatchComponentIds.ACTION_SUBMIT, "_"), "Go live")
+                        ActionSpec.secondary(MatchComponentIds.of(MatchComponentIds.ACTION_SUBMIT, "_"), "Go live"),
+                        ActionSpec.secondary(CallComponentIds.again("_"), "Start a call")
                 )
                 .ephemeral(true)
                 .build();
