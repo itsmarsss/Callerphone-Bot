@@ -115,9 +115,26 @@ public final class CallProfileShareService {
                 String opener = Icebreakers.forPair(actorProfile.get(), subjectProfile.get());
                 MessageChannel other = ToolSet.getMessageChannel(opt.get().otherChannelId(actorChannelId));
                 if (other != null) {
-                    other.sendMessageEmbeds(MatchEmbeds.success(
-                            "You connected",
-                            "You're both interested.\n\n_" + opener + "_"
+                    other.sendMessage(com.itsmarsss.callerphone.experience.ExperienceRenderer.toMessage(
+                            com.itsmarsss.callerphone.experience.ExperienceView.builder(
+                                            com.itsmarsss.callerphone.experience.ExperienceIntent.SOCIAL)
+                                    .title("You connected")
+                                    .description("You're both interested.\n\n_" + opener + "_")
+                                    .actions(
+                                            conversationId.isPresent()
+                                                    ? com.itsmarsss.callerphone.experience.ActionSpec.success(
+                                                    com.itsmarsss.callerphone.match.component.MatchComponentIds.of(
+                                                            com.itsmarsss.callerphone.match.component.MatchComponentIds.ACTION_CHAT_SELECT,
+                                                            conversationId.get()
+                                                    ),
+                                                    "Open Match chat"
+                                            )
+                                                    : com.itsmarsss.callerphone.experience.ActionSpec.success(
+                                                    CallComponentIds.prompt(sessionId),
+                                                    "Keep talking"
+                                            )
+                                    )
+                                    .build()
                     )).queue();
                 }
                 try {
@@ -136,9 +153,12 @@ public final class CallProfileShareService {
         }
         MessageChannel other = ToolSet.getMessageChannel(opt.get().otherChannelId(actorChannelId));
         if (other != null) {
-            other.sendMessageEmbeds(MatchEmbeds.soft(
-                    "Interest received",
-                    "Someone is interested in the shared profile."
+            other.sendMessage(com.itsmarsss.callerphone.experience.ExperienceRenderer.toMessage(
+                    com.itsmarsss.callerphone.experience.ExperienceView.builder(
+                                    com.itsmarsss.callerphone.experience.ExperienceIntent.SOCIAL)
+                            .title("Interest received")
+                            .description("Someone is interested in the shared profile.")
+                            .build()
             )).queue();
         }
         return ShareResult.ok("Interest sent privately.");

@@ -638,9 +638,17 @@ public final class MatchPresenter {
     public static ExperienceView setupRetry(String message) {
         return ExperienceView.builder(ExperienceIntent.WARNING)
                 .title("Try again")
-                .description(message)
+                .description(message == null || message.isBlank() ? "Something didn't save. Nothing was lost." : message)
                 .footer("Step 2 of 3")
-                .actions(ActionSpec.primary(MatchComponentIds.of(MatchComponentIds.ACTION_SETUP, "_"), "Retry"))
+                .actions(
+                        ActionSpec.primary(MatchComponentIds.of(MatchComponentIds.ACTION_SETUP, "_"), "Retry"),
+                        ActionSpec.secondary(MatchComponentIds.of(MatchComponentIds.ACTION_PHOTO_MENU, "_"), "Photo"),
+                        ActionSpec.secondary(CallComponentIds.again("_"), "Start a call"),
+                        ActionSpec.secondary(
+                                BottleComponentIds.of(BottleComponentIds.ACTION_FIND, "_"),
+                                "Find a bottle"
+                        )
+                )
                 .ephemeral(true)
                 .build();
     }

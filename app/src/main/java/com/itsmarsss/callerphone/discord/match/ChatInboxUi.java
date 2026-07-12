@@ -74,6 +74,12 @@ public final class ChatInboxUi {
                             Button.secondary(
                                     MatchComponentIds.of(MatchComponentIds.ACTION_HOME, "_"),
                                     "Inbox"
+                            ),
+                            Button.secondary(
+                                    com.itsmarsss.callerphone.msginbottle.BottleComponentIds.of(
+                                            com.itsmarsss.callerphone.msginbottle.BottleComponentIds.ACTION_FIND, "_"
+                                    ),
+                                    "Find a bottle"
                             )
                     )
             );
@@ -101,6 +107,12 @@ public final class ChatInboxUi {
                     Button.secondary(
                             MatchComponentIds.of(MatchComponentIds.ACTION_HOME, "_"),
                             "Inbox"
+                    ),
+                    Button.secondary(
+                            com.itsmarsss.callerphone.msginbottle.BottleComponentIds.of(
+                                    com.itsmarsss.callerphone.msginbottle.BottleComponentIds.ACTION_FIND, "_"
+                            ),
+                            "Find a bottle"
                     )
             ));
             builder.setComponents(actionRows);

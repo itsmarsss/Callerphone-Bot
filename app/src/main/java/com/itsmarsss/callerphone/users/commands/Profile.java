@@ -34,6 +34,10 @@ public class Profile implements ISlashCommand {
         boolean self = user.getId().equals(e.getUser().getId());
 
         if (self && ApplicationContext.isReady()) {
+            try {
+                ApplicationContext.get().analytics().track(user.getId(), "profile_view", "self");
+            } catch (Exception ignored) {
+            }
             e.reply(ExperienceRenderer.toMessage(selfActivityView(user))).setEphemeral(true).queue();
             return;
         }
