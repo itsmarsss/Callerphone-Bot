@@ -305,6 +305,7 @@ public final class MatchCommand implements ISlashCommand {
     private void handleEdit(SlashCommandInteractionEvent e, ApplicationContext ctx, String userId) {
         try {
             ctx.analytics().track(userId, "edit_menu_open", "slash");
+            ctx.analytics().trackSurface(userId, "profile", "edit_menu", "slash");
         } catch (Exception ignored) {
         }
         e.reply(ExperienceRenderer.toMessage(MatchPresenter.editMenu())).setEphemeral(true).queue();
