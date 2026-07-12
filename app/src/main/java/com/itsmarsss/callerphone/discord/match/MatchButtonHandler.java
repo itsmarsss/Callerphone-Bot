@@ -125,8 +125,20 @@ public final class MatchButtonHandler implements IButtonInteraction {
                     replyService(e, result);
                 }
             }
-            case MatchComponentIds.ACTION_UNMATCH -> replyService(e, ctx.conversations().unmatch(userId, opaque));
-            case MatchComponentIds.ACTION_STOP_CHAT -> replyService(e, ctx.conversations().stopChat(userId));
+            case MatchComponentIds.ACTION_UNMATCH -> {
+                try {
+                    ctx.analytics().track(userId, "unmatch", opaque);
+                } catch (Exception ignored) {
+                }
+                replyService(e, ctx.conversations().unmatch(userId, opaque));
+            }
+            case MatchComponentIds.ACTION_STOP_CHAT -> {
+                try {
+                    ctx.analytics().track(userId, "chat_stop", "button");
+                } catch (Exception ignored) {
+                }
+                replyService(e, ctx.conversations().stopChat(userId));
+            }
             case MatchComponentIds.ACTION_SUBMIT -> {
                 ctx.profiles().setAvatar(userId, e.getUser().getEffectiveAvatarUrl());
                 EnrollmentService.ServiceResult result = ctx.profiles().publish(userId);
