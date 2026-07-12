@@ -50,11 +50,15 @@ public final class NotificationService {
     }
 
     public void notifyProfileLive(String userId) {
+        pushInbox(userId, SocialInboxService.EntryType.PROFILE_SHARE_RESPONSE,
+                userId, "Match", "You're live in Discover");
         dmIfEnabled(userId, "You're live", "Your profile can now appear in Discover.", null);
     }
 
     public void notifyProfileRestricted(String userId, String reason) {
         String detail = reason == null || reason.isBlank() ? "A moderator paused your profile." : reason;
+        pushInbox(userId, SocialInboxService.EntryType.SAFETY_UPDATE,
+                userId, "Safety", detail);
         dmIfEnabled(userId, "Profile paused", detail, null);
     }
 
