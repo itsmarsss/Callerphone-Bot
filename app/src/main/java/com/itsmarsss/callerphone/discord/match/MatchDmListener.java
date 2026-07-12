@@ -74,9 +74,11 @@ public final class MatchDmListener extends ListenerAdapter {
                                         event.getMessage().addReaction(
                                                 net.dv8tion.jda.api.entities.emoji.Emoji.fromUnicode("✅")).queue();
                                         if (ApplicationContext.isReady()) {
-                                            ApplicationContext.get().analytics()
-                                                    .track(event.getAuthor().getId(), "match_message_relayed",
-                                                            result.conversationId());
+                                            var analytics = ApplicationContext.get().analytics();
+                                            analytics.track(event.getAuthor().getId(), "match_message_relayed",
+                                                    result.conversationId());
+                                            analytics.trackSurface(event.getAuthor().getId(), "chat", "message",
+                                                    result.conversationId());
                                         }
                                     },
                                     err -> event.getMessage().reply(
