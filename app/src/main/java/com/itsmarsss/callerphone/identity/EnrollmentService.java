@@ -92,6 +92,13 @@ public final class EnrollmentService {
         }
         profile.touch();
         profiles.save(profile);
+        try {
+            if (com.itsmarsss.callerphone.bootstrap.ApplicationContext.isReady()) {
+                com.itsmarsss.callerphone.bootstrap.ApplicationContext.get().analytics()
+                        .track(userId, "match_enroll_age", cohort.code());
+            }
+        } catch (Exception ignored) {
+        }
         return ServiceResult.ok("Age group set to " + cohort.label() + ".");
     }
 

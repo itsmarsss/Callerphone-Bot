@@ -127,10 +127,18 @@ public final class CallButtonHandler implements IButtonInteraction {
                                 .setEphemeral(true).queue()
                 );
             }
-            case CallComponentIds.GAME_DECLINE -> e.reply(ExperienceRenderer.toMessage(
-                            CallPresenter.success("Declined", "You can keep chatting on the call.")
-                    ))
-                    .setEphemeral(true).queue();
+            case CallComponentIds.GAME_DECLINE -> {
+                try {
+                    if (com.itsmarsss.callerphone.bootstrap.ApplicationContext.isReady()) {
+                        com.itsmarsss.callerphone.bootstrap.ApplicationContext.get().analytics()
+                                .track(userId, "call_game_decline", parsed.sessionId());
+                    }
+                } catch (Exception ignored) {
+                }
+                e.reply(ExperienceRenderer.toMessage(
+                        CallPresenter.success("Declined", "You can keep chatting on the call.")
+                )).setEphemeral(true).queue();
+            }
             case CallComponentIds.AGAIN -> {
                 try {
                     if (com.itsmarsss.callerphone.bootstrap.ApplicationContext.isReady()) {
