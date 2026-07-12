@@ -3,12 +3,9 @@ package com.itsmarsss.callerphone.discord.match;
 import com.itsmarsss.callerphone.bootstrap.ApplicationContext;
 import com.itsmarsss.callerphone.experience.ExperienceRenderer;
 import com.itsmarsss.callerphone.identity.EnrollmentService;
-import com.itsmarsss.callerphone.match.component.MatchComponentIds;
 import com.itsmarsss.callerphone.match.model.MatchProfile;
 import com.itsmarsss.callerphone.match.model.ProfileState;
 import com.itsmarsss.commandType.IModalInteraction;
-import net.dv8tion.jda.api.components.actionrow.ActionRow;
-import net.dv8tion.jda.api.components.buttons.Button;
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
 
 import java.util.Arrays;
