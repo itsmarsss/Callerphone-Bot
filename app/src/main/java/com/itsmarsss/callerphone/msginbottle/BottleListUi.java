@@ -1,5 +1,6 @@
 package com.itsmarsss.callerphone.msginbottle;
 
+import com.itsmarsss.callerphone.experience.ActionSpec;
 import com.itsmarsss.callerphone.experience.DiscordLimits;
 import com.itsmarsss.callerphone.experience.ExperienceIntent;
 import com.itsmarsss.callerphone.experience.ExperienceRenderer;
@@ -22,10 +23,16 @@ public final class BottleListUi {
         if (bottles == null || bottles.isEmpty()) {
             return ExperienceRenderer.toMessage(ExperienceView.builder(ExperienceIntent.DISCOVERY)
                     .title("Your bottle threads")
-                    .description(
-                            "No threads yet. Find a bottle and reply to start one.\n\n"
-                                    + "`/bottle find` · discover\n"
-                                    + "`/bottle send` · cast"
+                    .description("No threads yet. Find a bottle and reply to start one.")
+                    .actions(
+                            ActionSpec.success(
+                                    BottleComponentIds.of(BottleComponentIds.ACTION_FIND, "_"),
+                                    "Find a bottle"
+                            ),
+                            ActionSpec.primary(
+                                    BottleComponentIds.of(BottleComponentIds.ACTION_SEND, "_"),
+                                    "Send a bottle"
+                            )
                     )
                     .ephemeral(true)
                     .build());
@@ -70,8 +77,17 @@ public final class BottleListUi {
                     .title("Saved bottles")
                     .description(
                             "Nothing saved yet. Tap **Save** on a bottle you find, "
-                                    + "or open one by id with `/bottle saved id:`.\n\n"
-                                    + "`/bottle find` · discover something new"
+                                    + "or open one by id with `/bottle saved id:`."
+                    )
+                    .actions(
+                            ActionSpec.success(
+                                    BottleComponentIds.of(BottleComponentIds.ACTION_FIND, "_"),
+                                    "Find a bottle"
+                            ),
+                            ActionSpec.primary(
+                                    BottleComponentIds.of(BottleComponentIds.ACTION_SEND, "_"),
+                                    "Send a bottle"
+                            )
                     )
                     .ephemeral(true)
                     .build());
