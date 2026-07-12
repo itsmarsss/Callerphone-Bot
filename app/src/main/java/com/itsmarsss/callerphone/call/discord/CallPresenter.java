@@ -140,7 +140,13 @@ public final class CallPresenter {
                 .description("Both sides will disconnect. You can start another call right after.")
                 .actions(
                         ActionSpec.danger(CallComponentIds.endConfirm(), "End call"),
-                        ActionSpec.secondary(CallComponentIds.endCancel(), "Keep talking")
+                        ActionSpec.secondary(CallComponentIds.endCancel(), "Keep talking"),
+                        ActionSpec.secondary(
+                                com.itsmarsss.callerphone.msginbottle.BottleComponentIds.of(
+                                        com.itsmarsss.callerphone.msginbottle.BottleComponentIds.ACTION_FIND, "_"
+                                ),
+                                "Find a bottle"
+                        )
                 )
                 .build();
     }
