@@ -5,7 +5,6 @@ import com.itsmarsss.callerphone.experience.ExperienceRenderer;
 import com.itsmarsss.callerphone.identity.AgeCohort;
 import com.itsmarsss.callerphone.identity.EnrollmentService;
 import com.itsmarsss.callerphone.match.component.MatchComponentIds;
-import com.itsmarsss.callerphone.match.model.ConversationStage;
 import com.itsmarsss.callerphone.match.model.DecisionType;
 import com.itsmarsss.callerphone.match.model.MatchConversation;
 import com.itsmarsss.callerphone.match.model.MatchProfile;
@@ -18,8 +17,6 @@ import net.dv8tion.jda.api.components.buttons.Button;
 import net.dv8tion.jda.api.components.selections.StringSelectMenu;
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonInteraction;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
 public final class MatchButtonHandler implements IButtonInteraction {
@@ -399,68 +396,27 @@ public final class MatchButtonHandler implements IButtonInteraction {
         MatchConversation conversation = result.conversation();
         String other = conversation.otherParticipant(userId);
         String name = ctx.profiles().find(other).map(MatchProfile::getDisplayName).orElse("your connection");
-        List<Button> row1 = new ArrayList<>();
-        List<Button> row2 = new ArrayList<>();
-        row1.add(Button.secondary(MatchComponentIds.of(MatchComponentIds.ACTION_STOP_CHAT, "_"), "Stop chat"));
-        row1.add(Button.danger(
-                MatchComponentIds.of(MatchComponentIds.ACTION_SAFETY_OPEN, "conversation:" + conversationId),
-                "Safety"
-        ));
         Optional<String> pendingGame = ctx.connectionGames().pendingProposer(conversationId);
+        MatchPresenter.ChatGameUi gameUi = MatchPresenter.ChatGameUi.AVAILABLE;
         if (pendingGame.isPresent() && !pendingGame.get().equals(userId)) {
-            row2.add(Button.success(
-                    MatchComponentIds.of(MatchComponentIds.ACTION_GAME_ACCEPT, conversationId),
-                    "Play Tic-Tac-Toe"
-            ));
-            row2.add(Button.secondary(
-                    MatchComponentIds.of(MatchComponentIds.ACTION_GAME_DECLINE, conversationId),
-                    "Decline game"
-            ));
-        } else if (pendingGame.isPresent() && pendingGame.get().equals(userId)) {
-            row2.add(Button.primary(
-                    MatchComponentIds.of(MatchComponentIds.ACTION_GAME_TTT, conversationId),
-                    "Waiting…"
-            ).asDisabled());
-            row2.add(Button.secondary(
-                    MatchComponentIds.of(MatchComponentIds.ACTION_GAME_DECLINE, conversationId),
-                    "Cancel game"
-            ));
-        } else {
-            row2.add(Button.primary(
-                    MatchComponentIds.of(MatchComponentIds.ACTION_GAME_TTT, conversationId),
-                    "Play a game"
-            ));
-            row2.add(Button.secondary(
-                    MatchComponentIds.of(MatchComponentIds.ACTION_ICEBREAKER, conversationId),
-                    "Icebreaker"
-            ));
+            gameUi = MatchPresenter.ChatGameUi.ACCEPT_THEIRS;
+        } else if (pendingGame.isPresent()) {
+            gameUi = MatchPresenter.ChatGameUi.WAITING_SELF;
         }
-        if (conversation.getStage() == ConversationStage.MEDIATED) {
-            row1.add(Button.primary(
-                    MatchComponentIds.of(MatchComponentIds.ACTION_CONNECT_REQUEST, conversationId),
-                    "Request connect"
-            ));
-        } else if (conversation.getStage() == ConversationStage.CONNECT_PENDING
-                && conversation.getConnectRequestedBy() != null
-                && !conversation.getConnectRequestedBy().equals(userId)) {
-            row1.add(Button.success(
-                    MatchComponentIds.of(MatchComponentIds.ACTION_CONNECT_ACCEPT, conversationId),
-                    "Accept connect"
-            ));
-            row1.add(Button.secondary(
-                    MatchComponentIds.of(MatchComponentIds.ACTION_CONNECT_DECLINE, conversationId),
-                    "Decline"
-            ));
-        } else if (conversation.getStage() == ConversationStage.CONNECT_PENDING
-                && userId.equals(conversation.getConnectRequestedBy())) {
-            row1.add(Button.secondary("m-v1-wait-_", "Waiting for connect…").asDisabled());
-        }
-        var reply = e.replyEmbeds(MatchEmbeds.success("Chatting with " + name, result.message()))
-                .addComponents(ActionRow.of(row1));
-        if (!row2.isEmpty()) {
-            reply = reply.addComponents(ActionRow.of(row2));
-        }
-        reply.setEphemeral(true).queue();
+        boolean connectRequester = conversation.getConnectRequestedBy() != null
+                && conversation.getConnectRequestedBy().equals(userId);
+        boolean connectTarget = conversation.getConnectRequestedBy() != null
+                && !conversation.getConnectRequestedBy().equals(userId);
+        e.reply(ExperienceRenderer.toMessage(MatchPresenter.chatSelected(
+                name,
+                result.message(),
+                conversationId,
+                conversation.getStage(),
+                connectRequester,
+                connectTarget,
+                gameUi,
+                false
+        ))).setEphemeral(true).queue();
     }
 
     private void decide(ButtonInteraction e, ApplicationContext ctx, String userId, String sessionId, DecisionType type) {
@@ -546,10 +502,7 @@ public final class MatchButtonHandler implements IButtonInteraction {
         for (ReportCategory cat : ReportCategory.values()) {
             menu.addOption(cat.label(), cat.code());
         }
-        e.replyEmbeds(MatchEmbeds.soft(
-                        "Report",
-                        "Choose the closest reason. Evidence from this chat or profile is attached."
-                ))
+        e.reply(ExperienceRenderer.toMessage(MatchPresenter.safetyReportPrompt()))
                 .addComponents(ActionRow.of(menu.build()))
                 .setEphemeral(true)
                 .queue();

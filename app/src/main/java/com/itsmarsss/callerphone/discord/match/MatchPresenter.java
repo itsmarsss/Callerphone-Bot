@@ -8,6 +8,7 @@ import com.itsmarsss.callerphone.experience.ExperienceView;
 import com.itsmarsss.callerphone.experience.ViewField;
 import com.itsmarsss.callerphone.identity.AgeCohort;
 import com.itsmarsss.callerphone.match.component.MatchComponentIds;
+import com.itsmarsss.callerphone.match.model.ConversationStage;
 import com.itsmarsss.callerphone.match.model.MatchProfile;
 import com.itsmarsss.callerphone.match.service.EmptyStates;
 import com.itsmarsss.callerphone.match.service.MatchLimits;
@@ -489,20 +490,121 @@ public final class MatchPresenter {
                 .build();
     }
 
+    public enum ChatGameUi {
+        AVAILABLE,
+        WAITING_SELF,
+        ACCEPT_THEIRS
+    }
+
     public static ExperienceView chatSelected(String name, String message, String conversationId) {
+        return chatSelected(name, message, conversationId, ConversationStage.MEDIATED,
+                false, false, ChatGameUi.AVAILABLE, false);
+    }
+
+    /**
+     * Full chat surface: stop/safety + game state + connect stage + optional back-to-inbox.
+     */
+    public static ExperienceView chatSelected(
+            String name,
+            String message,
+            String conversationId,
+            ConversationStage stage,
+            boolean isConnectRequester,
+            boolean isConnectTarget,
+            ChatGameUi gameUi,
+            boolean includeBackToInbox
+    ) {
+        List<ActionSpec> actions = new ArrayList<>();
+        actions.add(ActionSpec.secondary(MatchComponentIds.of(MatchComponentIds.ACTION_STOP_CHAT, "_"), "Stop chat"));
+        actions.add(ActionSpec.danger(
+                MatchComponentIds.of(MatchComponentIds.ACTION_SAFETY_OPEN, "conversation:" + conversationId),
+                "Safety"
+        ));
+        if (stage == ConversationStage.MEDIATED) {
+            actions.add(ActionSpec.primary(
+                    MatchComponentIds.of(MatchComponentIds.ACTION_CONNECT_REQUEST, conversationId),
+                    "Request connect"
+            ));
+        } else if (stage == ConversationStage.CONNECT_PENDING && isConnectTarget) {
+            actions.add(ActionSpec.success(
+                    MatchComponentIds.of(MatchComponentIds.ACTION_CONNECT_ACCEPT, conversationId),
+                    "Accept connect"
+            ));
+            actions.add(ActionSpec.secondary(
+                    MatchComponentIds.of(MatchComponentIds.ACTION_CONNECT_DECLINE, conversationId),
+                    "Decline"
+            ));
+        } else if (stage == ConversationStage.CONNECT_PENDING && isConnectRequester) {
+            actions.add(ActionSpec.secondary("m-v1-wait-_", "Waiting for connect…").asDisabled());
+        }
+
+        ChatGameUi ui = gameUi == null ? ChatGameUi.AVAILABLE : gameUi;
+        switch (ui) {
+            case ACCEPT_THEIRS -> {
+                actions.add(ActionSpec.success(
+                        MatchComponentIds.of(MatchComponentIds.ACTION_GAME_ACCEPT, conversationId),
+                        "Play Tic-Tac-Toe"
+                ));
+                actions.add(ActionSpec.secondary(
+                        MatchComponentIds.of(MatchComponentIds.ACTION_GAME_DECLINE, conversationId),
+                        "Decline game"
+                ));
+            }
+            case WAITING_SELF -> {
+                actions.add(ActionSpec.primary(
+                        MatchComponentIds.of(MatchComponentIds.ACTION_GAME_TTT, conversationId),
+                        "Waiting…"
+                ).asDisabled());
+                actions.add(ActionSpec.secondary(
+                        MatchComponentIds.of(MatchComponentIds.ACTION_GAME_DECLINE, conversationId),
+                        "Cancel game"
+                ));
+            }
+            default -> {
+                actions.add(ActionSpec.primary(
+                        MatchComponentIds.of(MatchComponentIds.ACTION_GAME_TTT, conversationId),
+                        "Play a game"
+                ));
+                actions.add(ActionSpec.secondary(
+                        MatchComponentIds.of(MatchComponentIds.ACTION_ICEBREAKER, conversationId),
+                        "Icebreaker"
+                ));
+            }
+        }
+        if (includeBackToInbox) {
+            actions.add(ActionSpec.secondary(
+                    MatchComponentIds.of(MatchComponentIds.ACTION_BACK_INBOX, "_"),
+                    "Back to inbox"
+            ));
+        }
+
         return ExperienceView.builder(ExperienceIntent.SOCIAL)
                 .title("Chatting with " + name)
                 .description(message)
+                .actions(actions)
+                .ephemeral(true)
+                .build();
+    }
+
+    public static ExperienceView safetyReportPrompt() {
+        return ExperienceView.builder(ExperienceIntent.SAFETY)
+                .title("Report")
+                .description("Choose the closest reason. Evidence from this chat or profile is attached.")
+                .ephemeral(true)
+                .build();
+    }
+
+    public static ExperienceView expiredAction() {
+        return ExperienceView.builder(ExperienceIntent.WARNING)
+                .title("That action expired")
+                .description("Open a fresh screen to continue — home, Discover, or your chats.")
                 .actions(
-                        ActionSpec.primary(
-                                MatchComponentIds.of(MatchComponentIds.ACTION_GAME_TTT, conversationId),
-                                "Play a game"
+                        ActionSpec.primary(MatchComponentIds.of(MatchComponentIds.ACTION_HOME, "_"), "Home"),
+                        ActionSpec.success(
+                                MatchComponentIds.of(MatchComponentIds.ACTION_START_BROWSE, "_"),
+                                "Discover"
                         ),
-                        ActionSpec.secondary(MatchComponentIds.of(MatchComponentIds.ACTION_STOP_CHAT, "_"), "Stop chat"),
-                        ActionSpec.danger(
-                                MatchComponentIds.of(MatchComponentIds.ACTION_SAFETY_OPEN, "conversation:" + conversationId),
-                                "Safety"
-                        )
+                        ActionSpec.secondary(MatchComponentIds.of(MatchComponentIds.ACTION_OPEN_CHATS, "_"), "Chats")
                 )
                 .ephemeral(true)
                 .build();
@@ -654,11 +756,7 @@ public final class MatchPresenter {
     }
 
     public static ExperienceView expired() {
-        return ExperienceView.builder(ExperienceIntent.WARNING)
-                .title("That expired")
-                .description(CopyCatalog.expiredAction())
-                .ephemeral(true)
-                .build();
+        return expiredAction();
     }
 
     public static ExperienceView leaveConfirm() {

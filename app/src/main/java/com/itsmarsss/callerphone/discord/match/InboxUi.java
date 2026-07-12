@@ -80,7 +80,13 @@ public final class InboxUi {
         ));
 
         return new MessageCreateBuilder()
-                .setEmbeds(MatchEmbeds.soft("Your inbox", sb.toString().trim()))
+                .setEmbeds(ExperienceRenderer.toEmbed(
+                        com.itsmarsss.callerphone.experience.ExperienceView.builder(
+                                        com.itsmarsss.callerphone.experience.ExperienceIntent.SOCIAL)
+                                .title("Your inbox")
+                                .description(sb.toString().trim())
+                                .build()
+                ))
                 .setComponents(
                         ActionRow.of(menu.build()),
                         ActionRow.of(buttons)
@@ -142,36 +148,31 @@ public final class InboxUi {
         MatchConversation conversation = result.conversation();
         String other = conversation.otherParticipant(userId);
         String name = ctx.profiles().find(other).map(MatchProfile::getDisplayName).orElse("your connection");
-        List<Button> buttons = new ArrayList<>();
-        List<Button> row1 = new ArrayList<>();
-        List<Button> row2 = new ArrayList<>();
-        row1.add(Button.primary(
-                MatchComponentIds.of(MatchComponentIds.ACTION_GAME_TTT, conversationId),
-                "Play a game"
+        String body = result.message();
+        if (entry.preview() != null && !entry.preview().isBlank()) {
+            body = body + "\n\n_" + entry.preview() + "_";
+        }
+        java.util.Optional<String> pendingGame = ctx.connectionGames().pendingProposer(conversationId);
+        MatchPresenter.ChatGameUi gameUi = MatchPresenter.ChatGameUi.AVAILABLE;
+        if (pendingGame.isPresent() && !pendingGame.get().equals(userId)) {
+            gameUi = MatchPresenter.ChatGameUi.ACCEPT_THEIRS;
+        } else if (pendingGame.isPresent()) {
+            gameUi = MatchPresenter.ChatGameUi.WAITING_SELF;
+        }
+        boolean connectRequester = conversation.getConnectRequestedBy() != null
+                && conversation.getConnectRequestedBy().equals(userId);
+        boolean connectTarget = conversation.getConnectRequestedBy() != null
+                && !conversation.getConnectRequestedBy().equals(userId);
+        return ExperienceRenderer.toMessage(MatchPresenter.chatSelected(
+                name,
+                body,
+                conversationId,
+                conversation.getStage(),
+                connectRequester,
+                connectTarget,
+                gameUi,
+                true
         ));
-        row1.add(Button.secondary(
-                MatchComponentIds.of(MatchComponentIds.ACTION_ICEBREAKER, conversationId),
-                "Icebreaker"
-        ));
-        row1.add(Button.secondary(
-                MatchComponentIds.of(MatchComponentIds.ACTION_STOP_CHAT, "_"),
-                "Stop chat"
-        ));
-        row2.add(Button.danger(
-                MatchComponentIds.of(MatchComponentIds.ACTION_SAFETY_OPEN, "conversation:" + conversationId),
-                "Safety"
-        ));
-        row2.add(Button.secondary(
-                MatchComponentIds.of(MatchComponentIds.ACTION_BACK_INBOX, "_"),
-                "Back to inbox"
-        ));
-        return new MessageCreateBuilder()
-                .setEmbeds(MatchEmbeds.success(
-                        "Chatting with " + name,
-                        result.message() + "\n\n_" + entry.preview() + "_"
-                ))
-                .setComponents(ActionRow.of(row1), ActionRow.of(row2))
-                .build();
     }
 
     private static MessageCreateData openBottle(ApplicationContext ctx, String userId, String bottleId) {

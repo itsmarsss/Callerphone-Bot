@@ -54,15 +54,19 @@ public final class CallProfileShareService {
         }
         session.markProfileShared(sharerUserId);
         MatchProfile p = profile.get();
-        other.sendMessageEmbeds(
-                        MatchEmbeds.soft("Profile shared", "Someone wants you to meet them."),
-                        MatchEmbeds.profileCard(p, false)
-                )
-                .setComponents(ActionRow.of(
-                        Button.success(CallComponentIds.like(sessionId, sharerUserId), "Interested"),
-                        Button.secondary(CallComponentIds.pass(sessionId, sharerUserId), "Not now")
+        other.sendMessage(com.itsmarsss.callerphone.experience.ExperienceRenderer.toMessage(
+                        com.itsmarsss.callerphone.experience.ExperienceView.builder(
+                                        com.itsmarsss.callerphone.experience.ExperienceIntent.SOCIAL)
+                                .title("Profile shared")
+                                .description("Someone wants you to meet them.")
+                                .build()
                 ))
-                .queue();
+                .queue(ok -> other.sendMessageEmbeds(MatchEmbeds.profileCard(p, false))
+                        .setComponents(ActionRow.of(
+                                Button.success(CallComponentIds.like(sessionId, sharerUserId), "Interested"),
+                                Button.secondary(CallComponentIds.pass(sessionId, sharerUserId), "Not now")
+                        ))
+                        .queue());
         try {
             ApplicationContext.get().analytics().track(sharerUserId, "call_profile_share", sessionId);
         } catch (Exception ignored) {

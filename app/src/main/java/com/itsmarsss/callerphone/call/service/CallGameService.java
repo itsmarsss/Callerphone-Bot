@@ -88,9 +88,9 @@ public final class CallGameService {
         // Notify both call channels; full board still lives in DMs via existing mini-game flow
         MessageChannel a = ToolSet.getMessageChannel(session.getChannelA());
         MessageChannel b = ToolSet.getMessageChannel(session.getChannelB());
-        MessageCreateData notice = new MessageCreateBuilder()
-                .setContent("**Tic-Tac-Toe started.** The board is in each player's DMs. The call stays connected.")
-                .build();
+        MessageCreateData notice = ExperienceRenderer.toMessage(
+                CallPresenter.gameStarted(sessionId)
+        );
         if (a != null) {
             a.sendMessage(notice).queue();
         }

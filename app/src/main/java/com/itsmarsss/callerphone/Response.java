@@ -1,7 +1,7 @@
 package com.itsmarsss.callerphone;
 
 public enum Response {
-    ERROR("Something went wrong. Try again."),
+    ERROR("We couldn't finish that. Nothing was lost — try again."),
     MISSING_PARAM("Something's missing. Try `/help` for that command."),
 
     PING_TEMPLATE("**Rest ping:** %sms \n**WS ping:** %sms"),
@@ -26,7 +26,7 @@ public enum Response {
     /** Args: error, support server */
     ERROR_MSG("We hit a problem (`%s`). If it keeps happening, join support: %s"),
     TEMP("There is no set return message"),
-    FEATURE_COMING_SOON("This isn't available yet.");
+    FEATURE_COMING_SOON("This game isn't ready yet. Try Tic-Tac-Toe or keep chatting.");
 
     public final String label;
 

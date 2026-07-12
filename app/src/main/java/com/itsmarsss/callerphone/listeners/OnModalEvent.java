@@ -1,7 +1,6 @@
 package com.itsmarsss.callerphone.listeners;
 
 import com.itsmarsss.callerphone.Callerphone;
-import com.itsmarsss.callerphone.ToolSet;
 import com.itsmarsss.callerphone.utils.InteractionUtils;
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
@@ -17,13 +16,14 @@ public class OnModalEvent extends ListenerAdapter {
                 handler.runModal(event);
                 return;
             }
-            event.reply(
-                    ToolSet.CP_EMJ
-                            + "Hmmm, the modal `"
-                            + event.getModalId()
-                            + "` shouldn't exist! Please join our support server and report this issue. "
-                            + Callerphone.config.getSupportServer()
-            ).queue();
+            event.reply(com.itsmarsss.callerphone.experience.ExperienceRenderer.toMessage(
+                    com.itsmarsss.callerphone.experience.ExperienceView.builder(
+                                    com.itsmarsss.callerphone.experience.ExperienceIntent.WARNING)
+                            .title("That form expired")
+                            .description("Open a fresh screen and try again. If this keeps happening, join support: "
+                                    + Callerphone.config.getSupportServer())
+                            .build()
+            )).setEphemeral(true).queue();
         } catch (Exception e) {
             ErrorHandler.handleModalError(event, e);
         }

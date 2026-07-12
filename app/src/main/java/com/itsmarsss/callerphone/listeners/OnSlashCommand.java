@@ -21,13 +21,14 @@ public class OnSlashCommand extends ListenerAdapter {
         try {
             ISlashCommand command = (ISlashCommand) Callerphone.cmdMap.get(event.getName());
             if (command == null) {
-                event.reply(
-                        ToolSet.CP_EMJ
-                                + "Hmmm, the slash command `"
-                                + event.getName()
-                                + "` shouldn't exist! Please join our support server and report this issue. "
-                                + Callerphone.config.getSupportServer()
-                ).queue();
+                event.reply(com.itsmarsss.callerphone.experience.ExperienceRenderer.toMessage(
+                        com.itsmarsss.callerphone.experience.ExperienceView.builder(
+                                        com.itsmarsss.callerphone.experience.ExperienceIntent.WARNING)
+                                .title("Command unavailable")
+                                .description("That command isn't registered right now. Try `/help` or join support: "
+                                        + Callerphone.config.getSupportServer())
+                                .build()
+                )).setEphemeral(true).queue();
                 return;
             }
 

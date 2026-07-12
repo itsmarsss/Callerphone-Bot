@@ -100,6 +100,20 @@ public final class CallPresenter {
                 .build();
     }
 
+    public static ExperienceView gameStarted(String sessionId) {
+        return ExperienceView.builder(ExperienceIntent.SUCCESS)
+                .title("Tic-Tac-Toe started")
+                .description(
+                        "The board is in each player's DMs. The call stays connected — keep talking here."
+                )
+                .footer("Callerphone Call")
+                .actions(
+                        ActionSpec.primary(CallComponentIds.prompt(sessionId), "Conversation prompt"),
+                        ActionSpec.secondary(CallComponentIds.share(sessionId), "Share profile")
+                )
+                .build();
+    }
+
     public static ExperienceView queuedDm(int position, int size) {
         return ExperienceView.builder(ExperienceIntent.PROGRESS)
                 .title("Finding a call")
