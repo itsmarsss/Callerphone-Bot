@@ -19,7 +19,6 @@ public enum Response {
     ATTEMPTED_LINK(ToolSet.CP_ERR + "I tried to send a link " + ToolSet.CP_ERR),
 
     USER_TEMPLATE("\t\t{\n\t\t\t\"id\": \"%s\",\n\t\t\t\"status\": \"%s\",\n\t\t\t\"reason\": \"%s\",\n\t\t\t\"prefix\": \"%s\",\n\t\t\t\"credits\": %s,\n\t\t\t\"executed\": %s,\n\t\t\t\"transmitted\": %s\n\t\t}"),
-    POOL_TEMPLATE("\t\t{\n\t\t\t\"hostID\": \"%s\",\n\t\t\t\"pwd\": \"%s\",\n\t\t\t\"cap\": %s,\n\t\t\t\"pub\": %s,\n\t\t\t\"children\": [\n\t\t\t\t%s\n\t\t\t]\n\t\t}"),
 
     NO_PERMISSION(ToolSet.CP_EMJ + "You need `Manage Channel` permission to run this command."),
     /** Args: reason, support server */

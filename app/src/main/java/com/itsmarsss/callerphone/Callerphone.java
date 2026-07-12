@@ -13,8 +13,6 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.itsmarsss.ICommand;
-import com.itsmarsss.callerphone.channelpool.commands.*;
-import com.itsmarsss.callerphone.channelpool.modals.SettingsModal;
 import com.itsmarsss.callerphone.minigames.commands.PlayMiniGame;
 import com.itsmarsss.callerphone.minigames.commands.ShowMiniGames;
 import com.itsmarsss.callerphone.minigames.handlers.BattleShipHandler;
@@ -36,10 +34,9 @@ import com.itsmarsss.callerphone.call.discord.CallButtonHandler;
 import com.itsmarsss.callerphone.call.discord.CallCommand;
 import com.itsmarsss.callerphone.call.discord.CallListener;
 import com.itsmarsss.callerphone.call.discord.EndCallCommand;
+import com.itsmarsss.callerphone.call.discord.PrefixCommand;
 import com.itsmarsss.callerphone.call.discord.ReportCallCommand;
 import com.itsmarsss.callerphone.call.service.CallSessionService;
-import com.itsmarsss.callerphone.tccallerphone.commands.Prefix;
-import com.itsmarsss.callerphone.tccallerphone.handlers.ReportChatHandler;
 import com.itsmarsss.callerphone.users.commands.DeductCredits;
 import com.itsmarsss.callerphone.users.commands.Leaderboard;
 import com.itsmarsss.callerphone.users.commands.Profile;
@@ -57,9 +54,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.itsmarsss.callerphone.bot.*;
-import com.itsmarsss.callerphone.utils.*;
 import com.itsmarsss.callerphone.listeners.*;
-import com.itsmarsss.callerphone.channelpool.*;
 
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.requests.GatewayIntent;
@@ -150,25 +145,16 @@ public class Callerphone {
         try {
             if (isQuickStart) {
                 sdMgr = DefaultShardManagerBuilder.createDefault(token, intent)
-                        //.enableCache(CacheFlag.VOICE_STATE)
-                        //.enableCache(CacheFlag.ROLE_TAGS)
-                        //.setMemberCachePolicy(MemberCachePolicy.ALL)
                         .setShardsTotal(-1)
                         .build();
             } else {
                 sdMgr = DefaultShardManagerBuilder.createDefault(token, intent)
-                        //.enableCache(CacheFlag.VOICE_STATE)
-                        //.enableCache(CacheFlag.ROLE_TAGS)
-                        //.setChunkingFilter(ChunkingFilter.ALL)
                         .setMemberCachePolicy(MemberCachePolicy.ALL)
                         .setShardsTotal(-1)
                         .build();
             }
-            //builder.setShards(shardId, shardTotal); // Set the shard ID and total number of shards for this instance
-            //builder.addEventListeners(/* Add event listeners */);
 
             selfUser = sdMgr.getShards().get(0).getSelfUser();
-
 
             logger.info("Shard count: {}", sdMgr.getShardsTotal());
             registerCommands();
@@ -196,13 +182,10 @@ public class Callerphone {
 
     private static void registerCommands() {
         ICommand[] commands = {
-                new About(), new BotInfo(), new Donate(), new Invite(), new Profile(), new Leaderboard(),
-                new ChannelInfo(), new Colour(), new Help(), new RoleInfo(), new Search(),
-                new ServerInfo(), new UserInfo(),
-                new CallCommand(), new EndCallCommand(), new ReportCallCommand(), new Prefix(),
+                new About(), new BotInfo(), new Donate(), new Help(), new Invite(),
+                new Profile(), new Leaderboard(),
+                new CallCommand(), new EndCallCommand(), new ReportCallCommand(), new PrefixCommand(),
                 new MatchCommand(),
-                new HostPool(), new JoinPool(), new EndPool(), new LeavePool(),
-                new PoolParticipants(), new PoolSettings(), new KickPool(),
                 new DeductCredits(), new RewardCredits(),
                 new PlayMiniGame(), new ShowMiniGames(),
                 new FindBottle(), new SendBottle(), new ViewBottle()
@@ -217,7 +200,7 @@ public class Callerphone {
     }
 
     private static void registerModals() {
-        IModalInteraction[] modals = {new SendModal(), new SettingsModal(), new MatchModalHandler()};
+        IModalInteraction[] modals = {new SendModal(), new MatchModalHandler()};
         for (IModalInteraction modal : modals) {
             mdlMap.put(modal.getID(), modal);
             logger.debug("Registered modal: {}", modal.getID());
@@ -230,7 +213,7 @@ public class Callerphone {
                 new TicTacToeHandler(), new Connect4Handler(), new BattleShipHandler(),
                 new WordSearchHandler(), new AddPageHandler(), new NextHandler(),
                 new PreviousHandler(), new ReportHandler(), new SaveHandler(),
-                new ReportChatHandler(), new CallButtonHandler(), new MatchButtonHandler()
+                new CallButtonHandler(), new MatchButtonHandler()
         };
         for (IButtonInteraction button : buttons) {
             btnMap.put(button.getID(), button);
@@ -247,10 +230,8 @@ public class Callerphone {
                 new OnModalEvent(),
                 new OnOtherEvent(),
                 new OnSlashCommand(),
-                new CallListener(),
-                new ChannelPoolListener()
+                new CallListener()
         );
-        // ensure call service is constructed
         CallSessionService.get();
     }
 }

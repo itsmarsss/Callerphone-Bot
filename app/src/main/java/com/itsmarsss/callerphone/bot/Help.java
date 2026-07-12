@@ -3,31 +3,18 @@ package com.itsmarsss.callerphone.bot;
 import com.itsmarsss.ICommand;
 import com.itsmarsss.callerphone.Callerphone;
 import com.itsmarsss.callerphone.ToolSet;
-import com.itsmarsss.callerphone.channelpool.commands.EndPool;
-import com.itsmarsss.callerphone.channelpool.commands.HostPool;
-import com.itsmarsss.callerphone.channelpool.commands.JoinPool;
-import com.itsmarsss.callerphone.channelpool.commands.KickPool;
-import com.itsmarsss.callerphone.channelpool.commands.LeavePool;
-import com.itsmarsss.callerphone.channelpool.commands.PoolParticipants;
-import com.itsmarsss.callerphone.channelpool.commands.PoolSettings;
 import com.itsmarsss.callerphone.msginbottle.commands.FindBottle;
 import com.itsmarsss.callerphone.msginbottle.commands.SendBottle;
 import com.itsmarsss.callerphone.msginbottle.commands.ViewBottle;
 import com.itsmarsss.callerphone.call.discord.CallCommand;
 import com.itsmarsss.callerphone.call.discord.EndCallCommand;
+import com.itsmarsss.callerphone.call.discord.PrefixCommand;
 import com.itsmarsss.callerphone.call.discord.ReportCallCommand;
 import com.itsmarsss.callerphone.discord.match.MatchCommand;
-import com.itsmarsss.callerphone.tccallerphone.commands.Prefix;
 import com.itsmarsss.callerphone.minigames.commands.PlayMiniGame;
 import com.itsmarsss.callerphone.minigames.commands.ShowMiniGames;
 import com.itsmarsss.callerphone.users.commands.Leaderboard;
 import com.itsmarsss.callerphone.users.commands.Profile;
-import com.itsmarsss.callerphone.utils.ChannelInfo;
-import com.itsmarsss.callerphone.utils.Colour;
-import com.itsmarsss.callerphone.utils.RoleInfo;
-import com.itsmarsss.callerphone.utils.Search;
-import com.itsmarsss.callerphone.utils.ServerInfo;
-import com.itsmarsss.callerphone.utils.UserInfo;
 import com.itsmarsss.commandType.ISlashCommand;
 import com.itsmarsss.database.categories.Users;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -56,86 +43,66 @@ public class Help implements ISlashCommand {
         }
 
         name = name.toLowerCase().trim();
-        String title = "Sorry.";
-        String desc = "I don't recognize that category/command :(";
+        String title;
+        String desc;
 
         switch (name) {
-            case "bot":
-                title = "Bot Commands";
+            case "bot" -> {
+                title = "Bot";
                 desc = joinHelp(new About(), new BotInfo(), new Donate(), new Help(), new Invite(),
                         new Profile(), new Leaderboard());
-                break;
-            case "games":
-            case "minigames":
-                title = "MiniGames";
+            }
+            case "games", "minigames" -> {
+                title = "Mini games";
                 desc = joinHelp(new ShowMiniGames(), new PlayMiniGame());
-                break;
-            case "utils":
-                title = "Util Commands";
-                desc = joinHelp(new ServerInfo(), new ChannelInfo(), new RoleInfo(), new UserInfo(), new Colour(), new Search());
-                break;
-            case "pooling":
-                title = "Channel Pooling Commands";
-                desc = joinHelp(new HostPool(), new JoinPool(), new EndPool(), new LeavePool(),
-                        new KickPool(), new PoolParticipants(), new PoolSettings());
-                break;
-            case "tccall":
-            case "call":
-                title = "Random Call";
-                desc = joinHelp(new CallCommand(), new EndCallCommand(), new ReportCallCommand(), new Prefix())
-                        + "\n\nSingle mode only (anon / family-friendly removed). "
-                        + "Share Match profiles during a call to like each other.";
-                break;
-            case "match":
-            case "social":
-                title = "Callerphone Social (Match)";
-                desc = joinHelp(new MatchCommand());
-                break;
-            case "msgbottle":
-                title = "Message In Bottle";
+            }
+            case "tccall", "call" -> {
+                title = "Call";
+                desc = joinHelp(new CallCommand(), new EndCallCommand(), new ReportCallCommand(), new PrefixCommand())
+                        + "\n\nChat with another server. Share your profile during a call if you want.";
+            }
+            case "match", "social" -> {
+                title = "Match";
+                desc = joinHelp(new MatchCommand())
+                        + "\nDiscover people in your age group and start chats.";
+            }
+            case "msgbottle", "bottle", "bottles" -> {
+                title = "Message in a bottle";
                 desc = joinHelp(new SendBottle(), new FindBottle(), new ViewBottle());
-                break;
-            case "music":
-                title = "Music Commands";
-                desc = "Callerphone no longer can play music, however I've created a new bot called **Tunes**...\nJoin [this]("
-                        + Callerphone.config.getSupportServer() + ") server for more information!";
-                break;
-            case "creds":
-                title = "**EARN CREDITS**";
-                desc = "__Commands:__" +
-                        "\n> Message ~ `\u23E3 1`" +
-                        "\n> Slash ~ `\u23E3 2`" +
-                        "\n\n__Messages:__" +
-                        "\n> Channel Pool ~ `\u23E3 3`" +
-                        "\n> Channel Chat ~ `\u23E3 5`" +
-                        "\n\n__Other:__" +
-                        "\n> Bug Report ~ `\u23E3 5,000`" +
-                        "\n\n**NOTE:** Channel Pool/Chat can be earned a maximum of once per "
-                        + (ToolSet.CREDIT_COOLDOWN / 1000) + " seconds. *(Spam prevention)*";
-                break;
-            case "exp":
-                title = "**EARN EXPERIENCE**";
-                desc = "__**Temporary:**__" +
-                        "\n> Each level requires 100 exp, and each command/message transferred is worth 1 exp.";
-                break;
-            default:
+            }
+            case "creds", "credits" -> {
+                title = "Credits";
+                desc = "Earn credits as you use the bot.\n\n"
+                        + "**Activity**\n"
+                        + "· Message · `◉ 1`\n"
+                        + "· Slash command · `◉ 2`\n"
+                        + "· Call message · `◉ 5`\n\n"
+                        + "**Other**\n"
+                        + "· Bug report · `◉ 5,000`\n\n"
+                        + "Call credits can be earned once every "
+                        + (ToolSet.CREDIT_COOLDOWN / 1000) + " seconds.";
+            }
+            case "exp", "experience", "level" -> {
+                title = "Experience";
+                desc = "Each level needs **100** exp.\nCommands and call messages grant **1** exp each.";
+            }
+            default -> {
                 ICommand cmd = Callerphone.cmdMap.get(name);
                 if (cmd != null) {
-                    title = cmd.getName();
+                    title = capitalize(cmd.getName());
                     desc = cmd.getHelp();
-                    if ("search".equals(name)) {
-                        desc += "\nWe use DuckDuckGo, so click [here](https://help.duckduckgo.com/duckduckgo-help-pages/results/syntax/) for searching syntax!";
-                    }
+                } else {
+                    title = "Not found";
+                    desc = "I don't recognize `" + name + "`.\nTry `/help` for categories.";
                 }
-                break;
+            }
         }
 
         return new EmbedBuilder()
                 .setTitle(title)
                 .setDescription(desc)
-                .setFooter("Hope you found this useful!",
-                        Callerphone.selfUser != null ? Callerphone.selfUser.getAvatarUrl() : null)
                 .setColor(ToolSet.COLOR)
+                .setFooter("Callerphone · /help")
                 .build();
     }
 
@@ -145,29 +112,34 @@ public class Help implements ISlashCommand {
                 .collect(Collectors.joining("\n"));
     }
 
-    private MessageEmbed helpCategories(boolean admin) {
-        EmbedBuilder categoryEmbed = new EmbedBuilder()
-                .setColor(ToolSet.COLOR)
-                .setTitle("Categories")
-                .addField("Bot", "Bot commands — `/help bot`", false)
-                .addField("Utils", "Utility commands — `/help utils`", false)
-                .addField("Pooling", "Channel pooling — `/help pooling`", false)
-                .addField("Random Call", "Cross-server chat — `/help call`", false)
-                .addField("Match / Social", "Discover & connect — `/help match`", false)
-                .addField("Msg Bottles", "Message in bottle — `/help msgbottle`", false)
-                .addField("MiniGames", "Playable games — `/help games`", false)
-                .addField("Music", "Callerphone no longer plays music", false)
-                .setFooter("Type `/help <category name>` to see category commands");
-        if (admin) {
-            categoryEmbed.addField("Moderator only",
-                    "Moderator commands — `" + Callerphone.config.getPrefix() + "help mod` in DM", false);
+    private static String capitalize(String s) {
+        if (s == null || s.isEmpty()) {
+            return s;
         }
-        return categoryEmbed.build();
+        return Character.toUpperCase(s.charAt(0)) + s.substring(1);
+    }
+
+    private MessageEmbed helpCategories(boolean admin) {
+        EmbedBuilder emb = new EmbedBuilder()
+                .setColor(ToolSet.COLOR)
+                .setTitle("Callerphone help")
+                .setDescription("Pick a category, or pass a command name.")
+                .addField("Match", "Discover people · `/help match`", false)
+                .addField("Call", "Chat across servers · `/help call`", false)
+                .addField("Message in a bottle", "Cast & find bottles · `/help msgbottle`", false)
+                .addField("Mini games", "Play together · `/help games`", false)
+                .addField("Bot", "Profile, invite, about · `/help bot`", false)
+                .addField("Credits & exp", "`/help credits` · `/help exp`", false)
+                .setFooter("Callerphone");
+        if (admin) {
+            emb.addField("Moderator", "DM `" + Callerphone.config.getPrefix() + "help mod`", false);
+        }
+        return emb.build();
     }
 
     @Override
     public String getHelp() {
-        return "</help:1075169172423720970> - help help help";
+        return "`/help` browse commands";
     }
 
     @Override

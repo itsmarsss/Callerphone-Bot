@@ -41,7 +41,7 @@ public class Profile implements ISlashCommand {
                 : "`" + tempPrefix + "`";
 
         long now = System.currentTimeMillis();
-        long creditElapsed = now - Cooldown.getPoolCooldown(userId);
+        long creditElapsed = now - Cooldown.getCreditCooldown(userId);
         long commandElapsed = now - Cooldown.getCmdCooldown(userId);
 
         return new EmbedBuilder()

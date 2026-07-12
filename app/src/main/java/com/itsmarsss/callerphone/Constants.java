@@ -12,11 +12,6 @@ public final class Constants {
     public static final long FINDBOTTLE_COOLDOWN = 600_000;
     public static final long SENDBOTTLE_COOLDOWN = 600_000;
 
-    // Channel Pool limits
-    public static final int POOL_MIN_CAPACITY = 2;
-    public static final int POOL_MAX_CAPACITY = 10;
-    public static final int POOL_DEFAULT_CAPACITY = 10;
-
     // Message in Bottle limits
     public static final int MIB_MIN_PAGE_LENGTH = 10;
     public static final int MIB_MAX_PAGE_LENGTH = 1500;

@@ -12,6 +12,7 @@ import java.awt.Color;
 import java.time.format.DateTimeFormatter;
 import java.util.Collection;
 import java.util.EnumSet;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
 /**
@@ -82,5 +83,13 @@ public final class EmbedHelpers {
 
     public static MessageEmbed error(String message) {
         return base().setTitle("Error").setDescription(message).build();
+    }
+
+    public static Color randColor() {
+        return new Color(
+                ThreadLocalRandom.current().nextInt(256),
+                ThreadLocalRandom.current().nextInt(256),
+                ThreadLocalRandom.current().nextInt(256)
+        );
     }
 }

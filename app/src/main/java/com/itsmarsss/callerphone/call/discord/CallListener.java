@@ -42,8 +42,8 @@ public final class CallListener extends ListenerAdapter {
             return;
         }
         calls.handleMessage(channelId, message.getAuthor(), raw);
-        if ((System.currentTimeMillis() - Cooldown.getPoolCooldown(event.getAuthor().getId())) > ToolSet.CREDIT_COOLDOWN) {
-            Cooldown.setUserCooldown(event.getAuthor().getId());
+        if ((System.currentTimeMillis() - Cooldown.getCreditCooldown(event.getAuthor().getId())) > ToolSet.CREDIT_COOLDOWN) {
+            Cooldown.setCreditCooldown(event.getAuthor().getId());
             Users.reward(event.getAuthor().getId(), 5);
             Users.addTransmit(event.getAuthor().getId(), 1);
         }

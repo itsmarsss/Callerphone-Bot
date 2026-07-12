@@ -60,11 +60,12 @@ public class Cooldown {
         }
     }
 
-    public static long getPoolCooldown(String id) {
+    /** Credit grant cooldown for call messages (storage key retained for existing users). */
+    public static long getCreditCooldown(String id) {
         return queryUserCooldown(id, "poolChat");
     }
 
-    public static void setUserCooldown(String id) {
+    public static void setCreditCooldown(String id) {
         updateUserCooldown(id, "poolChat");
     }
 

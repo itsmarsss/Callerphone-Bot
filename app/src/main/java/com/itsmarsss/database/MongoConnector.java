@@ -20,7 +20,6 @@ public class MongoConnector {
     private MongoDatabase mongoDatabase;
     private MongoCollection<Document> filtersCollection;
     private MongoCollection<Document> usersCollection;
-    private MongoCollection<Document> poolsCollection;
     private MongoCollection<Document> mibsCollection;
     private MongoCollection<Document> chatsCollection;
 
@@ -36,7 +35,6 @@ public class MongoConnector {
 
             filtersCollection = mongoDatabase.getCollection("filters");
             usersCollection = mongoDatabase.getCollection("users");
-            poolsCollection = mongoDatabase.getCollection("pools");
             mibsCollection = mongoDatabase.getCollection("mibs");
             chatsCollection = mongoDatabase.getCollection("chats");
 
@@ -66,10 +64,6 @@ public class MongoConnector {
 
     public MongoCollection<Document> getUsersCollection() {
         return usersCollection;
-    }
-
-    public MongoCollection<Document> getPoolsCollection() {
-        return poolsCollection;
     }
 
     public MongoCollection<Document> getMibsCollection() {

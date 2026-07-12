@@ -82,7 +82,7 @@ public class Users {
                     .append("executed", 0L)
                     .append("transmitted", 0L)
                     .append("cooldowns_command", 0L)
-                    .append("cooldowns_poolChat", 0L)
+                    .append("cooldowns_poolChat", 0L) // historical credit-cooldown key
                     .append("cooldowns_MIBSend", 0L)
                     .append("cooldowns_MIBFind", 0L));
 
