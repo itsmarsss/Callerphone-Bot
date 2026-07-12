@@ -566,7 +566,9 @@ public final class MatchButtonHandler implements IButtonInteraction {
                 String lower = msg.toLowerCase();
                 if (lower.contains("interests used") || lower.contains("chat limit") || lower.contains("limit reached")) {
                     try {
-                        ctx.analytics().track(userId, "soft_limit", type.name().toLowerCase());
+                        String reason = type.name().toLowerCase();
+                        ctx.analytics().track(userId, "soft_limit", reason);
+                        ctx.analytics().trackSurface(userId, "discover", "soft_limit", reason);
                     } catch (Exception ignored) {
                     }
                     e.getHook().sendMessage(ExperienceRenderer.toMessage(
