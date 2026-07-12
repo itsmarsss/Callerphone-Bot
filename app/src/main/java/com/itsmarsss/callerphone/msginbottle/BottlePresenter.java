@@ -64,7 +64,17 @@ public final class BottlePresenter {
                 .title("Not yet")
                 .description("Your next bottle can launch in **" + minutes + "** minute(s).")
                 .actions(
-                        ActionSpec.success(BottleComponentIds.of(BottleComponentIds.ACTION_FIND, "_"), "Find a bottle")
+                        ActionSpec.success(BottleComponentIds.of(BottleComponentIds.ACTION_FIND, "_"), "Find a bottle"),
+                        ActionSpec.secondary(
+                                com.itsmarsss.callerphone.call.discord.CallComponentIds.again("_"),
+                                "Start a call"
+                        ),
+                        ActionSpec.secondary(
+                                com.itsmarsss.callerphone.match.component.MatchComponentIds.of(
+                                        com.itsmarsss.callerphone.match.component.MatchComponentIds.ACTION_START_BROWSE, "_"
+                                ),
+                                "Discover people"
+                        )
                 )
                 .ephemeral(true)
                 .build();
@@ -75,7 +85,17 @@ public final class BottlePresenter {
                 .title("Cooldown")
                 .description("Try finding another bottle in **" + minutes + "** minute(s).")
                 .actions(
-                        ActionSpec.primary(BottleComponentIds.of(BottleComponentIds.ACTION_SEND, "_"), "Send a bottle")
+                        ActionSpec.primary(BottleComponentIds.of(BottleComponentIds.ACTION_SEND, "_"), "Send a bottle"),
+                        ActionSpec.secondary(
+                                com.itsmarsss.callerphone.call.discord.CallComponentIds.again("_"),
+                                "Start a call"
+                        ),
+                        ActionSpec.secondary(
+                                com.itsmarsss.callerphone.match.component.MatchComponentIds.of(
+                                        com.itsmarsss.callerphone.match.component.MatchComponentIds.ACTION_START_BROWSE, "_"
+                                ),
+                                "Discover people"
+                        )
                 )
                 .ephemeral(true)
                 .build();
