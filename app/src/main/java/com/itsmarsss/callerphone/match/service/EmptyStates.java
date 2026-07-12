@@ -5,26 +5,26 @@ public final class EmptyStates {
     }
 
     public static String noCandidates() {
-        return "No one new right now. Check back later.";
+        return "You've seen everyone available right now. New and refreshed profiles appear later.";
     }
 
     public static String notActive() {
-        return "Finish your profile first. Try `/match join`.";
+        return "Finish your profile first so you can appear in Discover.";
     }
 
     public static String notEnrolled() {
-        return "Start with `/match join`.";
+        return "Create a profile to start discovering people.";
     }
 
     public static String restricted() {
-        return "Match is paused on your account.";
+        return "Discover is paused on your account.";
     }
 
     public static String noChats() {
-        return "No chats yet. Browse and say interested when you vibe.";
+        return "When you and someone are both interested, your chat appears here.";
     }
 
     public static String noLikes() {
-        return "No likes yet. Keep browsing.";
+        return "No new interest yet. Your profile can still appear in Discover.";
     }
 }

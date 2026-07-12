@@ -1,6 +1,5 @@
 package com.itsmarsss.callerphone.call.discord;
 
-import com.itsmarsss.callerphone.ToolSet;
 import com.itsmarsss.callerphone.call.service.CallResult;
 import com.itsmarsss.callerphone.call.service.CallSessionService;
 import com.itsmarsss.commandType.ISlashCommand;
@@ -9,7 +8,7 @@ import net.dv8tion.jda.api.interactions.InteractionContextType;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 
-/** Single-mode random chat between servers. */
+/** Random chat between servers. */
 public final class CallCommand implements ISlashCommand {
     private final CallSessionService calls = CallSessionService.get();
 
@@ -17,18 +16,18 @@ public final class CallCommand implements ISlashCommand {
     public void runSlash(SlashCommandInteractionEvent e) {
         CallResult result = calls.start(e.getChannel().getId(), e.getUser().getId());
         switch (result.status()) {
-            case CONFLICT -> e.reply(ToolSet.CP_EMJ + " " + result.message()).setEphemeral(true).queue();
-            case ALREADY_QUEUED, QUEUED -> e.reply(ToolSet.CP_EMJ + " " + result.message()).queue();
-            case MATCHED -> {
-                e.reply(calls.connectedMessage(result.session())).queue();
-            }
-            case FAILED -> e.reply(ToolSet.CP_EMJ + " " + result.message()).setEphemeral(true).queue();
+            case CONFLICT -> e.replyEmbeds(CallEmbeds.conflict()).setEphemeral(true).queue();
+            case QUEUED -> e.replyEmbeds(CallEmbeds.queued(result.queuePosition(), result.queueSize())).queue();
+            case ALREADY_QUEUED -> e.replyEmbeds(CallEmbeds.waiting(result.queuePosition(), result.queueSize())).queue();
+            case MATCHED -> e.reply(calls.connectedMessage(result.session())).queue();
+            case FAILED -> e.replyEmbeds(CallEmbeds.warn("Couldn't connect", result.message()))
+                    .setEphemeral(true).queue();
         }
     }
 
     @Override
     public String getHelp() {
-        return "`/call` random chat with another server\nShare your Match profile if you want.";
+        return "`/call` start a random chat with another server";
     }
 
     @Override

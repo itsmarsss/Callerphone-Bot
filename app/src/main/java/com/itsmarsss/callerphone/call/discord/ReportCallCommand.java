@@ -1,6 +1,5 @@
 package com.itsmarsss.callerphone.call.discord;
 
-import com.itsmarsss.callerphone.ToolSet;
 import com.itsmarsss.callerphone.call.service.CallSessionService;
 import com.itsmarsss.commandType.ISlashCommand;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
@@ -14,9 +13,10 @@ public final class ReportCallCommand implements ISlashCommand {
     @Override
     public void runSlash(SlashCommandInteractionEvent e) {
         if (calls.reportActive(e.getChannel().getId())) {
-            e.reply(ToolSet.CP_EMJ + " Call flagged. Thanks.").setEphemeral(true).queue();
+            e.replyEmbeds(CallEmbeds.success("Report received", "Recent messages were saved for review."))
+                    .setEphemeral(true).queue();
         } else {
-            e.reply(ToolSet.CP_EMJ + " No active call here.").setEphemeral(true).queue();
+            e.replyEmbeds(CallEmbeds.noCall()).setEphemeral(true).queue();
         }
     }
 
@@ -32,7 +32,7 @@ public final class ReportCallCommand implements ISlashCommand {
 
     @Override
     public SlashCommandData getCommandData() {
-        return Commands.slash(getName(), "Report the current random call")
+        return Commands.slash(getName(), "Report the current call")
                 .setContexts(InteractionContextType.GUILD);
     }
 }

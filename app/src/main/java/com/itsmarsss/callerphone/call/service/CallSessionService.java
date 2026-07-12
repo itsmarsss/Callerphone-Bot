@@ -4,6 +4,7 @@ import com.itsmarsss.callerphone.Callerphone;
 import com.itsmarsss.callerphone.Response;
 import com.itsmarsss.callerphone.ToolSet;
 import com.itsmarsss.callerphone.call.discord.CallComponentIds;
+import com.itsmarsss.callerphone.call.discord.CallEmbeds;
 import com.itsmarsss.callerphone.call.model.CallEndpoint;
 import com.itsmarsss.callerphone.call.model.CallMatchSource;
 import com.itsmarsss.callerphone.call.model.CallMessage;
@@ -79,7 +80,7 @@ public final class CallSessionService {
             } else if (chB != null) {
                 queue.enqueue(b);
             }
-            return CallResult.failed("Could not reach the other channel. Try again.");
+            return CallResult.failed("The other channel became unavailable. You're no longer in queue.");
         }
 
         byChannel.put(a.channelId(), session);
@@ -94,8 +95,7 @@ public final class CallSessionService {
 
     public MessageCreateData connectedMessage(CallSession session) {
         return new MessageCreateBuilder()
-                .setContent(ToolSet.CP_EMJ + " **Connected.** Messages here go to the other server.\n"
-                        + "`/endcall` to hang up.")
+                .setEmbeds(CallEmbeds.connected())
                 .setComponents(ActionRow.of(
                         Button.primary(CallComponentIds.share(session.getId()), "Share profile"),
                         Button.danger(CallComponentIds.report(session.getId()), "Report")
@@ -108,23 +108,23 @@ public final class CallSessionService {
         if (session == null) {
             if (queue.remove(channelId)) {
                 return new MessageCreateBuilder()
-                        .setContent(ToolSet.CP_EMJ + " Left the call queue.")
+                        .setEmbeds(CallEmbeds.leftQueue())
                         .build();
             }
             return new MessageCreateBuilder()
-                    .setContent(ToolSet.CP_EMJ + " No active call in this channel.")
+                    .setEmbeds(CallEmbeds.noCall())
                     .build();
         }
         TextChannel other = ToolSet.getTextChannel(session.otherChannelId(channelId));
         Button report = Button.danger(CallComponentIds.report(session.getId()), "Report");
         if (other != null) {
-            other.sendMessage(ToolSet.CP_EMJ + " The other side hung up.")
+            other.sendMessageEmbeds(CallEmbeds.peerHungUp())
                     .setComponents(ActionRow.of(report))
                     .queue();
         }
         finalize(session);
         return new MessageCreateBuilder()
-                .setContent(ToolSet.CP_EMJ + " Call ended.")
+                .setEmbeds(CallEmbeds.ended())
                 .setComponents(ActionRow.of(report))
                 .build();
     }

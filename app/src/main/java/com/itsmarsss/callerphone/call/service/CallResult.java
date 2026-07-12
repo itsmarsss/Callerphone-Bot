@@ -12,21 +12,19 @@ public record CallResult(Status status, CallSession session, int queuePosition, 
     }
 
     public static CallResult queued(int pos, int size) {
-        return new CallResult(Status.QUEUED, null, pos, size,
-                "In queue · **" + pos + "** of **" + size + "**");
+        return new CallResult(Status.QUEUED, null, pos, size, null);
     }
 
     public static CallResult alreadyQueued(int pos, int size) {
-        return new CallResult(Status.ALREADY_QUEUED, null, pos, size,
-                "Still waiting · **" + pos + "** of **" + size + "**");
+        return new CallResult(Status.ALREADY_QUEUED, null, pos, size, null);
     }
 
     public static CallResult matched(CallSession session) {
-        return new CallResult(Status.MATCHED, session, 0, 0, "Connected!");
+        return new CallResult(Status.MATCHED, session, 0, 0, null);
     }
 
     public static CallResult conflict() {
-        return new CallResult(Status.CONFLICT, null, 0, 0, "This channel is already in a call.");
+        return new CallResult(Status.CONFLICT, null, 0, 0, null);
     }
 
     public static CallResult failed(String message) {

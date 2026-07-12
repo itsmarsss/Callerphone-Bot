@@ -1,6 +1,5 @@
 package com.itsmarsss.callerphone.call.discord;
 
-import com.itsmarsss.callerphone.ToolSet;
 import com.itsmarsss.callerphone.call.service.CallProfileShareService;
 import com.itsmarsss.callerphone.call.service.CallSessionService;
 import com.itsmarsss.commandType.IButtonInteraction;
@@ -11,23 +10,19 @@ public final class CallButtonHandler implements IButtonInteraction {
     private final CallSessionService sessions = CallSessionService.get();
     private final CallProfileShareService share = new CallProfileShareService(sessions);
 
-    public CallButtonHandler() {
-        // decisions wired lazily when ApplicationContext is ready
-    }
-
     @Override
     public void runClick(ButtonInteraction e) {
         CallComponentIds.Parsed parsed = CallComponentIds.parse(e.getComponentId());
         if (parsed == null) {
-            // legacy reportchat-id
             if (e.getComponentId().startsWith("reportchat-")) {
                 String id = e.getComponentId().substring("reportchat-".length());
                 sessions.reportById(id);
                 e.editButton(Button.danger("reportchat", "Reported").asDisabled()).queue();
-                e.getMessage().reply(ToolSet.CP_EMJ + " Call reported.").queue();
+                e.getMessage().replyEmbeds(CallEmbeds.success("Report received", "Thanks for reporting.")).queue();
                 return;
             }
-            e.reply(ToolSet.CP_EMJ + " Unknown call button.").setEphemeral(true).queue();
+            e.replyEmbeds(CallEmbeds.warn("That expired", "Open a fresh screen to continue."))
+                    .setEphemeral(true).queue();
             return;
         }
         wireShare();
@@ -36,22 +31,29 @@ public final class CallButtonHandler implements IButtonInteraction {
         switch (parsed.action()) {
             case CallComponentIds.SHARE -> {
                 var result = share.share(parsed.sessionId(), userId, channelId);
-                e.reply(ToolSet.CP_EMJ + " " + result.message()).setEphemeral(true).queue();
+                e.replyEmbeds(result.success()
+                                ? CallEmbeds.success("Profile shared", result.message())
+                                : CallEmbeds.warn("Can't share", result.message()))
+                        .setEphemeral(true).queue();
             }
             case CallComponentIds.LIKE -> {
                 var result = share.react(parsed.sessionId(), userId, parsed.subjectUserId(), true, channelId);
-                e.reply(ToolSet.CP_EMJ + " " + result.message()).setEphemeral(true).queue();
+                e.replyEmbeds(result.success()
+                                ? CallEmbeds.success("Interest sent", result.message())
+                                : CallEmbeds.warn("Couldn't send", result.message()))
+                        .setEphemeral(true).queue();
             }
             case CallComponentIds.PASS -> {
                 var result = share.react(parsed.sessionId(), userId, parsed.subjectUserId(), false, channelId);
-                e.reply(ToolSet.CP_EMJ + " " + result.message()).setEphemeral(true).queue();
+                e.replyEmbeds(CallEmbeds.info("Noted", result.message())).setEphemeral(true).queue();
             }
             case CallComponentIds.REPORT -> {
                 sessions.reportById(parsed.sessionId());
                 e.editButton(Button.danger(CallComponentIds.report(parsed.sessionId()), "Reported").asDisabled()).queue();
-                e.getMessage().reply(ToolSet.CP_EMJ + " Call reported to staff.").queue();
+                e.getMessage().replyEmbeds(CallEmbeds.success("Report received", "Thanks for reporting.")).queue();
             }
-            default -> e.reply(ToolSet.CP_EMJ + " Unknown call action.").setEphemeral(true).queue();
+            default -> e.replyEmbeds(CallEmbeds.warn("That expired", "Open a fresh screen to continue."))
+                    .setEphemeral(true).queue();
         }
     }
 

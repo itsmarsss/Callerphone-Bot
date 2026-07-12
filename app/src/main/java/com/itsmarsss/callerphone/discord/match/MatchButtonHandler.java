@@ -1,6 +1,5 @@
 package com.itsmarsss.callerphone.discord.match;
 
-import com.itsmarsss.callerphone.ToolSet;
 import com.itsmarsss.callerphone.bootstrap.ApplicationContext;
 import com.itsmarsss.callerphone.identity.AgeCohort;
 import com.itsmarsss.callerphone.identity.EnrollmentService;
@@ -23,12 +22,12 @@ public final class MatchButtonHandler implements IButtonInteraction {
     @Override
     public void runClick(ButtonInteraction e) {
         if (!ApplicationContext.isReady()) {
-            e.reply(ToolSet.CP_EMJ + " Match is starting up.").setEphemeral(true).queue();
+            e.replyEmbeds(MatchEmbeds.warm("One moment", "Still starting up.")).setEphemeral(true).queue();
             return;
         }
         MatchComponentIds.Parsed parsed = MatchComponentIds.parse(e.getComponentId());
         if (parsed == null) {
-            e.reply(ToolSet.CP_EMJ + " Unknown Match button.").setEphemeral(true).queue();
+            e.replyEmbeds(MatchEmbeds.warm("That expired", "Open a fresh screen to continue.")).setEphemeral(true).queue();
             return;
         }
         ApplicationContext ctx = ApplicationContext.get();
@@ -66,28 +65,27 @@ public final class MatchButtonHandler implements IButtonInteraction {
             case MatchComponentIds.ACTION_CHAT_SELECT -> replyChatSelect(e, ctx, userId, opaque);
             case MatchComponentIds.ACTION_CONNECT_REQUEST -> {
                 EnrollmentService.ServiceResult result = ctx.connect().request(userId, opaque);
-                e.reply(ToolSet.CP_EMJ + " " + result.message()).setEphemeral(true).queue();
+                e.replyEmbeds(result.success() ? MatchEmbeds.success("Done", result.message()) : MatchEmbeds.warm("Couldn't complete", result.message())).setEphemeral(true).queue();
             }
             case MatchComponentIds.ACTION_CONNECT_ACCEPT -> {
                 var result = ctx.connect().accept(userId, opaque);
                 if (result.success() && result.otherUserId() != null) {
-                    e.reply(ToolSet.CP_EMJ + " " + result.message() + " Other user: <@" + result.otherUserId() + ">")
-                            .setEphemeral(true).queue();
+                    e.replyEmbeds(MatchEmbeds.success("Connected", result.message() + "\n\nThey are <@" + result.otherUserId() + ">.")).setEphemeral(true).queue();
                 } else {
-                    e.reply(ToolSet.CP_EMJ + " " + result.message()).setEphemeral(true).queue();
+                    e.replyEmbeds(result.success() ? MatchEmbeds.success("Done", result.message()) : MatchEmbeds.warm("Couldn't complete", result.message())).setEphemeral(true).queue();
                 }
             }
             case MatchComponentIds.ACTION_CONNECT_DECLINE -> {
                 EnrollmentService.ServiceResult result = ctx.connect().decline(userId, opaque);
-                e.reply(ToolSet.CP_EMJ + " " + result.message()).setEphemeral(true).queue();
+                e.replyEmbeds(result.success() ? MatchEmbeds.success("Done", result.message()) : MatchEmbeds.warm("Couldn't complete", result.message())).setEphemeral(true).queue();
             }
             case MatchComponentIds.ACTION_UNMATCH -> {
                 EnrollmentService.ServiceResult result = ctx.conversations().unmatch(userId, opaque);
-                e.reply(ToolSet.CP_EMJ + " " + result.message()).setEphemeral(true).queue();
+                e.replyEmbeds(result.success() ? MatchEmbeds.success("Done", result.message()) : MatchEmbeds.warm("Couldn't complete", result.message())).setEphemeral(true).queue();
             }
             case MatchComponentIds.ACTION_STOP_CHAT -> {
                 EnrollmentService.ServiceResult result = ctx.conversations().stopChat(userId);
-                e.reply(ToolSet.CP_EMJ + " " + result.message()).setEphemeral(true).queue();
+                e.replyEmbeds(result.success() ? MatchEmbeds.success("Done", result.message()) : MatchEmbeds.warm("Couldn't complete", result.message())).setEphemeral(true).queue();
             }
             case MatchComponentIds.ACTION_SUBMIT -> {
                 ctx.profiles().setAvatar(userId, e.getUser().getEffectiveAvatarUrl());
@@ -95,7 +93,7 @@ public final class MatchButtonHandler implements IButtonInteraction {
                 if (result.success()) {
                     e.replyEmbeds(MatchEmbeds.success("You're live", result.message()))
                             .addComponents(ActionRow.of(
-                                    Button.success(MatchComponentIds.of(MatchComponentIds.ACTION_START_BROWSE, "_"), "Browse")
+                                    Button.success(MatchComponentIds.of(MatchComponentIds.ACTION_START_BROWSE, "_"), "Discover")
                             ))
                             .setEphemeral(true)
                             .queue();
@@ -112,7 +110,7 @@ public final class MatchButtonHandler implements IButtonInteraction {
                 e.deferReply(true).queue();
                 ctx.dbExecutor().execute(() -> sendBrowse(e, ctx, userId));
             }
-            default -> e.reply(ToolSet.CP_EMJ + " That Match action expired or is unknown.").setEphemeral(true).queue();
+            default -> e.replyEmbeds(MatchEmbeds.warm("That expired", "Open a fresh screen to continue.")).setEphemeral(true).queue();
         }
     }
 
@@ -120,7 +118,7 @@ public final class MatchButtonHandler implements IButtonInteraction {
         EnrollmentService.ServiceResult result = ctx.enrollment().selectAgeCohort(userId, cohort);
         ctx.profiles().setAvatar(userId, e.getUser().getEffectiveAvatarUrl());
         if (!result.success()) {
-            e.replyEmbeds(MatchEmbeds.warm("Hold up", result.message())).setEphemeral(true).queue();
+            e.replyEmbeds(MatchEmbeds.warm("Couldn't continue", result.message())).setEphemeral(true).queue();
             return;
         }
         // Lowest friction: open the one setup form immediately (no extra commands)
@@ -130,7 +128,7 @@ public final class MatchButtonHandler implements IButtonInteraction {
     private void replyChatSelect(ButtonInteraction e, ApplicationContext ctx, String userId, String conversationId) {
         MatchConversationService.SelectResult result = ctx.conversations().select(userId, conversationId);
         if (!result.success()) {
-            e.reply(ToolSet.CP_EMJ + " " + result.message()).setEphemeral(true).queue();
+            e.replyEmbeds(result.success() ? MatchEmbeds.success("Done", result.message()) : MatchEmbeds.warm("Couldn't complete", result.message())).setEphemeral(true).queue();
             return;
         }
         MatchConversation conversation = result.conversation();
@@ -165,13 +163,13 @@ public final class MatchButtonHandler implements IButtonInteraction {
         ctx.dbExecutor().execute(() -> {
             DecisionService.DecisionResult result = ctx.decisions().decide(userId, sessionId, type);
             if (!result.success()) {
-                e.getHook().sendMessage(ToolSet.CP_EMJ + " " + result.message()).setEphemeral(true).queue();
+                e.getHook().sendMessageEmbeds(MatchEmbeds.warm("Couldn't complete", result.message())).setEphemeral(true).queue();
                 return;
             }
             String note = result.message();
             if (result.mutual() && result.conversationId() != null) {
-                e.getHook().editOriginal(ToolSet.CP_EMJ + " " + note)
-                        .setEmbeds()
+                e.getHook().editOriginalEmbeds(MatchEmbeds.success("You connected", note))
+                        .setContent(null)
                         .setComponents(ActionRow.of(
                                 Button.success(
                                         MatchComponentIds.of(MatchComponentIds.ACTION_CHAT_SELECT, result.conversationId()),
@@ -183,17 +181,17 @@ public final class MatchButtonHandler implements IButtonInteraction {
             }
             DiscoveryService.DiscoveryResult next = ctx.discovery().next(userId);
             if (!next.success()) {
-                e.getHook().editOriginal(ToolSet.CP_EMJ + " " + note + "\n" + next.message())
-                        .setEmbeds()
+                e.getHook().editOriginalEmbeds(MatchEmbeds.soft(note, next.message()))
+                        .setContent(null)
                         .setComponents(List.of())
                         .queue();
                 return;
             }
             e.getHook().editOriginalEmbeds(MatchEmbeds.profileCard(next.profile(), false))
-                    .setContent(ToolSet.CP_EMJ + " " + note)
+                    .setContent(note)
                     .setComponents(ActionRow.of(
                             Button.success(MatchComponentIds.of(MatchComponentIds.ACTION_INTERESTED, next.session().sessionId()), "Interested"),
-                            Button.secondary(MatchComponentIds.of(MatchComponentIds.ACTION_SKIP, next.session().sessionId()), "Skip")
+                            Button.secondary(MatchComponentIds.of(MatchComponentIds.ACTION_SKIP, next.session().sessionId()), "Next")
                     ))
                     .queue();
         });
@@ -202,13 +200,13 @@ public final class MatchButtonHandler implements IButtonInteraction {
     private void sendBrowse(ButtonInteraction e, ApplicationContext ctx, String userId) {
         DiscoveryService.DiscoveryResult next = ctx.discovery().next(userId);
         if (!next.success()) {
-            e.getHook().sendMessage(ToolSet.CP_EMJ + " " + next.message()).setEphemeral(true).queue();
+            e.getHook().sendMessageEmbeds(MatchEmbeds.soft("Discover", next.message())).setEphemeral(true).queue();
             return;
         }
         e.getHook().sendMessageEmbeds(MatchEmbeds.profileCard(next.profile(), false))
                 .addComponents(ActionRow.of(
                         Button.success(MatchComponentIds.of(MatchComponentIds.ACTION_INTERESTED, next.session().sessionId()), "Interested"),
-                        Button.secondary(MatchComponentIds.of(MatchComponentIds.ACTION_SKIP, next.session().sessionId()), "Skip")
+                        Button.secondary(MatchComponentIds.of(MatchComponentIds.ACTION_SKIP, next.session().sessionId()), "Next")
                 ))
                 .setEphemeral(true)
                 .queue();

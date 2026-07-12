@@ -119,7 +119,7 @@ public final class DecisionService {
                     .orElse("your match");
             String opener = Icebreakers.forPair(viewer, profiles.find(session.subjectId()).orElse(null));
             return DecisionResult.mutual(
-                    "It's a match with **" + peerName + "**!\n_" + opener + "_",
+                    "You connected with **" + peerName + "**.\n_" + opener + "_",
                     created.match(),
                     created.conversationId()
             );

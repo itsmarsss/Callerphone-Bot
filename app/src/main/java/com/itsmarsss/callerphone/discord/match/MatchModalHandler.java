@@ -1,6 +1,5 @@
 package com.itsmarsss.callerphone.discord.match;
 
-import com.itsmarsss.callerphone.ToolSet;
 import com.itsmarsss.callerphone.bootstrap.ApplicationContext;
 import com.itsmarsss.callerphone.identity.EnrollmentService;
 import com.itsmarsss.callerphone.match.component.MatchComponentIds;
@@ -18,7 +17,7 @@ public final class MatchModalHandler implements IModalInteraction {
     @Override
     public void runModal(ModalInteractionEvent e) {
         if (!ApplicationContext.isReady()) {
-            e.reply(ToolSet.CP_EMJ + " Match is starting up.").setEphemeral(true).queue();
+            e.replyEmbeds(MatchEmbeds.warm("One moment", "Still starting up.")).setEphemeral(true).queue();
             return;
         }
         ApplicationContext ctx = ApplicationContext.get();
@@ -33,7 +32,7 @@ public final class MatchModalHandler implements IModalInteraction {
             handleSetup(e, ctx, userId);
             return;
         }
-        e.reply(ToolSet.CP_EMJ + " Unknown Match modal.").setEphemeral(true).queue();
+        e.replyEmbeds(MatchEmbeds.warm("That expired", "Open a fresh form to continue.")).setEphemeral(true).queue();
     }
 
     private static void handleSetup(ModalInteractionEvent e, ApplicationContext ctx, String userId) {
@@ -89,7 +88,7 @@ public final class MatchModalHandler implements IModalInteraction {
 
         if (profile != null && profile.getState() == ProfileState.ACTIVE) {
             reply = reply.addComponents(ActionRow.of(
-                    Button.success(MatchComponentIds.of(MatchComponentIds.ACTION_START_BROWSE, "_"), "Browse"),
+                    Button.success(MatchComponentIds.of(MatchComponentIds.ACTION_START_BROWSE, "_"), "Discover"),
                     Button.secondary(MatchComponentIds.of(MatchComponentIds.ACTION_SETUP, "_"), "Edit")
             ));
         }

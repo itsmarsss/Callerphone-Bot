@@ -27,7 +27,7 @@ public final class EndCallCommand implements ISlashCommand {
 
     @Override
     public SlashCommandData getCommandData() {
-        return Commands.slash(getName(), "End a random call or leave the queue")
+        return Commands.slash(getName(), "End a call or leave the queue")
                 .setContexts(InteractionContextType.GUILD);
     }
 }

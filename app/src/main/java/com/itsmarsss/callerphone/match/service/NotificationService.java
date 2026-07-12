@@ -38,18 +38,18 @@ public final class NotificationService {
         String nameB = displayName(userB);
         MatchProfile profileA = profiles.findByUserId(userA).orElse(null);
         MatchProfile profileB = profiles.findByUserId(userB).orElse(null);
-        dmIfEnabled(userA, "It's a match!",
-                "You and **" + nameB + "** both liked each other.\n_"
+        dmIfEnabled(userA, "You connected",
+                "You and **" + nameB + "** are both interested.\n_"
                         + Icebreakers.forPair(profileA, profileB) + "_",
                 conversationId);
-        dmIfEnabled(userB, "It's a match!",
-                "You and **" + nameA + "** both liked each other.\n_"
+        dmIfEnabled(userB, "You connected",
+                "You and **" + nameA + "** are both interested.\n_"
                         + Icebreakers.forPair(profileB, profileA) + "_",
                 conversationId);
     }
 
     public void notifyProfileLive(String userId) {
-        dmIfEnabled(userId, "You're live", "People in your age group can find you now.", null);
+        dmIfEnabled(userId, "You're live", "Your profile can now appear in Discover.", null);
     }
 
     public void notifyProfileRestricted(String userId, String reason) {

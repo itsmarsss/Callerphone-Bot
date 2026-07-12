@@ -30,16 +30,17 @@ public final class MatchEmbeds {
                 .setTitle(self ? name : "Meet " + name)
                 .setDescription(bio);
 
-        emb.addField("Age", cohort, true);
-        emb.addField("Status", prettyState(profile.getState()), true);
+        if (self) {
+            emb.addField("Age group", cohort, true);
+            emb.addField("Visibility", prettyState(profile.getState()), true);
+        } else {
+            emb.addField("Age group", cohort, true);
+        }
         if (profile.getPronouns() != null && !profile.getPronouns().isBlank()) {
             emb.addField("Pronouns", profile.getPronouns(), true);
         }
-        if (profile.getGender() != null) {
-            emb.addField("Gender", profile.getGender().label(), true);
-        }
         if (profile.getInterests() != null && !profile.getInterests().isEmpty()) {
-            emb.addField("Interests", String.join(" · ", profile.getInterests()), false);
+            emb.addField(self ? "Interests" : "Interests", String.join(" · ", profile.getInterests()), false);
         }
         if (profile.getPrompts() != null && !profile.getPrompts().isEmpty()) {
             ProfilePrompt prompt = profile.getPrompts().get(0);
@@ -49,7 +50,7 @@ public final class MatchEmbeds {
                 && profile.getMedia().get(0).attachmentUrl() != null) {
             emb.setThumbnail(profile.getMedia().get(0).attachmentUrl());
         }
-        emb.setFooter(self ? "Your profile" : "Interested or Skip");
+        emb.setFooter(self ? "Your profile" : null);
         return emb.build();
     }
 
@@ -72,8 +73,7 @@ public final class MatchEmbeds {
     public static MessageEmbed simple(String title, String description, Color color) {
         EmbedBuilder emb = new EmbedBuilder()
                 .setTitle(title)
-                .setColor(color)
-                .setFooter("Callerphone Social");
+                .setColor(color);
         if (description != null && !description.isBlank()) {
             emb.setDescription(description);
         }
@@ -92,10 +92,10 @@ public final class MatchEmbeds {
             return "-";
         }
         return switch (state) {
-            case ACTIVE -> "Live";
-            case DRAFT -> "Setup";
+            case ACTIVE -> "In Discover";
+            case DRAFT -> "Incomplete";
             case PAUSED -> "Paused";
-            case PENDING_REVIEW -> "Setup";
+            case PENDING_REVIEW -> "Incomplete";
             case SUSPENDED -> "Paused";
             case DELETED -> "Removed";
         };

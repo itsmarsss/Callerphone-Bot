@@ -1,28 +1,27 @@
 package com.itsmarsss.callerphone.match.service;
 
-/** Short limit messages. No purchase flow yet. */
+/** Limit messages. Premium purchase is not live; keep copy soft. */
 public final class UpsellCopy {
     private UpsellCopy() {
     }
 
     public static String forLimit(String limitName) {
         return switch (limitName == null ? "" : limitName) {
-            case "discovery" -> "That's all for today. Come back tomorrow.";
+            case "discovery" -> "Today's discoveries are done. Your free set refreshes tomorrow.";
             case "interest" -> "Daily interests used up. See you tomorrow.";
-            case "conversations" -> "You're at your chat limit. Unmatch someone to open a slot.";
-            case "undo" -> "No undos left today.";
+            case "conversations" -> "Chat limit reached. Unmatch someone to free a slot.";
+            case "undo" -> "Nothing left to undo today.";
             default -> "Limit reached. Try again later.";
         };
     }
 
     public static String premiumPitch() {
         return """
-                **Premium** coming later
-                Higher daily limits
-                More open chats
-                Extra undos
+                Premium is planned for later.
 
-                Matching stays free either way.
+                Higher daily Discover limits, more open chats, and extra undos.
+
+                Discover stays free either way.
                 """;
     }
 }

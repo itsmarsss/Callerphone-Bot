@@ -64,7 +64,7 @@ public class Help implements ISlashCommand {
             case "match", "social" -> {
                 title = "Match";
                 desc = joinHelp(new MatchCommand())
-                        + "\nDiscover people in your age group and start chats.";
+                        + "\nDiscover people your age, express interest, and chat when it's mutual.";
             }
             case "msgbottle", "bottle", "bottles" -> {
                 title = "Message in a bottle";

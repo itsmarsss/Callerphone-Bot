@@ -252,7 +252,7 @@ public final class ProfileService {
             notifications.notifyProfileLive(userId);
         }
         return EnrollmentService.ServiceResult.ok(
-                "You're live! Use `/match browse` to discover people in your age group.");
+                "Your profile can now appear in Discover.");
     }
 
     /** @deprecated use {@link #publish(String)} */
