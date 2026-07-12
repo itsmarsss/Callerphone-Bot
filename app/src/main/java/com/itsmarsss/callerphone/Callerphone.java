@@ -191,6 +191,7 @@ public class Callerphone {
                 new MatchCommand(),
                 new DeductCredits(), new RewardCredits(),
                 new PlayMiniGame(), new ShowMiniGames(),
+                new com.itsmarsss.callerphone.msginbottle.commands.BottleCommand(),
                 new FindBottle(), new SendBottle(), new ViewBottle()
         };
 
@@ -226,7 +227,10 @@ public class Callerphone {
     }
 
     private static void registerSelects() {
-        IStringSelectInteraction[] selects = {new com.itsmarsss.callerphone.discord.match.MatchSelectHandler()};
+        IStringSelectInteraction[] selects = {
+                new com.itsmarsss.callerphone.discord.match.MatchSelectHandler(),
+                new com.itsmarsss.callerphone.call.discord.CallSelectHandler()
+        };
         for (IStringSelectInteraction select : selects) {
             selMap.put(select.getID(), select);
             logger.debug("Registered select: {}", select.getID());

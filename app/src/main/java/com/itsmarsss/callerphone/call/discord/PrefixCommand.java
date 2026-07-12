@@ -1,9 +1,11 @@
 package com.itsmarsss.callerphone.call.discord;
 
 import com.itsmarsss.callerphone.Constants;
+import com.itsmarsss.callerphone.experience.ExperienceIntent;
+import com.itsmarsss.callerphone.experience.ExperienceRenderer;
+import com.itsmarsss.callerphone.experience.ExperienceView;
 import com.itsmarsss.commandType.ISlashCommand;
 import com.itsmarsss.database.categories.Users;
-import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.InteractionContextType;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
@@ -12,31 +14,53 @@ import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 
-/** Level-gated call message prefix. */
+/** Plan §20: level-gated call prefix with preview. */
 public final class PrefixCommand implements ISlashCommand {
     @Override
     public void runSlash(SlashCommandInteractionEvent e) {
+        String userId = e.getUser().getId();
+        long level = (Users.getExecuted(userId) + Users.getTransmitted(userId)) / 100;
         OptionMapping option = e.getOption("prefix");
-        if (option == null) {
-            e.reply("Choose a prefix up to " + Constants.PREFIX_MAX_LENGTH + " characters.")
-                    .setEphemeral(true).queue();
+
+        if (level < Constants.PREFIX_MIN_LEVEL) {
+            long need = Constants.PREFIX_MIN_LEVEL - level;
+            e.reply(ExperienceRenderer.toMessage(ExperienceView.builder(ExperienceIntent.PROGRESS)
+                    .title("Prefix unlocks at Level " + Constants.PREFIX_MIN_LEVEL)
+                    .description("You're Level **" + level + "** · **" + need + "** levels to go.")
+                    .build())).setEphemeral(true).queue();
             return;
         }
-        e.reply(setPrefix(e.getUser(), option.getAsString())).queue();
-    }
 
-    private String setPrefix(User user, String prefix) {
-        if (prefix == null || prefix.isEmpty() || prefix.length() > Constants.PREFIX_MAX_LENGTH) {
-            return "Prefix is too long (max " + Constants.PREFIX_MAX_LENGTH + " characters).";
+        if (option == null) {
+            String current = Users.getPrefix(userId);
+            if (current == null || current.isEmpty()) {
+                e.reply(ExperienceRenderer.toMessage(ExperienceView.builder(ExperienceIntent.NEUTRAL)
+                        .title("Call prefix")
+                        .description("No prefix set. Pass a short tag with `/prefix` to add one.\n\n"
+                                + "Preview: **[YourTag] " + e.getUser().getName() + "** · Hello")
+                        .build())).setEphemeral(true).queue();
+                return;
+            }
+            e.reply(ExperienceRenderer.toMessage(ExperienceView.builder(ExperienceIntent.NEUTRAL)
+                    .title("Call prefix")
+                    .description("Your messages appear as:\n**[" + current + "] " + e.getUser().getName() + "** · Hello")
+                    .build())).setEphemeral(true).queue();
+            return;
         }
 
-        long level = (Users.getExecuted(user.getId()) + Users.getTransmitted(user.getId())) / 100;
-        if (level < Constants.PREFIX_MIN_LEVEL) {
-            return "Prefix unlocks at level " + Constants.PREFIX_MIN_LEVEL + ".";
+        String prefix = option.getAsString().trim();
+        if (prefix.isEmpty() || prefix.length() > Constants.PREFIX_MAX_LENGTH) {
+            e.reply(ExperienceRenderer.toMessage(ExperienceView.builder(ExperienceIntent.WARNING)
+                    .title("Too long")
+                    .description("Prefix max length is " + Constants.PREFIX_MAX_LENGTH + " characters.")
+                    .build())).setEphemeral(true).queue();
+            return;
         }
-
-        Users.setPrefix(user.getId(), prefix);
-        return "Prefix set to `" + prefix + "`.";
+        Users.setPrefix(userId, prefix);
+        e.reply(ExperienceRenderer.toMessage(ExperienceView.builder(ExperienceIntent.SUCCESS)
+                .title("Prefix updated")
+                .description("Your messages appear as:\n**[" + prefix + "] " + e.getUser().getName() + "** · Hello")
+                .build())).setEphemeral(true).queue();
     }
 
     @Override
@@ -53,8 +77,8 @@ public final class PrefixCommand implements ISlashCommand {
     public SlashCommandData getCommandData() {
         return Commands.slash(getName(), "Set a call prefix (level " + Constants.PREFIX_MIN_LEVEL + "+)")
                 .addOptions(new OptionData(OptionType.STRING, "prefix", "Prefix text")
-                        .setRequired(true)
+                        .setRequired(false)
                         .setMaxLength(Constants.PREFIX_MAX_LENGTH))
-                .setContexts(InteractionContextType.GUILD);
+                .setContexts(InteractionContextType.GUILD, InteractionContextType.BOT_DM);
     }
 }

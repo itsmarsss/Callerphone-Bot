@@ -2,6 +2,7 @@ package com.itsmarsss.callerphone.users.commands;
 
 import com.itsmarsss.callerphone.Callerphone;
 import com.itsmarsss.callerphone.ToolSet;
+import com.itsmarsss.callerphone.experience.ProgressBar;
 import com.itsmarsss.commandType.ISlashCommand;
 import com.itsmarsss.database.categories.Users;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -18,38 +19,44 @@ import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 import java.time.Instant;
 
 /**
- * Lightweight activity card. Credits, cooldowns, and locked rewards stay out of the
- * primary surface until real unlocks exist.
+ * Plan §21: activity-first profile. Credits/unlocks stay secondary until the economy has real value.
  */
 public class Profile implements ISlashCommand {
     @Override
     public void runSlash(SlashCommandInteractionEvent e) {
         OptionMapping target = e.getOption("target");
         User user = target != null ? target.getAsUser() : e.getUser();
-        e.replyEmbeds(profile(user)).queue();
+        boolean self = user.getId().equals(e.getUser().getId());
+        e.replyEmbeds(profile(user, self)).queue();
     }
 
-    private MessageEmbed profile(User user) {
+    private MessageEmbed profile(User user, boolean self) {
         String userId = user.getId();
         final long executed = Users.getExecuted(userId);
         final long transmitted = Users.getTransmitted(userId);
         final long total = executed + transmitted;
         final int level = (int) (total / 100);
         final int exp = (int) (total % 100);
-        int filled = Math.max(0, Math.min(10, exp / 10));
-        String bar = "█".repeat(filled) + "░".repeat(10 - filled);
+        String bar = ProgressBar.of(exp, 100, 10);
 
         String prefix = Users.getPrefix(userId);
-        String prefixLine = prefix == null || prefix.isEmpty() ? "" : "Prefix `" + prefix + "`\n";
+        StringBuilder desc = new StringBuilder();
+        desc.append(bar).append(" **").append(exp).append("/100** XP\n");
+        desc.append(transmitted).append(" call messages · ").append(executed).append(" commands");
+        if (prefix != null && !prefix.isEmpty()) {
+            desc.append("\nPrefix `").append(prefix).append("`");
+        }
+        if (self) {
+            desc.append("\n\n_Levels unlock call flair over time. Credits stay in the background until rewards ship._");
+        }
 
         return new EmbedBuilder()
                 .setTitle(user.getName() + " · Level " + level)
                 .setThumbnail(user.getAvatarUrl())
-                .setDescription(prefixLine + bar + " " + exp + "/100 XP\n"
-                        + transmitted + " call messages · " + executed + " commands")
+                .setDescription(desc.toString())
+                .setColor(ToolSet.COLOR)
                 .setFooter("Callerphone", Callerphone.selfUser != null ? Callerphone.selfUser.getAvatarUrl() : null)
                 .setTimestamp(Instant.now())
-                .setColor(ToolSet.COLOR)
                 .build();
     }
 

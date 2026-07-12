@@ -104,6 +104,26 @@ public final class MatchButtonHandler implements IButtonInteraction {
             case MatchComponentIds.ACTION_SAFETY_BLOCK -> safetyBlock(e, ctx, userId, opaque);
             case MatchComponentIds.ACTION_SAFETY_REPORT -> safetyReport(e, ctx, userId, opaque);
             case MatchComponentIds.ACTION_SAFETY_UNMATCH -> safetyUnmatch(e, ctx, userId, opaque);
+            case MatchComponentIds.ACTION_LEAVE_CONFIRM -> replyService(e, ctx.deletion().leaveAndSoftDelete(userId));
+            case MatchComponentIds.ACTION_LEAVE_CANCEL -> e.reply(ExperienceRenderer.toMessage(
+                            MatchPresenter.quietSuccess("Still live", "You're still in Discover.")
+                    )).setEphemeral(true).queue();
+            case MatchComponentIds.ACTION_DELETE_CONFIRM -> replyService(e, ctx.deletion().hardDeleteProfileContent(userId));
+            case MatchComponentIds.ACTION_DELETE_CANCEL -> e.reply(ExperienceRenderer.toMessage(
+                            MatchPresenter.quietSuccess("Cancelled", "Nothing was deleted.")
+                    )).setEphemeral(true).queue();
+            case MatchComponentIds.ACTION_PREVIEW_SELF -> {
+                Optional<MatchProfile> p = ctx.profiles().find(userId);
+                if (p.isEmpty()) {
+                    e.reply(ExperienceRenderer.toMessage(MatchPresenter.warn("No profile", "Start with `/match join`.")))
+                            .setEphemeral(true).queue();
+                } else {
+                    e.replyEmbeds(MatchEmbeds.profileCard(p.get(), true)).setEphemeral(true).queue();
+                }
+            }
+            case MatchComponentIds.ACTION_EDIT_MENU -> e.reply(ExperienceRenderer.toMessage(MatchPresenter.editMenu()))
+                    .setEphemeral(true).queue();
+            case MatchComponentIds.ACTION_RESUME -> replyService(e, ctx.profiles().resume(userId));
             default -> e.reply(ExperienceRenderer.toMessage(MatchPresenter.expired())).setEphemeral(true).queue();
         }
     }

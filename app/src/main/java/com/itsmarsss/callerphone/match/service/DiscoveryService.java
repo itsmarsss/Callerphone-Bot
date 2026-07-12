@@ -162,8 +162,14 @@ public final class DiscoveryService {
         double shared = 0;
         if (viewer.getInterests() != null && candidate.getInterests() != null) {
             for (String interest : viewer.getInterests()) {
-                if (candidate.getInterests().contains(interest)) {
-                    shared += 1.0;
+                if (interest == null || interest.isBlank()) {
+                    continue;
+                }
+                for (String other : candidate.getInterests()) {
+                    if (other != null && interest.equalsIgnoreCase(other)) {
+                        shared += 1.0;
+                        break;
+                    }
                 }
             }
         }

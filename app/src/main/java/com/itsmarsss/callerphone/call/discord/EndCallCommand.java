@@ -8,15 +8,24 @@ import net.dv8tion.jda.api.interactions.InteractionContextType;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 
+/**
+ * Plan §18: confirm before ending an active call; leave queue / idle without extra friction.
+ */
 public final class EndCallCommand implements ISlashCommand {
     private final CallSessionService calls = CallSessionService.get();
 
     @Override
     public void runSlash(SlashCommandInteractionEvent e) {
-        CallSessionService.EndOutcome outcome = calls.end(e.getChannel().getId());
+        String channelId = e.getChannel().getId();
+        if (calls.isInCall(channelId)) {
+            e.reply(ExperienceRenderer.toMessage(CallPresenter.endConfirm())).queue();
+            return;
+        }
+        // Queued or idle — end immediately
+        CallSessionService.EndOutcome outcome = calls.end(channelId);
         if (outcome.editedInPlace()) {
             e.reply(ExperienceRenderer.toMessage(
-                            CallPresenter.success("Done", "The call lobby was updated.")
+                            CallPresenter.success("Done", "Lobby updated.")
                     ))
                     .setEphemeral(true)
                     .queue();

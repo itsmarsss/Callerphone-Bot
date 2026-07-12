@@ -43,6 +43,16 @@ public final class MatchComponentIds {
     public static final String ACTION_CHAT_MENU = "chat_menu";
     /** String select: report category. Opaque is safety context. Values are category codes. */
     public static final String ACTION_REPORT_CAT = "report_cat";
+    public static final String ACTION_LEAVE_CONFIRM = "leave_ok";
+    public static final String ACTION_LEAVE_CANCEL = "leave_no";
+    public static final String ACTION_DELETE_CONFIRM = "del_ok";
+    public static final String ACTION_DELETE_CANCEL = "del_no";
+    public static final String ACTION_EDIT_MENU = "edit_menu";
+    public static final String ACTION_PREVIEW_SELF = "preview_self";
+    public static final String ACTION_SETTINGS = "settings";
+    public static final String ACTION_OPEN_LIKES = "open_likes";
+    public static final String ACTION_RESUME = "resume";
+    public static final String ACTION_HOME = "home";
 
     private MatchComponentIds() {
     }

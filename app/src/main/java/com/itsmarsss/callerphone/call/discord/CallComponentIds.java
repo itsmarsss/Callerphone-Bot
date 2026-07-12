@@ -11,6 +11,11 @@ public final class CallComponentIds {
     public static final String PASS = "pass";
     public static final String REPORT = "report";
     public static final String AGAIN = "again";
+    public static final String LEAVE_QUEUE = "leaveq";
+    public static final String END_CONFIRM = "endok";
+    public static final String END_CANCEL = "endno";
+    public static final String PROMPT = "prompt";
+    public static final String REPORT_CAT = "repcat";
 
     private CallComponentIds() {
     }
@@ -33,6 +38,26 @@ public final class CallComponentIds {
 
     public static String again(String opaque) {
         return HEAD + AGAIN + "-" + (opaque == null || opaque.isBlank() ? "_" : opaque);
+    }
+
+    public static String leaveQueue() {
+        return HEAD + LEAVE_QUEUE + "-_";
+    }
+
+    public static String endConfirm() {
+        return HEAD + END_CONFIRM + "-_";
+    }
+
+    public static String endCancel() {
+        return HEAD + END_CANCEL + "-_";
+    }
+
+    public static String prompt(String sessionId) {
+        return HEAD + PROMPT + "-" + sessionId;
+    }
+
+    public static String reportCat(String sessionId) {
+        return HEAD + REPORT_CAT + "-" + sessionId;
     }
 
     public static boolean isCall(String customId) {

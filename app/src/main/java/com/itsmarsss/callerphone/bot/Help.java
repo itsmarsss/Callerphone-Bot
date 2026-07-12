@@ -117,7 +117,8 @@ public class Help implements ISlashCommand {
             }
             case "msgbottle", "bottle", "bottles" -> {
                 title = "Message in a bottle";
-                desc = joinHelp(new SendBottle(), new FindBottle(), new ViewBottle());
+                desc = joinHelp(new com.itsmarsss.callerphone.msginbottle.commands.BottleCommand(),
+                        new SendBottle(), new FindBottle(), new ViewBottle());
             }
             case "creds", "credits" -> {
                 title = "Credits";
@@ -174,9 +175,9 @@ public class Help implements ISlashCommand {
                 .setTitle("All commands")
                 .setDescription("Shortcuts if you prefer slash commands over buttons.")
                 .addField("Match", "Discover people · `/help match`", false)
-                .addField("Call", "Chat across servers · `/help call`", false)
-                .addField("Message in a bottle", "Cast & find bottles · `/help msgbottle`", false)
-                .addField("Mini games", "Play together · `/help games`", false)
+                .addField("Call", "Server or DM · `/help call`", false)
+                .addField("Bottles", "`/bottle send|find|saved` · `/help bottle`", false)
+                .addField("Mini games", "Best during a call · `/help games`", false)
                 .addField("Bot", "Profile, invite, about · `/help bot`", false)
                 .setFooter("Callerphone");
         if (admin) {

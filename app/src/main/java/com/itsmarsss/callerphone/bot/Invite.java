@@ -10,25 +10,28 @@ import net.dv8tion.jda.api.interactions.InteractionContextType;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 
+/** Plan §31: invite with clear link actions. */
 public class Invite implements ISlashCommand {
     @Override
     public void runSlash(SlashCommandInteractionEvent e) {
-        e.replyEmbeds(invite()).queue();
+        e.replyEmbeds(invite()).setEphemeral(true).queue();
     }
 
     private MessageEmbed invite() {
         return new EmbedBuilder()
                 .setColor(EmbedHelpers.randColor())
-                .addField("Add me to your server", "[Invite Link](" + Callerphone.config.getBotInviteLink() + ")", true)
-                .addField("Join the Community and Support Server", "[Server Link](" + Callerphone.config.getSupportServer() + ")", true)
-                .addField("Support Us", "[Patreon Link](" + Callerphone.config.getDonateLink() + ")", true)
-                .setFooter("Have a nice day")
+                .setTitle("Bring Callerphone with you")
+                .setDescription("Add Callerphone to a server or join the community.")
+                .addField("Add to a server", "[Invite](" + Callerphone.config.getBotInviteLink() + ")", true)
+                .addField("Community", "[Support server](" + Callerphone.config.getSupportServer() + ")", true)
+                .addField("Support us", "[Donate](" + Callerphone.config.getDonateLink() + ")", true)
+                .setFooter("Glad you're here")
                 .build();
     }
 
     @Override
     public String getHelp() {
-        return "</invite:1075168882702164068> - Get invites and links related to this bot.";
+        return "`/invite` bot and support links";
     }
 
     @Override
@@ -38,7 +41,7 @@ public class Invite implements ISlashCommand {
 
     @Override
     public SlashCommandData getCommandData() {
-        return Commands.slash(getName(), getHelp().split(" - ")[1])
-                .setContexts(InteractionContextType.GUILD);
+        return Commands.slash(getName(), "Bot and support links")
+                .setContexts(InteractionContextType.GUILD, InteractionContextType.BOT_DM);
     }
 }

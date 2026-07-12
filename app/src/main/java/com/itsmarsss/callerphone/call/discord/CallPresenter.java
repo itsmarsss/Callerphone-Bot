@@ -14,18 +14,20 @@ public final class CallPresenter {
     public static ExperienceView queued(int position, int size) {
         return ExperienceView.builder(ExperienceIntent.PROGRESS)
                 .title("Finding a call")
-                .description("You're in line. We'll connect this channel automatically.")
+                .description("You're in line. We'll connect this channel automatically when someone is ready.")
                 .fields(java.util.List.of(ViewField.of("Queue", "#" + position + " of " + size)))
-                .footer("Leave with /endcall")
+                .footer("Callerphone Call")
+                .actions(ActionSpec.secondary(CallComponentIds.leaveQueue(), "Leave queue"))
                 .build();
     }
 
     public static ExperienceView waiting(int position, int size) {
         return ExperienceView.builder(ExperienceIntent.PROGRESS)
                 .title("Still finding a call")
-                .description("You're still in line. We'll update this channel when someone connects.")
+                .description("You're still in line. We'll update this when someone connects.")
                 .fields(java.util.List.of(ViewField.of("Queue", "#" + position + " of " + size)))
-                .footer("Leave with /endcall")
+                .footer("Callerphone Call")
+                .actions(ActionSpec.secondary(CallComponentIds.leaveQueue(), "Leave queue"))
                 .build();
     }
 
@@ -37,13 +39,13 @@ public final class CallPresenter {
         return ExperienceView.builder(ExperienceIntent.SUCCESS)
                 .title("Call connected")
                 .description(
-                        "You're linked with another Callerphone chat (server or DM).\n"
-                                + "Messages in this channel go to them.\n\n"
-                                + "Share your profile if you want to keep talking later."
+                        "Another chat picked up. Say hello 👋\n\n"
+                                + "Messages here go to them."
                 )
-                .footer("End anytime with /endcall")
+                .footer("Callerphone Call")
                 .actions(
-                        ActionSpec.primary(CallComponentIds.share(sessionId), "Share profile"),
+                        ActionSpec.primary(CallComponentIds.prompt(sessionId), "Conversation prompt"),
+                        ActionSpec.success(CallComponentIds.share(sessionId), "Share profile"),
                         ActionSpec.danger(CallComponentIds.report(sessionId), "Report")
                 )
                 .build();
@@ -57,13 +59,14 @@ public final class CallPresenter {
         return ExperienceView.builder(ExperienceIntent.SUCCESS)
                 .title("Call connected")
                 .description(
-                        "You're chatting with someone through Callerphone (they may be in a server or a DM).\n"
-                                + "Messages you send here go to them.\n\n"
-                                + "Share your Match profile if you want to keep talking later."
+                        "You're chatting through Callerphone. Say hello 👋\n"
+                                + "They may be in a server channel or another DM.\n\n"
+                                + "Messages you send here go to them."
                 )
-                .footer("End anytime with /endcall")
+                .footer("Callerphone Call")
                 .actions(
-                        ActionSpec.primary(CallComponentIds.share(sessionId), "Share profile"),
+                        ActionSpec.primary(CallComponentIds.prompt(sessionId), "Conversation prompt"),
+                        ActionSpec.success(CallComponentIds.share(sessionId), "Share profile"),
                         ActionSpec.danger(CallComponentIds.report(sessionId), "Report")
                 )
                 .build();
@@ -72,9 +75,10 @@ public final class CallPresenter {
     public static ExperienceView queuedDm(int position, int size) {
         return ExperienceView.builder(ExperienceIntent.PROGRESS)
                 .title("Finding a call")
-                .description("You're in line. You may connect with someone in a server channel or another DM.")
+                .description("You're in line. You may connect with a server channel or another DM.")
                 .fields(java.util.List.of(ViewField.of("Queue", "#" + position + " of " + size)))
-                .footer("Leave with /endcall")
+                .footer("Callerphone Call")
+                .actions(ActionSpec.secondary(CallComponentIds.leaveQueue(), "Leave queue"))
                 .build();
     }
 
@@ -83,8 +87,40 @@ public final class CallPresenter {
                 .title("Still finding a call")
                 .description("You're still in line. You may connect with a server channel or another DM.")
                 .fields(java.util.List.of(ViewField.of("Queue", "#" + position + " of " + size)))
-                .footer("Leave with /endcall")
+                .footer("Callerphone Call")
+                .actions(ActionSpec.secondary(CallComponentIds.leaveQueue(), "Leave queue"))
                 .build();
+    }
+
+    public static ExperienceView endConfirm() {
+        return ExperienceView.builder(ExperienceIntent.WARNING)
+                .title("End this call?")
+                .description("Both sides will disconnect.")
+                .actions(
+                        ActionSpec.danger(CallComponentIds.endConfirm(), "End call"),
+                        ActionSpec.secondary(CallComponentIds.endCancel(), "Keep talking")
+                )
+                .build();
+    }
+
+    public static ExperienceView conversationPrompt(String prompt) {
+        return ExperienceView.builder(ExperienceIntent.SOCIAL)
+                .title("Conversation prompt")
+                .description("_" + prompt + "_")
+                .footer("Optional — say anything you like")
+                .build();
+    }
+
+    public static final String[] PROMPTS = {
+            "What's a song you could play on loop for a week?",
+            "What's your comfort game or show right now?",
+            "If you had a free Sunday, what would you do?",
+            "What's something small that made your week better?",
+            "What are you learning or trying lately?"
+    };
+
+    public static String randomPrompt() {
+        return PROMPTS[java.util.concurrent.ThreadLocalRandom.current().nextInt(PROMPTS.length)];
     }
 
     public static ExperienceView ended(String sessionId) {

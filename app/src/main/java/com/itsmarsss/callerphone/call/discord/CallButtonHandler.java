@@ -1,9 +1,15 @@
 package com.itsmarsss.callerphone.call.discord;
 
+import com.itsmarsss.callerphone.call.model.CallEndpoint;
 import com.itsmarsss.callerphone.call.service.CallProfileShareService;
 import com.itsmarsss.callerphone.call.service.CallSessionService;
+import com.itsmarsss.callerphone.experience.ExperienceRenderer;
+import com.itsmarsss.callerphone.safety.ReportCategory;
 import com.itsmarsss.commandType.IButtonInteraction;
+import net.dv8tion.jda.api.components.actionrow.ActionRow;
 import net.dv8tion.jda.api.components.buttons.Button;
+import net.dv8tion.jda.api.components.selections.StringSelectMenu;
+import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonInteraction;
 
 public final class CallButtonHandler implements IButtonInteraction {
@@ -47,40 +53,77 @@ public final class CallButtonHandler implements IButtonInteraction {
                 var result = share.react(parsed.sessionId(), userId, parsed.subjectUserId(), false, channelId);
                 e.replyEmbeds(CallEmbeds.info("Noted", result.message())).setEphemeral(true).queue();
             }
-            case CallComponentIds.REPORT -> {
-                sessions.reportById(parsed.sessionId());
-                e.editButton(Button.danger(CallComponentIds.report(parsed.sessionId()), "Reported").asDisabled()).queue();
-                e.getMessage().replyEmbeds(CallEmbeds.success("Report received", "Thanks for reporting.")).queue();
+            case CallComponentIds.REPORT -> openReportCategories(e, parsed.sessionId());
+            case CallComponentIds.LEAVE_QUEUE -> {
+                var outcome = sessions.end(channelId);
+                e.reply(outcome.message()).queue();
             }
-            case CallComponentIds.AGAIN -> {
-                boolean dm = e.getChannel().getType() == net.dv8tion.jda.api.entities.channel.ChannelType.PRIVATE
-                        || e.getChannel().getType() == net.dv8tion.jda.api.entities.channel.ChannelType.GROUP;
-                var endpoint = dm
-                        ? com.itsmarsss.callerphone.call.model.CallEndpoint.dm(channelId, userId)
-                        : com.itsmarsss.callerphone.call.model.CallEndpoint.guild(channelId, userId);
-                var result = sessions.start(endpoint);
-                switch (result.status()) {
-                    case QUEUED -> e.reply(com.itsmarsss.callerphone.experience.ExperienceRenderer.toMessage(
-                                    dm
-                                            ? CallPresenter.queuedDm(result.queuePosition(), result.queueSize())
-                                            : CallPresenter.queued(result.queuePosition(), result.queueSize())
+            case CallComponentIds.END_CONFIRM -> {
+                var outcome = sessions.end(channelId);
+                if (outcome.editedInPlace()) {
+                    e.reply(ExperienceRenderer.toMessage(
+                                    CallPresenter.success("Call ended", "Lobby updated.")
                             ))
-                            .queue(hook -> hook.retrieveOriginal().queue(msg ->
-                                    sessions.rememberLobbyMessage(channelId, msg.getId())));
-                    case ALREADY_QUEUED -> e.reply(com.itsmarsss.callerphone.experience.ExperienceRenderer.toMessage(
-                                    dm
-                                            ? CallPresenter.waitingDm(result.queuePosition(), result.queueSize())
-                                            : CallPresenter.waiting(result.queuePosition(), result.queueSize())
-                            )).queue();
-                    case MATCHED -> e.reply(sessions.connectedMessage(result.session()))
-                            .queue(hook -> hook.retrieveOriginal().queue(msg ->
-                                    sessions.rememberLobbyMessage(channelId, msg.getId())));
-                    case CONFLICT -> e.replyEmbeds(CallEmbeds.conflict()).setEphemeral(true).queue();
-                    case FAILED -> e.replyEmbeds(CallEmbeds.warn("Couldn't connect", result.message()))
                             .setEphemeral(true).queue();
+                } else {
+                    e.reply(outcome.message()).queue();
                 }
             }
+            case CallComponentIds.END_CANCEL -> e.reply(ExperienceRenderer.toMessage(
+                            CallPresenter.success("Still connected", "Keep talking.")
+                    ))
+                    .setEphemeral(true).queue();
+            case CallComponentIds.PROMPT -> e.reply(ExperienceRenderer.toMessage(
+                            CallPresenter.conversationPrompt(CallPresenter.randomPrompt())
+                    ))
+                    .setEphemeral(true).queue();
+            case CallComponentIds.AGAIN -> startAgain(e, userId, channelId);
             default -> e.replyEmbeds(CallEmbeds.warn("That expired", "Open a fresh screen to continue."))
+                    .setEphemeral(true).queue();
+        }
+    }
+
+    private void openReportCategories(ButtonInteraction e, String sessionId) {
+        StringSelectMenu.Builder menu = StringSelectMenu.create(CallComponentIds.reportCat(sessionId))
+                .setPlaceholder("Choose the closest reason")
+                .setRequiredRange(1, 1);
+        for (ReportCategory cat : ReportCategory.values()) {
+            menu.addOption(cat.label(), cat.code());
+        }
+        e.replyEmbeds(CallEmbeds.warn(
+                        "Report this call",
+                        "Choose the closest reason. Recent messages will be attached for review."
+                ))
+                .addComponents(ActionRow.of(menu.build()))
+                .setEphemeral(true)
+                .queue();
+    }
+
+    private void startAgain(ButtonInteraction e, String userId, String channelId) {
+        boolean dm = e.getChannel().getType() == ChannelType.PRIVATE
+                || e.getChannel().getType() == ChannelType.GROUP;
+        CallEndpoint endpoint = dm
+                ? CallEndpoint.dm(channelId, userId)
+                : CallEndpoint.guild(channelId, userId);
+        var result = sessions.start(endpoint);
+        switch (result.status()) {
+            case QUEUED -> e.reply(ExperienceRenderer.toMessage(
+                            dm
+                                    ? CallPresenter.queuedDm(result.queuePosition(), result.queueSize())
+                                    : CallPresenter.queued(result.queuePosition(), result.queueSize())
+                    ))
+                    .queue(hook -> hook.retrieveOriginal().queue(msg ->
+                            sessions.rememberLobbyMessage(channelId, msg.getId())));
+            case ALREADY_QUEUED -> e.reply(ExperienceRenderer.toMessage(
+                            dm
+                                    ? CallPresenter.waitingDm(result.queuePosition(), result.queueSize())
+                                    : CallPresenter.waiting(result.queuePosition(), result.queueSize())
+                    )).queue();
+            case MATCHED -> e.reply(sessions.connectedMessage(result.session()))
+                    .queue(hook -> hook.retrieveOriginal().queue(msg ->
+                            sessions.rememberLobbyMessage(channelId, msg.getId())));
+            case CONFLICT -> e.replyEmbeds(CallEmbeds.conflict()).setEphemeral(true).queue();
+            case FAILED -> e.replyEmbeds(CallEmbeds.warn("Couldn't connect", result.message()))
                     .setEphemeral(true).queue();
         }
     }

@@ -70,8 +70,10 @@ public final class MatchCommand implements ISlashCommand {
                 boolean enabled = e.getOption("enabled") != null && e.getOption("enabled").getAsBoolean();
                 reply(e, ctx.enrollment().setDigestOptIn(userId, enabled));
             }
-            case "leave" -> reply(e, ctx.deletion().leaveAndSoftDelete(userId));
-            case "delete" -> reply(e, ctx.deletion().hardDeleteProfileContent(userId));
+            case "leave" -> e.reply(ExperienceRenderer.toMessage(MatchPresenter.leaveConfirm()))
+                    .setEphemeral(true).queue();
+            case "delete" -> e.reply(ExperienceRenderer.toMessage(MatchPresenter.deleteConfirm()))
+                    .setEphemeral(true).queue();
             case "export" -> handleExport(e, ctx, userId);
             case "premium" -> e.reply(ExperienceRenderer.toMessage(
                             MatchPresenter.quietSuccess("Premium", UpsellCopy.premiumPitch())))
@@ -159,7 +161,7 @@ public final class MatchCommand implements ISlashCommand {
     }
 
     private void handleEdit(SlashCommandInteractionEvent e, ApplicationContext ctx, String userId) {
-        e.replyModal(setupModal()).queue();
+        e.reply(ExperienceRenderer.toMessage(MatchPresenter.editMenu())).setEphemeral(true).queue();
     }
 
     private void handleBrowse(SlashCommandInteractionEvent e, ApplicationContext ctx, String userId) {
@@ -231,10 +233,14 @@ public final class MatchCommand implements ISlashCommand {
 
     private void handleExport(SlashCommandInteractionEvent e, ApplicationContext ctx, String userId) {
         String json = ctx.export().exportJson(userId);
-        if (json.length() > 1800) {
-            json = json.substring(0, 1800) + "\n… truncated";
-        }
-        e.reply("```json\n" + json + "\n```").setEphemeral(true).queue();
+        byte[] bytes = json.getBytes(java.nio.charset.StandardCharsets.UTF_8);
+        e.reply(ExperienceRenderer.toMessage(MatchPresenter.quietSuccess(
+                        "Your export is ready",
+                        "It includes your profile, settings, and conversations covered by the export policy."
+                )))
+                .addFiles(net.dv8tion.jda.api.utils.FileUpload.fromData(bytes, "callerphone-match-export.json"))
+                .setEphemeral(true)
+                .queue();
     }
 
     private void handleSafety(SlashCommandInteractionEvent e, ApplicationContext ctx, String userId) {

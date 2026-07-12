@@ -317,6 +317,54 @@ public final class MatchPresenter {
                 .build();
     }
 
+    public static ExperienceView leaveConfirm() {
+        return ExperienceView.builder(ExperienceIntent.WARNING)
+                .title("Leave Discover?")
+                .description("Your profile will stop appearing, but your profile and chats will remain.")
+                .actions(
+                        ActionSpec.danger(MatchComponentIds.of(MatchComponentIds.ACTION_LEAVE_CONFIRM, "_"), "Leave Discover"),
+                        ActionSpec.secondary(MatchComponentIds.of(MatchComponentIds.ACTION_LEAVE_CANCEL, "_"), "Keep profile live")
+                )
+                .ephemeral(true)
+                .build();
+    }
+
+    public static ExperienceView deleteConfirm() {
+        return ExperienceView.builder(ExperienceIntent.SAFETY)
+                .title("Delete your Social data?")
+                .description("This permanently removes your profile content and discovery history. Safety records may be retained where required.")
+                .actions(
+                        ActionSpec.danger(MatchComponentIds.of(MatchComponentIds.ACTION_DELETE_CONFIRM, "_"), "Continue"),
+                        ActionSpec.secondary(MatchComponentIds.of(MatchComponentIds.ACTION_DELETE_CANCEL, "_"), "Cancel")
+                )
+                .ephemeral(true)
+                .build();
+    }
+
+    public static ExperienceView editMenu() {
+        return ExperienceView.builder(ExperienceIntent.NEUTRAL)
+                .title("Edit your profile")
+                .description("Choose what you want to update. You can change everything later.")
+                .actions(
+                        ActionSpec.primary(MatchComponentIds.of(MatchComponentIds.ACTION_SETUP, "_"), "About me"),
+                        ActionSpec.secondary(MatchComponentIds.of(MatchComponentIds.ACTION_PREVIEW_SELF, "_"), "Preview")
+                )
+                .ephemeral(true)
+                .build();
+    }
+
+    public static ExperienceView settings(boolean notifications, boolean digest) {
+        return ExperienceView.builder(ExperienceIntent.NEUTRAL)
+                .title("Notifications")
+                .description(
+                        "Connection alerts · " + (notifications ? "On" : "Off") + "\n"
+                                + "Weekly discovery digest · " + (digest ? "On" : "Off") + "\n\n"
+                                + "Use `/match notify` and `/match digest` to change these."
+                )
+                .ephemeral(true)
+                .build();
+    }
+
     public static ExperienceView quietSuccess(String title, String description) {
         return ExperienceView.builder(ExperienceIntent.SUCCESS)
                 .title(title)
