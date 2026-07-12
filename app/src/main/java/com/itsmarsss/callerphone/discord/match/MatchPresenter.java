@@ -940,7 +940,12 @@ public final class MatchPresenter {
                                 MatchComponentIds.of(MatchComponentIds.ACTION_PHOTO_AVATAR, "_"),
                                 "Use Discord avatar"
                         ),
-                        ActionSpec.secondary(MatchComponentIds.of(MatchComponentIds.ACTION_PREVIEW_SELF, "_"), "Preview profile")
+                        ActionSpec.secondary(MatchComponentIds.of(MatchComponentIds.ACTION_PREVIEW_SELF, "_"), "Preview profile"),
+                        ActionSpec.secondary(CallComponentIds.again("_"), "Start a call"),
+                        ActionSpec.secondary(
+                                BottleComponentIds.of(BottleComponentIds.ACTION_FIND, "_"),
+                                "Find a bottle"
+                        )
                 )
                 .ephemeral(true)
                 .build();
