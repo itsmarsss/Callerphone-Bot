@@ -103,9 +103,73 @@ public final class SocialInboxService {
 
     public void markAllRead(String userId) {
         collection.updateMany(
-                Filters.and(Filters.eq("userId", userId), Filters.eq("unread", true)),
+                Filters.and(
+                        Filters.eq("userId", userId),
+                        Filters.eq("unread", true),
+                        Filters.ne("type", EntryType.SAFETY_UPDATE.name())
+                ),
                 Updates.set("unread", false)
         );
+    }
+
+    public OptionalInboxEntry find(String userId, String entryId) {
+        if (userId == null || entryId == null) {
+            return OptionalInboxEntry.empty();
+        }
+        Document doc = collection.find(Filters.and(
+                Filters.eq("_id", entryId),
+                Filters.eq("userId", userId)
+        )).first();
+        if (doc == null) {
+            return OptionalInboxEntry.empty();
+        }
+        return OptionalInboxEntry.of(fromDoc(doc));
+    }
+
+    public OptionalInboxEntry firstUnread(String userId) {
+        Document doc = collection.find(Filters.and(
+                        Filters.eq("userId", userId),
+                        Filters.eq("unread", true)
+                ))
+                .sort(Sorts.orderBy(Sorts.ascending("priority"), Sorts.descending("occurredAt")))
+                .first();
+        if (doc == null) {
+            return OptionalInboxEntry.empty();
+        }
+        return OptionalInboxEntry.of(fromDoc(doc));
+    }
+
+    public void markReadBySource(String userId, String sourceId) {
+        if (userId == null || sourceId == null || sourceId.isBlank()) {
+            return;
+        }
+        collection.updateMany(
+                Filters.and(
+                        Filters.eq("userId", userId),
+                        Filters.eq("sourceId", sourceId),
+                        Filters.eq("unread", true)
+                ),
+                Updates.set("unread", false)
+        );
+    }
+
+    /** Lightweight optional without java.util.Optional for simple call sites. */
+    public record OptionalInboxEntry(InboxEntry entry) {
+        public static OptionalInboxEntry empty() {
+            return new OptionalInboxEntry(null);
+        }
+
+        public static OptionalInboxEntry of(InboxEntry entry) {
+            return new OptionalInboxEntry(entry);
+        }
+
+        public boolean isPresent() {
+            return entry != null;
+        }
+
+        public InboxEntry get() {
+            return entry;
+        }
     }
 
     private static InboxEntry fromDoc(Document doc) {

@@ -79,10 +79,27 @@ public final class MatchPresenter {
             return ExperienceView.builder(ExperienceIntent.SOCIAL)
                     .title(greeting(displayName))
                     .description(unreadChats + " unread chat" + (unreadChats == 1 ? "" : "s")
+                            + (inboxUnread > 0 ? " · " + inboxUnread + " inbox" : "")
                             + " · " + discoveriesLeft + " discoveries left")
                     .actions(
                             ActionSpec.primary(MatchComponentIds.of(MatchComponentIds.ACTION_OPEN_CHATS, "_"), "Open chats"),
+                            ActionSpec.secondary(MatchComponentIds.of(MatchComponentIds.ACTION_HOME, "_"), "Open inbox"),
                             ActionSpec.success(MatchComponentIds.of(MatchComponentIds.ACTION_START_BROWSE, "_"), "Discover people")
+                    )
+                    .ephemeral(true)
+                    .build();
+        }
+        // Plan §10.F — unread human events make inbox the primary home action
+        if (inboxUnread > 0) {
+            return ExperienceView.builder(ExperienceIntent.SOCIAL)
+                    .title(greeting(displayName))
+                    .description(inboxUnread + " unread update" + (inboxUnread == 1 ? "" : "s")
+                            + (incomingInterest > 0 ? " · someone is interested" : "")
+                            + " · " + discoveriesLeft + " discoveries left")
+                    .actions(
+                            ActionSpec.primary(MatchComponentIds.of(MatchComponentIds.ACTION_HOME, "_"), "Open inbox"),
+                            ActionSpec.success(MatchComponentIds.of(MatchComponentIds.ACTION_START_BROWSE, "_"), "Discover people"),
+                            ActionSpec.secondary(MatchComponentIds.of(MatchComponentIds.ACTION_OPEN_CHATS, "_"), "Open chats")
                     )
                     .ephemeral(true)
                     .build();
@@ -129,13 +146,14 @@ public final class MatchPresenter {
 
     public static ExperienceView inbox(List<String> lines) {
         String body = lines == null || lines.isEmpty()
-                ? "You're all caught up. New connection messages and interest will show here."
+                ? "You're all caught up. New connection messages, bottle replies, and games show here."
                 : String.join("\n\n", lines);
         return ExperienceView.builder(ExperienceIntent.SOCIAL)
                 .title("Your inbox")
                 .description(body)
                 .actions(
-                        ActionSpec.success(MatchComponentIds.of(MatchComponentIds.ACTION_START_BROWSE, "_"), "Discover"),
+                        ActionSpec.success(MatchComponentIds.of(MatchComponentIds.ACTION_INBOX_OPEN, "_"), "Open next"),
+                        ActionSpec.secondary(MatchComponentIds.of(MatchComponentIds.ACTION_START_BROWSE, "_"), "Discover"),
                         ActionSpec.secondary(MatchComponentIds.of(MatchComponentIds.ACTION_OPEN_CHATS, "_"), "Open chats")
                 )
                 .ephemeral(true)

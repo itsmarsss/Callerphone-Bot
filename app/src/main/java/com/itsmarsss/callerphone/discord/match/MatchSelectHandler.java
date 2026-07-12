@@ -36,8 +36,30 @@ public final class MatchSelectHandler implements IStringSelectInteraction {
         switch (parsed.action()) {
             case MatchComponentIds.ACTION_CHAT_MENU -> openChat(e, ctx, userId, value);
             case MatchComponentIds.ACTION_REPORT_CAT -> submitReport(e, ctx, userId, parsed.opaqueId(), value);
+            case MatchComponentIds.ACTION_INBOX_MENU -> openInboxEntry(e, ctx, userId, value);
             default -> e.reply(ExperienceRenderer.toMessage(MatchPresenter.expired())).setEphemeral(true).queue();
         }
+    }
+
+    private void openInboxEntry(
+            StringSelectInteractionEvent e,
+            ApplicationContext ctx,
+            String userId,
+            String entryId
+    ) {
+        e.deferReply(true).queue();
+        ctx.dbExecutor().execute(() -> {
+            var found = ctx.inbox().find(userId, entryId);
+            if (!found.isPresent()) {
+                e.getHook().sendMessage(ExperienceRenderer.toMessage(MatchPresenter.warn(
+                        "Gone",
+                        "That update is no longer available."
+                ))).setEphemeral(true).queue();
+                return;
+            }
+            e.getHook().sendMessage(InboxUi.openEntry(ctx, userId, found.get()))
+                    .setEphemeral(true).queue();
+        });
     }
 
     private void openChat(StringSelectInteractionEvent e, ApplicationContext ctx, String userId, String conversationId) {
@@ -50,31 +72,40 @@ public final class MatchSelectHandler implements IStringSelectInteraction {
         MatchConversation conversation = result.conversation();
         String other = conversation.otherParticipant(userId);
         String name = ctx.profiles().find(other).map(MatchProfile::getDisplayName).orElse("your connection");
-        List<Button> buttons = new ArrayList<>();
-        buttons.add(Button.secondary(MatchComponentIds.of(MatchComponentIds.ACTION_STOP_CHAT, "_"), "Stop chat"));
-        buttons.add(Button.danger(
+        List<Button> row1 = new ArrayList<>();
+        List<Button> row2 = new ArrayList<>();
+        row1.add(Button.secondary(MatchComponentIds.of(MatchComponentIds.ACTION_STOP_CHAT, "_"), "Stop chat"));
+        row1.add(Button.danger(
                 MatchComponentIds.of(MatchComponentIds.ACTION_SAFETY_OPEN, "conversation:" + conversationId),
                 "Safety"
         ));
+        row2.add(Button.primary(
+                MatchComponentIds.of(MatchComponentIds.ACTION_GAME_TTT, conversationId),
+                "Play a game"
+        ));
+        row2.add(Button.secondary(
+                MatchComponentIds.of(MatchComponentIds.ACTION_BACK_INBOX, "_"),
+                "Back to inbox"
+        ));
         if (conversation.getStage() == ConversationStage.MEDIATED) {
-            buttons.add(Button.primary(
+            row1.add(Button.primary(
                     MatchComponentIds.of(MatchComponentIds.ACTION_CONNECT_REQUEST, conversationId),
                     "Request connect"
             ));
         } else if (conversation.getStage() == ConversationStage.CONNECT_PENDING
                 && conversation.getConnectRequestedBy() != null
                 && !conversation.getConnectRequestedBy().equals(userId)) {
-            buttons.add(Button.success(
+            row1.add(Button.success(
                     MatchComponentIds.of(MatchComponentIds.ACTION_CONNECT_ACCEPT, conversationId),
                     "Accept connect"
             ));
-            buttons.add(Button.secondary(
+            row1.add(Button.secondary(
                     MatchComponentIds.of(MatchComponentIds.ACTION_CONNECT_DECLINE, conversationId),
                     "Decline"
             ));
         }
         e.replyEmbeds(MatchEmbeds.success("Chatting with " + name, result.message()))
-                .addComponents(ActionRow.of(buttons))
+                .addComponents(ActionRow.of(row1), ActionRow.of(row2))
                 .setEphemeral(true)
                 .queue();
     }

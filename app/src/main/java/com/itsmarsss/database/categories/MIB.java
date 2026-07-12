@@ -7,6 +7,8 @@ import com.itsmarsss.callerphone.msginbottle.entities.Page;
 import com.mongodb.MongoException;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.Aggregates;
+import com.mongodb.client.model.Filters;
+import com.mongodb.client.model.Sorts;
 import com.mongodb.client.model.Updates;
 import com.mongodb.client.result.InsertOneResult;
 import org.bson.Document;
@@ -16,7 +18,9 @@ import org.slf4j.LoggerFactory;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import static com.itsmarsss.database.DatabaseUtil.getOrDefault;
 import static com.itsmarsss.database.DatabaseUtil.getOrDefaultInt;
@@ -120,6 +124,79 @@ public final class MIB {
             logger.error("Unable to update MIB {}: {}", mibId, me.getMessage());
             return null;
         }
+    }
+
+    /**
+     * Bottles the user has participated in (authored any page), newest first.
+     * Multi-page bottles are preferred as "active threads".
+     */
+    public static List<Bottle> findThreadsForUser(String userId, int limit) {
+        if (userId == null || userId.isBlank()) {
+            return List.of();
+        }
+        MongoCollection<Document> mibCollection = Callerphone.dbConnector.getMibsCollection();
+        List<Bottle> out = new ArrayList<>();
+        try {
+            for (Document doc : mibCollection.find(Filters.eq("pages.author", userId))
+                    .sort(Sorts.descending("created"))
+                    .limit(Math.max(1, Math.min(limit, 50)))) {
+                Bottle bottle = parseDocumentToBottle(doc);
+                if (bottle != null && bottle.getPages() != null && !bottle.getPages().isEmpty()) {
+                    out.add(bottle);
+                }
+            }
+        } catch (MongoException me) {
+            logger.error("Unable to list MIB threads for {}: {}", userId, me.getMessage());
+        }
+        return out;
+    }
+
+    public static List<Bottle> getBottles(List<String> ids) {
+        if (ids == null || ids.isEmpty()) {
+            return List.of();
+        }
+        MongoCollection<Document> mibCollection = Callerphone.dbConnector.getMibsCollection();
+        List<Bottle> out = new ArrayList<>();
+        try {
+            for (Document doc : mibCollection.find(Filters.in("id", ids))) {
+                Bottle bottle = parseDocumentToBottle(doc);
+                if (bottle != null) {
+                    out.add(bottle);
+                }
+            }
+        } catch (MongoException me) {
+            logger.error("Unable to load MIBs by id: {}", me.getMessage());
+        }
+        return out;
+    }
+
+    /** Unique participant user ids for a bottle (page authors). */
+    public static Set<String> participantIds(Bottle bottle) {
+        Set<String> ids = new HashSet<>();
+        if (bottle == null || bottle.getPages() == null) {
+            return ids;
+        }
+        for (Page page : bottle.getPages()) {
+            if (page.getAuthor() != null && !page.getAuthor().isBlank() && !"unknown".equals(page.getAuthor())) {
+                ids.add(page.getAuthor());
+            }
+        }
+        return ids;
+    }
+
+    public static String preview(Bottle bottle, int maxLen) {
+        if (bottle == null || bottle.getPages() == null || bottle.getPages().isEmpty()) {
+            return "Empty bottle";
+        }
+        String msg = bottle.getPages().get(0).getMessage();
+        if (msg == null) {
+            return "Empty bottle";
+        }
+        msg = msg.replace('\n', ' ').trim();
+        if (msg.length() <= maxLen) {
+            return msg;
+        }
+        return msg.substring(0, Math.max(1, maxLen - 1)) + "…";
     }
 
     private static Bottle parseDocumentToBottle(Document mibDocument) {

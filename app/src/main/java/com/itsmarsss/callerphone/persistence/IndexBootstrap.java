@@ -75,6 +75,10 @@ public final class IndexBootstrap {
                 .createIndex(Indexes.ascending("userId", "priority", "occurredAt"));
         collection(MatchCollections.SOCIAL_INBOX)
                 .createIndex(Indexes.ascending("userId", "unread"));
+        collection(MatchCollections.BOTTLE_SAVES)
+                .createIndex(Indexes.ascending("userId", "bottleId"), new IndexOptions().unique(true));
+        collection(MatchCollections.BOTTLE_SAVES)
+                .createIndex(Indexes.descending("savedAt"));
         collection(MatchCollections.SCHEMA_MIGRATIONS)
                 .createIndex(Indexes.ascending("id"), new IndexOptions().unique(true));
 

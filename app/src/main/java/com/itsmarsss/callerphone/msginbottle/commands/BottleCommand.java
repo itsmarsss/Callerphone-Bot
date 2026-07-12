@@ -4,9 +4,11 @@ import com.itsmarsss.ICommand;
 import com.itsmarsss.callerphone.Constants;
 import com.itsmarsss.callerphone.Response;
 import com.itsmarsss.callerphone.ToolSet;
+import com.itsmarsss.callerphone.bootstrap.ApplicationContext;
 import com.itsmarsss.callerphone.experience.ExperienceIntent;
 import com.itsmarsss.callerphone.experience.ExperienceRenderer;
 import com.itsmarsss.callerphone.experience.ExperienceView;
+import com.itsmarsss.callerphone.msginbottle.BottleListUi;
 import com.itsmarsss.callerphone.msginbottle.MessageInBottle;
 import com.itsmarsss.callerphone.msginbottle.entities.Bottle;
 import com.itsmarsss.commandType.ISlashCommand;
@@ -26,6 +28,9 @@ import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 import net.dv8tion.jda.api.modals.Modal;
 import net.dv8tion.jda.api.utils.messages.MessageCreateData;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Plan §25–27: consolidated bottle surface.
  * Legacy /sendbottle, /findbottle, /viewbottle remain registered as aliases.
@@ -37,7 +42,10 @@ public final class BottleCommand implements ISlashCommand, ICommand {
         if (sub == null) {
             e.reply(ExperienceRenderer.toMessage(ExperienceView.builder(ExperienceIntent.DISCOVERY)
                     .title("Message in a bottle")
-                    .description("Send something into the sea, or find a bottle someone else cast.")
+                    .description(
+                            "Send something into the sea, find what others cast, "
+                                    + "or reopen threads you're part of."
+                    )
                     .build())).setEphemeral(true).queue();
             return;
         }
@@ -45,6 +53,7 @@ public final class BottleCommand implements ISlashCommand, ICommand {
             case "send" -> openSend(e);
             case "find" -> find(e);
             case "saved", "view" -> view(e);
+            case "threads" -> threads(e);
             default -> e.reply(Response.MISSING_PARAM.toString()).setEphemeral(true).queue();
         }
     }
@@ -117,38 +126,69 @@ public final class BottleCommand implements ISlashCommand, ICommand {
 
     private void view(SlashCommandInteractionEvent e) {
         OptionMapping idOpt = e.getOption("id");
-        if (idOpt == null || idOpt.getAsString().trim().isEmpty()) {
+        if (idOpt != null && !idOpt.getAsString().trim().isEmpty()) {
+            Bottle bottle = MIB.getBottle(idOpt.getAsString().trim());
+            if (bottle == null) {
+                e.reply(ExperienceRenderer.toMessage(ExperienceView.builder(ExperienceIntent.WARNING)
+                        .title("Not found")
+                        .description("No bottle with that id.")
+                        .build())).setEphemeral(true).queue();
+                return;
+            }
+            MessageCreateData message = MessageInBottle.createMessage(bottle, Integer.MAX_VALUE);
+            if (message == null) {
+                e.reply(Response.ERROR.toString()).setEphemeral(true).queue();
+                return;
+            }
+            e.reply(message).setEphemeral(true).queue();
+            return;
+        }
+
+        // List saved bookmarks
+        if (!ApplicationContext.isReady()) {
             e.reply(ExperienceRenderer.toMessage(ExperienceView.builder(ExperienceIntent.NEUTRAL)
                     .title("Saved bottles")
-                    .description(
-                            "Pass a bottle id to reopen one, or cast something new.\n\n"
-                                    + "`/bottle find` · discover a bottle\n"
-                                    + "`/bottle send` · cast one"
-                    )
+                    .description("Still starting up. Try again in a moment.")
                     .build())).setEphemeral(true).queue();
             return;
         }
-        Bottle bottle = MIB.getBottle(idOpt.getAsString().trim());
-        if (bottle == null) {
-            e.reply(ExperienceRenderer.toMessage(ExperienceView.builder(ExperienceIntent.WARNING)
-                    .title("Not found")
-                    .description("No bottle with that id.")
-                    .build())).setEphemeral(true).queue();
-            return;
+        e.deferReply(true).queue();
+        ApplicationContext ctx = ApplicationContext.get();
+        ctx.dbExecutor().execute(() -> {
+            List<String> ids = ctx.bottleSaves().listBottleIds(e.getUser().getId(), 25);
+            List<Bottle> bottles = new ArrayList<>();
+            // preserve save order
+            for (String id : ids) {
+                Bottle b = MIB.getBottle(id);
+                if (b != null) {
+                    bottles.add(b);
+                }
+            }
+            e.getHook().sendMessage(BottleListUi.saved(bottles)).setEphemeral(true).queue();
+        });
+    }
+
+    private void threads(SlashCommandInteractionEvent e) {
+        e.deferReply(true).queue();
+        String userId = e.getUser().getId();
+        // MIB queries are sync Mongo — run off the event thread when possible
+        if (ApplicationContext.isReady()) {
+            ApplicationContext.get().dbExecutor().execute(() -> {
+                List<Bottle> bottles = MIB.findThreadsForUser(userId, 25);
+                e.getHook().sendMessage(BottleListUi.threads(bottles)).setEphemeral(true).queue();
+            });
+        } else {
+            List<Bottle> bottles = MIB.findThreadsForUser(userId, 25);
+            e.getHook().sendMessage(BottleListUi.threads(bottles)).setEphemeral(true).queue();
         }
-        MessageCreateData message = MessageInBottle.createMessage(bottle, Integer.MAX_VALUE);
-        if (message == null) {
-            e.reply(Response.ERROR.toString()).setEphemeral(true).queue();
-            return;
-        }
-        e.reply(message).setEphemeral(true).queue();
     }
 
     @Override
     public String getHelp() {
         return "`/bottle send` cast a bottle\n"
                 + "`/bottle find` discover one\n"
-                + "`/bottle saved` reopen by id";
+                + "`/bottle saved` your bookmarks\n"
+                + "`/bottle threads` threads you're in";
     }
 
     @Override
@@ -162,8 +202,9 @@ public final class BottleCommand implements ISlashCommand, ICommand {
                 .addSubcommands(
                         new SubcommandData("send", "Cast a bottle into the sea"),
                         new SubcommandData("find", "Find a random bottle"),
-                        new SubcommandData("saved", "Open a bottle by id")
-                                .addOptions(new OptionData(OptionType.STRING, "id", "Bottle id", false))
+                        new SubcommandData("saved", "Saved bottles (or open by id)")
+                                .addOptions(new OptionData(OptionType.STRING, "id", "Bottle id", false)),
+                        new SubcommandData("threads", "Bottles you've replied to or launched")
                 )
                 .setContexts(InteractionContextType.GUILD, InteractionContextType.BOT_DM);
     }

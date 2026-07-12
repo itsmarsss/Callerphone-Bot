@@ -153,20 +153,23 @@ public final class MatchButtonHandler implements IButtonInteraction {
                             .setEphemeral(true).queue();
                 });
             }
-            case MatchComponentIds.ACTION_HOME -> {
+            case MatchComponentIds.ACTION_HOME,
+                 MatchComponentIds.ACTION_BACK_INBOX -> {
                 e.deferReply(true).queue();
-                ctx.dbExecutor().execute(() -> {
-                    var entries = ctx.inbox().list(userId, 15);
-                    List<String> lines = new ArrayList<>();
-                    for (var entry : entries) {
-                        String mark = entry.unread() ? "● " : "  ";
-                        lines.add(mark + "**" + entry.actorDisplay() + "** · "
-                                + entry.type().name().toLowerCase().replace('_', ' ')
-                                + "\n" + entry.preview());
-                    }
-                    e.getHook().sendMessage(ExperienceRenderer.toMessage(MatchPresenter.inbox(lines)))
-                            .setEphemeral(true).queue();
-                });
+                ctx.dbExecutor().execute(() -> InboxUi.send(e.getHook(), ctx, userId));
+            }
+            case MatchComponentIds.ACTION_INBOX_OPEN -> {
+                e.deferReply(true).queue();
+                ctx.dbExecutor().execute(() ->
+                        e.getHook().sendMessage(InboxUi.openNext(ctx, userId)).setEphemeral(true).queue()
+                );
+            }
+            case MatchComponentIds.ACTION_INBOX_READ_ALL -> {
+                ctx.inbox().markAllRead(userId);
+                e.reply(ExperienceRenderer.toMessage(MatchPresenter.quietSuccess(
+                        "Inbox cleared",
+                        "Non-safety updates marked read. Open next anytime from your inbox."
+                ))).setEphemeral(true).queue();
             }
             case MatchComponentIds.ACTION_GAME_TTT -> {
                 var result = ctx.connectionGames().proposeTtt(opaque, userId);

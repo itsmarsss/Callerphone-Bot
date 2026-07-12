@@ -230,7 +230,8 @@ public class Callerphone {
     private static void registerSelects() {
         IStringSelectInteraction[] selects = {
                 new com.itsmarsss.callerphone.discord.match.MatchSelectHandler(),
-                new com.itsmarsss.callerphone.call.discord.CallSelectHandler()
+                new com.itsmarsss.callerphone.call.discord.CallSelectHandler(),
+                new com.itsmarsss.callerphone.msginbottle.BottleSelectHandler()
         };
         for (IStringSelectInteraction select : selects) {
             selMap.put(select.getID(), select);

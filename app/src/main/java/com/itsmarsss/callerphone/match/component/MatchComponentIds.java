@@ -58,6 +58,12 @@ public final class MatchComponentIds {
     public static final String ACTION_GAME_DECLINE = "game_no";
     /** Bottle author interest from a found bottle. Opaque: authorUserId. */
     public static final String ACTION_BOTTLE_INTEREST = "bot_int";
+    /** String select: open an inbox entry. Values are entry ids. */
+    public static final String ACTION_INBOX_MENU = "inbox_menu";
+    /** Open highest-priority unread inbox entry. */
+    public static final String ACTION_INBOX_OPEN = "inbox_open";
+    public static final String ACTION_INBOX_READ_ALL = "inbox_read";
+    public static final String ACTION_BACK_INBOX = "back_inbox";
 
     private MatchComponentIds() {
     }

@@ -225,14 +225,8 @@ public final class MatchCommand implements ISlashCommand {
     }
 
     private void handleInbox(SlashCommandInteractionEvent e, ApplicationContext ctx, String userId) {
-        var entries = ctx.inbox().list(userId, 15);
-        List<String> lines = new ArrayList<>();
-        for (var entry : entries) {
-            String mark = entry.unread() ? "● " : "  ";
-            lines.add(mark + "**" + entry.actorDisplay() + "** · " + entry.type().name().toLowerCase().replace('_', ' ')
-                    + "\n" + entry.preview());
-        }
-        e.reply(ExperienceRenderer.toMessage(MatchPresenter.inbox(lines))).setEphemeral(true).queue();
+        e.deferReply(true).queue();
+        ctx.dbExecutor().execute(() -> InboxUi.send(e.getHook(), ctx, userId));
     }
 
     private void handleChats(SlashCommandInteractionEvent e, ApplicationContext ctx, String userId) {
