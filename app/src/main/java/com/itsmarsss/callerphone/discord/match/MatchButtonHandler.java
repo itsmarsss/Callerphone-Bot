@@ -448,6 +448,7 @@ public final class MatchButtonHandler implements IButtonInteraction {
                 );
                 try {
                     ctx.analytics().track(userId, "match_icebreaker", opaque);
+                    ctx.analytics().trackSurface(userId, "chat", "icebreaker", null);
                 } catch (Exception ignored) {
                 }
                 e.reply(ExperienceRenderer.toMessage(MatchPresenter.icebreakerPrompt(opener, opaque)))
