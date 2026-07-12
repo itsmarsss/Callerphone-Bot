@@ -60,7 +60,9 @@ public final class ExportService {
             po.put("displayName", p.getDisplayName());
             po.put("state", p.getState() == null ? null : p.getState().name());
             po.put("bio", p.getBio());
+            po.put("pronouns", p.getPronouns());
             po.put("interests", p.getInterests());
+            po.put("ageCohort", p.getAgeCohort() == null ? null : p.getAgeCohort().code());
             po.put("ageCohort", p.getAgeCohort() == null ? null : p.getAgeCohort().code());
             root.put("profile", po);
         }

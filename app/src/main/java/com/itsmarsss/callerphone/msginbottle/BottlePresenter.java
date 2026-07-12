@@ -27,10 +27,17 @@ public final class BottlePresenter {
     public static ExperienceView sent() {
         return ExperienceView.builder(ExperienceIntent.SUCCESS)
                 .title("Bottle sent 🌊")
-                .description("It's now floating for someone else to find.")
+                .description(
+                        "It's now floating for someone else to find.\n\n"
+                                + "Replies show up in your inbox when someone adds a page."
+                )
                 .actions(
                         ActionSpec.primary(BottleComponentIds.of(BottleComponentIds.ACTION_SEND, "_"), "Send another"),
-                        ActionSpec.success(BottleComponentIds.of(BottleComponentIds.ACTION_FIND, "_"), "Find a bottle")
+                        ActionSpec.success(BottleComponentIds.of(BottleComponentIds.ACTION_FIND, "_"), "Find a bottle"),
+                        ActionSpec.secondary(
+                                com.itsmarsss.callerphone.call.discord.CallComponentIds.again("_"),
+                                "Start a call"
+                        )
                 )
                 .ephemeral(true)
                 .build();
