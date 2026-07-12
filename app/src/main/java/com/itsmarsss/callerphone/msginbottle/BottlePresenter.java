@@ -166,7 +166,11 @@ public final class BottlePresenter {
         } else {
             b.actions(
                     ActionSpec.success(BottleComponentIds.of(BottleComponentIds.ACTION_FIND, "_"), "Find another"),
-                    ActionSpec.secondary(BottleComponentIds.of(BottleComponentIds.ACTION_KEEP_ANON, bottleId), "Okay")
+                    ActionSpec.secondary(BottleComponentIds.of(BottleComponentIds.ACTION_KEEP_ANON, bottleId), "Okay"),
+                    ActionSpec.secondary(
+                            com.itsmarsss.callerphone.call.discord.CallComponentIds.again("_"),
+                            "Start a call"
+                    )
             );
         }
         return b.build();
