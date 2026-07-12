@@ -39,21 +39,25 @@ public final class CallButtonHandler implements IButtonInteraction {
         switch (parsed.action()) {
             case CallComponentIds.SHARE -> {
                 var result = share.share(parsed.sessionId(), userId, channelId);
-                e.replyEmbeds(result.success()
-                                ? CallEmbeds.success("Profile shared", result.message())
-                                : CallEmbeds.warn("Can't share", result.message()))
+                e.reply(ExperienceRenderer.toMessage(result.success()
+                                ? CallPresenter.success("Profile shared", result.message())
+                                : CallPresenter.warn("Can't share", result.message())
+                        ))
                         .setEphemeral(true).queue();
             }
             case CallComponentIds.LIKE -> {
                 var result = share.react(parsed.sessionId(), userId, parsed.subjectUserId(), true, channelId);
-                e.replyEmbeds(result.success()
-                                ? CallEmbeds.success("Interest sent", result.message())
-                                : CallEmbeds.warn("Couldn't send", result.message()))
+                e.reply(ExperienceRenderer.toMessage(result.success()
+                                ? CallPresenter.success("Interest sent", result.message())
+                                : CallPresenter.warn("Couldn't send", result.message())
+                        ))
                         .setEphemeral(true).queue();
             }
             case CallComponentIds.PASS -> {
                 var result = share.react(parsed.sessionId(), userId, parsed.subjectUserId(), false, channelId);
-                e.replyEmbeds(CallEmbeds.info("Noted", result.message())).setEphemeral(true).queue();
+                e.reply(ExperienceRenderer.toMessage(
+                        CallPresenter.success("Noted", result.message())
+                )).setEphemeral(true).queue();
             }
             case CallComponentIds.REPORT -> openReportCategories(e, parsed.sessionId());
             case CallComponentIds.LEAVE_QUEUE -> {
