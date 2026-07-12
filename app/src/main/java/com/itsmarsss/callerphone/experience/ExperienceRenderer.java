@@ -61,7 +61,14 @@ public final class ExperienceRenderer {
     public static List<ActionRow> toComponents(ExperienceView view) {
         List<Button> buttons = new ArrayList<>();
         for (ActionSpec action : view.actions()) {
-            if (action == null || !DiscordLimits.isValidCustomId(action.componentId())) {
+            if (action == null || action.componentId() == null || action.componentId().isBlank()) {
+                continue;
+            }
+            // Link buttons use URLs (up to Discord's URL length); others use custom ids ≤100.
+            if (action.style() != ActionSpec.Style.LINK && !DiscordLimits.isValidCustomId(action.componentId())) {
+                continue;
+            }
+            if (action.style() == ActionSpec.Style.LINK && action.componentId().length() > 512) {
                 continue;
             }
             String label = DiscordLimits.clamp(action.label(), DiscordLimits.BUTTON_LABEL);

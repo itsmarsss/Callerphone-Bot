@@ -35,6 +35,11 @@ public record ActionSpec(
         return new ActionSpec(componentId, label, Style.DANGER, false, false);
     }
 
+    /** Link button: {@code componentId} is the URL. */
+    public static ActionSpec link(String url, String label) {
+        return new ActionSpec(url, label, Style.LINK, false, false);
+    }
+
     public ActionSpec asDisabled() {
         return new ActionSpec(componentId, label, style, primary, true);
     }

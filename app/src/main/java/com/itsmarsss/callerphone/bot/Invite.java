@@ -1,10 +1,11 @@
 package com.itsmarsss.callerphone.bot;
 
 import com.itsmarsss.callerphone.Callerphone;
-import com.itsmarsss.callerphone.utils.EmbedHelpers;
+import com.itsmarsss.callerphone.experience.ActionSpec;
+import com.itsmarsss.callerphone.experience.ExperienceIntent;
+import com.itsmarsss.callerphone.experience.ExperienceRenderer;
+import com.itsmarsss.callerphone.experience.ExperienceView;
 import com.itsmarsss.commandType.ISlashCommand;
-import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.InteractionContextType;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
@@ -14,19 +15,24 @@ import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 public class Invite implements ISlashCommand {
     @Override
     public void runSlash(SlashCommandInteractionEvent e) {
-        e.replyEmbeds(invite()).setEphemeral(true).queue();
-    }
-
-    private MessageEmbed invite() {
-        return new EmbedBuilder()
-                .setColor(EmbedHelpers.randColor())
-                .setTitle("Bring Callerphone with you")
-                .setDescription("Add Callerphone to a server or join the community.")
-                .addField("Add to a server", "[Invite](" + Callerphone.config.getBotInviteLink() + ")", true)
-                .addField("Community", "[Support server](" + Callerphone.config.getSupportServer() + ")", true)
-                .addField("Support us", "[Donate](" + Callerphone.config.getDonateLink() + ")", true)
-                .setFooter("Glad you're here")
-                .build();
+        String invite = Callerphone.config.getBotInviteLink();
+        String support = Callerphone.config.getSupportServer();
+        String donate = Callerphone.config.getDonateLink();
+        e.reply(ExperienceRenderer.toMessage(ExperienceView.builder(ExperienceIntent.SOCIAL)
+                .title("Bring Callerphone with you")
+                .description(
+                        "Add Callerphone to a server or join the community.\n\n"
+                                + "**Add to a server** · [Invite](" + invite + ")\n"
+                                + "**Community** · [Support server](" + support + ")\n"
+                                + "**Support us** · [Donate](" + donate + ")"
+                )
+                .footer("Glad you're here")
+                .actions(
+                        ActionSpec.link(invite, "Invite bot"),
+                        ActionSpec.link(support, "Support server"),
+                        ActionSpec.link(donate, "Donate")
+                )
+                .build())).setEphemeral(true).queue();
     }
 
     @Override
