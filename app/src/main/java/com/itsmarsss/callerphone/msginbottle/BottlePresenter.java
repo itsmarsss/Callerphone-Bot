@@ -172,7 +172,8 @@ public final class BottlePresenter {
                         ActionSpec.success(
                                 BottleComponentIds.of(BottleComponentIds.ACTION_REPLY_SIGN, bottleId),
                                 "Signed"
-                        )
+                        ),
+                        ActionSpec.secondary(BottleComponentIds.of(BottleComponentIds.ACTION_FIND, "_"), "Find another")
                 )
                 .ephemeral(true)
                 .build();
