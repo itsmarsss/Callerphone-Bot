@@ -77,10 +77,14 @@ public final class CallPresenter {
     public static ExperienceView gameShelf(String sessionId) {
         return ExperienceView.builder(ExperienceIntent.SOCIAL)
                 .title("Play during this call")
-                .description("Only ready games are listed.\n\n**Tic-Tac-Toe** · Ready")
+                .description(
+                        "Only ready games are listed — nothing half-baked.\n\n"
+                                + "**Tic-Tac-Toe** · Ready\n"
+                                + "_Connect Four & Battleship stay off this shelf until live._"
+                )
                 .actions(
                         ActionSpec.success(CallComponentIds.gameTtt(sessionId), "Play Tic-Tac-Toe"),
-                        ActionSpec.secondary(CallComponentIds.prompt(sessionId), "Back to prompts")
+                        ActionSpec.secondary(CallComponentIds.prompt(sessionId), "Conversation prompt")
                 )
                 .build();
     }

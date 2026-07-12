@@ -29,7 +29,12 @@ public final class InboxUi {
     }
 
     public static void send(InteractionHook hook, ApplicationContext ctx, String userId) {
-        hook.sendMessage(buildList(ctx, userId)).setEphemeral(true).queue();
+        hook.sendMessage(buildList(ctx, userId)).setEphemeral(true).queue(msg ->
+                com.itsmarsss.callerphone.experience.ControlMessageStore.get().put(
+                        com.itsmarsss.callerphone.experience.ControlMessageStore.inboxKey(userId),
+                        msg.getId()
+                )
+        );
     }
 
     public static MessageCreateData buildList(ApplicationContext ctx, String userId) {

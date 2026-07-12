@@ -53,4 +53,12 @@ public final class ControlMessageStore {
     public static String onboardingKey(String userId) {
         return "match:onboard:" + userId;
     }
+
+    public static String inboxKey(String userId) {
+        return "match:inbox:" + userId;
+    }
+
+    public static String homeKey(String userId) {
+        return "match:home:" + userId;
+    }
 }

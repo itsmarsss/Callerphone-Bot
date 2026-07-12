@@ -107,6 +107,12 @@ public final class MatchSelectHandler implements IStringSelectInteraction {
                     MatchComponentIds.of(MatchComponentIds.ACTION_CONNECT_DECLINE, conversationId),
                     "Decline"
             ));
+        } else if (conversation.getStage() == ConversationStage.CONNECT_PENDING
+                && userId.equals(conversation.getConnectRequestedBy())) {
+            row1.add(Button.secondary(
+                    MatchComponentIds.of(MatchComponentIds.ACTION_STOP_CHAT, "_"),
+                    "Waiting for connect…"
+            ).asDisabled());
         }
         e.replyEmbeds(MatchEmbeds.success("Chatting with " + name, result.message()))
                 .addComponents(ActionRow.of(row1), ActionRow.of(row2))

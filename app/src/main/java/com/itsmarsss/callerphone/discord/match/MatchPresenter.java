@@ -383,11 +383,19 @@ public final class MatchPresenter {
     public static ExperienceView connectionGameShelf(String conversationId) {
         return ExperienceView.builder(ExperienceIntent.SOCIAL)
                 .title("Play with your connection")
-                .description("Only ready games are listed.\n\n**Tic-Tac-Toe** · Ready")
+                .description(
+                        "Only ready games are listed.\n\n"
+                                + "**Tic-Tac-Toe** · Ready\n"
+                                + "_Other games stay off this shelf until live._"
+                )
                 .actions(
                         ActionSpec.success(
                                 MatchComponentIds.of(MatchComponentIds.ACTION_GAME_TTT, conversationId),
                                 "Play Tic-Tac-Toe"
+                        ),
+                        ActionSpec.secondary(
+                                MatchComponentIds.of(MatchComponentIds.ACTION_ICEBREAKER, conversationId),
+                                "Icebreaker"
                         ),
                         ActionSpec.secondary(
                                 MatchComponentIds.of(MatchComponentIds.ACTION_CHAT_SELECT, conversationId),
@@ -405,7 +413,8 @@ public final class MatchPresenter {
                         "Games work best **during a call** or inside a Match chat.\n\n"
                                 + "**Ready**\n"
                                 + "• Tic-Tac-Toe\n\n"
-                                + "Start a call or open a chat, then challenge from there."
+                                + "Start a call or open a chat, then challenge from there. "
+                                + "Unavailable games are never offered as dead ends."
                 )
                 .actions(
                         ActionSpec.secondary(CallComponentIds.again("_"), "Start a call"),

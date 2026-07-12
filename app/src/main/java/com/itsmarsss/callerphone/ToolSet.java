@@ -190,31 +190,60 @@ public final class ToolSet {
     }
 
     public static void sendPPAndTOS(MessageReceivedEvent event) {
-        event.getMessage().replyEmbeds(buildPPAndTOS(event.getAuthor())).queue();
+        event.getMessage().reply(com.itsmarsss.callerphone.experience.ExperienceRenderer.toMessage(
+                buildPPAndTOSView()
+        )).queue();
         Users.createUser(event.getAuthor().getId());
     }
 
     public static void sendPPAndTOS(SlashCommandInteractionEvent event) {
-        event.replyEmbeds(buildPPAndTOS(event.getUser())).queue();
+        event.reply(com.itsmarsss.callerphone.experience.ExperienceRenderer.toMessage(
+                buildPPAndTOSView()
+        )).setEphemeral(true).queue();
         Users.createUser(event.getUser().getId());
     }
 
     public static MessageEmbed buildPPAndTOS(User user) {
-        return new EmbedBuilder()
-                .setAuthor("Must Read", null, user.getAvatarUrl())
-                .setTitle("User Agreement")
-                .setDescription("By issuing another Callerphone (**\"Bot\"**) command or message in the Bot's scope, it is expected that you (**\"User\"**) have read, and User has agreed to both Bot's [Privacy Policy](" + Callerphone.config.getPrivacyPolicy() + ") and [Terms of Service](" + Callerphone.config.getTermsOfService() + "). It is User's responsibility to regularly check for updates to these documents.")
-                .setFooter("This is to protect both Bot and User from unforeseen issues in the future. Please read these documents carefully.",
-                        Callerphone.selfUser != null ? Callerphone.selfUser.getAvatarUrl() : null)
-                .setColor(COLOR)
+        return com.itsmarsss.callerphone.experience.ExperienceRenderer.toEmbed(buildPPAndTOSView());
+    }
+
+    public static com.itsmarsss.callerphone.experience.ExperienceView buildPPAndTOSView() {
+        String privacy = Callerphone.config != null ? Callerphone.config.getPrivacyPolicy() : "";
+        String terms = Callerphone.config != null ? Callerphone.config.getTermsOfService() : "";
+        return com.itsmarsss.callerphone.experience.ExperienceView.builder(
+                        com.itsmarsss.callerphone.experience.ExperienceIntent.SAFETY)
+                .title("User Agreement")
+                .description(
+                        "By using Callerphone again, you confirm you've read our "
+                                + "[Privacy Policy](" + privacy + ") and "
+                                + "[Terms of Service](" + terms + ").\n\n"
+                                + "Check these occasionally — they can update."
+                )
+                .footer("Protects you and the bot")
+                .actions(
+                        com.itsmarsss.callerphone.experience.ActionSpec.link(privacy, "Privacy Policy"),
+                        com.itsmarsss.callerphone.experience.ActionSpec.link(terms, "Terms of Service"),
+                        com.itsmarsss.callerphone.experience.ActionSpec.success(
+                                com.itsmarsss.callerphone.match.component.MatchComponentIds.of(
+                                        com.itsmarsss.callerphone.match.component.MatchComponentIds.ACTION_JOIN_ACCEPT,
+                                        "_"
+                                ),
+                                "Create Match profile"
+                        )
+                )
                 .build();
     }
 
     public static void sendCommandCooldown(SlashCommandInteractionEvent event) {
         long remainingMs = COMMAND_COOLDOWN - (System.currentTimeMillis() - Cooldown.getCmdCooldown(event.getUser().getId()));
         long remainingSec = Math.max(1, remainingMs / 1000);
-        event.reply(":warning: **Command Cooldown;** " + remainingSec + " second(s)")
-                .setEphemeral(true).queue();
+        event.reply(com.itsmarsss.callerphone.experience.ExperienceRenderer.toMessage(
+                com.itsmarsss.callerphone.experience.ExperienceView.builder(
+                                com.itsmarsss.callerphone.experience.ExperienceIntent.WARNING)
+                        .title("Command cooldown")
+                        .description("Try again in **" + remainingSec + "** second(s).")
+                        .build()
+        )).setEphemeral(true).queue();
     }
 
     public static String formatCooldown(long elapsedMs, long cooldownMs, String unitSecondsLabel) {

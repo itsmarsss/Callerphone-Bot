@@ -67,7 +67,14 @@ public final class MatchButtonHandler implements IButtonInteraction {
             case MatchComponentIds.ACTION_CHAT_SELECT -> replyChatSelect(e, ctx, userId, opaque);
             case MatchComponentIds.ACTION_CONNECT_REQUEST -> {
                 EnrollmentService.ServiceResult result = ctx.connect().request(userId, opaque);
-                replyService(e, result);
+                if (result.success()) {
+                    e.reply(ExperienceRenderer.toMessage(MatchPresenter.quietSuccess(
+                            "Request sent",
+                            result.message() + "\n\nKeep chatting while you wait — they have 48 hours."
+                    ))).setEphemeral(true).queue();
+                } else {
+                    replyService(e, result);
+                }
             }
             case MatchComponentIds.ACTION_CONNECT_ACCEPT -> {
                 var result = ctx.connect().accept(userId, opaque);
@@ -413,6 +420,9 @@ public final class MatchButtonHandler implements IButtonInteraction {
                     MatchComponentIds.of(MatchComponentIds.ACTION_CONNECT_DECLINE, conversationId),
                     "Decline"
             ));
+        } else if (conversation.getStage() == ConversationStage.CONNECT_PENDING
+                && userId.equals(conversation.getConnectRequestedBy())) {
+            row1.add(Button.secondary("m-v1-wait-_", "Waiting for connect…").asDisabled());
         }
         var reply = e.replyEmbeds(MatchEmbeds.success("Chatting with " + name, result.message()))
                 .addComponents(ActionRow.of(row1));
