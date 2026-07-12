@@ -325,6 +325,7 @@ public final class MatchCommand implements ISlashCommand {
         if (incoming.isEmpty()) {
             try {
                 ctx.analytics().track(userId, "likes_open", "empty");
+                ctx.analytics().trackSurface(userId, "likes", "open", "empty");
             } catch (Exception ignored) {
             }
             e.reply(ExperienceRenderer.toMessage(MatchPresenter.incomingInterestEmpty()))
@@ -335,6 +336,7 @@ public final class MatchCommand implements ISlashCommand {
         if (!ctx.premium().canSeeIncomingInterestNames(userId)) {
             try {
                 ctx.analytics().track(userId, "likes_open", "teaser");
+                ctx.analytics().trackSurface(userId, "likes", "open", "teaser");
             } catch (Exception ignored) {
             }
             e.reply(ExperienceRenderer.toMessage(MatchPresenter.incomingInterestFreeTeaser()))
@@ -343,6 +345,7 @@ public final class MatchCommand implements ISlashCommand {
         }
         try {
             ctx.analytics().track(userId, "likes_open", "list");
+            ctx.analytics().trackSurface(userId, "likes", "open", "list");
         } catch (Exception ignored) {
         }
         StringBuilder sb = new StringBuilder();
