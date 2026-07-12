@@ -72,6 +72,7 @@ public final class MatchModalHandler implements IModalInteraction {
 
         try {
             ctx.analytics().track(userId, "match_setup_save", "ok");
+            ctx.analytics().trackSurface(userId, "profile", "setup_save", "ok");
         } catch (Exception ignored) {
         }
 
