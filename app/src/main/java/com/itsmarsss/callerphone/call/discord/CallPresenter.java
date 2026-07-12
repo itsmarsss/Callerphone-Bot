@@ -104,7 +104,7 @@ public final class CallPresenter {
         return ExperienceView.builder(ExperienceIntent.SUCCESS)
                 .title("Tic-Tac-Toe started")
                 .description(
-                        "The board is in each player's DMs. The call stays connected — keep talking here."
+                        "Boards appear in both call channels. Play there — the call stays connected."
                 )
                 .footer("Callerphone Call")
                 .actions(

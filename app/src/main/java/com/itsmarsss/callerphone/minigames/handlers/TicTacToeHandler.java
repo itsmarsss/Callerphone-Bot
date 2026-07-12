@@ -1,12 +1,13 @@
 package com.itsmarsss.callerphone.minigames.handlers;
 
-import com.itsmarsss.callerphone.Callerphone;
+import com.itsmarsss.callerphone.ToolSet;
 import com.itsmarsss.callerphone.minigames.MiniGameStatus;
 import com.itsmarsss.callerphone.minigames.games.TicTacToe;
 import com.itsmarsss.callerphone.users.BotUser;
 import com.itsmarsss.commandType.IButtonInteraction;
 import com.itsmarsss.database.categories.Users;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
+import net.dv8tion.jda.api.entities.channel.concrete.PrivateChannel;
 import net.dv8tion.jda.api.exceptions.ErrorHandler;
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonInteraction;
 import net.dv8tion.jda.api.requests.ErrorResponse;
@@ -100,19 +101,22 @@ public class TicTacToeHandler implements IButtonInteraction {
     }
 
     private void notifyOpponent(String channelId, String messageId, MessageCreateData board) {
-        MessageChannel channel = getPrivateChannel(channelId);
+        MessageChannel channel = resolveChannel(channelId);
         if (channel == null) {
             return;
         }
 
         updateBoard(channel, messageId, board);
-        channel.sendMessage("You've got a game!").queue(msg ->
-                msg.delete().queueAfter(1, TimeUnit.SECONDS, null, err -> {
-                }));
+        // Quiet turn ping only in DMs — call channels already show the edited board.
+        if (channel instanceof PrivateChannel) {
+            channel.sendMessage("Your turn.").queue(msg ->
+                    msg.delete().queueAfter(2, TimeUnit.SECONDS, null, err -> {
+                    }));
+        }
     }
 
     private void updateBoard(String channelId, String messageId, MessageCreateData board) {
-        MessageChannel channel = getPrivateChannel(channelId);
+        MessageChannel channel = resolveChannel(channelId);
         if (channel != null) {
             updateBoard(channel, messageId, board);
         }
@@ -129,14 +133,15 @@ public class TicTacToeHandler implements IButtonInteraction {
         );
     }
 
-    private MessageChannel getPrivateChannel(String channelId) {
-        if (channelId == null || Callerphone.sdMgr == null) {
+    /** Guild call channels or private DMs. */
+    private MessageChannel resolveChannel(String channelId) {
+        if (channelId == null) {
             return null;
         }
         try {
-            return Callerphone.sdMgr.getPrivateChannelById(channelId);
+            return ToolSet.getMessageChannel(channelId);
         } catch (Exception e) {
-            logger.debug("Could not resolve private channel {}", channelId, e);
+            logger.debug("Could not resolve game channel {}", channelId, e);
             return null;
         }
     }

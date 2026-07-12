@@ -1,6 +1,5 @@
 package com.itsmarsss.callerphone.msginbottle;
 
-import com.itsmarsss.callerphone.Response;
 import com.itsmarsss.callerphone.ToolSet;
 import com.itsmarsss.callerphone.experience.ExperienceRenderer;
 import com.itsmarsss.callerphone.msginbottle.entities.Bottle;
@@ -83,7 +82,7 @@ public final class BottleButtonHandler implements IButtonInteraction {
         }
         MessageCreateData message = MessageInBottle.createMessage(bottle, Integer.MAX_VALUE);
         if (message == null) {
-            e.reply(Response.ERROR.toString()).setEphemeral(true).queue();
+            e.reply(ExperienceRenderer.toMessage(BottlePresenter.genericError())).setEphemeral(true).queue();
             return;
         }
         Cooldown.setMIBFindCoolDown(userId);

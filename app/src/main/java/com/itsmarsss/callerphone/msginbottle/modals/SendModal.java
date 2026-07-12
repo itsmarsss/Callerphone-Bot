@@ -1,6 +1,5 @@
 package com.itsmarsss.callerphone.msginbottle.modals;
 
-import com.itsmarsss.callerphone.Response;
 import com.itsmarsss.callerphone.ToolSet;
 import com.itsmarsss.callerphone.bootstrap.ApplicationContext;
 import com.itsmarsss.callerphone.experience.ExperienceRenderer;
@@ -72,7 +71,7 @@ public class SendModal implements IModalInteraction {
                         BottlePresenter.threadFull(parsed.bottleId(), author)
                 )).setEphemeral(true).queue();
             }
-            case ERROR -> e.reply(Response.ERROR.toString()).setEphemeral(true).queue();
+            case ERROR -> e.reply(ExperienceRenderer.toMessage(BottlePresenter.genericError())).setEphemeral(true).queue();
             case SENT -> {
                 Cooldown.setMIBSendCoolDown(e.getUser().getId());
                 if (parsed.bottleId() != null) {
@@ -84,7 +83,7 @@ public class SendModal implements IModalInteraction {
                     e.reply(ExperienceRenderer.toMessage(BottlePresenter.sent())).setEphemeral(true).queue();
                 }
             }
-            default -> e.reply(Response.ERROR.toString()).setEphemeral(true).queue();
+            default -> e.reply(ExperienceRenderer.toMessage(BottlePresenter.genericError())).setEphemeral(true).queue();
         }
     }
 

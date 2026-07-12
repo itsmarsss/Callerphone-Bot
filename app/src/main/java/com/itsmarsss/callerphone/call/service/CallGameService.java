@@ -9,7 +9,6 @@ import com.itsmarsss.callerphone.users.BotUser;
 import com.itsmarsss.database.categories.Users;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
-import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder;
 import net.dv8tion.jda.api.utils.messages.MessageCreateData;
 
 import java.util.Optional;
@@ -85,25 +84,21 @@ public final class CallGameService {
             return Result.fail("One or both players are at the game limit.");
         }
 
-        // Notify both call channels; full board still lives in DMs via existing mini-game flow
-        MessageChannel a = ToolSet.getMessageChannel(session.getChannelA());
-        MessageChannel b = ToolSet.getMessageChannel(session.getChannelB());
-        MessageCreateData notice = ExperienceRenderer.toMessage(
-                CallPresenter.gameStarted(sessionId)
-        );
-        if (a != null) {
-            a.sendMessage(notice).queue();
+        // Boards post into the call channels (guild or DM) so play stays in-session.
+        MessageChannel fromCh = ToolSet.getMessageChannel(proposerChannel);
+        MessageChannel toCh = ToolSet.getMessageChannel(acceptorChannelId);
+        MessageCreateData notice = ExperienceRenderer.toMessage(CallPresenter.gameStarted(sessionId));
+        if (fromCh != null) {
+            fromCh.sendMessage(notice).queue();
+            fromCh.sendMessage(ttt.getMessageForFrom()).queue(msg -> ttt.setFromMessageId(msg.getId()));
+        } else {
+            ToolSet.sendPrivateGameMessageFrom(proposerUser, ttt.getMessageForFrom(), ttt);
         }
-        if (b != null) {
-            b.sendMessage(notice).queue();
+        if (toCh != null) {
+            toCh.sendMessage(ttt.getMessageForTo()).queue(msg -> ttt.setToMessageId(msg.getId()));
+        } else {
+            ToolSet.sendPrivateGameMessageTo(acceptorUser, ttt.getMessageForTo(), ttt);
         }
-
-        ToolSet.sendPrivateGameMessageFrom(proposerUser,
-                new MessageCreateBuilder()
-                        .setContent("Your Tic-Tac-Toe with @" + acceptorUser.getName() + " (from a call).")
-                        .build(),
-                ttt);
-        ToolSet.sendPrivateGameMessageTo(acceptorUser, ttt.getMessageForTo(), ttt);
         try {
             if (com.itsmarsss.callerphone.bootstrap.ApplicationContext.isReady()) {
                 com.itsmarsss.callerphone.bootstrap.ApplicationContext.get().analytics()
@@ -111,7 +106,7 @@ public final class CallGameService {
             }
         } catch (Exception ignored) {
         }
-        return Result.ok("Game started. Check your DMs for the board.");
+        return Result.ok("Game started. Boards are in the call channels.");
     }
 
     public record Result(boolean success, String message) {

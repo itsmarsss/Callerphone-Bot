@@ -1,8 +1,9 @@
 package com.itsmarsss.callerphone.msginbottle.commands;
 
 import com.itsmarsss.callerphone.Constants;
-import com.itsmarsss.callerphone.Response;
 import com.itsmarsss.callerphone.ToolSet;
+import com.itsmarsss.callerphone.experience.ExperienceRenderer;
+import com.itsmarsss.callerphone.msginbottle.BottlePresenter;
 import com.itsmarsss.commandType.ISlashCommand;
 import com.itsmarsss.database.categories.Cooldown;
 import net.dv8tion.jda.api.components.label.Label;
@@ -18,7 +19,7 @@ public class SendBottle implements ISlashCommand {
     @Override
     public void runSlash(SlashCommandInteractionEvent e) {
         if (e.getMember() == null) {
-            e.reply(Response.ERROR.toString()).setEphemeral(true).queue();
+            e.reply(ExperienceRenderer.toMessage(BottlePresenter.genericError())).setEphemeral(true).queue();
             return;
         }
 

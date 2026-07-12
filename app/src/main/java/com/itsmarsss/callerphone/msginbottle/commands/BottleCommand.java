@@ -72,7 +72,7 @@ public final class BottleCommand implements ISlashCommand, ICommand {
 
     private void openSend(SlashCommandInteractionEvent e) {
         if (e.getUser() == null) {
-            e.reply(Response.ERROR.toString()).setEphemeral(true).queue();
+            e.reply(ExperienceRenderer.toMessage(BottlePresenter.genericError())).setEphemeral(true).queue();
             return;
         }
         String userId = e.getUser().getId();
@@ -102,7 +102,7 @@ public final class BottleCommand implements ISlashCommand, ICommand {
         }
         MessageCreateData message = MessageInBottle.createMessage(bottle, Integer.MAX_VALUE);
         if (message == null) {
-            e.reply(Response.ERROR.toString()).setEphemeral(true).queue();
+            e.reply(ExperienceRenderer.toMessage(BottlePresenter.genericError())).setEphemeral(true).queue();
             return;
         }
         Cooldown.setMIBFindCoolDown(userId);
@@ -128,7 +128,7 @@ public final class BottleCommand implements ISlashCommand, ICommand {
             }
             MessageCreateData message = MessageInBottle.createMessage(bottle, Integer.MAX_VALUE);
             if (message == null) {
-                e.reply(Response.ERROR.toString()).setEphemeral(true).queue();
+                e.reply(ExperienceRenderer.toMessage(BottlePresenter.genericError())).setEphemeral(true).queue();
                 return;
             }
             e.reply(message).setEphemeral(true).queue();

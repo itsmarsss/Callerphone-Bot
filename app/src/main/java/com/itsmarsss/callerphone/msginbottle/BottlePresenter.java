@@ -156,4 +156,16 @@ public final class BottlePresenter {
                 .ephemeral(true)
                 .build();
     }
+
+    public static ExperienceView genericError() {
+        return ExperienceView.builder(ExperienceIntent.WARNING)
+                .title("Couldn't load that bottle")
+                .description("Nothing was used. Try finding another, or cast one of your own.")
+                .actions(
+                        ActionSpec.success(BottleComponentIds.of(BottleComponentIds.ACTION_FIND, "_"), "Find a bottle"),
+                        ActionSpec.primary(BottleComponentIds.of(BottleComponentIds.ACTION_SEND, "_"), "Send a bottle")
+                )
+                .ephemeral(true)
+                .build();
+    }
 }

@@ -47,7 +47,13 @@ public final class ChatInboxUi {
         }
 
         MessageCreateBuilder builder = new MessageCreateBuilder()
-                .setEmbeds(MatchEmbeds.soft("Your chats", sb.toString().trim()));
+                .setEmbeds(ExperienceRenderer.toEmbed(
+                        com.itsmarsss.callerphone.experience.ExperienceView.builder(
+                                        com.itsmarsss.callerphone.experience.ExperienceIntent.SOCIAL)
+                                .title("Your chats")
+                                .description(sb.toString().trim())
+                                .build()
+                ));
 
         if (rows.size() > SELECT_THRESHOLD) {
             StringSelectMenu.Builder menu = StringSelectMenu.create(

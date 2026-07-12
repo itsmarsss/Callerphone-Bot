@@ -1,7 +1,8 @@
 package com.itsmarsss.callerphone.msginbottle.commands;
 
-import com.itsmarsss.callerphone.Response;
 import com.itsmarsss.callerphone.ToolSet;
+import com.itsmarsss.callerphone.experience.ExperienceRenderer;
+import com.itsmarsss.callerphone.msginbottle.BottlePresenter;
 import com.itsmarsss.callerphone.msginbottle.MessageInBottle;
 import com.itsmarsss.callerphone.msginbottle.entities.Bottle;
 import com.itsmarsss.commandType.ISlashCommand;
@@ -16,7 +17,7 @@ public class FindBottle implements ISlashCommand {
     @Override
     public void runSlash(SlashCommandInteractionEvent e) {
         if (e.getMember() == null) {
-            e.reply(Response.ERROR.toString()).setEphemeral(true).queue();
+            e.reply(ExperienceRenderer.toMessage(BottlePresenter.genericError())).setEphemeral(true).queue();
             return;
         }
 
@@ -38,7 +39,7 @@ public class FindBottle implements ISlashCommand {
 
         MessageCreateData mibMessage = MessageInBottle.createMessage(bottle, Integer.MAX_VALUE);
         if (mibMessage == null) {
-            e.reply(Response.ERROR.toString()).setEphemeral(true).queue();
+            e.reply(ExperienceRenderer.toMessage(BottlePresenter.genericError())).setEphemeral(true).queue();
             return;
         }
 

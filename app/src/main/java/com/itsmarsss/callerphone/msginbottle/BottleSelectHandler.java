@@ -1,6 +1,6 @@
 package com.itsmarsss.callerphone.msginbottle;
 
-import com.itsmarsss.callerphone.Response;
+import com.itsmarsss.callerphone.experience.ExperienceRenderer;
 import com.itsmarsss.callerphone.msginbottle.entities.Bottle;
 import com.itsmarsss.commandType.IStringSelectInteraction;
 import com.itsmarsss.database.categories.MIB;
@@ -24,7 +24,7 @@ public final class BottleSelectHandler implements IStringSelectInteraction {
         }
         MessageCreateData message = MessageInBottle.createMessage(bottle, Integer.MAX_VALUE);
         if (message == null) {
-            e.reply(Response.ERROR.toString()).setEphemeral(true).queue();
+            e.reply(ExperienceRenderer.toMessage(BottlePresenter.genericError())).setEphemeral(true).queue();
             return;
         }
         // Mark bottle-related inbox entries read when opening from Match inbox path may also apply
