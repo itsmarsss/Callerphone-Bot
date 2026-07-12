@@ -161,6 +161,10 @@ public final class BottlePresenter {
                     ActionSpec.secondary(
                             BottleComponentIds.of(BottleComponentIds.ACTION_KEEP_ANON, bottleId),
                             "Keep browsing"
+                    ),
+                    ActionSpec.secondary(
+                            com.itsmarsss.callerphone.call.discord.CallComponentIds.again("_"),
+                            "Start a call"
                     )
             );
         } else {
