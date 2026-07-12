@@ -154,6 +154,7 @@ public final class MatchCommand implements ISlashCommand {
                 if (result.success()) {
                     try {
                         ctx.analytics().track(userId, "match_go_live", "slash");
+                        ctx.analytics().trackSurface(userId, "profile", "go_live", "slash");
                     } catch (Exception ignored) {
                     }
                     e.reply(ExperienceRenderer.toMessage(MatchPresenter.liveReady())).setEphemeral(true).queue();
