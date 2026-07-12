@@ -60,7 +60,10 @@ public final class MatchCommand implements ISlashCommand {
             case "likes" -> handleLikes(e, ctx, userId);
             case "inbox" -> handleInbox(e, ctx, userId);
             case "chats" -> handleChats(e, ctx, userId);
-            case "undo" -> handleUndo(e, ctx, userId);
+            case "undo" -> {
+                ctx.analytics().track(userId, "match_undo_open", null);
+                handleUndo(e, ctx, userId);
+            }
             case "pause" -> {
                 EnrollmentService.ServiceResult r = ctx.profiles().pause(userId);
                 if (r.success()) {

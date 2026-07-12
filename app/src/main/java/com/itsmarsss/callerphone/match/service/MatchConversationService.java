@@ -256,7 +256,9 @@ public final class MatchConversationService {
             }
         } catch (Exception ignored) {
         }
-        return EnrollmentService.ServiceResult.ok("Unmatched.");
+        return EnrollmentService.ServiceResult.ok(
+                "Unmatched. That chat is closed — Discover when you want someone new."
+        );
     }
 
     private void clearSelectionIf(String userId, String conversationId) {

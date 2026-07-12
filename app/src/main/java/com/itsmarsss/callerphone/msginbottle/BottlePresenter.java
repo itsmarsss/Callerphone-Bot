@@ -72,9 +72,16 @@ public final class BottlePresenter {
     public static ExperienceView emptySea() {
         return ExperienceView.builder(ExperienceIntent.DISCOVERY)
                 .title("The water is quiet")
-                .description("No new bottles are available right now.")
+                .description(
+                        "No new bottles are available right now.\n\n"
+                                + "Cast one yourself, or try a call while the sea rests."
+                )
                 .actions(
-                        ActionSpec.primary(BottleComponentIds.of(BottleComponentIds.ACTION_SEND, "_"), "Send a bottle")
+                        ActionSpec.primary(BottleComponentIds.of(BottleComponentIds.ACTION_SEND, "_"), "Send a bottle"),
+                        ActionSpec.secondary(
+                                com.itsmarsss.callerphone.call.discord.CallComponentIds.again("_"),
+                                "Start a call"
+                        )
                 )
                 .ephemeral(true)
                 .build();
