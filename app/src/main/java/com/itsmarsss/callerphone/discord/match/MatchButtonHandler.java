@@ -268,6 +268,7 @@ public final class MatchButtonHandler implements IButtonInteraction {
             case MatchComponentIds.ACTION_PHOTO_MENU -> {
                 try {
                     ctx.analytics().track(userId, "photo_menu_open", null);
+                    ctx.analytics().trackSurface(userId, "profile", "photo_menu", null);
                 } catch (Exception ignored) {
                 }
                 e.reply(ExperienceRenderer.toMessage(MatchPresenter.photoMenu()))
