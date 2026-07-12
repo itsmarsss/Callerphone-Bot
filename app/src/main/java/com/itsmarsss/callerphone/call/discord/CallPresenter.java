@@ -84,7 +84,8 @@ public final class CallPresenter {
                 )
                 .actions(
                         ActionSpec.success(CallComponentIds.gameTtt(sessionId), "Play Tic-Tac-Toe"),
-                        ActionSpec.secondary(CallComponentIds.prompt(sessionId), "Conversation prompt")
+                        ActionSpec.secondary(CallComponentIds.prompt(sessionId), "Conversation prompt"),
+                        ActionSpec.secondary(CallComponentIds.share(sessionId), "Share profile")
                 )
                 .build();
     }
