@@ -218,6 +218,7 @@ public final class MatchButtonHandler implements IButtonInteraction {
             case MatchComponentIds.ACTION_PREVIEW_SELF -> {
                 try {
                     ctx.analytics().track(userId, "preview_self", null);
+                    ctx.analytics().trackSurface(userId, "profile", "preview", null);
                 } catch (Exception ignored) {
                 }
                 Optional<MatchProfile> p = ctx.profiles().find(userId);
