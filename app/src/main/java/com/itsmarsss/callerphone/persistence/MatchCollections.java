@@ -17,6 +17,7 @@ public final class MatchCollections {
     public static final String AUDIT_EVENTS = "audit_events";
     public static final String PRODUCT_EVENTS = "product_events";
     public static final String BROWSE_SESSIONS = "browse_sessions";
+    public static final String SOCIAL_INBOX = "social_inbox";
     public static final String SCHEMA_MIGRATIONS = "schema_migrations";
 
     private MatchCollections() {

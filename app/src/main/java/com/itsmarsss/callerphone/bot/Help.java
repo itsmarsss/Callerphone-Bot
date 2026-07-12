@@ -9,12 +9,7 @@ import com.itsmarsss.callerphone.call.discord.EndCallCommand;
 import com.itsmarsss.callerphone.call.discord.PrefixCommand;
 import com.itsmarsss.callerphone.call.discord.ReportCallCommand;
 import com.itsmarsss.callerphone.discord.match.MatchCommand;
-import com.itsmarsss.callerphone.discord.match.MatchPresenter;
 import com.itsmarsss.callerphone.experience.ExperienceRenderer;
-import com.itsmarsss.callerphone.match.model.MatchConversation;
-import com.itsmarsss.callerphone.match.model.MatchProfile;
-import com.itsmarsss.callerphone.match.model.ProfileState;
-import com.itsmarsss.callerphone.match.service.ProfileChecklist;
 import com.itsmarsss.callerphone.minigames.commands.PlayMiniGame;
 import com.itsmarsss.callerphone.minigames.commands.ShowMiniGames;
 import com.itsmarsss.callerphone.msginbottle.commands.FindBottle;
@@ -34,11 +29,11 @@ import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 
 import java.util.Arrays;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
- * Product home by default; pass a term for the command directory.
+ * Product home by default when Match is ready; pass a term for the command directory.
+ * Category buttons edit the directory in place (plan patterns §28).
  */
 public class Help implements ISlashCommand {
     @Override
@@ -49,46 +44,38 @@ public class Help implements ISlashCommand {
             replyHome(e, admin);
             return;
         }
-        e.replyEmbeds(help(term.getAsString(), admin)).queue();
+        String name = term.getAsString().toLowerCase().trim();
+        if ("home".equals(name) || "commands".equals(name) || "all".equals(name) || "directory".equals(name)) {
+            e.reply(ExperienceRenderer.toMessage(HelpPresenter.directory(admin))).queue();
+            return;
+        }
+        var embed = help(name, admin);
+        String title = embed.getTitle() == null ? "Help" : embed.getTitle();
+        String desc = embed.getDescription() == null ? "" : embed.getDescription();
+        e.reply(ExperienceRenderer.toMessage(HelpPresenter.category(title, desc))).queue();
     }
 
     private void replyHome(SlashCommandInteractionEvent e, boolean admin) {
         if (!ApplicationContext.isReady()) {
-            e.replyEmbeds(directoryEmbed(admin)).queue();
+            e.reply(ExperienceRenderer.toMessage(HelpPresenter.directory(admin))).queue();
             return;
         }
-        ApplicationContext ctx = ApplicationContext.get();
-        String userId = e.getUser().getId();
-        var user = ctx.enrollment().getOrCreate(userId);
-        Optional<MatchProfile> profile = ctx.profiles().find(userId);
-        boolean enrolled = user.isEnrolled();
-        boolean live = profile.isPresent()
-                && profile.get().getState() == ProfileState.ACTIVE
-                && ProfileChecklist.readyToSubmit(profile.get());
-        String name = profile.map(MatchProfile::getDisplayName).orElse(e.getUser().getName());
-        int unread = 0;
-        long left = 0;
-        if (live) {
-            MatchProfile p = profile.get();
-            ctx.profiles().resetDailyCountersIfNeeded(p);
-            left = Math.max(0, ctx.premium().dailyDiscoveries(userId) - p.getDiscoveryViewsToday());
-            for (MatchConversation chat : ctx.conversations().list(userId)) {
-                unread += chat.unreadFor(userId);
-            }
-        }
-        e.reply(ExperienceRenderer.toMessage(MatchPresenter.home(name, unread, left, live, enrolled)))
-                .addEmbeds(directoryEmbed(admin))
+        // Personalized Match home + navigable command directory (edit-in-place categories)
+        var home = MatchCommand.buildHome(ApplicationContext.get(), e.getUser().getId(), e.getUser().getName());
+        e.reply(ExperienceRenderer.toMessage(home))
+                .addEmbeds(ExperienceRenderer.toEmbed(HelpPresenter.directory(admin)))
+                .addComponents(ExperienceRenderer.toComponents(HelpPresenter.directory(admin)))
                 .queue();
     }
 
     public MessageEmbed help(String name, boolean admin) {
         if (name == null || name.isEmpty()) {
-            return directoryEmbed(admin);
+            return ExperienceRenderer.toEmbed(HelpPresenter.directory(admin));
         }
 
         name = name.toLowerCase().trim();
         if ("home".equals(name) || "commands".equals(name) || "all".equals(name)) {
-            return directoryEmbed(admin);
+            return ExperienceRenderer.toEmbed(HelpPresenter.directory(admin));
         }
 
         String title;
@@ -102,7 +89,8 @@ public class Help implements ISlashCommand {
             }
             case "games", "minigames" -> {
                 title = "Mini games";
-                desc = joinHelp(new ShowMiniGames(), new PlayMiniGame());
+                desc = joinHelp(new ShowMiniGames(), new PlayMiniGame())
+                        + "\n\nBest during a **Call** or Match chat — open **Play a game** there.";
             }
             case "tccall", "call" -> {
                 title = "Call";
@@ -118,7 +106,8 @@ public class Help implements ISlashCommand {
             case "msgbottle", "bottle", "bottles" -> {
                 title = "Message in a bottle";
                 desc = joinHelp(new com.itsmarsss.callerphone.msginbottle.commands.BottleCommand(),
-                        new SendBottle(), new FindBottle(), new ViewBottle());
+                        new SendBottle(), new FindBottle(), new ViewBottle())
+                        + "\n\nSigned bottles offer **Interested** — same mutual-interest rules as Discover.";
             }
             case "creds", "credits" -> {
                 title = "Credits";
@@ -169,26 +158,9 @@ public class Help implements ISlashCommand {
         return Character.toUpperCase(s.charAt(0)) + s.substring(1);
     }
 
-    private MessageEmbed directoryEmbed(boolean admin) {
-        EmbedBuilder emb = new EmbedBuilder()
-                .setColor(ToolSet.COLOR)
-                .setTitle("All commands")
-                .setDescription("Shortcuts if you prefer slash commands over buttons.")
-                .addField("Match", "Discover people · `/help match`", false)
-                .addField("Call", "Server or DM · `/help call`", false)
-                .addField("Bottles", "`/bottle send|find|saved` · `/help bottle`", false)
-                .addField("Mini games", "Best during a call · `/help games`", false)
-                .addField("Bot", "Profile, invite, about · `/help bot`", false)
-                .setFooter("Callerphone");
-        if (admin) {
-            emb.addField("Moderator", "DM `" + Callerphone.config.getPrefix() + "help mod`", false);
-        }
-        return emb.build();
-    }
-
     @Override
     public String getHelp() {
-        return "`/help` home · `/help commands` directory";
+        return "`/help` home · `/help commands` directory · category buttons edit in place";
     }
 
     @Override

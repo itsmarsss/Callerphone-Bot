@@ -71,6 +71,10 @@ public final class IndexBootstrap {
                 .createIndex(Indexes.ascending("expiresAt"), new IndexOptions().expireAfter(0L, java.util.concurrent.TimeUnit.SECONDS));
         collection(MatchCollections.PRODUCT_EVENTS)
                 .createIndex(Indexes.ascending("createdAt"));
+        collection(MatchCollections.SOCIAL_INBOX)
+                .createIndex(Indexes.ascending("userId", "priority", "occurredAt"));
+        collection(MatchCollections.SOCIAL_INBOX)
+                .createIndex(Indexes.ascending("userId", "unread"));
         collection(MatchCollections.SCHEMA_MIGRATIONS)
                 .createIndex(Indexes.ascending("id"), new IndexOptions().unique(true));
 

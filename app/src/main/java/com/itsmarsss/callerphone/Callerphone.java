@@ -217,7 +217,8 @@ public class Callerphone {
                 new TicTacToeHandler(), new Connect4Handler(), new BattleShipHandler(),
                 new WordSearchHandler(), new AddPageHandler(), new NextHandler(),
                 new PreviousHandler(), new ReportHandler(), new SaveHandler(),
-                new CallButtonHandler(), new MatchButtonHandler()
+                new CallButtonHandler(), new MatchButtonHandler(),
+                new com.itsmarsss.callerphone.bot.HelpButtonHandler()
         };
         for (IButtonInteraction button : buttons) {
             btnMap.put(button.getID(), button);

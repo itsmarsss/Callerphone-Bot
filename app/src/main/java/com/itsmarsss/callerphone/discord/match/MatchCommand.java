@@ -110,7 +110,7 @@ public final class MatchCommand implements ISlashCommand {
                 .setEphemeral(true).queue();
     }
 
-    static com.itsmarsss.callerphone.experience.ExperienceView buildHome(
+    public static com.itsmarsss.callerphone.experience.ExperienceView buildHome(
             ApplicationContext ctx,
             String userId,
             String fallbackName

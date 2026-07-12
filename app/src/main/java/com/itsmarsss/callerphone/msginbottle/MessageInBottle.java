@@ -2,6 +2,7 @@ package com.itsmarsss.callerphone.msginbottle;
 
 import com.itsmarsss.callerphone.Callerphone;
 import com.itsmarsss.callerphone.ToolSet;
+import com.itsmarsss.callerphone.match.component.MatchComponentIds;
 import com.itsmarsss.callerphone.msginbottle.entities.Bottle;
 import com.itsmarsss.callerphone.msginbottle.entities.Page;
 import com.itsmarsss.database.categories.MIB;
@@ -18,6 +19,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 
 public class MessageInBottle {
     public static final Logger logger = LoggerFactory.getLogger(MessageInBottle.class);
@@ -79,10 +82,31 @@ public class MessageInBottle {
         Button reportButton = Button.danger("rpt-" + bottle.getId() + "-" + page.getPageNum(), "Report");
         Button saveACopy = Button.secondary("sve", "Save");
 
-        return new MessageCreateBuilder()
+        List<Button> row1 = new ArrayList<>();
+        row1.add(addPage);
+        row1.add(previousPage);
+        row1.add(nextPage);
+        row1.add(reportButton);
+        row1.add(saveACopy);
+
+        MessageCreateBuilder builder = new MessageCreateBuilder()
                 .setEmbeds(bottleEmbed.build())
-                .setComponents(ActionRow.of(addPage, previousPage, nextPage, reportButton, saveACopy))
-                .build();
+                .setComponents(ActionRow.of(row1));
+
+        // Plan §26: signed bottles offer mutual interest without bypassing Match rules.
+        if (page.isSigned()
+                && page.getAuthor() != null
+                && !page.getAuthor().isBlank()
+                && !"unknown".equals(sign)) {
+            builder.addComponents(ActionRow.of(
+                    Button.success(
+                            MatchComponentIds.of(MatchComponentIds.ACTION_BOTTLE_INTEREST, page.getAuthor()),
+                            "Interested"
+                    )
+            ));
+        }
+
+        return builder.build();
     }
 
     private static void log(Bottle bottle) {

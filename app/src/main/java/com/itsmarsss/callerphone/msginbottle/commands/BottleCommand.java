@@ -99,7 +99,10 @@ public final class BottleCommand implements ISlashCommand, ICommand {
         if (bottle == null) {
             e.reply(ExperienceRenderer.toMessage(ExperienceView.builder(ExperienceIntent.DISCOVERY)
                     .title("The water is quiet")
-                    .description("No new bottles are available right now.")
+                    .description(
+                            "No new bottles are available right now.\n\n"
+                                    + "Cast one with `/bottle send`, or try again later."
+                    )
                     .build())).setEphemeral(true).queue();
             return;
         }
@@ -117,7 +120,11 @@ public final class BottleCommand implements ISlashCommand, ICommand {
         if (idOpt == null || idOpt.getAsString().trim().isEmpty()) {
             e.reply(ExperienceRenderer.toMessage(ExperienceView.builder(ExperienceIntent.NEUTRAL)
                     .title("Saved bottles")
-                    .description("Pass a bottle id to reopen one, or use `/bottle find` for something new.")
+                    .description(
+                            "Pass a bottle id to reopen one, or cast something new.\n\n"
+                                    + "`/bottle find` · discover a bottle\n"
+                                    + "`/bottle send` · cast one"
+                    )
                     .build())).setEphemeral(true).queue();
             return;
         }

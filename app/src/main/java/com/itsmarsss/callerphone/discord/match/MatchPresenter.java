@@ -291,6 +291,10 @@ public final class MatchPresenter {
                 .title("Chatting with " + name)
                 .description(message)
                 .actions(
+                        ActionSpec.primary(
+                                MatchComponentIds.of(MatchComponentIds.ACTION_GAME_TTT, conversationId),
+                                "Play a game"
+                        ),
                         ActionSpec.secondary(MatchComponentIds.of(MatchComponentIds.ACTION_STOP_CHAT, "_"), "Stop chat"),
                         ActionSpec.danger(
                                 MatchComponentIds.of(MatchComponentIds.ACTION_SAFETY_OPEN, "conversation:" + conversationId),

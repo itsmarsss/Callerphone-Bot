@@ -168,6 +168,69 @@ public final class MatchButtonHandler implements IButtonInteraction {
                             .setEphemeral(true).queue();
                 });
             }
+            case MatchComponentIds.ACTION_GAME_TTT -> {
+                var result = ctx.connectionGames().proposeTtt(opaque, userId);
+                e.reply(ExperienceRenderer.toMessage(result.success()
+                        ? MatchPresenter.quietSuccess("Challenge sent", result.message())
+                        : MatchPresenter.warn("Couldn't challenge", result.message())
+                )).setEphemeral(true).queue();
+            }
+            case MatchComponentIds.ACTION_GAME_ACCEPT -> {
+                String proposerId = ctx.connectionGames().pendingProposer(opaque).orElse(null);
+                if (proposerId == null) {
+                    e.reply(ExperienceRenderer.toMessage(MatchPresenter.warn(
+                            "No challenge",
+                            "There's no pending game for this chat."
+                    ))).setEphemeral(true).queue();
+                    return;
+                }
+                e.getJDA().retrieveUserById(proposerId).queue(
+                        proposer -> {
+                            var result = ctx.connectionGames().acceptTtt(
+                                    opaque, userId, e.getUser(), proposer
+                            );
+                            e.reply(ExperienceRenderer.toMessage(result.success()
+                                    ? MatchPresenter.quietSuccess("Game on", result.message())
+                                    : MatchPresenter.warn("Couldn't start", result.message())
+                            )).setEphemeral(true).queue();
+                        },
+                        err -> e.reply(ExperienceRenderer.toMessage(MatchPresenter.warn(
+                                "Couldn't start",
+                                "Couldn't resolve the other player."
+                        ))).setEphemeral(true).queue()
+                );
+            }
+            case MatchComponentIds.ACTION_GAME_DECLINE -> {
+                var result = ctx.connectionGames().decline(opaque, userId);
+                e.reply(ExperienceRenderer.toMessage(result.success()
+                        ? MatchPresenter.quietSuccess("Declined", result.message())
+                        : MatchPresenter.warn("Couldn't decline", result.message())
+                )).setEphemeral(true).queue();
+            }
+            case MatchComponentIds.ACTION_BOTTLE_INTEREST -> {
+                e.deferReply(true).queue();
+                ctx.dbExecutor().execute(() -> {
+                    var result = ctx.decisions().expressInterest(userId, opaque);
+                    if (result.mutual() && result.conversationId() != null) {
+                        String peerName = "your connection";
+                        if (result.match() != null) {
+                            String peerId = result.match().otherUserId(userId);
+                            if (peerId != null) {
+                                peerName = ctx.profiles().find(peerId)
+                                        .map(MatchProfile::getDisplayName).orElse(peerName);
+                            }
+                        }
+                        e.getHook().sendMessage(ExperienceRenderer.toMessage(
+                                MatchPresenter.connected(peerName, null, result.conversationId())
+                        )).setEphemeral(true).queue();
+                        return;
+                    }
+                    e.getHook().sendMessage(ExperienceRenderer.toMessage(result.success()
+                            ? MatchPresenter.quietSuccess("Interest sent", result.message())
+                            : MatchPresenter.warn("Couldn't send interest", result.message())
+                    )).setEphemeral(true).queue();
+                });
+            }
             default -> e.reply(ExperienceRenderer.toMessage(MatchPresenter.expired())).setEphemeral(true).queue();
         }
     }
@@ -200,33 +263,61 @@ public final class MatchButtonHandler implements IButtonInteraction {
         MatchConversation conversation = result.conversation();
         String other = conversation.otherParticipant(userId);
         String name = ctx.profiles().find(other).map(MatchProfile::getDisplayName).orElse("your connection");
-        List<Button> buttons = new ArrayList<>();
-        buttons.add(Button.secondary(MatchComponentIds.of(MatchComponentIds.ACTION_STOP_CHAT, "_"), "Stop chat"));
-        buttons.add(Button.danger(
+        List<Button> row1 = new ArrayList<>();
+        List<Button> row2 = new ArrayList<>();
+        row1.add(Button.secondary(MatchComponentIds.of(MatchComponentIds.ACTION_STOP_CHAT, "_"), "Stop chat"));
+        row1.add(Button.danger(
                 MatchComponentIds.of(MatchComponentIds.ACTION_SAFETY_OPEN, "conversation:" + conversationId),
                 "Safety"
         ));
+        Optional<String> pendingGame = ctx.connectionGames().pendingProposer(conversationId);
+        if (pendingGame.isPresent() && !pendingGame.get().equals(userId)) {
+            row2.add(Button.success(
+                    MatchComponentIds.of(MatchComponentIds.ACTION_GAME_ACCEPT, conversationId),
+                    "Play Tic-Tac-Toe"
+            ));
+            row2.add(Button.secondary(
+                    MatchComponentIds.of(MatchComponentIds.ACTION_GAME_DECLINE, conversationId),
+                    "Decline game"
+            ));
+        } else if (pendingGame.isPresent() && pendingGame.get().equals(userId)) {
+            row2.add(Button.primary(
+                    MatchComponentIds.of(MatchComponentIds.ACTION_GAME_TTT, conversationId),
+                    "Waiting…"
+            ).asDisabled());
+            row2.add(Button.secondary(
+                    MatchComponentIds.of(MatchComponentIds.ACTION_GAME_DECLINE, conversationId),
+                    "Cancel game"
+            ));
+        } else {
+            row2.add(Button.primary(
+                    MatchComponentIds.of(MatchComponentIds.ACTION_GAME_TTT, conversationId),
+                    "Play a game"
+            ));
+        }
         if (conversation.getStage() == ConversationStage.MEDIATED) {
-            buttons.add(Button.primary(
+            row1.add(Button.primary(
                     MatchComponentIds.of(MatchComponentIds.ACTION_CONNECT_REQUEST, conversationId),
                     "Request connect"
             ));
         } else if (conversation.getStage() == ConversationStage.CONNECT_PENDING
                 && conversation.getConnectRequestedBy() != null
                 && !conversation.getConnectRequestedBy().equals(userId)) {
-            buttons.add(Button.success(
+            row1.add(Button.success(
                     MatchComponentIds.of(MatchComponentIds.ACTION_CONNECT_ACCEPT, conversationId),
                     "Accept connect"
             ));
-            buttons.add(Button.secondary(
+            row1.add(Button.secondary(
                     MatchComponentIds.of(MatchComponentIds.ACTION_CONNECT_DECLINE, conversationId),
                     "Decline"
             ));
         }
-        e.replyEmbeds(MatchEmbeds.success("Chatting with " + name, result.message()))
-                .addComponents(ActionRow.of(buttons))
-                .setEphemeral(true)
-                .queue();
+        var reply = e.replyEmbeds(MatchEmbeds.success("Chatting with " + name, result.message()))
+                .addComponents(ActionRow.of(row1));
+        if (!row2.isEmpty()) {
+            reply = reply.addComponents(ActionRow.of(row2));
+        }
+        reply.setEphemeral(true).queue();
     }
 
     private void decide(ButtonInteraction e, ApplicationContext ctx, String userId, String sessionId, DecisionType type) {

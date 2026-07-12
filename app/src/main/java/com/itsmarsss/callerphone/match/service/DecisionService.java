@@ -10,6 +10,7 @@ import com.itsmarsss.callerphone.match.model.MatchConversation;
 import com.itsmarsss.callerphone.match.model.MatchDecision;
 import com.itsmarsss.callerphone.match.model.MatchProfile;
 import com.itsmarsss.callerphone.match.model.MatchStatus;
+import com.itsmarsss.callerphone.match.model.ProfileState;
 import com.itsmarsss.callerphone.match.repository.MatchConversationRepository;
 import com.itsmarsss.callerphone.match.repository.MatchDecisionRepository;
 import com.itsmarsss.callerphone.match.repository.MatchRepository;
@@ -199,6 +200,121 @@ public final class DecisionService {
         BrowseSession session = discovery.reopenSession(actorId, subjectId);
         String name = profiles.find(subjectId).map(MatchProfile::getDisplayName).orElse("that profile");
         return DecisionResult.undone("Back to **" + name + "**.", session);
+    }
+
+    /**
+     * Express interest without a Discover browse session (bottles, call share, etc.).
+     * Same mutual-interest rules as Discover — eligibility, blocks, limits, age cohort.
+     */
+    public DecisionResult expressInterest(String actorId, String subjectId) {
+        if (actorId == null || subjectId == null || actorId.isBlank() || subjectId.isBlank()) {
+            return DecisionResult.fail("Couldn't send interest.");
+        }
+        if (actorId.equals(subjectId)) {
+            return DecisionResult.fail("That's your own bottle.");
+        }
+        if (safety.isMatchSuspended(actorId) || safety.isBlockedEitherWay(actorId, subjectId)) {
+            return DecisionResult.fail("You can't act on this profile.");
+        }
+        Optional<MatchProfile> viewerOpt = profiles.find(actorId);
+        if (viewerOpt.isEmpty() || viewerOpt.get().getState() != ProfileState.ACTIVE) {
+            return DecisionResult.fail("Publish your Match profile first (`/match join`).");
+        }
+        Optional<MatchProfile> subjectOpt = profiles.find(subjectId);
+        if (subjectOpt.isEmpty() || !subjectOpt.get().getState().isBrowsable()) {
+            return DecisionResult.fail("They don't have a live Match profile yet.");
+        }
+        MatchProfile viewer = viewerOpt.get();
+        MatchProfile subject = subjectOpt.get();
+        if (viewer.getAgeCohort() != null && subject.getAgeCohort() != null
+                && viewer.getAgeCohort() != subject.getAgeCohort()) {
+            return DecisionResult.fail("Age groups must match.");
+        }
+        profiles.resetDailyCountersIfNeeded(viewer);
+        int limit = premium.dailyInterests(actorId);
+        if (viewer.getInterestSignalsToday() >= limit) {
+            return DecisionResult.fail(premium.upsellForLimit("interest"));
+        }
+        Optional<MatchDecision> existing = decisions.find(actorId, subjectId);
+        if (existing.isPresent()
+                && existing.get().decision() == DecisionType.INTERESTED
+                && !existing.get().isExpired(Instant.now())) {
+            // still check mutual in case peer liked since
+            if (decisions.findReciprocalInterest(subjectId, actorId).isPresent()) {
+                return finalizeMutual(actorId, subjectId, viewer);
+            }
+            return DecisionResult.interested("Interest already sent privately.");
+        }
+
+        decisions.upsert(new MatchDecision(actorId, subjectId, DecisionType.INTERESTED, Instant.now(), null));
+        profiles.bumpInterest(viewer);
+
+        if (decisions.findReciprocalInterest(subjectId, actorId).isPresent()) {
+            return finalizeMutual(actorId, subjectId, viewer);
+        }
+
+        analytics.track(actorId, "match_interested", subjectId);
+        String actorName = viewer.getDisplayName() == null || viewer.getDisplayName().isBlank()
+                ? "Someone"
+                : viewer.getDisplayName();
+        try {
+            if (com.itsmarsss.callerphone.bootstrap.ApplicationContext.isReady()) {
+                com.itsmarsss.callerphone.bootstrap.ApplicationContext.get().inbox().push(
+                        subjectId,
+                        SocialInboxService.EntryType.INCOMING_INTEREST,
+                        actorId,
+                        actorName,
+                        "Expressed interest (from a bottle)"
+                );
+            }
+        } catch (Exception ignored) {
+        }
+        return DecisionResult.interested("Interest sent privately. Nothing is shared unless it's mutual.");
+    }
+
+    private DecisionResult finalizeMutual(String actorId, String subjectId, MatchProfile viewer) {
+        int actorCap = premium.activeConversations(actorId);
+        int peerCap = premium.activeConversations(subjectId);
+        if (conversations.countActiveByUserId(actorId) >= actorCap
+                || conversations.countActiveByUserId(subjectId) >= peerCap) {
+            return DecisionResult.interested(premium.upsellForLimit("conversations"));
+        }
+        Optional<Match> existingMatch = matches.findByPairKey(Match.pairKeyFor(actorId, subjectId));
+        if (existingMatch.isPresent() && existingMatch.get().getStatus() == MatchStatus.ACTIVE) {
+            Optional<MatchConversation> conv = conversations.findByMatchId(existingMatch.get().getMatchId());
+            if (conv.isPresent()) {
+                String peerName = profiles.find(subjectId).map(MatchProfile::getDisplayName).orElse("your match");
+                return DecisionResult.mutual(
+                        "You're already connected with **" + peerName + "**.",
+                        existingMatch.get(),
+                        conv.get().getConversationId()
+                );
+            }
+        }
+        MutualCreate created = createMutualMatch(actorId, subjectId);
+        notifications.notifyMutualMatch(actorId, subjectId, created.conversationId());
+        analytics.track(actorId, "match_mutual", subjectId);
+        analytics.track(subjectId, "match_mutual", actorId);
+        String peerName = profiles.find(subjectId).map(MatchProfile::getDisplayName).orElse("your match");
+        String actorName = viewer.getDisplayName() == null || viewer.getDisplayName().isBlank()
+                ? "Someone"
+                : viewer.getDisplayName();
+        String opener = Icebreakers.forPair(viewer, profiles.find(subjectId).orElse(null));
+        try {
+            if (com.itsmarsss.callerphone.bootstrap.ApplicationContext.isReady()) {
+                var inbox = com.itsmarsss.callerphone.bootstrap.ApplicationContext.get().inbox();
+                inbox.push(actorId, SocialInboxService.EntryType.CONNECTION_MESSAGE,
+                        created.conversationId(), peerName, "You connected");
+                inbox.push(subjectId, SocialInboxService.EntryType.CONNECTION_MESSAGE,
+                        created.conversationId(), actorName, "You connected");
+            }
+        } catch (Exception ignored) {
+        }
+        return DecisionResult.mutual(
+                "You connected with **" + peerName + "**.\n_" + opener + "_",
+                created.match(),
+                created.conversationId()
+        );
     }
 
     /** Public entry for adjacent features (e.g. call profile share). */

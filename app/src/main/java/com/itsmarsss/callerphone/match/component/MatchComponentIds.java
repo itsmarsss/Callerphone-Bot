@@ -53,6 +53,11 @@ public final class MatchComponentIds {
     public static final String ACTION_OPEN_LIKES = "open_likes";
     public static final String ACTION_RESUME = "resume";
     public static final String ACTION_HOME = "home";
+    public static final String ACTION_GAME_TTT = "game_ttt";
+    public static final String ACTION_GAME_ACCEPT = "game_ok";
+    public static final String ACTION_GAME_DECLINE = "game_no";
+    /** Bottle author interest from a found bottle. Opaque: authorUserId. */
+    public static final String ACTION_BOTTLE_INTEREST = "bot_int";
 
     private MatchComponentIds() {
     }

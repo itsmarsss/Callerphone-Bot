@@ -1,16 +1,20 @@
 package com.itsmarsss.callerphone.match.service;
 
+import com.itsmarsss.callerphone.persistence.MatchCollections;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.model.Filters;
+import com.mongodb.client.model.Sorts;
+import com.mongodb.client.model.Updates;
+import org.bson.Document;
+
 import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.UUID;
 
 /**
- * Plan philosophy §10.F — unified social inbox (MVP in-memory).
- * Survives only process lifetime; Mongo persistence can replace later.
+ * Plan philosophy §10.F — unified social inbox (Mongo-backed).
  */
 public final class SocialInboxService {
     public enum EntryType {
@@ -36,7 +40,11 @@ public final class SocialInboxService {
     ) {
     }
 
-    private final Map<String, CopyOnWriteArrayList<InboxEntry>> byUser = new ConcurrentHashMap<>();
+    private final MongoCollection<Document> collection;
+
+    public SocialInboxService(MongoDatabase database) {
+        this.collection = database.getCollection(MatchCollections.SOCIAL_INBOX);
+    }
 
     public void push(
             String userId,
@@ -57,56 +65,72 @@ public final class SocialInboxService {
             case PROFILE_SHARE_RESPONSE -> 6;
             case INCOMING_INTEREST -> 7;
         };
-        InboxEntry entry = new InboxEntry(
-                java.util.UUID.randomUUID().toString().replace("-", ""),
-                userId,
-                type,
-                sourceId,
-                actorDisplay == null ? "Someone" : actorDisplay,
-                preview == null ? "" : preview,
-                true,
-                priority,
-                Instant.now()
-        );
-        byUser.computeIfAbsent(userId, k -> new CopyOnWriteArrayList<>()).add(0, entry);
-        // Cap per user
-        CopyOnWriteArrayList<InboxEntry> list = byUser.get(userId);
-        while (list.size() > 50) {
-            list.remove(list.size() - 1);
-        }
+        Document doc = new Document("_id", UUID.randomUUID().toString().replace("-", ""))
+                .append("userId", userId)
+                .append("type", type.name())
+                .append("sourceId", sourceId)
+                .append("actorDisplay", actorDisplay == null ? "Someone" : actorDisplay)
+                .append("preview", preview == null ? "" : preview)
+                .append("unread", true)
+                .append("priority", priority)
+                .append("occurredAt", Instant.now().toString());
+        collection.insertOne(doc);
     }
 
     public List<InboxEntry> list(String userId, int limit) {
-        List<InboxEntry> all = byUser.getOrDefault(userId, new CopyOnWriteArrayList<>());
-        List<InboxEntry> copy = new ArrayList<>(all);
-        copy.sort(Comparator
-                .comparingInt(InboxEntry::priority)
-                .thenComparing(InboxEntry::occurredAt, Comparator.reverseOrder()));
-        if (copy.size() <= limit) {
-            return copy;
+        List<InboxEntry> out = new ArrayList<>();
+        for (Document doc : collection.find(Filters.eq("userId", userId))
+                .sort(Sorts.orderBy(Sorts.ascending("priority"), Sorts.descending("occurredAt")))
+                .limit(Math.max(1, limit))) {
+            out.add(fromDoc(doc));
         }
-        return copy.subList(0, limit);
+        return out;
     }
 
     public int unreadCount(String userId) {
-        return (int) byUser.getOrDefault(userId, new CopyOnWriteArrayList<>()).stream()
-                .filter(InboxEntry::unread)
-                .count();
+        return (int) collection.countDocuments(Filters.and(
+                Filters.eq("userId", userId),
+                Filters.eq("unread", true)
+        ));
     }
 
     public void markRead(String userId, String entryId) {
-        CopyOnWriteArrayList<InboxEntry> list = byUser.get(userId);
-        if (list == null) {
-            return;
+        collection.updateOne(
+                Filters.and(Filters.eq("_id", entryId), Filters.eq("userId", userId)),
+                Updates.set("unread", false)
+        );
+    }
+
+    public void markAllRead(String userId) {
+        collection.updateMany(
+                Filters.and(Filters.eq("userId", userId), Filters.eq("unread", true)),
+                Updates.set("unread", false)
+        );
+    }
+
+    private static InboxEntry fromDoc(Document doc) {
+        EntryType type;
+        try {
+            type = EntryType.valueOf(doc.getString("type"));
+        } catch (Exception e) {
+            type = EntryType.CONNECTION_MESSAGE;
         }
-        for (int i = 0; i < list.size(); i++) {
-            InboxEntry e = list.get(i);
-            if (e.id().equals(entryId) && e.unread()) {
-                list.set(i, new InboxEntry(
-                        e.id(), e.userId(), e.type(), e.sourceId(), e.actorDisplay(),
-                        e.preview(), false, e.priority(), e.occurredAt()
-                ));
-            }
+        Instant at;
+        try {
+            at = Instant.parse(doc.getString("occurredAt"));
+        } catch (Exception e) {
+            at = Instant.now();
         }
+        return new InboxEntry(
+                doc.getString("_id"),
+                doc.getString("userId"),
+                type,
+                doc.getString("sourceId"),
+                doc.getString("actorDisplay"),
+                doc.getString("preview"),
+                Boolean.TRUE.equals(doc.getBoolean("unread")),
+                doc.getInteger("priority", 9),
+                at
+        );
     }
 }
