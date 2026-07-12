@@ -239,6 +239,10 @@ public final class MatchButtonHandler implements IButtonInteraction {
                 boolean next = !user.isNotificationsEnabled();
                 var r = ctx.enrollment().setNotifications(userId, next);
                 user = ctx.enrollment().getOrCreate(userId);
+                try {
+                    ctx.analytics().track(userId, "settings_notify", next ? "on" : "off");
+                } catch (Exception ignored) {
+                }
                 e.reply(ExperienceRenderer.toMessage(r.success()
                         ? MatchPresenter.settings(user.isNotificationsEnabled(), user.isDigestOptIn())
                         : MatchPresenter.serviceFailed(r.message())
@@ -249,6 +253,10 @@ public final class MatchButtonHandler implements IButtonInteraction {
                 boolean next = !user.isDigestOptIn();
                 var r = ctx.enrollment().setDigestOptIn(userId, next);
                 user = ctx.enrollment().getOrCreate(userId);
+                try {
+                    ctx.analytics().track(userId, "settings_digest", next ? "on" : "off");
+                } catch (Exception ignored) {
+                }
                 e.reply(ExperienceRenderer.toMessage(r.success()
                         ? MatchPresenter.settings(user.isNotificationsEnabled(), user.isDigestOptIn())
                         : MatchPresenter.serviceFailed(r.message())
