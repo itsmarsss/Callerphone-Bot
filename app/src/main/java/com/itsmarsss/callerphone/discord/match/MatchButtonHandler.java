@@ -301,7 +301,13 @@ public final class MatchButtonHandler implements IButtonInteraction {
                         : MatchPresenter.serviceFailed(r.message())
                 )).setEphemeral(true).queue();
             }
-            case MatchComponentIds.ACTION_RESUME -> replyService(e, ctx.profiles().resume(userId));
+            case MatchComponentIds.ACTION_RESUME -> {
+                try {
+                    ctx.analytics().track(userId, "profile_resume", null);
+                } catch (Exception ignored) {
+                }
+                replyService(e, ctx.profiles().resume(userId));
+            }
             case MatchComponentIds.ACTION_OPEN_LIKES -> {
                 e.deferReply(true).queue();
                 ctx.dbExecutor().execute(() -> {
