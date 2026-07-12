@@ -84,6 +84,7 @@ public final class MatchButtonHandler implements IButtonInteraction {
                 if (result.success()) {
                     try {
                         ctx.analytics().track(userId, "connect_request", opaque);
+                        ctx.analytics().trackSurface(userId, "connect", "request", null);
                     } catch (Exception ignored) {
                     }
                     e.reply(ExperienceRenderer.toMessage(MatchPresenter.chatSelected(
@@ -100,6 +101,7 @@ public final class MatchButtonHandler implements IButtonInteraction {
                 if (result.success()) {
                     try {
                         ctx.analytics().track(userId, "connect_accept", opaque);
+                        ctx.analytics().trackSurface(userId, "connect", "accept", null);
                     } catch (Exception ignored) {
                     }
                     String peerName = result.otherUserId() == null
@@ -123,6 +125,7 @@ public final class MatchButtonHandler implements IButtonInteraction {
                 if (result.success()) {
                     try {
                         ctx.analytics().track(userId, "connect_decline", opaque);
+                        ctx.analytics().trackSurface(userId, "connect", "decline", null);
                     } catch (Exception ignored) {
                     }
                     e.reply(ExperienceRenderer.toMessage(MatchPresenter.chatSelected(
