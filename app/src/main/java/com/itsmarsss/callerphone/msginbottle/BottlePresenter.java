@@ -216,7 +216,11 @@ public final class BottlePresenter {
                 )
                 .actions(
                         ActionSpec.primary(BottleComponentIds.of(BottleComponentIds.ACTION_SEND, "_"), "Try again"),
-                        ActionSpec.secondary(BottleComponentIds.of(BottleComponentIds.ACTION_FIND, "_"), "Find a bottle")
+                        ActionSpec.secondary(BottleComponentIds.of(BottleComponentIds.ACTION_FIND, "_"), "Find a bottle"),
+                        ActionSpec.secondary(
+                                com.itsmarsss.callerphone.call.discord.CallComponentIds.again("_"),
+                                "Start a call"
+                        )
                 )
                 .ephemeral(true)
                 .build();
