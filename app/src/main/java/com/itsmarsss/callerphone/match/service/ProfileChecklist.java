@@ -51,11 +51,20 @@ public final class ProfileChecklist {
         if (user == null || user.getAgeCohort() == null) {
             return "Pick an age group.";
         }
-        if (profile == null || !readyToSubmit(profile) || profile.getState() != ProfileState.ACTIVE) {
-            return "Finish setup.";
+        if (profile == null || profile.getDisplayName() == null || profile.getDisplayName().isBlank()) {
+            return "Add a display name.";
+        }
+        if (profile.getBio() == null || profile.getBio().isBlank()) {
+            return "Write a short bio.";
+        }
+        if (profile.getInterests() == null || profile.getInterests().isEmpty()) {
+            return "Add a few interests.";
         }
         if (profile.getState() == ProfileState.PAUSED) {
             return "Resume when you're ready.";
+        }
+        if (profile.getState() != ProfileState.ACTIVE) {
+            return "Go live when you're ready.";
         }
         return "Browse when you want.";
     }

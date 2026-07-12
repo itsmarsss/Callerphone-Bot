@@ -303,9 +303,17 @@ public final class MatchPresenter {
     }
 
     public static ExperienceView incompleteWelcome() {
+        return incompleteWelcome(null);
+    }
+
+    public static ExperienceView incompleteWelcome(String checklist) {
+        String body = "Finish your profile so you can appear in Discover.";
+        if (checklist != null && !checklist.isBlank()) {
+            body += "\n\n" + checklist;
+        }
         return ExperienceView.builder(ExperienceIntent.PROGRESS)
                 .title("Pick up where you left off")
-                .description("Finish your profile so you can appear in Discover.")
+                .description(body)
                 .actions(
                         ActionSpec.primary(MatchComponentIds.of(MatchComponentIds.ACTION_SETUP, "_"), "Continue setup"),
                         ActionSpec.secondary(MatchComponentIds.of(MatchComponentIds.ACTION_PHOTO_MENU, "_"), "Add photo"),

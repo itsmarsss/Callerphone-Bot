@@ -252,6 +252,15 @@ public final class CallPresenter {
         return ExperienceView.builder(ExperienceIntent.WARNING)
                 .title(title)
                 .description(description)
+                .ephemeral(true)
+                .build();
+    }
+
+    /** Empty/error recovery after a failed or missing call. */
+    public static ExperienceView warnRecover(String title, String description) {
+        return ExperienceView.builder(ExperienceIntent.WARNING)
+                .title(title)
+                .description(description)
                 .actions(
                         ActionSpec.primary(CallComponentIds.again("_"), "Try a call"),
                         ActionSpec.success(

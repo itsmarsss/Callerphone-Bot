@@ -188,14 +188,18 @@ public final class MatchCommand implements ISlashCommand {
     private void handleJoin(SlashCommandInteractionEvent e, ApplicationContext ctx, String userId) {
         EnrollmentService.ServiceResult result = ctx.enrollment().beginJoin(userId);
         if (!result.success()) {
-            e.replyEmbeds(MatchEmbeds.warm("Can't continue", result.message())).setEphemeral(true).queue();
+            e.reply(ExperienceRenderer.toMessage(MatchPresenter.warn("Can't continue", result.message())))
+                    .setEphemeral(true).queue();
             return;
         }
         if (!"START_ONBOARDING".equals(result.message())) {
             MatchProfile profile = ctx.profiles().getOrCreateDraft(userId);
             if (!ProfileChecklist.readyToSubmit(profile)
                     || profile.getState() != com.itsmarsss.callerphone.match.model.ProfileState.ACTIVE) {
-                e.reply(ExperienceRenderer.toMessage(MatchPresenter.incompleteWelcome()))
+                var user = ctx.enrollment().getOrCreate(userId);
+                e.reply(ExperienceRenderer.toMessage(MatchPresenter.incompleteWelcome(
+                                ProfileChecklist.format(user, profile)
+                        )))
                         .setEphemeral(true).queue();
                 return;
             }

@@ -26,11 +26,14 @@ public final class CallButtonHandler implements IButtonInteraction {
                 String id = e.getComponentId().substring("reportchat-".length());
                 sessions.reportById(id);
                 e.editButton(Button.danger("reportchat", "Reported").asDisabled()).queue();
-                e.getMessage().replyEmbeds(CallEmbeds.success("Report received", "Thanks for reporting.")).queue();
+                e.getMessage().reply(ExperienceRenderer.toMessage(
+                        CallPresenter.success("Report received", "Thanks for reporting.")
+                )).queue();
                 return;
             }
-            e.replyEmbeds(CallEmbeds.warn("That expired", "Open a fresh screen to continue."))
-                    .setEphemeral(true).queue();
+            e.reply(ExperienceRenderer.toMessage(
+                    CallPresenter.warnRecover("That expired", "Open a fresh screen to continue.")
+            )).setEphemeral(true).queue();
             return;
         }
         wireShare();
@@ -135,8 +138,9 @@ public final class CallButtonHandler implements IButtonInteraction {
                 }
                 startAgain(e, userId, channelId);
             }
-            default -> e.replyEmbeds(CallEmbeds.warn("That expired", "Open a fresh screen to continue."))
-                    .setEphemeral(true).queue();
+            default -> e.reply(ExperienceRenderer.toMessage(
+                    CallPresenter.warnRecover("That expired", "Open a fresh screen to continue.")
+            )).setEphemeral(true).queue();
         }
     }
 
@@ -147,9 +151,11 @@ public final class CallButtonHandler implements IButtonInteraction {
         for (ReportCategory cat : ReportCategory.values()) {
             menu.addOption(cat.label(), cat.code());
         }
-        e.replyEmbeds(CallEmbeds.warn(
-                        "Report this call",
-                        "Choose the closest reason. Recent messages will be attached for review."
+        e.reply(ExperienceRenderer.toMessage(
+                        CallPresenter.warn(
+                                "Report this call",
+                                "Choose the closest reason. Recent messages will be attached for review."
+                        )
                 ))
                 .addComponents(ActionRow.of(menu.build()))
                 .setEphemeral(true)
@@ -179,8 +185,10 @@ public final class CallButtonHandler implements IButtonInteraction {
             case MATCHED -> e.reply(sessions.connectedMessage(result.session()))
                     .queue(hook -> hook.retrieveOriginal().queue(msg ->
                             sessions.rememberLobbyMessage(channelId, msg.getId())));
-            case CONFLICT -> e.replyEmbeds(CallEmbeds.conflict()).setEphemeral(true).queue();
-            case FAILED -> e.replyEmbeds(CallEmbeds.warn("Couldn't connect", result.message()))
+            case CONFLICT -> e.reply(ExperienceRenderer.toMessage(CallPresenter.conflict())).queue();
+            case FAILED -> e.reply(ExperienceRenderer.toMessage(
+                            CallPresenter.warnRecover("Couldn't connect", result.message())
+                    ))
                     .setEphemeral(true).queue();
         }
     }

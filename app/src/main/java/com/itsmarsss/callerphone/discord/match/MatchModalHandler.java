@@ -86,7 +86,11 @@ public final class MatchModalHandler implements IModalInteraction {
             return;
         }
 
-        e.reply(ExperienceRenderer.toMessage(MatchPresenter.incompleteWelcome()))
+        MatchProfile draft = ctx.profiles().find(userId).orElse(null);
+        var user = ctx.enrollment().getOrCreate(userId);
+        e.reply(ExperienceRenderer.toMessage(MatchPresenter.incompleteWelcome(
+                        com.itsmarsss.callerphone.match.service.ProfileChecklist.format(user, draft)
+                )))
                 .setEphemeral(true)
                 .queue();
     }

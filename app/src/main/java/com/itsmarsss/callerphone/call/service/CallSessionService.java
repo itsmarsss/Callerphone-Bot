@@ -291,7 +291,7 @@ public final class CallSessionService {
     private void terminateError(CallSession session) {
         MessageChannel a = ToolSet.getMessageChannel(session.getChannelA());
         MessageChannel b = ToolSet.getMessageChannel(session.getChannelB());
-        ExperienceView lost = CallPresenter.warn("Connection lost", "The call ended unexpectedly.");
+        ExperienceView lost = CallPresenter.warnRecover("Connection lost", "The call ended unexpectedly.");
         if (a != null) {
             publishLobby(a, session.getChannelA(), lost);
         }

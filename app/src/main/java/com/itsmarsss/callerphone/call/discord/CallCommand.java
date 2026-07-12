@@ -57,7 +57,7 @@ public final class CallCommand implements ISlashCommand {
                     .queue(hook -> hook.retrieveOriginal().queue(msg ->
                             calls.rememberLobbyMessage(channelId, msg.getId())));
             case FAILED -> e.reply(ExperienceRenderer.toMessage(
-                            CallPresenter.warn("Couldn't connect", result.message())))
+                            CallPresenter.warnRecover("Couldn't connect", result.message())))
                     .setEphemeral(true).queue();
         }
     }

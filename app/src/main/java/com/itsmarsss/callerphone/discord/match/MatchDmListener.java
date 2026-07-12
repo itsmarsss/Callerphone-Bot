@@ -35,7 +35,9 @@ public final class MatchDmListener extends ListenerAdapter {
             ApplicationContext ctx = ApplicationContext.get();
             var user = ctx.enrollment().getOrCreate(event.getAuthor().getId());
             if (user.getSelectedConversationId() != null) {
-                event.getMessage().replyEmbeds(MatchEmbeds.warm("Text only", "Chat is text-only for now.")).queue();
+                event.getMessage().reply(com.itsmarsss.callerphone.experience.ExperienceRenderer.toMessage(
+                        MatchPresenter.warn("Text only", "Chat is text-only for now.")
+                )).queue();
             }
             return;
         }
@@ -58,7 +60,9 @@ public final class MatchDmListener extends ListenerAdapter {
                 return;
             }
             if (!result.success()) {
-                event.getMessage().replyEmbeds(MatchEmbeds.warm("Couldn't send", result.message())).queue();
+                event.getMessage().reply(com.itsmarsss.callerphone.experience.ExperienceRenderer.toMessage(
+                        MatchPresenter.warn("Couldn't send", result.message())
+                )).queue();
                 return;
             }
             event.getJDA().retrieveUserById(result.recipientId()).queue(recipient -> {
@@ -75,10 +79,22 @@ public final class MatchDmListener extends ListenerAdapter {
                                                             result.conversationId());
                                         }
                                     },
-                                    err -> event.getMessage().replyEmbeds(MatchEmbeds.warm("Delivery failed", "They may have DMs closed.")).queue()
+                                    err -> event.getMessage().reply(
+                                            com.itsmarsss.callerphone.experience.ExperienceRenderer.toMessage(
+                                                    MatchPresenter.warn("Delivery failed", "They may have DMs closed.")
+                                            )
+                                    ).queue()
                             );
-                }, err -> event.getMessage().replyEmbeds(MatchEmbeds.warm("Couldn't deliver", "Couldn't open their DMs.")).queue());
-            }, err -> event.getMessage().replyEmbeds(MatchEmbeds.warm("Couldn't deliver", "Recipient not found.")).queue());
+                }, err -> event.getMessage().reply(
+                        com.itsmarsss.callerphone.experience.ExperienceRenderer.toMessage(
+                                MatchPresenter.warn("Couldn't deliver", "Couldn't open their DMs.")
+                        )
+                ).queue());
+            }, err -> event.getMessage().reply(
+                    com.itsmarsss.callerphone.experience.ExperienceRenderer.toMessage(
+                            MatchPresenter.warn("Couldn't deliver", "Recipient not found.")
+                    )
+            ).queue());
         });
     }
 }

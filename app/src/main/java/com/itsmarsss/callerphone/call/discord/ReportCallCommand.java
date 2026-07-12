@@ -22,7 +22,7 @@ public final class ReportCallCommand implements ISlashCommand {
         String channelId = e.getChannel().getId();
         var session = calls.get(channelId);
         if (session.isEmpty()) {
-            e.reply(ExperienceRenderer.toMessage(CallPresenter.warn(
+            e.reply(ExperienceRenderer.toMessage(CallPresenter.warnRecover(
                     "No recent call to report",
                     "Reports are available during a call and shortly after it ends."
             ))).setEphemeral(true).queue();
@@ -35,10 +35,10 @@ public final class ReportCallCommand implements ISlashCommand {
         for (ReportCategory cat : ReportCategory.values()) {
             menu.addOption(cat.label(), cat.code());
         }
-        e.replyEmbeds(CallEmbeds.warn(
+        e.reply(ExperienceRenderer.toMessage(CallPresenter.warn(
                         "Report this call",
                         "Choose the closest reason. Recent messages will be attached for review."
-                ))
+                )))
                 .addComponents(ActionRow.of(menu.build()))
                 .setEphemeral(true)
                 .queue();
