@@ -92,6 +92,10 @@ public class ErrorHandler {
                                 ActionSpec.secondary(
                                         BottleComponentIds.of(BottleComponentIds.ACTION_FIND, "_"),
                                         "Find a bottle"
+                                ),
+                                ActionSpec.secondary(
+                                        MatchComponentIds.of(MatchComponentIds.ACTION_START_BROWSE, "_"),
+                                        "Discover"
                                 )
                         )
                         .ephemeral(true)
