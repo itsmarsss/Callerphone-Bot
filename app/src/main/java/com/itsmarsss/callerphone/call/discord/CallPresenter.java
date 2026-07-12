@@ -209,13 +209,31 @@ public final class CallPresenter {
         return ExperienceView.builder(ExperienceIntent.NEUTRAL)
                 .title("Left the queue")
                 .description("This channel is no longer waiting for a call.")
+                .actions(
+                        ActionSpec.primary(CallComponentIds.again("_"), "Find a call"),
+                        ActionSpec.success(
+                                com.itsmarsss.callerphone.msginbottle.BottleComponentIds.of(
+                                        com.itsmarsss.callerphone.msginbottle.BottleComponentIds.ACTION_FIND, "_"
+                                ),
+                                "Find a bottle"
+                        )
+                )
                 .build();
     }
 
     public static ExperienceView noCall() {
         return ExperienceView.builder(ExperienceIntent.WARNING)
                 .title("No active call")
-                .description("Start a random conversation with another server.")
+                .description("Start a random conversation with another server or in DMs.")
+                .actions(
+                        ActionSpec.primary(CallComponentIds.again("_"), "Start a call"),
+                        ActionSpec.success(
+                                com.itsmarsss.callerphone.msginbottle.BottleComponentIds.of(
+                                        com.itsmarsss.callerphone.msginbottle.BottleComponentIds.ACTION_FIND, "_"
+                                ),
+                                "Find a bottle"
+                        )
+                )
                 .build();
     }
 
@@ -223,6 +241,10 @@ public final class CallPresenter {
         return ExperienceView.builder(ExperienceIntent.WARNING)
                 .title("Already on a call")
                 .description("This channel is already connected. End it before starting another.")
+                .actions(
+                        ActionSpec.danger(CallComponentIds.endConfirm(), "End call"),
+                        ActionSpec.secondary(CallComponentIds.endCancel(), "Keep talking")
+                )
                 .build();
     }
 

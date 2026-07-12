@@ -7,6 +7,7 @@ import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.Sorts;
 import com.mongodb.client.model.Updates;
 import org.bson.Document;
+import org.bson.conversions.Bson;
 
 import java.time.Instant;
 import java.util.ArrayList;
@@ -65,15 +66,40 @@ public final class SocialInboxService {
             case PROFILE_SHARE_RESPONSE -> 6;
             case INCOMING_INTEREST -> 7;
         };
+        String actor = actorDisplay == null ? "Someone" : actorDisplay;
+        String text = preview == null ? "" : preview;
+        Instant now = Instant.now();
+
+        // Coalesce chat/bottle bursts: one unread row per source, refresh preview
+        if ((type == EntryType.CONNECTION_MESSAGE || type == EntryType.BOTTLE_REPLY)
+                && sourceId != null && !sourceId.isBlank()) {
+            Bson filter = Filters.and(
+                    Filters.eq("userId", userId),
+                    Filters.eq("type", type.name()),
+                    Filters.eq("sourceId", sourceId),
+                    Filters.eq("unread", true)
+            );
+            Document existing = collection.find(filter).first();
+            if (existing != null) {
+                collection.updateOne(filter, Updates.combine(
+                        Updates.set("actorDisplay", actor),
+                        Updates.set("preview", text),
+                        Updates.set("occurredAt", now.toString()),
+                        Updates.set("priority", priority)
+                ));
+                return;
+            }
+        }
+
         Document doc = new Document("_id", UUID.randomUUID().toString().replace("-", ""))
                 .append("userId", userId)
                 .append("type", type.name())
                 .append("sourceId", sourceId)
-                .append("actorDisplay", actorDisplay == null ? "Someone" : actorDisplay)
-                .append("preview", preview == null ? "" : preview)
+                .append("actorDisplay", actor)
+                .append("preview", text)
                 .append("unread", true)
                 .append("priority", priority)
-                .append("occurredAt", Instant.now().toString());
+                .append("occurredAt", now.toString());
         collection.insertOne(doc);
     }
 

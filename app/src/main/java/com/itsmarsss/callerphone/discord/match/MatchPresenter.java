@@ -138,6 +138,7 @@ public final class MatchPresenter {
             bits.add(inboxUnread + " inbox");
         }
         // Plan §10.G — explore modes without becoming a stats dashboard
+        // Discord allows 5 buttons/row; renderer wraps to a second row for profile/premium.
         return ExperienceView.builder(ExperienceIntent.SOCIAL)
                 .title(greeting(displayName))
                 .description(String.join(" · ", bits))
@@ -145,7 +146,8 @@ public final class MatchPresenter {
                         ActionSpec.success(MatchComponentIds.of(MatchComponentIds.ACTION_START_BROWSE, "_"), "Discover people"),
                         ActionSpec.secondary(MatchComponentIds.of(MatchComponentIds.ACTION_OPEN_CHATS, "_"), "Open chats"),
                         ActionSpec.secondary(CallComponentIds.again("_"), "Start a call"),
-                        ActionSpec.secondary(BottleComponentIds.of(BottleComponentIds.ACTION_FIND, "_"), "Find a bottle")
+                        ActionSpec.secondary(BottleComponentIds.of(BottleComponentIds.ACTION_FIND, "_"), "Find a bottle"),
+                        ActionSpec.secondary(MatchComponentIds.of(MatchComponentIds.ACTION_PREVIEW_SELF, "_"), "My profile")
                 )
                 .ephemeral(true)
                 .build();

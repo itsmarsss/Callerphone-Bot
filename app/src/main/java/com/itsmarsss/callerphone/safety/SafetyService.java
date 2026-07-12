@@ -72,6 +72,13 @@ public final class SafetyService {
         blocks.create(Block.match(blockerId, blockedId, reason));
         endPair(blockerId, blockedId, blockerId, MatchStatus.BLOCKED);
         audits.append(AuditEvent.of(blockerId, "block", blockedId, Block.PRODUCT_MATCH, reason));
+        try {
+            if (com.itsmarsss.callerphone.bootstrap.ApplicationContext.isReady()) {
+                com.itsmarsss.callerphone.bootstrap.ApplicationContext.get().analytics()
+                        .track(blockerId, "safety_block", blockedId);
+            }
+        } catch (Exception ignored) {
+        }
     }
 
     public Report report(
@@ -107,6 +114,25 @@ public final class SafetyService {
 
         if (reportAlerter != null) {
             reportAlerter.onReport(report);
+        }
+        try {
+            if (com.itsmarsss.callerphone.bootstrap.ApplicationContext.isReady()) {
+                com.itsmarsss.callerphone.bootstrap.ApplicationContext.get().analytics()
+                        .track(reporterId, "safety_report", cat.code());
+            }
+        } catch (Exception ignored) {
+        }
+        try {
+            if (com.itsmarsss.callerphone.bootstrap.ApplicationContext.isReady()) {
+                com.itsmarsss.callerphone.bootstrap.ApplicationContext.get().inbox().push(
+                        reporterId,
+                        com.itsmarsss.callerphone.match.service.SocialInboxService.EntryType.SAFETY_UPDATE,
+                        report.getId() != null ? report.getId() : subjectId,
+                        "Safety",
+                        "Report received · " + cat.label()
+                );
+            }
+        } catch (Exception ignored) {
         }
         return report;
     }

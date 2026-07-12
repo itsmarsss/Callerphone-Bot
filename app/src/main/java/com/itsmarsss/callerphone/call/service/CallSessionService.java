@@ -157,6 +157,13 @@ public final class CallSessionService {
         CallSession session = byChannel.get(channelId);
         if (session == null) {
             if (queue.remove(channelId)) {
+                try {
+                    if (com.itsmarsss.callerphone.bootstrap.ApplicationContext.isReady()) {
+                        com.itsmarsss.callerphone.bootstrap.ApplicationContext.get().analytics()
+                                .track("system", "call_leave_queue", channelId);
+                    }
+                } catch (Exception ignored) {
+                }
                 boolean edited = tryEditLobby(channelId, CallPresenter.leftQueue());
                 ControlMessageStore.get().remove(ControlMessageStore.callLobbyKey(channelId));
                 return new EndOutcome(edited, ExperienceRenderer.toMessage(CallPresenter.leftQueue()));
