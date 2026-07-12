@@ -548,6 +548,16 @@ public final class MatchPresenter {
         return ExperienceView.builder(ExperienceIntent.SAFETY)
                 .title(who + " is blocked")
                 .description("Their profile and conversations are no longer available to you.")
+                .actions(
+                        ActionSpec.success(
+                                MatchComponentIds.of(MatchComponentIds.ACTION_START_BROWSE, "_"),
+                                "Discover people"
+                        ),
+                        ActionSpec.secondary(
+                                MatchComponentIds.of(MatchComponentIds.ACTION_OPEN_CHATS, "_"),
+                                "Open chats"
+                        )
+                )
                 .ephemeral(true)
                 .build();
     }
@@ -556,6 +566,16 @@ public final class MatchPresenter {
         return ExperienceView.builder(ExperienceIntent.SAFETY)
                 .title("Report received")
                 .description("Evidence was preserved for review. They have not been notified.")
+                .actions(
+                        ActionSpec.success(
+                                MatchComponentIds.of(MatchComponentIds.ACTION_START_BROWSE, "_"),
+                                "Keep discovering"
+                        ),
+                        ActionSpec.secondary(
+                                MatchComponentIds.of(MatchComponentIds.ACTION_HOME, "_"),
+                                "Inbox"
+                        )
+                )
                 .ephemeral(true)
                 .build();
     }
