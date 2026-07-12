@@ -231,6 +231,12 @@ public final class BottlePresenter {
                         ActionSpec.secondary(
                                 com.itsmarsss.callerphone.call.discord.CallComponentIds.again("_"),
                                 "Start a call"
+                        ),
+                        ActionSpec.secondary(
+                                com.itsmarsss.callerphone.match.component.MatchComponentIds.of(
+                                        com.itsmarsss.callerphone.match.component.MatchComponentIds.ACTION_START_BROWSE, "_"
+                                ),
+                                "Discover people"
                         )
                 )
                 .ephemeral(true)
