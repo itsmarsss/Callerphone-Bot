@@ -101,6 +101,8 @@ public final class DiscoveryUi {
                         ? "discover_daily_limit"
                         : "discover_empty";
                 ctx.analytics().track(userId, event, msg.substring(0, Math.min(40, msg.length())));
+                ctx.analytics().trackSurface(userId, "discover",
+                        event.equals("discover_daily_limit") ? "limit" : "empty", "send");
             } catch (Exception ignored) {
             }
             hook.sendMessage(ExperienceRenderer.toMessage(MatchPresenter.emptyDiscoverWithFallback(next.message())))
@@ -132,6 +134,8 @@ public final class DiscoveryUi {
                         ? "discover_daily_limit"
                         : "discover_empty";
                 ctx.analytics().track(userId, event, "after_action");
+                ctx.analytics().trackSurface(userId, "discover",
+                        event.equals("discover_daily_limit") ? "limit" : "empty", "after_action");
             } catch (Exception ignored) {
             }
             String combined = (note == null || note.isBlank() ? "" : note + "\n\n")
