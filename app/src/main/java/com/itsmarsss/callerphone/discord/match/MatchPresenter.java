@@ -419,10 +419,17 @@ public final class MatchPresenter {
         return ExperienceView.builder(ExperienceIntent.NEUTRAL)
                 .title("Incoming interest")
                 .description(EmptyStates.noLikes())
-                .actions(ActionSpec.success(
-                        MatchComponentIds.of(MatchComponentIds.ACTION_START_BROWSE, "_"),
-                        "Keep discovering"
-                ))
+                .actions(
+                        ActionSpec.success(
+                                MatchComponentIds.of(MatchComponentIds.ACTION_START_BROWSE, "_"),
+                                "Keep discovering"
+                        ),
+                        ActionSpec.secondary(MatchComponentIds.of(MatchComponentIds.ACTION_PREVIEW_SELF, "_"), "My profile"),
+                        ActionSpec.secondary(
+                                BottleComponentIds.of(BottleComponentIds.ACTION_FIND, "_"),
+                                "Find a bottle"
+                        )
+                )
                 .ephemeral(true)
                 .build();
     }
@@ -443,10 +450,17 @@ public final class MatchPresenter {
         return ExperienceView.builder(ExperienceIntent.NEUTRAL)
                 .title("No conversations yet")
                 .description(EmptyStates.noChats())
-                .actions(ActionSpec.success(
-                        MatchComponentIds.of(MatchComponentIds.ACTION_START_BROWSE, "_"),
-                        "Discover people"
-                ))
+                .actions(
+                        ActionSpec.success(
+                                MatchComponentIds.of(MatchComponentIds.ACTION_START_BROWSE, "_"),
+                                "Discover people"
+                        ),
+                        ActionSpec.secondary(CallComponentIds.again("_"), "Start a call"),
+                        ActionSpec.secondary(
+                                BottleComponentIds.of(BottleComponentIds.ACTION_FIND, "_"),
+                                "Find a bottle"
+                        )
+                )
                 .ephemeral(true)
                 .build();
     }

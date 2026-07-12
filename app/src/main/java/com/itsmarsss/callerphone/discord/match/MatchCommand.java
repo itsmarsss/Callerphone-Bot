@@ -301,9 +301,16 @@ public final class MatchCommand implements ISlashCommand {
         ctx.dbExecutor().execute(() -> {
             DecisionService.DecisionResult result = ctx.decisions().undoLastSkip(userId);
             if (!result.success() || result.restoredSession() == null) {
-                e.getHook().sendMessage(ExperienceRenderer.toMessage(
-                        MatchPresenter.warn("Undo", result.message())
-                )).setEphemeral(true).queue();
+                String msg = result.message() == null ? "" : result.message();
+                if (msg.toLowerCase().contains("nothing left") || msg.toLowerCase().contains("too late")) {
+                    e.getHook().sendMessage(ExperienceRenderer.toMessage(
+                            MatchPresenter.softLimit("Undo unavailable", msg)
+                    )).setEphemeral(true).queue();
+                } else {
+                    e.getHook().sendMessage(ExperienceRenderer.toMessage(
+                            MatchPresenter.warn("Undo", result.message())
+                    )).setEphemeral(true).queue();
+                }
                 return;
             }
             Optional<MatchProfile> profile = ctx.profiles().find(result.restoredSession().subjectId());
