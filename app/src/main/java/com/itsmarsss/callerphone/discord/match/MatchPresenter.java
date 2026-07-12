@@ -361,7 +361,11 @@ public final class MatchPresenter {
                                 MatchComponentIds.of(MatchComponentIds.ACTION_PREVIEW_SELF, "_"),
                                 "Preview"
                         ),
-                        ActionSpec.secondary(CallComponentIds.again("_"), "Start a call")
+                        ActionSpec.secondary(CallComponentIds.again("_"), "Start a call"),
+                        ActionSpec.secondary(
+                                BottleComponentIds.of(BottleComponentIds.ACTION_FIND, "_"),
+                                "Find a bottle"
+                        )
                 )
                 .ephemeral(true)
                 .build();
