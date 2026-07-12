@@ -14,14 +14,14 @@ public final class CallSelectHandler implements IStringSelectInteraction {
     public void runSelect(StringSelectInteractionEvent e) {
         CallComponentIds.Parsed parsed = CallComponentIds.parse(e.getComponentId());
         if (parsed == null || e.getValues().isEmpty()) {
-            e.reply(ExperienceRenderer.toMessage(CallPresenter.warn(
+            e.reply(ExperienceRenderer.toMessage(CallPresenter.warnRecover(
                     "That expired",
                     "Open a fresh report screen to continue."
             ))).setEphemeral(true).queue();
             return;
         }
         if (!CallComponentIds.REPORT_CAT.equals(parsed.action())) {
-            e.reply(ExperienceRenderer.toMessage(CallPresenter.warn(
+            e.reply(ExperienceRenderer.toMessage(CallPresenter.warnRecover(
                     "That expired",
                     "Open a fresh screen to continue."
             ))).setEphemeral(true).queue();
@@ -54,6 +54,13 @@ public final class CallSelectHandler implements IStringSelectInteraction {
                                         com.itsmarsss.callerphone.msginbottle.BottleComponentIds.ACTION_FIND, "_"
                                 ),
                                 "Find a bottle"
+                        ),
+                        com.itsmarsss.callerphone.experience.ActionSpec.secondary(
+                                com.itsmarsss.callerphone.match.component.MatchComponentIds.of(
+                                        com.itsmarsss.callerphone.match.component.MatchComponentIds.ACTION_START_BROWSE,
+                                        "_"
+                                ),
+                                "Discover people"
                         )
                 )
                 .ephemeral(true)
