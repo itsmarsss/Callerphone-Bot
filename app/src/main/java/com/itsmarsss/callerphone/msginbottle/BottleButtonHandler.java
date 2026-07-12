@@ -14,7 +14,7 @@ public final class BottleButtonHandler implements IButtonInteraction {
     public void runClick(ButtonInteraction e) {
         BottleComponentIds.Parsed parsed = BottleComponentIds.parse(e.getComponentId());
         if (parsed == null) {
-            e.reply("That bottle button expired. Try `/bottle` again.").setEphemeral(true).queue();
+            e.reply(ExperienceRenderer.toMessage(BottlePresenter.genericError())).setEphemeral(true).queue();
             return;
         }
         String userId = e.getUser().getId();

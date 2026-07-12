@@ -1,7 +1,5 @@
 package com.itsmarsss.callerphone.users.commands;
 
-import com.itsmarsss.callerphone.Callerphone;
-import com.itsmarsss.callerphone.ToolSet;
 import com.itsmarsss.callerphone.bootstrap.ApplicationContext;
 import com.itsmarsss.callerphone.discord.match.MatchPresenter;
 import com.itsmarsss.callerphone.experience.ExperienceRenderer;
@@ -10,8 +8,6 @@ import com.itsmarsss.callerphone.match.model.MatchProfile;
 import com.itsmarsss.callerphone.match.model.ProfileState;
 import com.itsmarsss.commandType.ISlashCommand;
 import com.itsmarsss.database.categories.Users;
-import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.InteractionContextType;
@@ -20,8 +16,6 @@ import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
-
-import java.time.Instant;
 
 /**
  * Plan §21: activity-first profile. Match summary for self when enrolled.
@@ -41,7 +35,7 @@ public class Profile implements ISlashCommand {
             e.reply(ExperienceRenderer.toMessage(selfActivityView(user))).setEphemeral(true).queue();
             return;
         }
-        e.replyEmbeds(legacyProfile(user, self)).queue();
+        e.reply(ExperienceRenderer.toMessage(publicActivityView(user, self))).setEphemeral(self).queue();
     }
 
     private static com.itsmarsss.callerphone.experience.ExperienceView selfActivityView(User user) {
@@ -87,7 +81,7 @@ public class Profile implements ISlashCommand {
         );
     }
 
-    private MessageEmbed legacyProfile(User user, boolean self) {
+    private static com.itsmarsss.callerphone.experience.ExperienceView publicActivityView(User user, boolean self) {
         String userId = user.getId();
         final long executed = Users.getExecuted(userId);
         final long transmitted = Users.getTransmitted(userId);
@@ -95,7 +89,6 @@ public class Profile implements ISlashCommand {
         final int level = (int) (total / 100);
         final int exp = (int) (total % 100);
         String bar = ProgressBar.of(exp, 100, 10);
-
         String prefix = Users.getPrefix(userId);
         StringBuilder desc = new StringBuilder();
         desc.append(bar).append(" **").append(exp).append("/100** XP\n");
@@ -103,18 +96,21 @@ public class Profile implements ISlashCommand {
         if (prefix != null && !prefix.isEmpty()) {
             desc.append("\nPrefix `").append(prefix).append("`");
         }
+        var b = com.itsmarsss.callerphone.experience.ExperienceView.builder(
+                        com.itsmarsss.callerphone.experience.ExperienceIntent.SOCIAL)
+                .title(user.getName() + " · Level " + level)
+                .description(desc.toString())
+                .media(com.itsmarsss.callerphone.experience.MediaSpec.thumbnail(user.getEffectiveAvatarUrl()))
+                .footer("Callerphone");
         if (self) {
-            desc.append("\n\n_Levels unlock call flair over time._");
+            b.actions(com.itsmarsss.callerphone.experience.ActionSpec.primary(
+                    com.itsmarsss.callerphone.match.component.MatchComponentIds.of(
+                            com.itsmarsss.callerphone.match.component.MatchComponentIds.ACTION_REWARDS, "_"
+                    ),
+                    "View rewards"
+            )).ephemeral(true);
         }
-
-        return new EmbedBuilder()
-                .setTitle(user.getName() + " · Level " + level)
-                .setThumbnail(user.getAvatarUrl())
-                .setDescription(desc.toString())
-                .setColor(ToolSet.COLOR)
-                .setFooter("Callerphone", Callerphone.selfUser != null ? Callerphone.selfUser.getAvatarUrl() : null)
-                .setTimestamp(Instant.now())
-                .build();
+        return b.build();
     }
 
     @Override

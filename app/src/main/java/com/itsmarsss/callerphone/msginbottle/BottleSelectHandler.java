@@ -12,8 +12,7 @@ public final class BottleSelectHandler implements IStringSelectInteraction {
     public void runSelect(StringSelectInteractionEvent e) {
         BottleComponentIds.Parsed parsed = BottleComponentIds.parse(e.getComponentId());
         if (parsed == null || e.getValues().isEmpty()) {
-            e.reply("That menu expired. Run `/bottle threads` or `/bottle saved` again.")
-                    .setEphemeral(true).queue();
+            e.reply(ExperienceRenderer.toMessage(BottlePresenter.genericError())).setEphemeral(true).queue();
             return;
         }
         String bottleId = e.getValues().get(0);
