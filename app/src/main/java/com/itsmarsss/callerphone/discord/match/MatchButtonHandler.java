@@ -380,8 +380,9 @@ public final class MatchButtonHandler implements IButtonInteraction {
             case MatchComponentIds.ACTION_HOME,
                  MatchComponentIds.ACTION_BACK_INBOX -> {
                 try {
-                    ctx.analytics().track(userId, "inbox_open",
-                            MatchComponentIds.ACTION_HOME.equals(action) ? "home_btn" : "back_inbox");
+                    String src = MatchComponentIds.ACTION_HOME.equals(action) ? "home_btn" : "back_inbox";
+                    ctx.analytics().track(userId, "inbox_open", src);
+                    ctx.analytics().trackSurface(userId, "inbox", "open", src);
                 } catch (Exception ignored) {
                 }
                 e.deferReply(true).queue();
