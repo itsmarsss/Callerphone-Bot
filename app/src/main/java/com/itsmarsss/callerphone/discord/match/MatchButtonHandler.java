@@ -159,6 +159,7 @@ public final class MatchButtonHandler implements IButtonInteraction {
                 if (result.success()) {
                     try {
                         ctx.analytics().track(userId, "match_go_live", "button");
+                        ctx.analytics().trackSurface(userId, "profile", "go_live", "button");
                     } catch (Exception ignored) {
                     }
                     e.reply(ExperienceRenderer.toMessage(MatchPresenter.liveReady())).setEphemeral(true).queue();
