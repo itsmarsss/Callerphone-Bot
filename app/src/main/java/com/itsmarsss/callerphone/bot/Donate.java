@@ -11,19 +11,36 @@ import net.dv8tion.jda.api.interactions.InteractionContextType;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 
-/** Plan §32: concrete support outcomes. */
+/** Plan §32: concrete support outcomes; Premium is separate value, not competing guilt. */
 public class Donate implements ISlashCommand {
     @Override
     public void runSlash(SlashCommandInteractionEvent e) {
         String donate = Callerphone.config.getDonateLink();
+        java.util.List<ActionSpec> actions = new java.util.ArrayList<>();
+        if (donate != null && !donate.isBlank()) {
+            actions.add(ActionSpec.link(donate, "Support the project"));
+        }
+        actions.add(ActionSpec.secondary(
+                com.itsmarsss.callerphone.match.component.MatchComponentIds.of(
+                        com.itsmarsss.callerphone.match.component.MatchComponentIds.ACTION_PREMIUM, "_"
+                ),
+                "About Premium"
+        ));
+        actions.add(ActionSpec.success(
+                com.itsmarsss.callerphone.match.component.MatchComponentIds.of(
+                        com.itsmarsss.callerphone.match.component.MatchComponentIds.ACTION_HOME, "_"
+                ),
+                "Open home"
+        ));
         e.reply(ExperienceRenderer.toMessage(ExperienceView.builder(ExperienceIntent.NEUTRAL)
                 .title("Support Callerphone")
                 .description(
                         "Help cover hosting, moderation tools, and new social features.\n\n"
-                                + "Every bit keeps random calls, Match, and bottles online for more people."
+                                + "Every bit keeps random calls, Match, and bottles online for more people.\n\n"
+                                + "_Premium (when live) is a product upgrade — donations keep the free tier healthy._"
                 )
                 .footer("Thank you")
-                .actions(ActionSpec.link(donate, "Support the project"))
+                .actions(actions)
                 .build())).setEphemeral(true).queue();
     }
 

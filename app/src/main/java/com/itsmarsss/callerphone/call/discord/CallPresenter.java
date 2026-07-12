@@ -195,6 +195,12 @@ public final class CallPresenter {
                             ),
                             "Find a bottle"
                     ),
+                    ActionSpec.secondary(
+                            com.itsmarsss.callerphone.match.component.MatchComponentIds.of(
+                                    com.itsmarsss.callerphone.match.component.MatchComponentIds.ACTION_START_BROWSE, "_"
+                            ),
+                            "Discover people"
+                    ),
                     ActionSpec.danger(CallComponentIds.report(sessionId), "Report")
             );
         }
@@ -221,6 +227,12 @@ public final class CallPresenter {
                                     com.itsmarsss.callerphone.msginbottle.BottleComponentIds.ACTION_FIND, "_"
                             ),
                             "Find a bottle"
+                    ),
+                    ActionSpec.secondary(
+                            com.itsmarsss.callerphone.match.component.MatchComponentIds.of(
+                                    com.itsmarsss.callerphone.match.component.MatchComponentIds.ACTION_START_BROWSE, "_"
+                            ),
+                            "Discover people"
                     ),
                     ActionSpec.danger(CallComponentIds.report(sessionId), "Report")
             );
