@@ -73,9 +73,10 @@ public final class MatchButtonHandler implements IButtonInteraction {
             case MatchComponentIds.ACTION_CONNECT_REQUEST -> {
                 EnrollmentService.ServiceResult result = ctx.connect().request(userId, opaque);
                 if (result.success()) {
-                    e.reply(ExperienceRenderer.toMessage(MatchPresenter.quietSuccess(
-                            "Request sent",
-                            result.message() + "\n\nKeep chatting while you wait — they have 48 hours."
+                    e.reply(ExperienceRenderer.toMessage(MatchPresenter.chatSelected(
+                            "your connection",
+                            result.message() + "\n\nKeep chatting while you wait — they have 48 hours.",
+                            opaque
                     ))).setEphemeral(true).queue();
                 } else {
                     replyService(e, result);
@@ -96,16 +97,17 @@ public final class MatchButtonHandler implements IButtonInteraction {
                     ))).setEphemeral(true).queue();
                 } else {
                     e.reply(ExperienceRenderer.toMessage(
-                            MatchPresenter.warn("Couldn't complete", result.message())
+                            MatchPresenter.serviceFailed(result.message())
                     )).setEphemeral(true).queue();
                 }
             }
             case MatchComponentIds.ACTION_CONNECT_DECLINE -> {
                 var result = ctx.connect().decline(userId, opaque);
                 if (result.success()) {
-                    e.reply(ExperienceRenderer.toMessage(MatchPresenter.quietSuccess(
-                            "Declined",
-                            result.message() + "\n\nYou can keep chatting or open another connection."
+                    e.reply(ExperienceRenderer.toMessage(MatchPresenter.chatSelected(
+                            "your connection",
+                            result.message() + "\n\nYou can keep chatting or open another connection.",
+                            opaque
                     ))).setEphemeral(true).queue();
                 } else {
                     replyService(e, result);
@@ -300,8 +302,7 @@ public final class MatchButtonHandler implements IButtonInteraction {
             }
             case MatchComponentIds.ACTION_INBOX_READ_ALL -> {
                 ctx.inbox().markAllRead(userId);
-                e.reply(ExperienceRenderer.toMessage(MatchPresenter.quietSuccess(
-                        "Inbox cleared",
+                e.reply(ExperienceRenderer.toMessage(MatchPresenter.serviceDone(
                         "Non-safety updates marked read. Open next anytime from your inbox."
                 ))).setEphemeral(true).queue();
             }
@@ -391,8 +392,8 @@ public final class MatchButtonHandler implements IButtonInteraction {
                         return;
                     }
                     e.getHook().sendMessage(ExperienceRenderer.toMessage(result.success()
-                            ? MatchPresenter.quietSuccess("Interest sent", result.message())
-                            : MatchPresenter.warn("Couldn't send interest", result.message())
+                            ? MatchPresenter.serviceDone(result.message())
+                            : MatchPresenter.serviceFailed(result.message())
                     )).setEphemeral(true).queue();
                 });
             }
