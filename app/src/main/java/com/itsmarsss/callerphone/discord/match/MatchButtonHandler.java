@@ -408,6 +408,7 @@ public final class MatchButtonHandler implements IButtonInteraction {
             case MatchComponentIds.ACTION_INBOX_OPEN -> {
                 try {
                     ctx.analytics().track(userId, "inbox_open_next", null);
+                    ctx.analytics().trackSurface(userId, "inbox", "open_next", null);
                 } catch (Exception ignored) {
                 }
                 e.deferReply(true).queue();
@@ -419,6 +420,7 @@ public final class MatchButtonHandler implements IButtonInteraction {
                 ctx.inbox().markAllRead(userId);
                 try {
                     ctx.analytics().track(userId, "inbox_read_all", null);
+                    ctx.analytics().trackSurface(userId, "inbox", "read_all", null);
                 } catch (Exception ignored) {
                 }
                 e.reply(ExperienceRenderer.toMessage(MatchPresenter.serviceDone(
