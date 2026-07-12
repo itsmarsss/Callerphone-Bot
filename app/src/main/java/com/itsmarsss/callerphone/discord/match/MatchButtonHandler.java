@@ -577,10 +577,7 @@ public final class MatchButtonHandler implements IButtonInteraction {
                 return;
             }
             if (result.mutual() && result.conversationId() != null) {
-                try {
-                    ctx.analytics().track(userId, "match_mutual", result.conversationId());
-                } catch (Exception ignored) {
-                }
+                // DecisionService already tracks match_mutual for both parties
                 String peerName = "your connection";
                 String opener = null;
                 if (result.match() != null) {
