@@ -556,8 +556,7 @@ public final class MatchButtonHandler implements IButtonInteraction {
     private void safetyUnmatch(ButtonInteraction e, ApplicationContext ctx, String userId, String opaque) {
         MatchComponentIds.SafetyContext safety = MatchComponentIds.parseSafetyContext(opaque);
         if (safety == null || safety.kind() != MatchComponentIds.SafetyKind.CONVERSATION) {
-            e.reply(ExperienceRenderer.toMessage(MatchPresenter.warn(
-                    "Unmatch",
+            e.reply(ExperienceRenderer.toMessage(MatchPresenter.serviceFailed(
                     "Open Safety from a chat to unmatch that connection."
             ))).setEphemeral(true).queue();
             return;
