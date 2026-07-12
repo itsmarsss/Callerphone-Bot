@@ -673,7 +673,8 @@ public final class MatchPresenter {
                         ActionSpec.secondary(
                                 MatchComponentIds.of(MatchComponentIds.ACTION_OPEN_CHATS, "_"),
                                 "Open chats"
-                        )
+                        ),
+                        ActionSpec.secondary(CallComponentIds.again("_"), "Start a call")
                 )
                 .ephemeral(true)
                 .build();
@@ -691,6 +692,11 @@ public final class MatchPresenter {
                         ActionSpec.secondary(
                                 MatchComponentIds.of(MatchComponentIds.ACTION_HOME, "_"),
                                 "Inbox"
+                        ),
+                        ActionSpec.secondary(CallComponentIds.again("_"), "Start a call"),
+                        ActionSpec.secondary(
+                                BottleComponentIds.of(BottleComponentIds.ACTION_FIND, "_"),
+                                "Find a bottle"
                         )
                 )
                 .ephemeral(true)
