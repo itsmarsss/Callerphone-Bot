@@ -849,6 +849,8 @@ public final class MatchPresenter {
                                 MatchComponentIds.of(MatchComponentIds.ACTION_TOGGLE_DIGEST, "_"),
                                 digest ? "Turn digest off" : "Turn digest on"
                         ),
+                        ActionSpec.secondary(MatchComponentIds.of(MatchComponentIds.ACTION_PREMIUM, "_"), "About Premium"),
+                        ActionSpec.secondary(MatchComponentIds.of(MatchComponentIds.ACTION_REWARDS, "_"), "View rewards"),
                         ActionSpec.secondary(MatchComponentIds.of(MatchComponentIds.ACTION_HOME, "_"), "Inbox")
                 )
                 .ephemeral(true)
