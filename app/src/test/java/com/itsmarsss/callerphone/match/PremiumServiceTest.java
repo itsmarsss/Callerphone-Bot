@@ -36,4 +36,12 @@ class PremiumServiceTest {
         assertTrue(premium.canSeeIncomingInterestNames("paid"));
         assertFalse(premium.canSeeIncomingInterestNames("free"));
     }
+
+    @Test
+    void purchasesLiveFalseWithoutConfig() {
+        PremiumService premium = new PremiumService();
+        // Without Callerphone.config premiumSkuId, purchases are not live
+        assertFalse(premium.purchasesLive());
+        assertEquals("", premium.configuredSkuId());
+    }
 }
