@@ -87,7 +87,7 @@ public final class MatchCommand implements ISlashCommand {
                 var user = ctx.enrollment().getOrCreate(userId);
                 e.reply(ExperienceRenderer.toMessage(r.success()
                                 ? MatchPresenter.settings(user.isNotificationsEnabled(), user.isDigestOptIn())
-                                : MatchPresenter.warn("Couldn't update", r.message())
+                                : MatchPresenter.serviceFailed(r.message())
                         ))
                         .setEphemeral(true).queue();
             }
@@ -97,7 +97,7 @@ public final class MatchCommand implements ISlashCommand {
                 var user = ctx.enrollment().getOrCreate(userId);
                 e.reply(ExperienceRenderer.toMessage(r.success()
                                 ? MatchPresenter.settings(user.isNotificationsEnabled(), user.isDigestOptIn())
-                                : MatchPresenter.warn("Couldn't update", r.message())
+                                : MatchPresenter.serviceFailed(r.message())
                         ))
                         .setEphemeral(true).queue();
             }

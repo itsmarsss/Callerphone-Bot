@@ -240,7 +240,7 @@ public final class MatchButtonHandler implements IButtonInteraction {
                 user = ctx.enrollment().getOrCreate(userId);
                 e.reply(ExperienceRenderer.toMessage(r.success()
                         ? MatchPresenter.settings(user.isNotificationsEnabled(), user.isDigestOptIn())
-                        : MatchPresenter.warn("Couldn't update", r.message())
+                        : MatchPresenter.serviceFailed(r.message())
                 )).setEphemeral(true).queue();
             }
             case MatchComponentIds.ACTION_TOGGLE_DIGEST -> {
@@ -250,7 +250,7 @@ public final class MatchButtonHandler implements IButtonInteraction {
                 user = ctx.enrollment().getOrCreate(userId);
                 e.reply(ExperienceRenderer.toMessage(r.success()
                         ? MatchPresenter.settings(user.isNotificationsEnabled(), user.isDigestOptIn())
-                        : MatchPresenter.warn("Couldn't update", r.message())
+                        : MatchPresenter.serviceFailed(r.message())
                 )).setEphemeral(true).queue();
             }
             case MatchComponentIds.ACTION_RESUME -> replyService(e, ctx.profiles().resume(userId));
