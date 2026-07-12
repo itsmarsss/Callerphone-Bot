@@ -391,7 +391,8 @@ public final class MatchPresenter {
                         ActionSpec.primary(MatchComponentIds.of(MatchComponentIds.ACTION_SETUP, "_"), "Continue setup"),
                         ActionSpec.secondary(MatchComponentIds.of(MatchComponentIds.ACTION_PHOTO_MENU, "_"), "Add photo"),
                         ActionSpec.secondary(CallComponentIds.again("_"), "Start a call"),
-                        ActionSpec.secondary(BottleComponentIds.of(BottleComponentIds.ACTION_FIND, "_"), "Find a bottle")
+                        ActionSpec.secondary(BottleComponentIds.of(BottleComponentIds.ACTION_FIND, "_"), "Find a bottle"),
+                        ActionSpec.secondary(MatchComponentIds.of(MatchComponentIds.ACTION_HOME, "_"), "Inbox")
                 )
                 .ephemeral(true)
                 .build();
