@@ -322,6 +322,10 @@ public final class MatchButtonHandler implements IButtonInteraction {
                 ctx.dbExecutor().execute(() -> InboxUi.send(e.getHook(), ctx, userId));
             }
             case MatchComponentIds.ACTION_INBOX_OPEN -> {
+                try {
+                    ctx.analytics().track(userId, "inbox_open_next", null);
+                } catch (Exception ignored) {
+                }
                 e.deferReply(true).queue();
                 ctx.dbExecutor().execute(() ->
                         e.getHook().sendMessage(InboxUi.openNext(ctx, userId)).setEphemeral(true).queue()
