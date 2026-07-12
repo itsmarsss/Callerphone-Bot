@@ -48,7 +48,12 @@ public final class BottlePresenter {
                 .title("Reply added")
                 .description("Your page is on the bottle. Others in the thread will see it in their inbox.")
                 .actions(
-                        ActionSpec.success(BottleComponentIds.of(BottleComponentIds.ACTION_FIND, "_"), "Find another")
+                        ActionSpec.success(BottleComponentIds.of(BottleComponentIds.ACTION_FIND, "_"), "Find another"),
+                        ActionSpec.primary(BottleComponentIds.of(BottleComponentIds.ACTION_SEND, "_"), "Send a bottle"),
+                        ActionSpec.secondary(
+                                com.itsmarsss.callerphone.call.discord.CallComponentIds.again("_"),
+                                "Start a call"
+                        )
                 )
                 .ephemeral(true)
                 .build();
