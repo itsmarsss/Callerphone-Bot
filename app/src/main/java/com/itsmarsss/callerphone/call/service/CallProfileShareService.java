@@ -69,6 +69,7 @@ public final class CallProfileShareService {
                         .queue());
         try {
             ApplicationContext.get().analytics().track(sharerUserId, "call_profile_share", sessionId);
+            ApplicationContext.get().analytics().trackSurface(sharerUserId, "call", "profile_share", sessionId);
         } catch (Exception ignored) {
         }
         return ShareResult.ok("Your profile was sent to the other side.");
