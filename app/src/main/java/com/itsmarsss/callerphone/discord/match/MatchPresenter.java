@@ -322,10 +322,17 @@ public final class MatchPresenter {
                 .title("You're live")
                 .description("Your profile can now appear in Discover.")
                 .footer("Step 3 of 3")
-                .actions(ActionSpec.success(
-                        MatchComponentIds.of(MatchComponentIds.ACTION_START_BROWSE, "_"),
-                        "Start discovering"
-                ))
+                .actions(
+                        ActionSpec.success(
+                                MatchComponentIds.of(MatchComponentIds.ACTION_START_BROWSE, "_"),
+                                "Start discovering"
+                        ),
+                        ActionSpec.secondary(
+                                MatchComponentIds.of(MatchComponentIds.ACTION_PREVIEW_SELF, "_"),
+                                "Preview"
+                        ),
+                        ActionSpec.secondary(CallComponentIds.again("_"), "Start a call")
+                )
                 .ephemeral(true)
                 .build();
     }
