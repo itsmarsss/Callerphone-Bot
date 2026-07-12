@@ -261,6 +261,11 @@ public final class MatchCommand implements ISlashCommand {
                     .setEphemeral(true).queue();
             return;
         }
+        try {
+            ctx.analytics().trackSurface(userId, "match", "join",
+                    result.message() == null ? "" : result.message());
+        } catch (Exception ignored) {
+        }
         if (!"START_ONBOARDING".equals(result.message())) {
             MatchProfile profile = ctx.profiles().getOrCreateDraft(userId);
             if (!ProfileChecklist.readyToSubmit(profile)
