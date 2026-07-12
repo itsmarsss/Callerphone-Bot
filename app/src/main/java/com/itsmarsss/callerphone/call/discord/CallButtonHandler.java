@@ -112,7 +112,7 @@ public final class CallButtonHandler implements IButtonInteraction {
                 var result = games.proposeTtt(parsed.sessionId(), userId, channelId);
                 e.reply(ExperienceRenderer.toMessage(result.success()
                                 ? CallPresenter.success("Challenge sent", result.message())
-                                : CallPresenter.warn("Couldn't challenge", result.message())
+                                : CallPresenter.warnRecover("Couldn't challenge", result.message())
                         ))
                         .setEphemeral(true).queue();
             }
@@ -124,13 +124,13 @@ public final class CallButtonHandler implements IButtonInteraction {
                                     parsed.sessionId(), userId, channelId, e.getUser(), proposer
                             );
                             e.reply(ExperienceRenderer.toMessage(result.success()
-                                            ? CallPresenter.success("Game on", result.message())
-                                            : CallPresenter.warn("Couldn't start", result.message())
+                                            ? CallPresenter.gameStarted(parsed.sessionId())
+                                            : CallPresenter.warnRecover("Couldn't start", result.message())
                                     ))
                                     .setEphemeral(true).queue();
                         },
                         err -> e.reply(ExperienceRenderer.toMessage(
-                                        CallPresenter.warn("Couldn't start", "Proposer not found.")
+                                        CallPresenter.warnRecover("Couldn't start", "Proposer not found.")
                                 ))
                                 .setEphemeral(true).queue()
                 );
@@ -144,7 +144,7 @@ public final class CallButtonHandler implements IButtonInteraction {
                 } catch (Exception ignored) {
                 }
                 e.reply(ExperienceRenderer.toMessage(
-                        CallPresenter.success("Declined", "You can keep chatting on the call.")
+                        CallPresenter.success("Declined", "You can keep chatting — try a prompt or share profile.")
                 )).setEphemeral(true).queue();
             }
             case CallComponentIds.AGAIN -> {
