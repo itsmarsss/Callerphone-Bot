@@ -104,6 +104,7 @@ public final class MatchCommand implements ISlashCommand {
             case "leave" -> {
                 try {
                     ctx.analytics().track(userId, "match_leave_prompt", null);
+                    ctx.analytics().trackSurface(userId, "match", "leave_prompt", null);
                 } catch (Exception ignored) {
                 }
                 e.reply(ExperienceRenderer.toMessage(MatchPresenter.leaveConfirm()))
@@ -112,6 +113,7 @@ public final class MatchCommand implements ISlashCommand {
             case "delete" -> {
                 try {
                     ctx.analytics().track(userId, "match_delete_prompt", null);
+                    ctx.analytics().trackSurface(userId, "match", "delete_prompt", null);
                 } catch (Exception ignored) {
                 }
                 e.reply(ExperienceRenderer.toMessage(MatchPresenter.deleteConfirm()))
