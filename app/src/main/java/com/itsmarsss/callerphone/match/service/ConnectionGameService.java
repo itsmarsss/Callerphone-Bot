@@ -172,7 +172,12 @@ public final class ConnectionGameService {
     private static void track(String userId, String name, String meta) {
         try {
             if (ApplicationContext.isReady()) {
-                ApplicationContext.get().analytics().track(userId, name, meta);
+                var analytics = ApplicationContext.get().analytics();
+                analytics.track(userId, name, meta);
+                String action = name.startsWith("connection_game_")
+                        ? name.substring("connection_game_".length())
+                        : name;
+                analytics.trackSurface(userId, "chat", "game_" + action, meta);
             }
         } catch (Exception ignored) {
         }
