@@ -163,12 +163,39 @@ public final class MatchCommand implements ISlashCommand {
     }
 
     private void handleHome(SlashCommandInteractionEvent e, ApplicationContext ctx, String userId) {
+        var home = buildHome(ctx, userId, e.getUser().getName());
         try {
-            ctx.analytics().track(userId, "home_open", "match");
+            ctx.analytics().track(userId, "home_open", homeStateMeta(home));
         } catch (Exception ignored) {
         }
-        e.reply(ExperienceRenderer.toMessage(buildHome(ctx, userId, e.getUser().getName())))
-                .setEphemeral(true).queue();
+        e.reply(ExperienceRenderer.toMessage(home)).setEphemeral(true).queue();
+    }
+
+    private static String homeStateMeta(com.itsmarsss.callerphone.experience.ExperienceView home) {
+        if (home == null || home.title() == null) {
+            return "unknown";
+        }
+        String t = home.title().toLowerCase();
+        String d = home.description() == null ? "" : home.description().toLowerCase();
+        if (t.contains("callerphone") && d.contains("optional")) {
+            return "not_enrolled";
+        }
+        if (d.contains("finish your profile") || d.contains("next:")) {
+            return "incomplete";
+        }
+        if (d.contains("paused")) {
+            return "paused";
+        }
+        if (d.contains("unread chat") || d.contains("unread update")) {
+            return "unread";
+        }
+        if (d.contains("someone is interested")) {
+            return "interest";
+        }
+        if (d.contains("discoveries are done") || d.contains("refreshes tomorrow")) {
+            return "daily_limit";
+        }
+        return "normal";
     }
 
     public static com.itsmarsss.callerphone.experience.ExperienceView buildHome(
