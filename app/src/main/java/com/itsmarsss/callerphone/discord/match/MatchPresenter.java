@@ -267,22 +267,34 @@ public final class MatchPresenter {
     }
 
     public static ExperienceView incomingInterestFreeTeaser() {
+        List<ActionSpec> actions = new ArrayList<>();
+        try {
+            if (com.itsmarsss.callerphone.Callerphone.config != null) {
+                String sku = com.itsmarsss.callerphone.Callerphone.config.getPremiumSkuId().trim();
+                if (!sku.isBlank()) {
+                    actions.add(ActionSpec.premiumSku(sku));
+                }
+            }
+        } catch (Exception ignored) {
+        }
+        actions.add(ActionSpec.success(
+                MatchComponentIds.of(MatchComponentIds.ACTION_START_BROWSE, "_"),
+                "Keep discovering"
+        ));
+        actions.add(ActionSpec.secondary(
+                MatchComponentIds.of(MatchComponentIds.ACTION_PREMIUM, "_"),
+                "About Premium"
+        ));
+        boolean skuLive = actions.stream().anyMatch(a -> a.style() == ActionSpec.Style.PREMIUM);
         return ExperienceView.builder(ExperienceIntent.SOCIAL)
                 .title("Someone is interested")
                 .description(
                         "Keep discovering — if you're interested too, you'll connect instantly.\n\n"
-                                + "Seeing **who** is interested is a Premium feature (not for sale yet)."
+                                + (skuLive
+                                ? "Seeing **who** is interested is included with Premium."
+                                : "Seeing **who** is interested is a Premium feature (purchases not live yet).")
                 )
-                .actions(
-                        ActionSpec.success(
-                                MatchComponentIds.of(MatchComponentIds.ACTION_START_BROWSE, "_"),
-                                "Keep discovering"
-                        ),
-                        ActionSpec.secondary(
-                                MatchComponentIds.of(MatchComponentIds.ACTION_PREMIUM, "_"),
-                                "About Premium"
-                        )
-                )
+                .actions(actions)
                 .ephemeral(true)
                 .build();
     }
