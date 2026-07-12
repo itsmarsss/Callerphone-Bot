@@ -119,6 +119,14 @@ public final class NotificationService {
         dmIfEnabled(userId, "Still there?",
                 "**" + peerName + "** is waiting.\n_" + opener + "_",
                 conversationId);
+        try {
+            if (com.itsmarsss.callerphone.bootstrap.ApplicationContext.isReady()) {
+                com.itsmarsss.callerphone.bootstrap.ApplicationContext.get().analytics()
+                        .track(userId, "match_inactivity_nudge", conversationId);
+            }
+        } catch (Exception e) {
+            logger.debug("nudge analytics failed: {}", e.getMessage());
+        }
     }
 
     public void notifyWeeklyDigest(String userId, String body) {

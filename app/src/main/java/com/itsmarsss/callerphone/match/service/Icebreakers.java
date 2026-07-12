@@ -12,7 +12,11 @@ public final class Icebreakers {
             "What's something fun you've been into lately?",
             "If we hung out for an hour online, what would we do?",
             "Any show, game, or song on loop right now?",
-            "What's a hobby you'd love to talk about more?"
+            "What's a hobby you'd love to talk about more?",
+            "What's the best thing that happened this week?",
+            "Coffee or late-night snack — what's your go-to?",
+            "What are you looking forward to right now?",
+            "If you could learn one skill instantly, what would it be?"
     );
 
     private Icebreakers() {

@@ -306,12 +306,20 @@ public final class MatchPresenter {
     public static ExperienceView ageGroup() {
         return ExperienceView.builder(ExperienceIntent.PROGRESS)
                 .title("Age group")
-                .description("You'll only meet people in the same group.")
+                .description(
+                        "You'll only meet people in the same group.\n\n"
+                                + "This keeps chats safer and more comfortable."
+                )
                 .footer("Step 1 of 3")
                 .actions(
                         ActionSpec.primary(MatchComponentIds.of(MatchComponentIds.ACTION_AGE_13_15, "_"), "13-15"),
                         ActionSpec.primary(MatchComponentIds.of(MatchComponentIds.ACTION_AGE_16_17, "_"), "16-17"),
-                        ActionSpec.success(MatchComponentIds.of(MatchComponentIds.ACTION_AGE_18_PLUS, "_"), "18+")
+                        ActionSpec.success(MatchComponentIds.of(MatchComponentIds.ACTION_AGE_18_PLUS, "_"), "18+"),
+                        ActionSpec.secondary(CallComponentIds.again("_"), "Call instead"),
+                        ActionSpec.secondary(
+                                BottleComponentIds.of(BottleComponentIds.ACTION_FIND, "_"),
+                                "Find a bottle"
+                        )
                 )
                 .ephemeral(true)
                 .build();

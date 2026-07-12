@@ -99,6 +99,7 @@ public final class MatchMaintenanceJobs {
         );
         if (result.getModifiedCount() > 0) {
             logger.info("Expired {} connect requests", result.getModifiedCount());
+            trackSystem("match_connect_expired", String.valueOf(result.getModifiedCount()));
         }
     }
 
@@ -117,6 +118,17 @@ public final class MatchMaintenanceJobs {
         );
         if (result.getModifiedCount() > 0) {
             logger.info("Archived {} idle Match conversations", result.getModifiedCount());
+            trackSystem("match_idle_archive", String.valueOf(result.getModifiedCount()));
+        }
+    }
+
+    private static void trackSystem(String name, String meta) {
+        try {
+            if (com.itsmarsss.callerphone.bootstrap.ApplicationContext.isReady()) {
+                com.itsmarsss.callerphone.bootstrap.ApplicationContext.get().analytics()
+                        .track("system", name, meta);
+            }
+        } catch (Exception ignored) {
         }
     }
 

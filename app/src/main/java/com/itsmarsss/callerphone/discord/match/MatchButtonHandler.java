@@ -159,7 +159,22 @@ public final class MatchButtonHandler implements IButtonInteraction {
                     e.reply(ExperienceRenderer.toMessage(MatchPresenter.warn("No profile", "Start with `/match join`.")))
                             .setEphemeral(true).queue();
                 } else {
-                    e.replyEmbeds(MatchEmbeds.profileCard(p.get(), true)).setEphemeral(true).queue();
+                    e.replyEmbeds(MatchEmbeds.profileCard(p.get(), true))
+                            .addComponents(ActionRow.of(
+                                    Button.primary(
+                                            MatchComponentIds.of(MatchComponentIds.ACTION_EDIT_MENU, "_"),
+                                            "Edit"
+                                    ),
+                                    Button.success(
+                                            MatchComponentIds.of(MatchComponentIds.ACTION_START_BROWSE, "_"),
+                                            "Discover"
+                                    ),
+                                    Button.secondary(
+                                            MatchComponentIds.of(MatchComponentIds.ACTION_SETTINGS, "_"),
+                                            "Settings"
+                                    )
+                            ))
+                            .setEphemeral(true).queue();
                 }
             }
             case MatchComponentIds.ACTION_EDIT_MENU -> e.reply(ExperienceRenderer.toMessage(MatchPresenter.editMenu()))
