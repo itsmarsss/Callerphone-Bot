@@ -284,13 +284,21 @@ public final class MatchPresenter {
                         "Three quick steps. You can change everything later.\n\n"
                                 + "**1.** Age group\n"
                                 + "**2.** About you\n"
-                                + "**3.** Preview & go live"
+                                + "**3.** Preview & go live\n\n"
+                                + "You'll only meet people in the same age group."
                 )
                 .footer("Step 0 of 3")
-                .actions(ActionSpec.success(
-                        MatchComponentIds.of(MatchComponentIds.ACTION_JOIN_ACCEPT, userId),
-                        "Start setup"
-                ))
+                .actions(
+                        ActionSpec.success(
+                                MatchComponentIds.of(MatchComponentIds.ACTION_JOIN_ACCEPT, userId),
+                                "Start setup"
+                        ),
+                        ActionSpec.secondary(CallComponentIds.again("_"), "Start a call instead"),
+                        ActionSpec.secondary(
+                                BottleComponentIds.of(BottleComponentIds.ACTION_FIND, "_"),
+                                "Find a bottle"
+                        )
+                )
                 .ephemeral(true)
                 .build();
     }

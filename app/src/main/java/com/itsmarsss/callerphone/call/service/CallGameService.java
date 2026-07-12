@@ -66,7 +66,7 @@ public final class CallGameService {
             return Result.fail("Wait for the other side to accept.");
         }
         if (!Users.hasUser(proposerUser.getId()) || !Users.hasUser(acceptorUserId)) {
-            return Result.fail("Both players need to accept Callerphone terms first.");
+            return Result.fail("Both players need to accept Callerphone terms first (`/match join`).");
         }
 
         CallSession session = opt.get();

@@ -123,7 +123,9 @@ public final class MatchConversationService {
         user.setSelectedConversationId(null);
         user.setConversationSelectedAt(null);
         users.save(user);
-        return EnrollmentService.ServiceResult.ok("Chat closed.");
+        return EnrollmentService.ServiceResult.ok(
+                "Chat deselected. Open `/match chats` to pick one again."
+        );
     }
 
     public RelayResult relayDm(String senderId, String content, String sourceMessageId) {
