@@ -456,6 +456,7 @@ public final class MatchCommand implements ISlashCommand {
                 String json = ctx.export().exportJson(userId);
                 byte[] bytes = json.getBytes(java.nio.charset.StandardCharsets.UTF_8);
                 ctx.analytics().track(userId, "match_export", String.valueOf(bytes.length));
+                ctx.analytics().trackSurface(userId, "match", "export", String.valueOf(bytes.length));
                 e.getHook().sendMessage(ExperienceRenderer.toMessage(MatchPresenter.serviceDone(
                                 "Your export is ready. It includes your profile, settings, and conversations covered by the export policy."
                         )))
