@@ -45,6 +45,8 @@ public final class ExportService {
             uo.put("enrolled", u.isEnrolled());
             uo.put("ageCohort", u.getAgeCohort() == null ? null : u.getAgeCohort().code());
             uo.put("notificationsEnabled", u.isNotificationsEnabled());
+            uo.put("digestOptIn", u.isDigestOptIn());
+            uo.put("browseStreakDays", u.getBrowseStreakDays());
             uo.put("createdAt", str(u.getCreatedAt()));
             uo.put("enrolledAt", str(u.getEnrolledAt()));
             root.put("matchUser", uo);
