@@ -94,7 +94,7 @@ public final class ConnectService {
         consents.append(ConsentEvent.of(userId, ConsentType.CONNECTION, "v1", true, conversationId));
         if (other != null) {
             consents.append(ConsentEvent.of(other, ConsentType.CONNECTION, "v1", true, conversationId));
-            notifications.notifyConnectAccepted(other, userId);
+            notifications.notifyConnectAccepted(other, userId, conversationId);
         }
         track(userId, "connect_accept", conversationId);
         return ConnectResult.connected(other);

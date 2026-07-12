@@ -175,6 +175,13 @@ public final class SafetyService {
     }
 
     public void restoreMatch(String moderatorId, String userId, String reason) {
+        try {
+            if (com.itsmarsss.callerphone.bootstrap.ApplicationContext.isReady()) {
+                com.itsmarsss.callerphone.bootstrap.ApplicationContext.get().analytics()
+                        .track(moderatorId, "staff_restore", userId);
+            }
+        } catch (Exception ignored) {
+        }
         for (Sanction sanction : sanctions.findActive(userId)) {
             if (Block.PRODUCT_MATCH.equals(sanction.getProduct()) || Block.PRODUCT_GLOBAL.equals(sanction.getProduct())) {
                 sanction.setActive(false);

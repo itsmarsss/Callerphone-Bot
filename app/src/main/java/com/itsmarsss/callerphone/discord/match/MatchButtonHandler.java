@@ -71,15 +71,20 @@ public final class MatchButtonHandler implements IButtonInteraction {
             }
             case MatchComponentIds.ACTION_CONNECT_ACCEPT -> {
                 var result = ctx.connect().accept(userId, opaque);
-                if (result.success() && result.otherUserId() != null) {
-                    e.reply(ExperienceRenderer.toMessage(MatchPresenter.quietSuccess(
-                            "Connected",
-                            result.message() + "\n\nThey are <@" + result.otherUserId() + ">."
+                if (result.success()) {
+                    String peerName = result.otherUserId() == null
+                            ? "your connection"
+                            : ctx.profiles().find(result.otherUserId())
+                                    .map(MatchProfile::getDisplayName)
+                                    .orElse("your connection");
+                    e.reply(ExperienceRenderer.toMessage(MatchPresenter.connected(
+                            peerName,
+                            null,
+                            opaque
                     ))).setEphemeral(true).queue();
                 } else {
-                    e.reply(ExperienceRenderer.toMessage(result.success()
-                            ? MatchPresenter.quietSuccess("Connected", result.message())
-                            : MatchPresenter.warn("Couldn't complete", result.message())
+                    e.reply(ExperienceRenderer.toMessage(
+                            MatchPresenter.warn("Couldn't complete", result.message())
                     )).setEphemeral(true).queue();
                 }
             }

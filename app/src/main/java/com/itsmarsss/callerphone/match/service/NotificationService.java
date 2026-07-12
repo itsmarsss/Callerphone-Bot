@@ -72,15 +72,26 @@ public final class NotificationService {
     }
 
     public void notifyConnectAccepted(String requesterId, String acceptorId) {
+        notifyConnectAccepted(requesterId, acceptorId, null);
+    }
+
+    public void notifyConnectAccepted(String requesterId, String acceptorId, String conversationId) {
+        String source = conversationId != null && !conversationId.isBlank() ? conversationId : acceptorId;
+        pushInbox(requesterId, SocialInboxService.EntryType.CONNECTION_MESSAGE,
+                source, displayName(acceptorId), "Accepted your connect request");
+        pushInbox(acceptorId, SocialInboxService.EntryType.CONNECTION_MESSAGE,
+                source, displayName(requesterId), "You're connected");
         dmIfEnabled(requesterId, "Connected",
                 "**" + displayName(acceptorId) + "** accepted. <@" + acceptorId + ">",
-                null);
+                conversationId);
         dmIfEnabled(acceptorId, "Connected",
                 "You're connected with **" + displayName(requesterId) + "**. <@" + requesterId + ">",
-                null);
+                conversationId);
     }
 
     public void notifyConnectDeclined(String requesterId) {
+        pushInbox(requesterId, SocialInboxService.EntryType.CONNECTION_MESSAGE,
+                requesterId, "Match", "Connect request declined");
         dmIfEnabled(requesterId, "Request declined", "You can keep chatting here if you want.", null);
     }
 

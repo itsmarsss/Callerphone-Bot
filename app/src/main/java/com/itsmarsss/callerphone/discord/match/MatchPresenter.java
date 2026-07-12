@@ -48,11 +48,21 @@ public final class MatchPresenter {
         if (!enrolled) {
             return ExperienceView.builder(ExperienceIntent.SOCIAL)
                     .title("Callerphone")
-                    .description("Meet someone new or pick up where you left off.")
-                    .actions(ActionSpec.success(
-                            MatchComponentIds.of(MatchComponentIds.ACTION_JOIN_ACCEPT, "_"),
-                            "Create profile"
-                    ))
+                    .description(
+                            "Meet someone new or pick up where you left off.\n\n"
+                                    + "Match is optional — calls and bottles work without a profile."
+                    )
+                    .actions(
+                            ActionSpec.success(
+                                    MatchComponentIds.of(MatchComponentIds.ACTION_JOIN_ACCEPT, "_"),
+                                    "Create profile"
+                            ),
+                            ActionSpec.primary(CallComponentIds.again("_"), "Start a call"),
+                            ActionSpec.secondary(
+                                    BottleComponentIds.of(BottleComponentIds.ACTION_FIND, "_"),
+                                    "Find a bottle"
+                            )
+                    )
                     .ephemeral(true)
                     .build();
         }
@@ -62,7 +72,12 @@ public final class MatchPresenter {
                     .description("Finish your profile so you can appear in Discover.")
                     .actions(
                             ActionSpec.primary(MatchComponentIds.of(MatchComponentIds.ACTION_SETUP, "_"), "Finish setup"),
-                            ActionSpec.secondary(MatchComponentIds.of(MatchComponentIds.ACTION_START_BROWSE, "_"), "Discover")
+                            ActionSpec.secondary(MatchComponentIds.of(MatchComponentIds.ACTION_PHOTO_MENU, "_"), "Add photo"),
+                            ActionSpec.secondary(CallComponentIds.again("_"), "Start a call"),
+                            ActionSpec.secondary(
+                                    BottleComponentIds.of(BottleComponentIds.ACTION_FIND, "_"),
+                                    "Find a bottle"
+                            )
                     )
                     .ephemeral(true)
                     .build();
@@ -73,7 +88,12 @@ public final class MatchPresenter {
                     .description("Your profile is paused. Chats stay available.")
                     .actions(
                             ActionSpec.success(MatchComponentIds.of(MatchComponentIds.ACTION_RESUME, "_"), "Resume profile"),
-                            ActionSpec.secondary(MatchComponentIds.of(MatchComponentIds.ACTION_OPEN_CHATS, "_"), "Open chats")
+                            ActionSpec.secondary(MatchComponentIds.of(MatchComponentIds.ACTION_OPEN_CHATS, "_"), "Open chats"),
+                            ActionSpec.secondary(CallComponentIds.again("_"), "Start a call"),
+                            ActionSpec.secondary(
+                                    BottleComponentIds.of(BottleComponentIds.ACTION_FIND, "_"),
+                                    "Find a bottle"
+                            )
                     )
                     .ephemeral(true)
                     .build();

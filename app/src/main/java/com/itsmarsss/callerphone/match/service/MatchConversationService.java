@@ -108,6 +108,15 @@ public final class MatchConversationService {
 
     public EnrollmentService.ServiceResult stopChat(String userId) {
         MatchUser user = users.findById(userId).orElse(null);
+        if (user != null && user.getSelectedConversationId() != null) {
+            try {
+                if (com.itsmarsss.callerphone.bootstrap.ApplicationContext.isReady()) {
+                    com.itsmarsss.callerphone.bootstrap.ApplicationContext.get().analytics()
+                            .track(userId, "match_stop_chat", user.getSelectedConversationId());
+                }
+            } catch (Exception ignored) {
+            }
+        }
         if (user == null) {
             return EnrollmentService.ServiceResult.fail("Join Match first.");
         }

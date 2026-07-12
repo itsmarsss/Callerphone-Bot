@@ -93,16 +93,24 @@ public class PlayMiniGame implements ISlashCommand {
 
         User opponent = opponentOpt.getAsUser();
         if (!Users.hasUser(opponent.getId())) {
-            e.reply("Your opponent has not yet agreed to our Privacy Policy or Terms of Service.")
-                    .setEphemeral(true).queue();
+            e.reply(ExperienceRenderer.toMessage(ExperienceView.builder(ExperienceIntent.WARNING)
+                    .title("Opponent not ready")
+                    .description("They haven't accepted Callerphone terms yet. Ask them to use `/match join` first.")
+                    .build())).setEphemeral(true).queue();
             return;
         }
         if (e.getUser().getId().equals(opponent.getId())) {
-            e.reply("You cannot challenge yourself to a MiniGame.").setEphemeral(true).queue();
+            e.reply(ExperienceRenderer.toMessage(ExperienceView.builder(ExperienceIntent.WARNING)
+                    .title("Can't challenge yourself")
+                    .description("Pick another player, or start a call / Match chat and run `/game tictactoe` alone.")
+                    .build())).setEphemeral(true).queue();
             return;
         }
         if (opponent.isBot() || opponent.isSystem()) {
-            e.reply("You cannot challenge this player.").setEphemeral(true).queue();
+            e.reply(ExperienceRenderer.toMessage(ExperienceView.builder(ExperienceIntent.WARNING)
+                    .title("Can't challenge this player")
+                    .description("Choose a real person.")
+                    .build())).setEphemeral(true).queue();
             return;
         }
 
