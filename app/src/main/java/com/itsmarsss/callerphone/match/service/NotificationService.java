@@ -2,15 +2,16 @@ package com.itsmarsss.callerphone.match.service;
 
 import com.itsmarsss.callerphone.Callerphone;
 import com.itsmarsss.callerphone.ToolSet;
-import com.itsmarsss.callerphone.discord.match.MatchEmbeds;
+import com.itsmarsss.callerphone.experience.ActionSpec;
+import com.itsmarsss.callerphone.experience.ExperienceIntent;
+import com.itsmarsss.callerphone.experience.ExperienceRenderer;
+import com.itsmarsss.callerphone.experience.ExperienceView;
 import com.itsmarsss.callerphone.identity.MatchUserRepository;
 import com.itsmarsss.callerphone.match.component.MatchComponentIds;
 import com.itsmarsss.callerphone.match.model.MatchProfile;
 import com.itsmarsss.callerphone.match.repository.MatchProfileRepository;
 import com.itsmarsss.callerphone.safety.Report;
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.components.actionrow.ActionRow;
-import net.dv8tion.jda.api.components.buttons.Button;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.sharding.ShardManager;
 import org.slf4j.Logger;
@@ -184,19 +185,19 @@ public final class NotificationService {
             return;
         }
         sm.retrieveUserById(userId).queue(user -> {
-            var msg = user.openPrivateChannel()
-                    .flatMap(ch -> ch.sendMessageEmbeds(MatchEmbeds.simple(title, body)));
+            ExperienceView.Builder vb = ExperienceView.builder(ExperienceIntent.SOCIAL)
+                    .title(title)
+                    .description(body);
             if (conversationId != null && !conversationId.isBlank()) {
-                msg = user.openPrivateChannel().flatMap(ch -> ch.sendMessageEmbeds(MatchEmbeds.simple(title, body))
-                        .setComponents(ActionRow.of(
-                                Button.primary(
-                                        MatchComponentIds.of(MatchComponentIds.ACTION_CHAT_SELECT, conversationId),
-                                        "Open chat"
-                                )
-                        )));
+                vb.actions(ActionSpec.primary(
+                        MatchComponentIds.of(MatchComponentIds.ACTION_CHAT_SELECT, conversationId),
+                        "Open chat"
+                ));
             }
-            msg.queue(ok -> {
-            }, err -> logger.debug("Match DM failed for {}: {}", userId, err.getMessage()));
+            user.openPrivateChannel()
+                    .flatMap(ch -> ch.sendMessage(ExperienceRenderer.toMessage(vb.build())))
+                    .queue(ok -> {
+                    }, err -> logger.debug("Match DM failed for {}: {}", userId, err.getMessage()));
         }, err -> logger.debug("Match DM user missing {}", userId));
     }
 
@@ -209,23 +210,36 @@ public final class NotificationService {
             return;
         }
         sm.retrieveUserById(userId).queue(user -> user.openPrivateChannel().queue(ch ->
-                ch.sendMessageEmbeds(MatchEmbeds.simple(title, body))
-                        .setComponents(ActionRow.of(
-                                Button.success(
-                                        MatchComponentIds.of(MatchComponentIds.ACTION_CONNECT_ACCEPT, conversationId),
-                                        "Accept connect"
-                                ),
-                                Button.danger(
-                                        MatchComponentIds.of(MatchComponentIds.ACTION_CONNECT_DECLINE, conversationId),
-                                        "Decline"
-                                ),
-                                Button.primary(
-                                        MatchComponentIds.of(MatchComponentIds.ACTION_CHAT_SELECT, conversationId),
-                                        "Open chat"
+                ch.sendMessage(ExperienceRenderer.toMessage(
+                        ExperienceView.builder(ExperienceIntent.SOCIAL)
+                                .title(title)
+                                .description(body)
+                                .actions(
+                                        ActionSpec.success(
+                                                MatchComponentIds.of(
+                                                        MatchComponentIds.ACTION_CONNECT_ACCEPT,
+                                                        conversationId
+                                                ),
+                                                "Accept connect"
+                                        ),
+                                        ActionSpec.danger(
+                                                MatchComponentIds.of(
+                                                        MatchComponentIds.ACTION_CONNECT_DECLINE,
+                                                        conversationId
+                                                ),
+                                                "Decline"
+                                        ),
+                                        ActionSpec.primary(
+                                                MatchComponentIds.of(
+                                                        MatchComponentIds.ACTION_CHAT_SELECT,
+                                                        conversationId
+                                                ),
+                                                "Open chat"
+                                        )
                                 )
-                        ))
-                        .queue(ok -> {
-                        }, err -> logger.debug("Connect DM failed for {}", userId))
+                                .build()
+                )).queue(ok -> {
+                }, err -> logger.debug("Connect DM failed for {}", userId))
         ));
     }
 

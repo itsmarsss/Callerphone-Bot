@@ -13,7 +13,6 @@ import com.itsmarsss.callerphone.minigames.games.TicTacToe;
 import com.itsmarsss.callerphone.users.BotUser;
 import com.itsmarsss.database.categories.Users;
 import net.dv8tion.jda.api.entities.User;
-import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder;
 
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
@@ -139,16 +138,12 @@ public final class ConnectionGameService {
         } catch (Exception ignored) {
         }
 
-        ToolSet.sendPrivateGameMessageFrom(proposer,
-                new MessageCreateBuilder()
-                        .setContent("Your Tic-Tac-Toe with @" + acceptor.getName() + " (Match chat).")
-                        .build(),
-                ttt);
+        ToolSet.sendPrivateGameMessageFrom(proposer, ttt.getMessageForFrom(), ttt);
         ToolSet.sendPrivateGameMessageTo(acceptor, ttt.getMessageForTo(), ttt);
 
         ctx.inbox().push(proposer.getId(), SocialInboxService.EntryType.GAME_TURN,
-                conversationId, acceptor.getName(), "Accepted Tic-Tac-Toe — your move is in DMs");
-        return Result.ok("Game started. Check your DMs for the board. The Match chat stays open.");
+                conversationId, acceptor.getName(), "Accepted Tic-Tac-Toe — board is in DMs");
+        return Result.ok("Game started. Boards are in both players' DMs. The Match chat stays open.");
     }
 
     public Result decline(String conversationId, String userId) {
