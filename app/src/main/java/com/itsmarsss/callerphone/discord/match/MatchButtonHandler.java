@@ -276,6 +276,11 @@ public final class MatchButtonHandler implements IButtonInteraction {
             }
             case MatchComponentIds.ACTION_HOME,
                  MatchComponentIds.ACTION_BACK_INBOX -> {
+                try {
+                    ctx.analytics().track(userId, "inbox_open",
+                            MatchComponentIds.ACTION_HOME.equals(action) ? "home_btn" : "back_inbox");
+                } catch (Exception ignored) {
+                }
                 e.deferReply(true).queue();
                 ctx.dbExecutor().execute(() -> InboxUi.send(e.getHook(), ctx, userId));
             }
