@@ -11,18 +11,17 @@ class CallQueueServiceTest {
     void matchesGuildChannelsTogether() {
         CallQueueService q = new CallQueueService();
         q.enqueue(CallEndpoint.guild("a", "u1"));
-        assertEquals(1, q.size(CallEndpoint.EndpointKind.GUILD_TEXT));
+        assertEquals(1, q.size());
         assertTrue(q.dequeuePeer(CallEndpoint.guild("b", "u2")).isPresent());
-        assertEquals(0, q.size(CallEndpoint.EndpointKind.GUILD_TEXT));
+        assertEquals(0, q.size());
     }
 
     @Test
-    void doesNotCrossMatchGuildAndDm() {
+    void matchesGuildAndDmTogether() {
         CallQueueService q = new CallQueueService();
         q.enqueue(CallEndpoint.guild("guild-ch", "u1"));
-        assertTrue(q.dequeuePeer(CallEndpoint.dm("dm-ch", "u2")).isEmpty());
-        assertEquals(1, q.size(CallEndpoint.EndpointKind.GUILD_TEXT));
-        assertEquals(0, q.size(CallEndpoint.EndpointKind.USER_DM));
+        assertTrue(q.dequeuePeer(CallEndpoint.dm("dm-ch", "u2")).isPresent());
+        assertEquals(0, q.size());
     }
 
     @Test
@@ -30,7 +29,7 @@ class CallQueueServiceTest {
         CallQueueService q = new CallQueueService();
         q.enqueue(CallEndpoint.dm("dm-a", "u1"));
         assertTrue(q.dequeuePeer(CallEndpoint.dm("dm-b", "u2")).isPresent());
-        assertEquals(0, q.size(CallEndpoint.EndpointKind.USER_DM));
+        assertEquals(0, q.size());
     }
 
     @Test
@@ -38,5 +37,6 @@ class CallQueueServiceTest {
         CallQueueService q = new CallQueueService();
         q.enqueue(CallEndpoint.dm("dm-a", "u1"));
         assertTrue(q.dequeuePeer(CallEndpoint.dm("dm-b", "u1")).isEmpty());
+        assertTrue(q.dequeuePeer(CallEndpoint.guild("guild-ch", "u1")).isEmpty());
     }
 }

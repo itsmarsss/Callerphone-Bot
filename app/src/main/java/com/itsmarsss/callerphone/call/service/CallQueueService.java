@@ -10,7 +10,7 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
- * Live call queues. Guild channels and DMs are matched within their own kind only.
+ * Single live call queue. Guild channels and bot DMs can pair with each other.
  */
 public final class CallQueueService {
     private static final Duration TIMEOUT = Duration.ofMinutes(5);
@@ -26,7 +26,8 @@ public final class CallQueueService {
     }
 
     /**
-     * Pop the first compatible peer: same endpoint kind, different channel, different user when known.
+     * Pop the first compatible peer: different channel, different user when known.
+     * Guild and DM endpoints may pair freely.
      */
     public Optional<CallQueueEntry> dequeuePeer(CallEndpoint self) {
         cleanup();
@@ -39,9 +40,6 @@ public final class CallQueueService {
             }
             if (entry.isExpired(TIMEOUT)) {
                 it.remove();
-                continue;
-            }
-            if (self.kind() != null && peer.kind() != self.kind()) {
                 continue;
             }
             if (self.starterUserId() != null && !self.starterUserId().isBlank()
@@ -97,31 +95,6 @@ public final class CallQueueService {
             }
         }
         return n;
-    }
-
-    /** Waiting count for a specific kind (guild vs DM). */
-    public int size(CallEndpoint.EndpointKind kind) {
-        int n = 0;
-        for (CallQueueEntry entry : queue) {
-            if (!entry.isExpired(TIMEOUT) && entry.endpoint().kind() == kind) {
-                n++;
-            }
-        }
-        return n;
-    }
-
-    public int position(String channelId, CallEndpoint.EndpointKind kind) {
-        int pos = 1;
-        for (CallQueueEntry entry : queue) {
-            if (entry.isExpired(TIMEOUT) || entry.endpoint().kind() != kind) {
-                continue;
-            }
-            if (entry.endpoint().channelId().equals(channelId)) {
-                return pos;
-            }
-            pos++;
-        }
-        return -1;
     }
 
     public void cleanup() {

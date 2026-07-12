@@ -59,16 +59,16 @@ public final class CallSessionService {
         }
         if (queue.isQueued(channelId)) {
             queue.cleanup();
-            int pos = Math.max(queue.position(channelId, self.kind()), 1);
-            int size = Math.max(queue.size(self.kind()), 1);
+            int pos = Math.max(queue.position(channelId), 1);
+            int size = Math.max(queue.size(), 1);
             return CallResult.alreadyQueued(pos, size);
         }
 
         Optional<CallQueueEntry> peer = queue.dequeuePeer(self);
         if (peer.isEmpty()) {
             queue.enqueue(self);
-            int pos = Math.max(queue.position(channelId, self.kind()), 1);
-            int size = Math.max(queue.size(self.kind()), 1);
+            int pos = Math.max(queue.position(channelId), 1);
+            int size = Math.max(queue.size(), 1);
             return CallResult.queued(pos, size);
         }
 
@@ -90,17 +90,19 @@ public final class CallSessionService {
         byChannel.put(a.channelId(), session);
         byChannel.put(b.channelId(), session);
 
-        ExperienceView connected = self.isDm()
+        // Peer lobby copy depends on their endpoint kind (guild vs DM)
+        ExperienceView peerConnected = a.isDm()
                 ? CallPresenter.connectedDm(session)
                 : CallPresenter.connected(session);
-        publishLobby(chA, a.channelId(), connected);
-        logger.info("Call matched {} <-> {} kind={} source={}",
-                a.channelId(), b.channelId(), self.kind(), session.getSource());
+        publishLobby(chA, a.channelId(), peerConnected);
+        logger.info("Call matched {} ({}) <-> {} ({}) source={}",
+                a.channelId(), a.kind(), b.channelId(), b.kind(), session.getSource());
         return CallResult.matched(session);
     }
 
     public MessageCreateData connectedMessage(CallSession session) {
-        boolean dm = session.getSideA().isDm() || session.getSideB().isDm();
+        // Prefer DM copy if the receiver side is a DM (side B is the slash invoker when matched)
+        boolean dm = session.getSideB().isDm();
         return ExperienceRenderer.toMessage(dm
                 ? CallPresenter.connectedDm(session)
                 : CallPresenter.connected(session));

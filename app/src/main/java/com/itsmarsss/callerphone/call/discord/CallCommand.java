@@ -12,7 +12,7 @@ import net.dv8tion.jda.api.interactions.InteractionContextType;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 
-/** Random chat: guild channel-to-channel or user DM-to-DM. */
+/** Random chat: guild channel and bot DMs share one queue. */
 public final class CallCommand implements ISlashCommand {
     private final CallSessionService calls = CallSessionService.get();
 
@@ -69,7 +69,7 @@ public final class CallCommand implements ISlashCommand {
 
     @Override
     public String getHelp() {
-        return "`/call` start a random chat (server channel or DM)";
+        return "`/call` start a random chat (server channel or DM — same queue)";
     }
 
     @Override

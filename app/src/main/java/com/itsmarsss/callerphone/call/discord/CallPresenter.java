@@ -37,7 +37,8 @@ public final class CallPresenter {
         return ExperienceView.builder(ExperienceIntent.SUCCESS)
                 .title("Call connected")
                 .description(
-                        "Another server picked up. Messages in this channel go to them.\n\n"
+                        "You're linked with another Callerphone chat (server or DM).\n"
+                                + "Messages in this channel go to them.\n\n"
                                 + "Share your profile if you want to keep talking later."
                 )
                 .footer("End anytime with /endcall")
@@ -56,7 +57,7 @@ public final class CallPresenter {
         return ExperienceView.builder(ExperienceIntent.SUCCESS)
                 .title("Call connected")
                 .description(
-                        "You're chatting with someone else through Callerphone.\n"
+                        "You're chatting with someone through Callerphone (they may be in a server or a DM).\n"
                                 + "Messages you send here go to them.\n\n"
                                 + "Share your Match profile if you want to keep talking later."
                 )
@@ -71,7 +72,7 @@ public final class CallPresenter {
     public static ExperienceView queuedDm(int position, int size) {
         return ExperienceView.builder(ExperienceIntent.PROGRESS)
                 .title("Finding a call")
-                .description("You're in the DM queue. We'll connect you with another person automatically.")
+                .description("You're in line. You may connect with someone in a server channel or another DM.")
                 .fields(java.util.List.of(ViewField.of("Queue", "#" + position + " of " + size)))
                 .footer("Leave with /endcall")
                 .build();
@@ -80,7 +81,7 @@ public final class CallPresenter {
     public static ExperienceView waitingDm(int position, int size) {
         return ExperienceView.builder(ExperienceIntent.PROGRESS)
                 .title("Still finding a call")
-                .description("You're still in the DM queue. We'll message you when someone connects.")
+                .description("You're still in line. You may connect with a server channel or another DM.")
                 .fields(java.util.List.of(ViewField.of("Queue", "#" + position + " of " + size)))
                 .footer("Leave with /endcall")
                 .build();
