@@ -49,9 +49,14 @@ public final class PremiumService {
         return isPremium(userId) ? MatchLimits.PREMIUM_DAILY_UNDOS : MatchLimits.FREE_DAILY_UNDOS;
     }
 
-    /** Incoming interest is free for everyone (teaser + full list). */
+    /** Anyone can know interest exists; full name list is Premium. */
     public boolean canSeeIncomingInterest(String userId) {
         return true;
+    }
+
+    /** Full incoming-interest list with names. */
+    public boolean canSeeIncomingInterestNames(String userId) {
+        return isPremium(userId);
     }
 
     public boolean canUndoSkip(String userId) {

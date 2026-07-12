@@ -1,6 +1,7 @@
 package com.itsmarsss.callerphone.call.discord;
 
 import com.itsmarsss.callerphone.call.model.CallEndpoint;
+import com.itsmarsss.callerphone.call.service.CallGameService;
 import com.itsmarsss.callerphone.call.service.CallProfileShareService;
 import com.itsmarsss.callerphone.call.service.CallSessionService;
 import com.itsmarsss.callerphone.experience.ExperienceRenderer;
@@ -15,6 +16,7 @@ import net.dv8tion.jda.api.interactions.components.buttons.ButtonInteraction;
 public final class CallButtonHandler implements IButtonInteraction {
     private final CallSessionService sessions = CallSessionService.get();
     private final CallProfileShareService share = new CallProfileShareService(sessions);
+    private final CallGameService games = new CallGameService(sessions);
 
     @Override
     public void runClick(ButtonInteraction e) {
@@ -75,6 +77,41 @@ public final class CallButtonHandler implements IButtonInteraction {
                     .setEphemeral(true).queue();
             case CallComponentIds.PROMPT -> e.reply(ExperienceRenderer.toMessage(
                             CallPresenter.conversationPrompt(CallPresenter.randomPrompt())
+                    ))
+                    .setEphemeral(true).queue();
+            case CallComponentIds.GAME_SHELF -> e.reply(ExperienceRenderer.toMessage(
+                            CallPresenter.gameShelf(parsed.sessionId())
+                    ))
+                    .setEphemeral(true).queue();
+            case CallComponentIds.GAME_TTT -> {
+                var result = games.proposeTtt(parsed.sessionId(), userId, channelId);
+                e.reply(ExperienceRenderer.toMessage(result.success()
+                                ? CallPresenter.success("Challenge sent", result.message())
+                                : CallPresenter.warn("Couldn't challenge", result.message())
+                        ))
+                        .setEphemeral(true).queue();
+            }
+            case CallComponentIds.GAME_ACCEPT -> {
+                String proposerId = parsed.subjectUserId();
+                e.getJDA().retrieveUserById(proposerId).queue(
+                        proposer -> {
+                            var result = games.acceptTtt(
+                                    parsed.sessionId(), userId, channelId, e.getUser(), proposer
+                            );
+                            e.reply(ExperienceRenderer.toMessage(result.success()
+                                            ? CallPresenter.success("Game on", result.message())
+                                            : CallPresenter.warn("Couldn't start", result.message())
+                                    ))
+                                    .setEphemeral(true).queue();
+                        },
+                        err -> e.reply(ExperienceRenderer.toMessage(
+                                        CallPresenter.warn("Couldn't start", "Proposer not found.")
+                                ))
+                                .setEphemeral(true).queue()
+                );
+            }
+            case CallComponentIds.GAME_DECLINE -> e.reply(ExperienceRenderer.toMessage(
+                            CallPresenter.success("Declined", "You can keep chatting on the call.")
                     ))
                     .setEphemeral(true).queue();
             case CallComponentIds.AGAIN -> startAgain(e, userId, channelId);

@@ -16,6 +16,10 @@ public final class CallComponentIds {
     public static final String END_CANCEL = "endno";
     public static final String PROMPT = "prompt";
     public static final String REPORT_CAT = "repcat";
+    public static final String GAME_SHELF = "gameshelf";
+    public static final String GAME_TTT = "gamett";
+    public static final String GAME_ACCEPT = "gameok";
+    public static final String GAME_DECLINE = "gamedc";
 
     private CallComponentIds() {
     }
@@ -60,6 +64,22 @@ public final class CallComponentIds {
         return HEAD + REPORT_CAT + "-" + sessionId;
     }
 
+    public static String gameShelf(String sessionId) {
+        return HEAD + GAME_SHELF + "-" + sessionId;
+    }
+
+    public static String gameTtt(String sessionId) {
+        return HEAD + GAME_TTT + "-" + sessionId;
+    }
+
+    public static String gameAccept(String sessionId, String proposerUserId) {
+        return HEAD + GAME_ACCEPT + "-" + sessionId + "-" + proposerUserId;
+    }
+
+    public static String gameDecline(String sessionId) {
+        return HEAD + GAME_DECLINE + "-" + sessionId;
+    }
+
     public static boolean isCall(String customId) {
         return customId != null && customId.startsWith(HEAD);
     }
@@ -74,11 +94,10 @@ public final class CallComponentIds {
             return null;
         }
         String action = parts[0];
-        if (LIKE.equals(action) || PASS.equals(action)) {
+        if (LIKE.equals(action) || PASS.equals(action) || GAME_ACCEPT.equals(action)) {
             if (parts.length < 3) {
                 return null;
             }
-            // sessionId may contain hyphens if we used UUID with hyphens - use generateUID without hyphens
             // opaque: sessionId-subjectUserId — subject is last snowflake segment
             String opaque = parts[1] + (parts.length > 2 ? "-" + parts[2] : "");
             int last = opaque.lastIndexOf('-');

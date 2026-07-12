@@ -21,6 +21,7 @@ import com.itsmarsss.callerphone.match.service.MatchMaintenanceJobs;
 import com.itsmarsss.callerphone.match.service.NotificationService;
 import com.itsmarsss.callerphone.match.service.PremiumService;
 import com.itsmarsss.callerphone.match.service.ProfileService;
+import com.itsmarsss.callerphone.match.service.SocialInboxService;
 import com.itsmarsss.callerphone.media.DiscordChannelMediaStorage;
 import com.itsmarsss.callerphone.media.MediaStorage;
 import com.itsmarsss.callerphone.persistence.IndexBootstrap;
@@ -61,6 +62,7 @@ public final class ApplicationContext {
     private final MatchMaintenanceJobs maintenanceJobs;
     private final MediaStorage mediaStorage;
     private final BrowseSessionStore browseSessionStore;
+    private final SocialInboxService socialInboxService;
     private final com.itsmarsss.callerphone.match.repository.MatchDecisionRepository decisionRepository;
 
     private ApplicationContext(MongoDatabase database, String mediaChannelId, JDA jdaOrNull) {
@@ -79,6 +81,7 @@ public final class ApplicationContext {
         var audits = new MongoAuditRepository(database);
         this.browseSessionStore = new BrowseSessionStore(database);
         this.premiumService = new PremiumService();
+        this.socialInboxService = new SocialInboxService();
         this.decisionRepository = decisions;
 
         this.safetyService = new SafetyService(blocks, reports, sanctions, audits, matches, conversations);
@@ -216,6 +219,10 @@ public final class ApplicationContext {
 
     public MediaStorage media() {
         return mediaStorage;
+    }
+
+    public SocialInboxService inbox() {
+        return socialInboxService;
     }
 
     public java.util.List<com.itsmarsss.callerphone.match.model.MatchDecision> incomingLikes(String userId) {

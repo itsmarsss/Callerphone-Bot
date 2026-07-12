@@ -58,17 +58,30 @@ public final class MatchCommand implements ISlashCommand {
                 handleBrowse(e, ctx, userId);
             }
             case "likes" -> handleLikes(e, ctx, userId);
+            case "inbox" -> handleInbox(e, ctx, userId);
             case "chats" -> handleChats(e, ctx, userId);
             case "undo" -> handleUndo(e, ctx, userId);
             case "pause" -> reply(e, ctx.profiles().pause(userId));
             case "resume" -> reply(e, ctx.profiles().resume(userId));
             case "notify" -> {
                 boolean enabled = e.getOption("enabled") == null || e.getOption("enabled").getAsBoolean();
-                reply(e, ctx.enrollment().setNotifications(userId, enabled));
+                var r = ctx.enrollment().setNotifications(userId, enabled);
+                var user = ctx.enrollment().getOrCreate(userId);
+                e.reply(ExperienceRenderer.toMessage(r.success()
+                                ? MatchPresenter.settings(user.isNotificationsEnabled(), user.isDigestOptIn())
+                                : MatchPresenter.warn("Couldn't update", r.message())
+                        ))
+                        .setEphemeral(true).queue();
             }
             case "digest" -> {
                 boolean enabled = e.getOption("enabled") != null && e.getOption("enabled").getAsBoolean();
-                reply(e, ctx.enrollment().setDigestOptIn(userId, enabled));
+                var r = ctx.enrollment().setDigestOptIn(userId, enabled);
+                var user = ctx.enrollment().getOrCreate(userId);
+                e.reply(ExperienceRenderer.toMessage(r.success()
+                                ? MatchPresenter.settings(user.isNotificationsEnabled(), user.isDigestOptIn())
+                                : MatchPresenter.warn("Couldn't update", r.message())
+                        ))
+                        .setEphemeral(true).queue();
             }
             case "leave" -> e.reply(ExperienceRenderer.toMessage(MatchPresenter.leaveConfirm()))
                     .setEphemeral(true).queue();
@@ -93,25 +106,40 @@ public final class MatchCommand implements ISlashCommand {
     }
 
     private void handleHome(SlashCommandInteractionEvent e, ApplicationContext ctx, String userId) {
+        e.reply(ExperienceRenderer.toMessage(buildHome(ctx, userId, e.getUser().getName())))
+                .setEphemeral(true).queue();
+    }
+
+    static com.itsmarsss.callerphone.experience.ExperienceView buildHome(
+            ApplicationContext ctx,
+            String userId,
+            String fallbackName
+    ) {
         var user = ctx.enrollment().getOrCreate(userId);
         Optional<MatchProfile> profile = ctx.profiles().find(userId);
         boolean enrolled = user.isEnrolled();
+        boolean paused = profile.isPresent()
+                && profile.get().getState() == com.itsmarsss.callerphone.match.model.ProfileState.PAUSED;
         boolean live = profile.isPresent()
                 && profile.get().getState() == com.itsmarsss.callerphone.match.model.ProfileState.ACTIVE
                 && ProfileChecklist.readyToSubmit(profile.get());
-        String name = profile.map(MatchProfile::getDisplayName).orElse(e.getUser().getName());
+        String name = profile.map(MatchProfile::getDisplayName).orElse(fallbackName);
         int unread = 0;
         long left = 0;
-        if (live) {
-            MatchProfile p = profile.get();
-            ctx.profiles().resetDailyCountersIfNeeded(p);
-            left = Math.max(0, ctx.premium().dailyDiscoveries(userId) - p.getDiscoveryViewsToday());
+        int incoming = 0;
+        int inboxUnread = ctx.inbox().unreadCount(userId);
+        if (live || paused) {
+            if (profile.isPresent()) {
+                MatchProfile p = profile.get();
+                ctx.profiles().resetDailyCountersIfNeeded(p);
+                left = Math.max(0, ctx.premium().dailyDiscoveries(userId) - p.getDiscoveryViewsToday());
+            }
             for (MatchConversation chat : ctx.conversations().list(userId)) {
                 unread += chat.unreadFor(userId);
             }
+            incoming = ctx.incomingLikes(userId).size();
         }
-        e.reply(ExperienceRenderer.toMessage(MatchPresenter.home(name, unread, left, live, enrolled)))
-                .setEphemeral(true).queue();
+        return MatchPresenter.home(name, unread, left, live, enrolled, paused, incoming, inboxUnread);
     }
 
     private void handleJoin(SlashCommandInteractionEvent e, ApplicationContext ctx, String userId) {
@@ -176,6 +204,12 @@ public final class MatchCommand implements ISlashCommand {
                     .setEphemeral(true).queue();
             return;
         }
+        // Plan §7: free path is a teaser; Premium reveals names
+        if (!ctx.premium().canSeeIncomingInterestNames(userId)) {
+            e.reply(ExperienceRenderer.toMessage(MatchPresenter.incomingInterestFreeTeaser()))
+                    .setEphemeral(true).queue();
+            return;
+        }
         StringBuilder sb = new StringBuilder();
         int i = 1;
         for (var d : incoming) {
@@ -188,6 +222,17 @@ public final class MatchCommand implements ISlashCommand {
         sb.append("\nDiscover to express interest back.");
         e.reply(ExperienceRenderer.toMessage(MatchPresenter.incomingInterestList(sb.toString())))
                 .setEphemeral(true).queue();
+    }
+
+    private void handleInbox(SlashCommandInteractionEvent e, ApplicationContext ctx, String userId) {
+        var entries = ctx.inbox().list(userId, 15);
+        List<String> lines = new ArrayList<>();
+        for (var entry : entries) {
+            String mark = entry.unread() ? "● " : "  ";
+            lines.add(mark + "**" + entry.actorDisplay() + "** · " + entry.type().name().toLowerCase().replace('_', ' ')
+                    + "\n" + entry.preview());
+        }
+        e.reply(ExperienceRenderer.toMessage(MatchPresenter.inbox(lines))).setEphemeral(true).queue();
     }
 
     private void handleChats(SlashCommandInteractionEvent e, ApplicationContext ctx, String userId) {
@@ -375,7 +420,7 @@ public final class MatchCommand implements ISlashCommand {
     public String getHelp() {
         return "`/match join` get started\n"
                 + "`/match browse` discover people\n"
-                + "`/match profile` · `/match likes` · `/match chats`\n"
+                + "`/match chats` · `/match likes` · `/match inbox`\n"
                 + "`/match safety` block, report, unmatch";
     }
 
@@ -393,6 +438,7 @@ public final class MatchCommand implements ISlashCommand {
                         new SubcommandData("edit", "Edit profile"),
                         new SubcommandData("browse", "Discover people"),
                         new SubcommandData("likes", "Incoming interest"),
+                        new SubcommandData("inbox", "Unified social inbox"),
                         new SubcommandData("undo", "Undo your last skip"),
                         new SubcommandData("chats", "List or select mediated chats")
                                 .addOptions(new OptionData(OptionType.STRING, "action", "list or stop", false)

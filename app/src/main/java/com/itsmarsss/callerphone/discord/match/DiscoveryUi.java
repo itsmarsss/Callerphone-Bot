@@ -95,7 +95,7 @@ public final class DiscoveryUi {
     ) {
         DiscoveryService.DiscoveryResult next = ctx.discovery().next(userId);
         if (!next.success()) {
-            hook.sendMessage(ExperienceRenderer.toMessage(MatchPresenter.emptyDiscover(next.message())))
+            hook.sendMessage(ExperienceRenderer.toMessage(MatchPresenter.emptyDiscoverWithFallback(next.message())))
                     .setEphemeral(ephemeral)
                     .queue();
             return;

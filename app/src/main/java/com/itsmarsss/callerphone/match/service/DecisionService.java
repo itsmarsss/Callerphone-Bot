@@ -117,7 +117,20 @@ public final class DecisionService {
             String peerName = profiles.find(session.subjectId())
                     .map(MatchProfile::getDisplayName)
                     .orElse("your match");
+            String actorName = viewer.getDisplayName() == null || viewer.getDisplayName().isBlank()
+                    ? "Someone"
+                    : viewer.getDisplayName();
             String opener = Icebreakers.forPair(viewer, profiles.find(session.subjectId()).orElse(null));
+            try {
+                if (com.itsmarsss.callerphone.bootstrap.ApplicationContext.isReady()) {
+                    var inbox = com.itsmarsss.callerphone.bootstrap.ApplicationContext.get().inbox();
+                    inbox.push(actorId, SocialInboxService.EntryType.CONNECTION_MESSAGE,
+                            created.conversationId(), peerName, "You connected");
+                    inbox.push(session.subjectId(), SocialInboxService.EntryType.CONNECTION_MESSAGE,
+                            created.conversationId(), actorName, "You connected");
+                }
+            } catch (Exception ignored) {
+            }
             return DecisionResult.mutual(
                     "You connected with **" + peerName + "**.\n_" + opener + "_",
                     created.match(),
@@ -127,6 +140,27 @@ public final class DecisionService {
 
         if (type == DecisionType.INTERESTED) {
             analytics.track(actorId, "match_interested", session.subjectId());
+            String actorName = viewer.getDisplayName() == null || viewer.getDisplayName().isBlank()
+                    ? "Someone"
+                    : viewer.getDisplayName();
+            // Inbox for subject (incoming interest) — free teaser path can surface this
+            if (notifications != null) {
+                // notifications already handle mutual; inbox is separate
+            }
+            try {
+                // Soft dependency: ApplicationContext may wire inbox
+                if (com.itsmarsss.callerphone.bootstrap.ApplicationContext.isReady()) {
+                    com.itsmarsss.callerphone.bootstrap.ApplicationContext.get().inbox().push(
+                            session.subjectId(),
+                            SocialInboxService.EntryType.INCOMING_INTEREST,
+                            actorId,
+                            actorName,
+                            "Expressed interest in you"
+                    );
+                }
+            } catch (Exception ignored) {
+                // non-fatal
+            }
             return DecisionResult.interested("Interest sent privately");
         }
         analytics.track(actorId, "match_skip", session.subjectId());

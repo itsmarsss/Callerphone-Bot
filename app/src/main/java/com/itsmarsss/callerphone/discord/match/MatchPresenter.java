@@ -18,12 +18,29 @@ public final class MatchPresenter {
     private MatchPresenter() {
     }
 
+    /**
+     * Plan patterns §2 state priority:
+     * NOT_ENROLLED → INCOMPLETE → PAUSED → UNREAD → INTEREST → NORMAL → DAILY_LIMIT
+     */
     public static ExperienceView home(
             String displayName,
             int unreadChats,
             long discoveriesLeft,
             boolean profileLive,
             boolean enrolled
+    ) {
+        return home(displayName, unreadChats, discoveriesLeft, profileLive, enrolled, false, 0, 0);
+    }
+
+    public static ExperienceView home(
+            String displayName,
+            int unreadChats,
+            long discoveriesLeft,
+            boolean profileLive,
+            boolean enrolled,
+            boolean paused,
+            int incomingInterest,
+            int inboxUnread
     ) {
         if (!enrolled) {
             return ExperienceView.builder(ExperienceIntent.SOCIAL)
@@ -36,7 +53,7 @@ public final class MatchPresenter {
                     .ephemeral(true)
                     .build();
         }
-        if (!profileLive) {
+        if (!profileLive && !paused) {
             return ExperienceView.builder(ExperienceIntent.PROGRESS)
                     .title(greeting(displayName))
                     .description("Finish your profile so you can appear in Discover.")
@@ -47,24 +64,105 @@ public final class MatchPresenter {
                     .ephemeral(true)
                     .build();
         }
+        if (paused) {
+            return ExperienceView.builder(ExperienceIntent.NEUTRAL)
+                    .title(greeting(displayName))
+                    .description("Your profile is paused. Chats stay available.")
+                    .actions(
+                            ActionSpec.success(MatchComponentIds.of(MatchComponentIds.ACTION_RESUME, "_"), "Resume profile"),
+                            ActionSpec.secondary(MatchComponentIds.of(MatchComponentIds.ACTION_OPEN_CHATS, "_"), "Open chats")
+                    )
+                    .ephemeral(true)
+                    .build();
+        }
+        if (unreadChats > 0) {
+            return ExperienceView.builder(ExperienceIntent.SOCIAL)
+                    .title(greeting(displayName))
+                    .description(unreadChats + " unread chat" + (unreadChats == 1 ? "" : "s")
+                            + " · " + discoveriesLeft + " discoveries left")
+                    .actions(
+                            ActionSpec.primary(MatchComponentIds.of(MatchComponentIds.ACTION_OPEN_CHATS, "_"), "Open chats"),
+                            ActionSpec.success(MatchComponentIds.of(MatchComponentIds.ACTION_START_BROWSE, "_"), "Discover people")
+                    )
+                    .ephemeral(true)
+                    .build();
+        }
+        if (incomingInterest > 0) {
+            return ExperienceView.builder(ExperienceIntent.SOCIAL)
+                    .title(greeting(displayName))
+                    .description("Someone is interested. Keep discovering — if you're interested too, you'll connect.")
+                    .actions(
+                            ActionSpec.success(MatchComponentIds.of(MatchComponentIds.ACTION_START_BROWSE, "_"), "Keep discovering"),
+                            ActionSpec.secondary(MatchComponentIds.of(MatchComponentIds.ACTION_OPEN_LIKES, "_"), "Incoming interest")
+                    )
+                    .ephemeral(true)
+                    .build();
+        }
+        if (discoveriesLeft <= 0) {
+            return ExperienceView.builder(ExperienceIntent.DISCOVERY)
+                    .title(greeting(displayName))
+                    .description("Today's discoveries are done. Your free set refreshes tomorrow.")
+                    .actions(
+                            ActionSpec.primary(MatchComponentIds.of(MatchComponentIds.ACTION_OPEN_CHATS, "_"), "Open chats"),
+                            ActionSpec.secondary(MatchComponentIds.of(MatchComponentIds.ACTION_HOME, "_"), "Inbox")
+                    )
+                    .ephemeral(true)
+                    .build();
+        }
 
         List<String> bits = new ArrayList<>();
-        if (unreadChats > 0) {
-            bits.add(unreadChats + " unread chat" + (unreadChats == 1 ? "" : "s"));
-        }
         bits.add(discoveriesLeft + " discoveries left today");
-
-        ActionSpec primary = unreadChats > 0
-                ? ActionSpec.primary(MatchComponentIds.of(MatchComponentIds.ACTION_OPEN_CHATS, "_"), "Open chats")
-                : ActionSpec.success(MatchComponentIds.of(MatchComponentIds.ACTION_START_BROWSE, "_"), "Discover people");
-        ActionSpec secondary = unreadChats > 0
-                ? ActionSpec.success(MatchComponentIds.of(MatchComponentIds.ACTION_START_BROWSE, "_"), "Discover people")
-                : ActionSpec.secondary(MatchComponentIds.of(MatchComponentIds.ACTION_OPEN_CHATS, "_"), "Open chats");
-
+        if (inboxUnread > 0) {
+            bits.add(inboxUnread + " inbox");
+        }
         return ExperienceView.builder(ExperienceIntent.SOCIAL)
                 .title(greeting(displayName))
                 .description(String.join(" · ", bits))
-                .actions(primary, secondary)
+                .actions(
+                        ActionSpec.success(MatchComponentIds.of(MatchComponentIds.ACTION_START_BROWSE, "_"), "Discover people"),
+                        ActionSpec.secondary(MatchComponentIds.of(MatchComponentIds.ACTION_OPEN_CHATS, "_"), "Open chats"),
+                        ActionSpec.secondary(MatchComponentIds.of(MatchComponentIds.ACTION_HOME, "_"), "Inbox")
+                )
+                .ephemeral(true)
+                .build();
+    }
+
+    public static ExperienceView inbox(List<String> lines) {
+        String body = lines == null || lines.isEmpty()
+                ? "You're all caught up. New connection messages and interest will show here."
+                : String.join("\n\n", lines);
+        return ExperienceView.builder(ExperienceIntent.SOCIAL)
+                .title("Your inbox")
+                .description(body)
+                .actions(
+                        ActionSpec.success(MatchComponentIds.of(MatchComponentIds.ACTION_START_BROWSE, "_"), "Discover"),
+                        ActionSpec.secondary(MatchComponentIds.of(MatchComponentIds.ACTION_OPEN_CHATS, "_"), "Open chats")
+                )
+                .ephemeral(true)
+                .build();
+    }
+
+    public static ExperienceView emptyDiscoverWithFallback(String message) {
+        return ExperienceView.builder(ExperienceIntent.DISCOVERY)
+                .title("You're caught up")
+                .description((message == null || message.isBlank() ? EmptyStates.noCandidates() : message)
+                        + "\n\nWant something else while you wait?")
+                .actions(
+                        ActionSpec.primary(MatchComponentIds.of(MatchComponentIds.ACTION_OPEN_CHATS, "_"), "Open chats"),
+                        ActionSpec.secondary(MatchComponentIds.of(MatchComponentIds.ACTION_SETUP, "_"), "Edit profile")
+                )
+                .ephemeral(true)
+                .build();
+    }
+
+    public static ExperienceView incomingInterestFreeTeaser() {
+        return ExperienceView.builder(ExperienceIntent.SOCIAL)
+                .title("Someone is interested")
+                .description("Keep discovering — if you're interested too, you'll connect instantly.")
+                .actions(ActionSpec.success(
+                        MatchComponentIds.of(MatchComponentIds.ACTION_START_BROWSE, "_"),
+                        "Keep discovering"
+                ))
                 .ephemeral(true)
                 .build();
     }

@@ -45,6 +45,7 @@ public final class CallPresenter {
                 .footer("Callerphone Call")
                 .actions(
                         ActionSpec.primary(CallComponentIds.prompt(sessionId), "Conversation prompt"),
+                        ActionSpec.secondary(CallComponentIds.gameShelf(sessionId), "Start a game"),
                         ActionSpec.success(CallComponentIds.share(sessionId), "Share profile"),
                         ActionSpec.danger(CallComponentIds.report(sessionId), "Report")
                 )
@@ -66,8 +67,31 @@ public final class CallPresenter {
                 .footer("Callerphone Call")
                 .actions(
                         ActionSpec.primary(CallComponentIds.prompt(sessionId), "Conversation prompt"),
+                        ActionSpec.secondary(CallComponentIds.gameShelf(sessionId), "Start a game"),
                         ActionSpec.success(CallComponentIds.share(sessionId), "Share profile"),
                         ActionSpec.danger(CallComponentIds.report(sessionId), "Report")
+                )
+                .build();
+    }
+
+    public static ExperienceView gameShelf(String sessionId) {
+        return ExperienceView.builder(ExperienceIntent.SOCIAL)
+                .title("Play during this call")
+                .description("Only ready games are listed.\n\n**Tic-Tac-Toe** · Ready")
+                .actions(
+                        ActionSpec.success(CallComponentIds.gameTtt(sessionId), "Play Tic-Tac-Toe"),
+                        ActionSpec.secondary(CallComponentIds.prompt(sessionId), "Back to prompts")
+                )
+                .build();
+    }
+
+    public static ExperienceView gameProposal(String sessionId, String proposerUserId) {
+        return ExperienceView.builder(ExperienceIntent.SOCIAL)
+                .title("Game challenge")
+                .description("The other side wants to play **Tic-Tac-Toe**.\nThe call stays connected.")
+                .actions(
+                        ActionSpec.success(CallComponentIds.gameAccept(sessionId, proposerUserId), "Play"),
+                        ActionSpec.secondary(CallComponentIds.gameDecline(sessionId), "Not now")
                 )
                 .build();
     }

@@ -124,6 +124,50 @@ public final class MatchButtonHandler implements IButtonInteraction {
             case MatchComponentIds.ACTION_EDIT_MENU -> e.reply(ExperienceRenderer.toMessage(MatchPresenter.editMenu()))
                     .setEphemeral(true).queue();
             case MatchComponentIds.ACTION_RESUME -> replyService(e, ctx.profiles().resume(userId));
+            case MatchComponentIds.ACTION_OPEN_LIKES -> {
+                e.deferReply(true).queue();
+                ctx.dbExecutor().execute(() -> {
+                    var incoming = ctx.incomingLikes(userId);
+                    if (incoming.isEmpty()) {
+                        e.getHook().sendMessage(ExperienceRenderer.toMessage(MatchPresenter.incomingInterestEmpty()))
+                                .setEphemeral(true).queue();
+                        return;
+                    }
+                    if (!ctx.premium().canSeeIncomingInterestNames(userId)) {
+                        e.getHook().sendMessage(ExperienceRenderer.toMessage(MatchPresenter.incomingInterestFreeTeaser()))
+                                .setEphemeral(true).queue();
+                        return;
+                    }
+                    StringBuilder sb = new StringBuilder();
+                    int i = 1;
+                    for (var d : incoming) {
+                        String name = ctx.profiles().find(d.viewerId()).map(MatchProfile::getDisplayName).orElse("Someone");
+                        sb.append("**").append(i++).append(".** ").append(name).append("\n");
+                        if (i > 15) {
+                            break;
+                        }
+                    }
+                    e.getHook().sendMessage(ExperienceRenderer.toMessage(
+                                    MatchPresenter.incomingInterestList(sb + "\nDiscover to express interest back.")
+                            ))
+                            .setEphemeral(true).queue();
+                });
+            }
+            case MatchComponentIds.ACTION_HOME -> {
+                e.deferReply(true).queue();
+                ctx.dbExecutor().execute(() -> {
+                    var entries = ctx.inbox().list(userId, 15);
+                    List<String> lines = new ArrayList<>();
+                    for (var entry : entries) {
+                        String mark = entry.unread() ? "● " : "  ";
+                        lines.add(mark + "**" + entry.actorDisplay() + "** · "
+                                + entry.type().name().toLowerCase().replace('_', ' ')
+                                + "\n" + entry.preview());
+                    }
+                    e.getHook().sendMessage(ExperienceRenderer.toMessage(MatchPresenter.inbox(lines)))
+                            .setEphemeral(true).queue();
+                });
+            }
             default -> e.reply(ExperienceRenderer.toMessage(MatchPresenter.expired())).setEphemeral(true).queue();
         }
     }
