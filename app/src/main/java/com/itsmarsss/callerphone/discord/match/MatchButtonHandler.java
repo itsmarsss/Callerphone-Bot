@@ -156,6 +156,10 @@ public final class MatchButtonHandler implements IButtonInteraction {
             case MatchComponentIds.ACTION_LEAVE_CONFIRM -> {
                 var result = ctx.deletion().leaveAndSoftDelete(userId);
                 if (result.success()) {
+                    try {
+                        ctx.analytics().track(userId, "match_leave", "confirm");
+                    } catch (Exception ignored) {
+                    }
                     e.reply(ExperienceRenderer.toMessage(MatchPresenter.home(
                             e.getUser().getName(), 0, 0, false, false
                     ))).setEphemeral(true).queue();
@@ -169,6 +173,10 @@ public final class MatchButtonHandler implements IButtonInteraction {
             case MatchComponentIds.ACTION_DELETE_CONFIRM -> {
                 var result = ctx.deletion().hardDeleteProfileContent(userId);
                 if (result.success()) {
+                    try {
+                        ctx.analytics().track(userId, "match_delete", "confirm");
+                    } catch (Exception ignored) {
+                    }
                     e.reply(ExperienceRenderer.toMessage(MatchPresenter.serviceDone(
                             result.message() + "\n\nYou can start fresh with **Create profile** anytime."
                     ))).setEphemeral(true).queue();
