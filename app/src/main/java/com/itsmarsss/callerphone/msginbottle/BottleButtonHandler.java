@@ -88,8 +88,9 @@ public final class BottleButtonHandler implements IButtonInteraction {
         Cooldown.setMIBFindCoolDown(userId);
         try {
             if (com.itsmarsss.callerphone.bootstrap.ApplicationContext.isReady()) {
-                com.itsmarsss.callerphone.bootstrap.ApplicationContext.get().analytics()
-                        .track(userId, "bottle_find", bottle.getId());
+                var analytics = com.itsmarsss.callerphone.bootstrap.ApplicationContext.get().analytics();
+                analytics.track(userId, "bottle_find", bottle.getId());
+                analytics.trackSurface(userId, "bottle", "find", bottle.getId());
             }
         } catch (Exception ignored) {
         }

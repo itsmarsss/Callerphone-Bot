@@ -194,7 +194,9 @@ public class SendModal implements IModalInteraction {
     private static void track(String userId, String name, String meta) {
         try {
             if (ApplicationContext.isReady()) {
-                ApplicationContext.get().analytics().track(userId, name, meta);
+                var analytics = ApplicationContext.get().analytics();
+                analytics.track(userId, name, meta);
+                analytics.trackSurface(userId, "bottle", name.replace("bottle_", ""), meta);
             }
         } catch (Exception ignored) {
         }
