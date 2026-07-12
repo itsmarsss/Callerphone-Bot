@@ -61,8 +61,24 @@ public final class MatchCommand implements ISlashCommand {
             case "inbox" -> handleInbox(e, ctx, userId);
             case "chats" -> handleChats(e, ctx, userId);
             case "undo" -> handleUndo(e, ctx, userId);
-            case "pause" -> reply(e, ctx.profiles().pause(userId));
-            case "resume" -> reply(e, ctx.profiles().resume(userId));
+            case "pause" -> {
+                EnrollmentService.ServiceResult r = ctx.profiles().pause(userId);
+                if (r.success()) {
+                    e.reply(ExperienceRenderer.toMessage(MatchPresenter.home(
+                            e.getUser().getName(), 0, 0, false, true, true, 0, 0
+                    ))).setEphemeral(true).queue();
+                } else {
+                    reply(e, r);
+                }
+            }
+            case "resume" -> {
+                EnrollmentService.ServiceResult r = ctx.profiles().resume(userId);
+                if (r.success()) {
+                    e.reply(ExperienceRenderer.toMessage(MatchPresenter.liveReady())).setEphemeral(true).queue();
+                } else {
+                    reply(e, r);
+                }
+            }
             case "notify" -> {
                 boolean enabled = e.getOption("enabled") == null || e.getOption("enabled").getAsBoolean();
                 var r = ctx.enrollment().setNotifications(userId, enabled);

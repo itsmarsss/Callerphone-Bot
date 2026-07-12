@@ -267,7 +267,10 @@ public final class ProfileService {
             profile.setState(ProfileState.PAUSED);
             profile.touch();
             profiles.save(profile);
-            return EnrollmentService.ServiceResult.ok("Profile paused.");
+            if (analytics != null) {
+                analytics.track(userId, "match_profile_pause", null);
+            }
+            return EnrollmentService.ServiceResult.ok("Profile paused. Chats stay available.");
         }
         return EnrollmentService.ServiceResult.fail("Nothing to pause.");
     }
@@ -289,6 +292,9 @@ public final class ProfileService {
         profile.setState(ProfileState.ACTIVE);
         profile.touch();
         profiles.save(profile);
+        if (analytics != null) {
+            analytics.track(userId, "match_profile_resume", null);
+        }
         return EnrollmentService.ServiceResult.ok("You're live again.");
     }
 
