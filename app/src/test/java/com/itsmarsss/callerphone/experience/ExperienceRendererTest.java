@@ -56,4 +56,19 @@ class ExperienceRendererTest {
         assertEquals(ExperienceIntent.WARNING, view.intent());
         assertEquals("Gone", view.title());
     }
+
+    @Test
+    void premiumSkuActionRendersComponent() {
+        ExperienceView view = ExperienceView.builder(ExperienceIntent.PREMIUM)
+                .title("Premium")
+                .description("Compare plans")
+                .actions(
+                        ActionSpec.premiumSku("123456789012345678"),
+                        ActionSpec.success("m-v1-start_browse-_", "Discover")
+                )
+                .build();
+        MessageCreateData data = ExperienceRenderer.toMessage(view);
+        assertFalse(data.getEmbeds().isEmpty());
+        assertFalse(data.getComponents().isEmpty());
+    }
 }
