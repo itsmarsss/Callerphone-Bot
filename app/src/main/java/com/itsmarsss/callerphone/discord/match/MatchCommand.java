@@ -447,8 +447,8 @@ public final class MatchCommand implements ISlashCommand {
 
     private static void reply(SlashCommandInteractionEvent e, EnrollmentService.ServiceResult result) {
         e.reply(ExperienceRenderer.toMessage(result.success()
-                ? MatchPresenter.quietSuccess("Done", result.message())
-                : MatchPresenter.warn("Couldn't complete", result.message())
+                ? MatchPresenter.serviceDone(result.message())
+                : MatchPresenter.serviceFailed(result.message())
         )).setEphemeral(true).queue();
     }
 
