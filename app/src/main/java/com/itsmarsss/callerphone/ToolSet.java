@@ -71,6 +71,24 @@ public final class ToolSet {
         }
     }
 
+    /**
+     * Guild text channel or cached private channel by id (for DM calls).
+     */
+    public static net.dv8tion.jda.api.entities.channel.middleman.MessageChannel getMessageChannel(String id) {
+        if (id == null || id.isEmpty() || Callerphone.sdMgr == null) {
+            return null;
+        }
+        try {
+            TextChannel text = getTextChannel(id);
+            if (text != null) {
+                return text;
+            }
+            return Callerphone.sdMgr.getPrivateChannelById(id);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
     public static RestAction<User> getUser(String id) {
         if (id == null || id.isEmpty() || Callerphone.sdMgr == null) {
             return null;

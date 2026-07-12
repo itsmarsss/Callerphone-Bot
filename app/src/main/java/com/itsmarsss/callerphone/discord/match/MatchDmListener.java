@@ -1,7 +1,7 @@
 package com.itsmarsss.callerphone.discord.match;
 
 import com.itsmarsss.callerphone.bootstrap.ApplicationContext;
-import com.itsmarsss.callerphone.discord.match.MatchEmbeds;
+import com.itsmarsss.callerphone.call.service.CallSessionService;
 import com.itsmarsss.callerphone.match.service.MatchConversationService;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
@@ -19,6 +19,10 @@ public final class MatchDmListener extends ListenerAdapter {
             return;
         }
         if (event.getChannelType() != ChannelType.PRIVATE) {
+            return;
+        }
+        // Active DM calls own the private channel; do not relay as Match chat
+        if (CallSessionService.get().isInCall(event.getChannel().getId())) {
             return;
         }
         if (!ApplicationContext.isReady()) {

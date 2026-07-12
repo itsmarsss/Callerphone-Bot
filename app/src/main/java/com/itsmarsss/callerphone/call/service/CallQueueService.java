@@ -9,7 +9,9 @@ import java.util.Iterator;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-/** Single live queue — no mode partitioning (anon/FF removed). */
+/**
+ * Live call queues. Guild channels and DMs are matched within their own kind only.
+ */
 public final class CallQueueService {
     private static final Duration TIMEOUT = Duration.ofMinutes(5);
     private final ConcurrentLinkedQueue<CallQueueEntry> queue = new ConcurrentLinkedQueue<>();
@@ -20,15 +22,30 @@ public final class CallQueueService {
     }
 
     public Optional<CallQueueEntry> dequeueOther(String channelId) {
+        return dequeuePeer(CallEndpoint.guild(channelId, null));
+    }
+
+    /**
+     * Pop the first compatible peer: same endpoint kind, different channel, different user when known.
+     */
+    public Optional<CallQueueEntry> dequeuePeer(CallEndpoint self) {
         cleanup();
         Iterator<CallQueueEntry> it = queue.iterator();
         while (it.hasNext()) {
             CallQueueEntry entry = it.next();
-            if (entry.endpoint().channelId().equals(channelId)) {
+            CallEndpoint peer = entry.endpoint();
+            if (peer.channelId().equals(self.channelId())) {
                 continue;
             }
             if (entry.isExpired(TIMEOUT)) {
                 it.remove();
+                continue;
+            }
+            if (self.kind() != null && peer.kind() != self.kind()) {
+                continue;
+            }
+            if (self.starterUserId() != null && !self.starterUserId().isBlank()
+                    && self.starterUserId().equals(peer.starterUserId())) {
                 continue;
             }
             it.remove();
@@ -80,6 +97,31 @@ public final class CallQueueService {
             }
         }
         return n;
+    }
+
+    /** Waiting count for a specific kind (guild vs DM). */
+    public int size(CallEndpoint.EndpointKind kind) {
+        int n = 0;
+        for (CallQueueEntry entry : queue) {
+            if (!entry.isExpired(TIMEOUT) && entry.endpoint().kind() == kind) {
+                n++;
+            }
+        }
+        return n;
+    }
+
+    public int position(String channelId, CallEndpoint.EndpointKind kind) {
+        int pos = 1;
+        for (CallQueueEntry entry : queue) {
+            if (entry.isExpired(TIMEOUT) || entry.endpoint().kind() != kind) {
+                continue;
+            }
+            if (entry.endpoint().channelId().equals(channelId)) {
+                return pos;
+            }
+            pos++;
+        }
+        return -1;
     }
 
     public void cleanup() {

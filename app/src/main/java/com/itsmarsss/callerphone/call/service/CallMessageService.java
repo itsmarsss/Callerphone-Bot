@@ -1,6 +1,5 @@
 package com.itsmarsss.callerphone.call.service;
 
-import com.itsmarsss.callerphone.Callerphone;
 import com.itsmarsss.callerphone.Constants;
 import com.itsmarsss.callerphone.Response;
 import com.itsmarsss.callerphone.ToolSet;
@@ -8,7 +7,7 @@ import com.itsmarsss.callerphone.call.model.CallMessage;
 import com.itsmarsss.callerphone.call.model.CallSession;
 import com.itsmarsss.database.categories.Users;
 import net.dv8tion.jda.api.entities.User;
-import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 
 import java.time.Instant;
 import java.util.List;
@@ -40,7 +39,7 @@ public final class CallMessageService {
         return content;
     }
 
-    public boolean send(TextChannel destination, User author, String content) {
+    public boolean send(MessageChannel destination, User author, String content) {
         if (destination == null) {
             return false;
         }
@@ -55,7 +54,7 @@ public final class CallMessageService {
         return true;
     }
 
-    public void sendTranscript(TextChannel channel, CallSession session) {
+    public void sendTranscript(MessageChannel channel, CallSession session) {
         if (channel == null || session == null) {
             return;
         }

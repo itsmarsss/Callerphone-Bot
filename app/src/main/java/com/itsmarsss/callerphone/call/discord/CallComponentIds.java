@@ -10,6 +10,7 @@ public final class CallComponentIds {
     public static final String LIKE = "like";
     public static final String PASS = "pass";
     public static final String REPORT = "report";
+    public static final String AGAIN = "again";
 
     private CallComponentIds() {
     }
@@ -28,6 +29,10 @@ public final class CallComponentIds {
 
     public static String report(String sessionId) {
         return HEAD + REPORT + "-" + sessionId;
+    }
+
+    public static String again(String opaque) {
+        return HEAD + AGAIN + "-" + (opaque == null || opaque.isBlank() ? "_" : opaque);
     }
 
     public static boolean isCall(String customId) {

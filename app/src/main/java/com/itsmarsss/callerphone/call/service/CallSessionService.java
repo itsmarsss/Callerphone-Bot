@@ -13,7 +13,7 @@ import com.itsmarsss.callerphone.experience.ControlMessageStore;
 import com.itsmarsss.callerphone.experience.ExperienceRenderer;
 import com.itsmarsss.callerphone.experience.ExperienceView;
 import net.dv8tion.jda.api.entities.User;
-import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.utils.messages.MessageCreateData;
 import net.dv8tion.jda.api.utils.messages.MessageEditData;
 import org.slf4j.Logger;
@@ -24,7 +24,7 @@ import java.time.Instant;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
-/** Random live call between two guild channels. */
+/** Live calls between guild channels or user DMs with the bot. */
 public final class CallSessionService {
     private static final Logger logger = LoggerFactory.getLogger(CallSessionService.class);
     private static volatile CallSessionService instance;
@@ -46,64 +46,71 @@ public final class CallSessionService {
     }
 
     public synchronized CallResult start(String channelId, String starterUserId) {
+        return start(CallEndpoint.guild(channelId, starterUserId));
+    }
+
+    public synchronized CallResult start(CallEndpoint self) {
+        String channelId = self.channelId();
         if (byChannel.containsKey(channelId)) {
             return CallResult.conflict();
         }
+        if (userAlreadyInCall(self.starterUserId())) {
+            return CallResult.failed("You're already in a call elsewhere. End that one first.");
+        }
         if (queue.isQueued(channelId)) {
             queue.cleanup();
-            int pos = queue.position(channelId);
-            int size = Math.max(queue.size(), 1);
-            if (pos < 1) {
-                queue.enqueue(CallEndpoint.guild(channelId, starterUserId));
-                return CallResult.queued(queue.position(channelId), queue.size());
-            }
+            int pos = Math.max(queue.position(channelId, self.kind()), 1);
+            int size = Math.max(queue.size(self.kind()), 1);
             return CallResult.alreadyQueued(pos, size);
         }
 
-        Optional<CallQueueEntry> peer = queue.dequeueOther(channelId);
+        Optional<CallQueueEntry> peer = queue.dequeuePeer(self);
         if (peer.isEmpty()) {
-            queue.enqueue(CallEndpoint.guild(channelId, starterUserId));
-            return CallResult.queued(Math.max(queue.position(channelId), 1), queue.size());
+            queue.enqueue(self);
+            int pos = Math.max(queue.position(channelId, self.kind()), 1);
+            int size = Math.max(queue.size(self.kind()), 1);
+            return CallResult.queued(pos, size);
         }
 
         CallEndpoint a = peer.get().endpoint();
-        CallEndpoint b = CallEndpoint.guild(channelId, starterUserId);
+        CallEndpoint b = self;
         CallSession session = new CallSession(a, b, CallMatchSource.LIVE_QUEUE);
 
-        TextChannel chA = ToolSet.getTextChannel(a.channelId());
-        TextChannel chB = ToolSet.getTextChannel(b.channelId());
+        MessageChannel chA = ToolSet.getMessageChannel(a.channelId());
+        MessageChannel chB = ToolSet.getMessageChannel(b.channelId());
         if (chA == null || chB == null) {
             if (chA != null) {
                 queue.enqueue(a);
             } else if (chB != null) {
                 queue.enqueue(b);
             }
-            return CallResult.failed("The other channel became unavailable. You're no longer in queue.");
+            return CallResult.failed("Couldn't reach the other side. Try again in a moment.");
         }
 
         byChannel.put(a.channelId(), session);
         byChannel.put(b.channelId(), session);
 
-        // Peer A: edit queue lobby in place when possible
-        publishLobby(chA, a.channelId(), CallPresenter.connected(session));
-        logger.info("Call matched {} <-> {} source={}", a.channelId(), b.channelId(), session.getSource());
+        ExperienceView connected = self.isDm()
+                ? CallPresenter.connectedDm(session)
+                : CallPresenter.connected(session);
+        publishLobby(chA, a.channelId(), connected);
+        logger.info("Call matched {} <-> {} kind={} source={}",
+                a.channelId(), b.channelId(), self.kind(), session.getSource());
         return CallResult.matched(session);
     }
 
     public MessageCreateData connectedMessage(CallSession session) {
-        return ExperienceRenderer.toMessage(CallPresenter.connected(session));
+        boolean dm = session.getSideA().isDm() || session.getSideB().isDm();
+        return ExperienceRenderer.toMessage(dm
+                ? CallPresenter.connectedDm(session)
+                : CallPresenter.connected(session));
     }
 
     public void rememberLobbyMessage(String channelId, String messageId) {
         ControlMessageStore.get().put(ControlMessageStore.callLobbyKey(channelId), messageId);
     }
 
-    /**
-     * Update an existing lobby message when possible; otherwise send a new one.
-     *
-     * @return true if an existing message was edited
-     */
-    public boolean publishLobby(TextChannel channel, String channelId, ExperienceView view) {
+    public boolean publishLobby(MessageChannel channel, String channelId, ExperienceView view) {
         if (channel == null || channelId == null) {
             return false;
         }
@@ -127,7 +134,7 @@ public final class CallSessionService {
     }
 
     public boolean tryEditLobby(String channelId, ExperienceView view) {
-        TextChannel channel = ToolSet.getTextChannel(channelId);
+        MessageChannel channel = ToolSet.getMessageChannel(channelId);
         if (channel == null) {
             return false;
         }
@@ -166,14 +173,14 @@ public final class CallSessionService {
 
         boolean editedSelf = tryEditLobby(channelId, selfEnded);
         if (!editedSelf) {
-            TextChannel self = ToolSet.getTextChannel(channelId);
+            MessageChannel self = ToolSet.getMessageChannel(channelId);
             if (self != null) {
                 self.sendMessage(ExperienceRenderer.toMessage(selfEnded))
                         .queue(msg -> rememberLobbyMessage(channelId, msg.getId()));
             }
         }
 
-        TextChannel other = ToolSet.getTextChannel(otherId);
+        MessageChannel other = ToolSet.getMessageChannel(otherId);
         if (other != null) {
             boolean editedOther = tryEditLobby(otherId, peerEnded);
             if (!editedOther) {
@@ -190,6 +197,18 @@ public final class CallSessionService {
 
     public boolean isInCall(String channelId) {
         return byChannel.containsKey(channelId);
+    }
+
+    public boolean userAlreadyInCall(String userId) {
+        if (userId == null || userId.isBlank()) {
+            return false;
+        }
+        for (CallSession s : byChannel.values()) {
+            if (userId.equals(s.getSideA().starterUserId()) || userId.equals(s.getSideB().starterUserId())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public Optional<CallSession> get(String channelId) {
@@ -218,7 +237,7 @@ public final class CallSessionService {
         }
         session.touchMessage(channelId);
         String outbound = messages.prepareOutbound(raw);
-        TextChannel dest = ToolSet.getTextChannel(session.otherChannelId(channelId));
+        MessageChannel dest = ToolSet.getMessageChannel(session.otherChannelId(channelId));
         if (!messages.send(dest, author, outbound)) {
             terminateError(session);
         }
@@ -246,8 +265,8 @@ public final class CallSessionService {
     }
 
     private void terminateError(CallSession session) {
-        TextChannel a = ToolSet.getTextChannel(session.getChannelA());
-        TextChannel b = ToolSet.getTextChannel(session.getChannelB());
+        MessageChannel a = ToolSet.getMessageChannel(session.getChannelA());
+        MessageChannel b = ToolSet.getMessageChannel(session.getChannelB());
         ExperienceView lost = CallPresenter.warn("Connection lost", "The call ended unexpectedly.");
         if (a != null) {
             publishLobby(a, session.getChannelA(), lost);

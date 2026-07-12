@@ -48,6 +48,44 @@ public final class CallPresenter {
                 .build();
     }
 
+    public static ExperienceView connectedDm(CallSession session) {
+        return connectedDm(session.getId());
+    }
+
+    public static ExperienceView connectedDm(String sessionId) {
+        return ExperienceView.builder(ExperienceIntent.SUCCESS)
+                .title("Call connected")
+                .description(
+                        "You're chatting with someone else through Callerphone.\n"
+                                + "Messages you send here go to them.\n\n"
+                                + "Share your Match profile if you want to keep talking later."
+                )
+                .footer("End anytime with /endcall")
+                .actions(
+                        ActionSpec.primary(CallComponentIds.share(sessionId), "Share profile"),
+                        ActionSpec.danger(CallComponentIds.report(sessionId), "Report")
+                )
+                .build();
+    }
+
+    public static ExperienceView queuedDm(int position, int size) {
+        return ExperienceView.builder(ExperienceIntent.PROGRESS)
+                .title("Finding a call")
+                .description("You're in the DM queue. We'll connect you with another person automatically.")
+                .fields(java.util.List.of(ViewField.of("Queue", "#" + position + " of " + size)))
+                .footer("Leave with /endcall")
+                .build();
+    }
+
+    public static ExperienceView waitingDm(int position, int size) {
+        return ExperienceView.builder(ExperienceIntent.PROGRESS)
+                .title("Still finding a call")
+                .description("You're still in the DM queue. We'll message you when someone connects.")
+                .fields(java.util.List.of(ViewField.of("Queue", "#" + position + " of " + size)))
+                .footer("Leave with /endcall")
+                .build();
+    }
+
     public static ExperienceView ended(String sessionId) {
         return ended(sessionId, -1, -1);
     }
@@ -57,7 +95,10 @@ public final class CallPresenter {
                 .title("Call ended")
                 .description(statsLine(minutes, messageCount, "Thanks for chatting."));
         if (sessionId != null && !sessionId.isBlank()) {
-            b.actions(ActionSpec.danger(CallComponentIds.report(sessionId), "Report"));
+            b.actions(
+                    ActionSpec.primary(CallComponentIds.again(sessionId), "Call again"),
+                    ActionSpec.danger(CallComponentIds.report(sessionId), "Report")
+            );
         }
         return b.build();
     }
@@ -75,7 +116,10 @@ public final class CallPresenter {
                 .title("Call ended")
                 .description(statsLine(minutes, messageCount, "The other side hung up."));
         if (sessionId != null && !sessionId.isBlank()) {
-            b.actions(ActionSpec.danger(CallComponentIds.report(sessionId), "Report"));
+            b.actions(
+                    ActionSpec.primary(CallComponentIds.again(sessionId), "Call again"),
+                    ActionSpec.danger(CallComponentIds.report(sessionId), "Report")
+            );
         }
         return b.build();
     }

@@ -14,7 +14,7 @@ import com.itsmarsss.callerphone.match.repository.MatchDecisionRepository;
 import com.itsmarsss.callerphone.match.service.Icebreakers;
 import net.dv8tion.jda.api.components.actionrow.ActionRow;
 import net.dv8tion.jda.api.components.buttons.Button;
-import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 
 import java.time.Instant;
 import java.util.Optional;
@@ -48,7 +48,7 @@ public final class CallProfileShareService {
         if (profile.isEmpty() || profile.get().getState() != ProfileState.ACTIVE) {
             return ShareResult.fail("Go live first with `/match join`.");
         }
-        TextChannel other = ToolSet.getTextChannel(session.otherChannelId(fromChannelId));
+        MessageChannel other = ToolSet.getMessageChannel(session.otherChannelId(fromChannelId));
         if (other == null) {
             return ShareResult.fail("Couldn't reach the other side.");
         }
@@ -63,7 +63,7 @@ public final class CallProfileShareService {
                         Button.secondary(CallComponentIds.pass(sessionId, sharerUserId), "Not now")
                 ))
                 .queue();
-        return ShareResult.ok("Your profile was sent to the other channel.");
+        return ShareResult.ok("Your profile was sent to the other side.");
     }
 
     public ShareResult react(
@@ -109,7 +109,7 @@ public final class CallProfileShareService {
                 Optional<String> conversationId = ApplicationContext.get().decisions()
                         .createMutualIfBothLiked(actorUserId, subjectUserId);
                 String opener = Icebreakers.forPair(actorProfile.get(), subjectProfile.get());
-                TextChannel other = ToolSet.getTextChannel(opt.get().otherChannelId(actorChannelId));
+                MessageChannel other = ToolSet.getMessageChannel(opt.get().otherChannelId(actorChannelId));
                 if (other != null) {
                     other.sendMessageEmbeds(MatchEmbeds.success(
                             "You connected",
@@ -121,7 +121,7 @@ public final class CallProfileShareService {
                         : "You're both interested. Chat limit may be full for now.");
             }
         }
-        TextChannel other = ToolSet.getTextChannel(opt.get().otherChannelId(actorChannelId));
+        MessageChannel other = ToolSet.getMessageChannel(opt.get().otherChannelId(actorChannelId));
         if (other != null) {
             other.sendMessageEmbeds(MatchEmbeds.soft(
                     "Interest received",

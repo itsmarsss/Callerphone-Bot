@@ -52,6 +52,34 @@ public final class CallButtonHandler implements IButtonInteraction {
                 e.editButton(Button.danger(CallComponentIds.report(parsed.sessionId()), "Reported").asDisabled()).queue();
                 e.getMessage().replyEmbeds(CallEmbeds.success("Report received", "Thanks for reporting.")).queue();
             }
+            case CallComponentIds.AGAIN -> {
+                boolean dm = e.getChannel().getType() == net.dv8tion.jda.api.entities.channel.ChannelType.PRIVATE
+                        || e.getChannel().getType() == net.dv8tion.jda.api.entities.channel.ChannelType.GROUP;
+                var endpoint = dm
+                        ? com.itsmarsss.callerphone.call.model.CallEndpoint.dm(channelId, userId)
+                        : com.itsmarsss.callerphone.call.model.CallEndpoint.guild(channelId, userId);
+                var result = sessions.start(endpoint);
+                switch (result.status()) {
+                    case QUEUED -> e.reply(com.itsmarsss.callerphone.experience.ExperienceRenderer.toMessage(
+                                    dm
+                                            ? CallPresenter.queuedDm(result.queuePosition(), result.queueSize())
+                                            : CallPresenter.queued(result.queuePosition(), result.queueSize())
+                            ))
+                            .queue(hook -> hook.retrieveOriginal().queue(msg ->
+                                    sessions.rememberLobbyMessage(channelId, msg.getId())));
+                    case ALREADY_QUEUED -> e.reply(com.itsmarsss.callerphone.experience.ExperienceRenderer.toMessage(
+                                    dm
+                                            ? CallPresenter.waitingDm(result.queuePosition(), result.queueSize())
+                                            : CallPresenter.waiting(result.queuePosition(), result.queueSize())
+                            )).queue();
+                    case MATCHED -> e.reply(sessions.connectedMessage(result.session()))
+                            .queue(hook -> hook.retrieveOriginal().queue(msg ->
+                                    sessions.rememberLobbyMessage(channelId, msg.getId())));
+                    case CONFLICT -> e.replyEmbeds(CallEmbeds.conflict()).setEphemeral(true).queue();
+                    case FAILED -> e.replyEmbeds(CallEmbeds.warn("Couldn't connect", result.message()))
+                            .setEphemeral(true).queue();
+                }
+            }
             default -> e.replyEmbeds(CallEmbeds.warn("That expired", "Open a fresh screen to continue."))
                     .setEphemeral(true).queue();
         }

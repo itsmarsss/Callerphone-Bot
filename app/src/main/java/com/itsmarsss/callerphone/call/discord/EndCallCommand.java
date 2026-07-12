@@ -15,7 +15,6 @@ public final class EndCallCommand implements ISlashCommand {
     public void runSlash(SlashCommandInteractionEvent e) {
         CallSessionService.EndOutcome outcome = calls.end(e.getChannel().getId());
         if (outcome.editedInPlace()) {
-            // Lobby message already shows the ended state publicly
             e.reply(ExperienceRenderer.toMessage(
                             CallPresenter.success("Done", "The call lobby was updated.")
                     ))
@@ -39,6 +38,10 @@ public final class EndCallCommand implements ISlashCommand {
     @Override
     public SlashCommandData getCommandData() {
         return Commands.slash(getName(), "End a call or leave the queue")
-                .setContexts(InteractionContextType.GUILD);
+                .setContexts(
+                        InteractionContextType.GUILD,
+                        InteractionContextType.BOT_DM,
+                        InteractionContextType.PRIVATE_CHANNEL
+                );
     }
 }

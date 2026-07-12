@@ -107,7 +107,8 @@ public class Help implements ISlashCommand {
             case "tccall", "call" -> {
                 title = "Call";
                 desc = joinHelp(new CallCommand(), new EndCallCommand(), new ReportCallCommand(), new PrefixCommand())
-                        + "\n\nChat with another server. Share your profile during a call if you want.";
+                        + "\n\nChat with another server **or** another person in bot DMs. "
+                        + "Share your Match profile during a call if you want.";
             }
             case "match", "social" -> {
                 title = "Match";
