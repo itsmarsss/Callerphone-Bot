@@ -887,7 +887,12 @@ public final class MatchPresenter {
                     )
                     .actions(
                             ActionSpec.success(MatchComponentIds.of(MatchComponentIds.ACTION_START_BROWSE, "_"), "Discover"),
-                            ActionSpec.secondary(MatchComponentIds.of(MatchComponentIds.ACTION_OPEN_CHATS, "_"), "Open chats")
+                            ActionSpec.secondary(MatchComponentIds.of(MatchComponentIds.ACTION_OPEN_CHATS, "_"), "Open chats"),
+                            ActionSpec.secondary(CallComponentIds.again("_"), "Start a call"),
+                            ActionSpec.secondary(
+                                    BottleComponentIds.of(BottleComponentIds.ACTION_FIND, "_"),
+                                    "Find a bottle"
+                            )
                     )
                     .ephemeral(true)
                     .build();
@@ -906,6 +911,11 @@ public final class MatchPresenter {
         }
         actions.add(ActionSpec.success(MatchComponentIds.of(MatchComponentIds.ACTION_START_BROWSE, "_"), "Keep discovering"));
         actions.add(ActionSpec.secondary(MatchComponentIds.of(MatchComponentIds.ACTION_OPEN_LIKES, "_"), "Incoming interest"));
+        actions.add(ActionSpec.secondary(CallComponentIds.again("_"), "Start a call"));
+        actions.add(ActionSpec.secondary(
+                BottleComponentIds.of(BottleComponentIds.ACTION_FIND, "_"),
+                "Find a bottle"
+        ));
         return ExperienceView.builder(ExperienceIntent.PREMIUM)
                 .title("Callerphone Premium")
                 .description(
