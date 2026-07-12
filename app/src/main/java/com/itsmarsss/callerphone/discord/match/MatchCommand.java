@@ -401,6 +401,7 @@ public final class MatchCommand implements ISlashCommand {
                 if (msg.toLowerCase().contains("nothing left") || msg.toLowerCase().contains("too late")) {
                     try {
                         ctx.analytics().track(userId, "soft_limit", "undo");
+                        ctx.analytics().trackSurface(userId, "discover", "soft_limit", "undo");
                     } catch (Exception ignored) {
                     }
                     e.getHook().sendMessage(ExperienceRenderer.toMessage(
@@ -422,6 +423,7 @@ public final class MatchCommand implements ISlashCommand {
             }
             try {
                 ctx.analytics().track(userId, "discover_undo", "ok");
+                ctx.analytics().trackSurface(userId, "discover", "undo", "ok");
             } catch (Exception ignored) {
             }
             String remaining = DiscoveryUi.remainingLine(ctx, userId);
