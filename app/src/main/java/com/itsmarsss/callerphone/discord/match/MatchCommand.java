@@ -313,6 +313,7 @@ public final class MatchCommand implements ISlashCommand {
     private void handleBrowse(SlashCommandInteractionEvent e, ApplicationContext ctx, String userId) {
         try {
             ctx.analytics().track(userId, "discover_open", "slash");
+            ctx.analytics().trackSurface(userId, "discover", "open", "slash");
         } catch (Exception ignored) {
         }
         e.deferReply(true).queue();
@@ -361,6 +362,7 @@ public final class MatchCommand implements ISlashCommand {
     private void handleInbox(SlashCommandInteractionEvent e, ApplicationContext ctx, String userId) {
         try {
             ctx.analytics().track(userId, "inbox_open", "slash");
+            ctx.analytics().trackSurface(userId, "inbox", "open", "slash");
         } catch (Exception ignored) {
         }
         e.deferReply(true).queue();
@@ -386,6 +388,7 @@ public final class MatchCommand implements ISlashCommand {
         }
         try {
             ctx.analytics().track(userId, "chats_open", "slash");
+            ctx.analytics().trackSurface(userId, "chats", "open", "slash");
         } catch (Exception ignored) {
         }
         e.deferReply(true).queue();
