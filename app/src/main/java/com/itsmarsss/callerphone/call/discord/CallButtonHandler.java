@@ -66,8 +66,9 @@ public final class CallButtonHandler implements IButtonInteraction {
             case CallComponentIds.LEAVE_QUEUE -> {
                 try {
                     if (com.itsmarsss.callerphone.bootstrap.ApplicationContext.isReady()) {
-                        com.itsmarsss.callerphone.bootstrap.ApplicationContext.get().analytics()
-                                .track(userId, "call_leave_queue", channelId);
+                        var analytics = com.itsmarsss.callerphone.bootstrap.ApplicationContext.get().analytics();
+                        analytics.track(userId, "call_leave_queue", channelId);
+                        analytics.trackSurface(userId, "call", "leave_queue", channelId);
                     }
                 } catch (Exception ignored) {
                 }
@@ -92,8 +93,9 @@ public final class CallButtonHandler implements IButtonInteraction {
             case CallComponentIds.PROMPT -> {
                 try {
                     if (com.itsmarsss.callerphone.bootstrap.ApplicationContext.isReady()) {
-                        com.itsmarsss.callerphone.bootstrap.ApplicationContext.get().analytics()
-                                .track(userId, "call_prompt", parsed.sessionId());
+                        var analytics = com.itsmarsss.callerphone.bootstrap.ApplicationContext.get().analytics();
+                        analytics.track(userId, "call_prompt", parsed.sessionId());
+                        analytics.trackSurface(userId, "call", "prompt", parsed.sessionId());
                     }
                 } catch (Exception ignored) {
                 }
@@ -138,8 +140,9 @@ public final class CallButtonHandler implements IButtonInteraction {
             case CallComponentIds.GAME_DECLINE -> {
                 try {
                     if (com.itsmarsss.callerphone.bootstrap.ApplicationContext.isReady()) {
-                        com.itsmarsss.callerphone.bootstrap.ApplicationContext.get().analytics()
-                                .track(userId, "call_game_decline", parsed.sessionId());
+                        var analytics = com.itsmarsss.callerphone.bootstrap.ApplicationContext.get().analytics();
+                        analytics.track(userId, "call_game_decline", parsed.sessionId());
+                        analytics.trackSurface(userId, "call", "game_decline", parsed.sessionId());
                     }
                 } catch (Exception ignored) {
                 }
@@ -154,8 +157,9 @@ public final class CallButtonHandler implements IButtonInteraction {
             case CallComponentIds.AGAIN -> {
                 try {
                     if (com.itsmarsss.callerphone.bootstrap.ApplicationContext.isReady()) {
-                        com.itsmarsss.callerphone.bootstrap.ApplicationContext.get().analytics()
-                                .track(userId, "call_again", channelId);
+                        var analytics = com.itsmarsss.callerphone.bootstrap.ApplicationContext.get().analytics();
+                        analytics.track(userId, "call_again", channelId);
+                        analytics.trackSurface(userId, "call", "again", channelId);
                     }
                 } catch (Exception ignored) {
                 }
