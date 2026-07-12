@@ -138,19 +138,25 @@ public final class InboxUi {
         String other = conversation.otherParticipant(userId);
         String name = ctx.profiles().find(other).map(MatchProfile::getDisplayName).orElse("your connection");
         List<Button> buttons = new ArrayList<>();
-        buttons.add(Button.primary(
+        List<Button> row1 = new ArrayList<>();
+        List<Button> row2 = new ArrayList<>();
+        row1.add(Button.primary(
                 MatchComponentIds.of(MatchComponentIds.ACTION_GAME_TTT, conversationId),
                 "Play a game"
         ));
-        buttons.add(Button.secondary(
+        row1.add(Button.secondary(
+                MatchComponentIds.of(MatchComponentIds.ACTION_ICEBREAKER, conversationId),
+                "Icebreaker"
+        ));
+        row1.add(Button.secondary(
                 MatchComponentIds.of(MatchComponentIds.ACTION_STOP_CHAT, "_"),
                 "Stop chat"
         ));
-        buttons.add(Button.danger(
+        row2.add(Button.danger(
                 MatchComponentIds.of(MatchComponentIds.ACTION_SAFETY_OPEN, "conversation:" + conversationId),
                 "Safety"
         ));
-        buttons.add(Button.secondary(
+        row2.add(Button.secondary(
                 MatchComponentIds.of(MatchComponentIds.ACTION_BACK_INBOX, "_"),
                 "Back to inbox"
         ));
@@ -159,7 +165,7 @@ public final class InboxUi {
                         "Chatting with " + name,
                         result.message() + "\n\n_" + entry.preview() + "_"
                 ))
-                .setComponents(ActionRow.of(buttons))
+                .setComponents(ActionRow.of(row1), ActionRow.of(row2))
                 .build();
     }
 

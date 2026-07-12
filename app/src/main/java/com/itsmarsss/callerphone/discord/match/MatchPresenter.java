@@ -439,13 +439,24 @@ public final class MatchPresenter {
         if (opener != null && !opener.isBlank()) {
             body += "\n\n_" + opener + "_";
         }
+        body += "\n\nSend a text DM here to talk.";
         return ExperienceView.builder(ExperienceIntent.SOCIAL)
                 .title("You connected")
                 .description(body)
-                .actions(ActionSpec.success(
-                        MatchComponentIds.of(MatchComponentIds.ACTION_CHAT_SELECT, conversationId),
-                        "Open chat"
-                ))
+                .actions(
+                        ActionSpec.success(
+                                MatchComponentIds.of(MatchComponentIds.ACTION_CHAT_SELECT, conversationId),
+                                "Open chat"
+                        ),
+                        ActionSpec.secondary(
+                                MatchComponentIds.of(MatchComponentIds.ACTION_ICEBREAKER, conversationId),
+                                "Another prompt"
+                        ),
+                        ActionSpec.primary(
+                                MatchComponentIds.of(MatchComponentIds.ACTION_GAME_TTT, conversationId),
+                                "Play a game"
+                        )
+                )
                 .ephemeral(true)
                 .build();
     }

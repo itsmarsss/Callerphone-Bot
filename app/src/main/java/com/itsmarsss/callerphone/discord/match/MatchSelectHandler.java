@@ -84,6 +84,10 @@ public final class MatchSelectHandler implements IStringSelectInteraction {
                 "Play a game"
         ));
         row2.add(Button.secondary(
+                MatchComponentIds.of(MatchComponentIds.ACTION_ICEBREAKER, conversationId),
+                "Icebreaker"
+        ));
+        row2.add(Button.secondary(
                 MatchComponentIds.of(MatchComponentIds.ACTION_BACK_INBOX, "_"),
                 "Back to inbox"
         ));
