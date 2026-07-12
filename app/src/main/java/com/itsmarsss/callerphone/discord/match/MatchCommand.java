@@ -55,6 +55,7 @@ public final class MatchCommand implements ISlashCommand {
             case "edit" -> handleEdit(e, ctx, userId);
             case "browse" -> {
                 ctx.analytics().track(userId, "match_browse_open", null);
+                ctx.analytics().trackSurface(userId, "discover", "open", "slash_browse");
                 handleBrowse(e, ctx, userId);
             }
             case "likes" -> handleLikes(e, ctx, userId);
@@ -62,11 +63,13 @@ public final class MatchCommand implements ISlashCommand {
             case "chats" -> handleChats(e, ctx, userId);
             case "undo" -> {
                 ctx.analytics().track(userId, "match_undo_open", null);
+                ctx.analytics().trackSurface(userId, "discover", "undo_open", null);
                 handleUndo(e, ctx, userId);
             }
             case "pause" -> {
                 EnrollmentService.ServiceResult r = ctx.profiles().pause(userId);
                 if (r.success()) {
+                    ctx.analytics().trackSurface(userId, "profile", "pause", null);
                     e.reply(ExperienceRenderer.toMessage(buildHome(ctx, userId, e.getUser().getName())))
                             .setEphemeral(true).queue();
                 } else {
@@ -76,6 +79,7 @@ public final class MatchCommand implements ISlashCommand {
             case "resume" -> {
                 EnrollmentService.ServiceResult r = ctx.profiles().resume(userId);
                 if (r.success()) {
+                    ctx.analytics().trackSurface(userId, "profile", "resume", "slash");
                     e.reply(ExperienceRenderer.toMessage(MatchPresenter.liveReady())).setEphemeral(true).queue();
                 } else {
                     reply(e, r);
