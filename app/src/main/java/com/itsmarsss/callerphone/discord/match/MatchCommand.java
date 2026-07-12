@@ -194,39 +194,8 @@ public final class MatchCommand implements ISlashCommand {
             reply(e, ctx.conversations().stopChat(userId));
             return;
         }
-        List<MatchConversation> chats = ctx.conversations().list(userId);
-        if (chats.isEmpty()) {
-            e.reply(ExperienceRenderer.toMessage(MatchPresenter.chatsEmpty())).setEphemeral(true).queue();
-            return;
-        }
-        StringBuilder sb = new StringBuilder();
-        List<ActionRow> rows = new ArrayList<>();
-        List<Button> buttons = new ArrayList<>();
-        for (MatchConversation chat : chats) {
-            String other = chat.otherParticipant(userId);
-            String name = ctx.profiles().find(other).map(MatchProfile::getDisplayName).orElse("Connection");
-            int unread = chat.unreadFor(userId);
-            String badge = unread > 0 ? " · " + unread + " new" : "";
-            String preview = chat.getLastMessagePreview() == null || chat.getLastMessagePreview().isBlank()
-                    ? ""
-                    : "\n_" + truncate(chat.getLastMessagePreview(), 50) + "_";
-            sb.append("**").append(name).append("**").append(badge).append(preview).append("\n\n");
-            buttons.add(Button.primary(
-                    MatchComponentIds.of(MatchComponentIds.ACTION_CHAT_SELECT, chat.getConversationId()),
-                    truncate(name, 20)
-            ));
-            if (buttons.size() == 5) {
-                rows.add(ActionRow.of(buttons));
-                buttons = new ArrayList<>();
-            }
-        }
-        if (!buttons.isEmpty()) {
-            rows.add(ActionRow.of(buttons));
-        }
-        e.replyEmbeds(MatchEmbeds.soft("Your chats", sb.toString().trim()))
-                .setComponents(rows)
-                .setEphemeral(true)
-                .queue();
+        e.deferReply(true).queue();
+        ctx.dbExecutor().execute(() -> ChatInboxUi.sendInbox(e.getHook(), ctx, userId));
     }
 
     private void handleUndo(SlashCommandInteractionEvent e, ApplicationContext ctx, String userId) {
@@ -247,8 +216,10 @@ public final class MatchCommand implements ISlashCommand {
                 return;
             }
             String remaining = DiscoveryUi.remainingLine(ctx, userId);
+            MatchProfile viewer = ctx.profiles().find(userId).orElse(null);
             e.getHook().sendMessage(DiscoveryUi.cardMessage(
                             profile.get(),
+                            viewer,
                             result.restoredSession(),
                             remaining,
                             result.message()

@@ -43,6 +43,7 @@ import com.itsmarsss.callerphone.users.commands.Profile;
 import com.itsmarsss.callerphone.users.commands.RewardCredits;
 import com.itsmarsss.commandType.IButtonInteraction;
 import com.itsmarsss.commandType.IModalInteraction;
+import com.itsmarsss.commandType.IStringSelectInteraction;
 import com.itsmarsss.database.MongoConnector;
 import net.dv8tion.jda.api.*;
 import net.dv8tion.jda.api.entities.User;
@@ -73,6 +74,7 @@ public class Callerphone {
     public static final Map<String, ICommand> cmdMap = new ConcurrentHashMap<>();
     public static final Map<String, IModalInteraction> mdlMap = new ConcurrentHashMap<>();
     public static final Map<String, IButtonInteraction> btnMap = new ConcurrentHashMap<>();
+    public static final Map<String, IStringSelectInteraction> selMap = new ConcurrentHashMap<>();
 
     public static boolean isQuickStart;
 
@@ -160,6 +162,7 @@ public class Callerphone {
             registerCommands();
             registerModals();
             registerButtons();
+            registerSelects();
             registerListeners();
 
             sdMgr.setActivity(Activity.watching("for /help"));
@@ -222,9 +225,19 @@ public class Callerphone {
         logger.info("Registered {} buttons", btnMap.size());
     }
 
+    private static void registerSelects() {
+        IStringSelectInteraction[] selects = {new com.itsmarsss.callerphone.discord.match.MatchSelectHandler()};
+        for (IStringSelectInteraction select : selects) {
+            selMap.put(select.getID(), select);
+            logger.debug("Registered select: {}", select.getID());
+        }
+        logger.info("Registered {} select handlers", selMap.size());
+    }
+
     private static void registerListeners() {
         sdMgr.addEventListener(
                 new OnButtonClick(),
+                new OnStringSelect(),
                 new ModCommandRouter(),
                 new MatchDmListener(),
                 new OnModalEvent(),

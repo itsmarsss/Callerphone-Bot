@@ -49,9 +49,13 @@ public final class CallPresenter {
     }
 
     public static ExperienceView ended(String sessionId) {
+        return ended(sessionId, -1, -1);
+    }
+
+    public static ExperienceView ended(String sessionId, long minutes, int messageCount) {
         ExperienceView.Builder b = ExperienceView.builder(ExperienceIntent.NEUTRAL)
                 .title("Call ended")
-                .description("Thanks for chatting.");
+                .description(statsLine(minutes, messageCount, "Thanks for chatting."));
         if (sessionId != null && !sessionId.isBlank()) {
             b.actions(ActionSpec.danger(CallComponentIds.report(sessionId), "Report"));
         }
@@ -59,15 +63,29 @@ public final class CallPresenter {
     }
 
     public static ExperienceView ended() {
-        return ended(null);
+        return ended(null, -1, -1);
     }
 
     public static ExperienceView peerHungUp(String sessionId) {
-        return ExperienceView.builder(ExperienceIntent.NEUTRAL)
+        return peerHungUp(sessionId, -1, -1);
+    }
+
+    public static ExperienceView peerHungUp(String sessionId, long minutes, int messageCount) {
+        ExperienceView.Builder b = ExperienceView.builder(ExperienceIntent.NEUTRAL)
                 .title("Call ended")
-                .description("The other side hung up.")
-                .actions(ActionSpec.danger(CallComponentIds.report(sessionId), "Report"))
-                .build();
+                .description(statsLine(minutes, messageCount, "The other side hung up."));
+        if (sessionId != null && !sessionId.isBlank()) {
+            b.actions(ActionSpec.danger(CallComponentIds.report(sessionId), "Report"));
+        }
+        return b.build();
+    }
+
+    private static String statsLine(long minutes, int messageCount, String base) {
+        if (minutes < 0 || messageCount < 0) {
+            return base;
+        }
+        String time = minutes <= 0 ? "under a minute" : minutes + (minutes == 1 ? " minute" : " minutes");
+        return base + "\n\n" + time + " · " + messageCount + " message" + (messageCount == 1 ? "" : "s");
     }
 
     public static ExperienceView leftQueue() {

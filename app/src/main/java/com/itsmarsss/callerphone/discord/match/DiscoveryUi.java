@@ -9,7 +9,6 @@ import com.itsmarsss.callerphone.match.service.BrowseSession;
 import com.itsmarsss.callerphone.match.service.DiscoveryService;
 import net.dv8tion.jda.api.components.actionrow.ActionRow;
 import net.dv8tion.jda.api.components.buttons.Button;
-import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder;
 import net.dv8tion.jda.api.utils.messages.MessageCreateData;
@@ -24,13 +23,14 @@ public final class DiscoveryUi {
     }
 
     public static MessageCreateData cardMessage(
-            MatchProfile profile,
+            MatchProfile subject,
+            MatchProfile viewer,
             BrowseSession session,
             String remainingLine,
             String note
     ) {
         MessageCreateBuilder builder = new MessageCreateBuilder()
-                .setEmbeds(MatchEmbeds.profileCard(profile, false))
+                .setEmbeds(MatchEmbeds.profileCard(subject, false, viewer))
                 .setComponents(ActionRow.of(
                         Button.success(
                                 MatchComponentIds.of(MatchComponentIds.ACTION_INTERESTED, session.sessionId()),
@@ -53,13 +53,14 @@ public final class DiscoveryUi {
     }
 
     public static MessageEditData cardEdit(
-            MatchProfile profile,
+            MatchProfile subject,
+            MatchProfile viewer,
             BrowseSession session,
             String remainingLine,
             String note
     ) {
         MessageEditBuilder builder = new MessageEditBuilder()
-                .setEmbeds(MatchEmbeds.profileCard(profile, false))
+                .setEmbeds(MatchEmbeds.profileCard(subject, false, viewer))
                 .setComponents(ActionRow.of(
                         Button.success(
                                 MatchComponentIds.of(MatchComponentIds.ACTION_INTERESTED, session.sessionId()),
@@ -74,8 +75,7 @@ public final class DiscoveryUi {
                                 "Safety"
                         )
                 ));
-        String content = joinContent(note, remainingLine);
-        builder.setContent(content);
+        builder.setContent(joinContent(note, remainingLine));
         return builder.build();
     }
 
@@ -100,8 +100,9 @@ public final class DiscoveryUi {
                     .queue();
             return;
         }
+        MatchProfile viewer = ctx.profiles().find(userId).orElse(null);
         String remaining = remainingLine(ctx, userId);
-        hook.sendMessage(cardMessage(next.profile(), next.session(), remaining, null))
+        hook.sendMessage(cardMessage(next.profile(), viewer, next.session(), remaining, null))
                 .setEphemeral(ephemeral)
                 .queue(msg -> ControlMessageStore.get().put(
                         ControlMessageStore.discoverKey(userId),
@@ -121,8 +122,9 @@ public final class DiscoveryUi {
                     .queue();
             return;
         }
+        MatchProfile viewer = ctx.profiles().find(userId).orElse(null);
         String remaining = remainingLine(ctx, userId);
-        hook.editOriginal(cardEdit(next.profile(), next.session(), remaining, note)).queue();
+        hook.editOriginal(cardEdit(next.profile(), viewer, next.session(), remaining, note)).queue();
     }
 
     private static String joinContent(String note, String remaining) {

@@ -15,6 +15,7 @@ import com.itsmarsss.callerphone.safety.ReportCategory;
 import com.itsmarsss.commandType.IButtonInteraction;
 import net.dv8tion.jda.api.components.actionrow.ActionRow;
 import net.dv8tion.jda.api.components.buttons.Button;
+import net.dv8tion.jda.api.components.selections.StringSelectMenu;
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonInteraction;
 
 import java.util.ArrayList;
@@ -59,7 +60,7 @@ public final class MatchButtonHandler implements IButtonInteraction {
             }
             case MatchComponentIds.ACTION_OPEN_CHATS -> {
                 e.deferReply(true).queue();
-                ctx.dbExecutor().execute(() -> sendChats(e, ctx, userId));
+                ctx.dbExecutor().execute(() -> ChatInboxUi.sendInbox(e.getHook(), ctx, userId));
             }
             case MatchComponentIds.ACTION_INTERESTED -> decide(e, ctx, userId, opaque, DecisionType.INTERESTED);
             case MatchComponentIds.ACTION_SKIP -> decide(e, ctx, userId, opaque, DecisionType.SKIP);
@@ -232,19 +233,20 @@ public final class MatchButtonHandler implements IButtonInteraction {
             e.reply(ExperienceRenderer.toMessage(MatchPresenter.safetyHelp())).setEphemeral(true).queue();
             return;
         }
-        String evidenceType = safety != null && safety.kind() == MatchComponentIds.SafetyKind.CONVERSATION
-                ? "conversation"
-                : "user";
-        String evidenceId = safety != null ? safety.referenceId() : target;
-        ctx.safety().report(
-                userId,
-                target,
-                ReportCategory.OTHER.code(),
-                ReportCategory.OTHER.label(),
-                evidenceType,
-                evidenceId
-        );
-        e.reply(ExperienceRenderer.toMessage(MatchPresenter.safetyReported())).setEphemeral(true).queue();
+        StringSelectMenu.Builder menu = StringSelectMenu.create(
+                        MatchComponentIds.of(MatchComponentIds.ACTION_REPORT_CAT, opaque))
+                .setPlaceholder("Choose a reason")
+                .setRequiredRange(1, 1);
+        for (ReportCategory cat : ReportCategory.values()) {
+            menu.addOption(cat.label(), cat.code());
+        }
+        e.replyEmbeds(MatchEmbeds.soft(
+                        "Report",
+                        "Choose the closest reason. Evidence from this chat or profile is attached."
+                ))
+                .addComponents(ActionRow.of(menu.build()))
+                .setEphemeral(true)
+                .queue();
     }
 
     private void safetyUnmatch(ButtonInteraction e, ApplicationContext ctx, String userId, String opaque) {
@@ -286,50 +288,6 @@ public final class MatchButtonHandler implements IButtonInteraction {
             return "this person";
         }
         return ctx.profiles().find(target).map(MatchProfile::getDisplayName).orElse("this person");
-    }
-
-    private void sendChats(ButtonInteraction e, ApplicationContext ctx, String userId) {
-        List<MatchConversation> chats = ctx.conversations().list(userId);
-        if (chats.isEmpty()) {
-            e.getHook().sendMessage(ExperienceRenderer.toMessage(MatchPresenter.chatsEmpty()))
-                    .setEphemeral(true).queue();
-            return;
-        }
-        StringBuilder sb = new StringBuilder();
-        List<ActionRow> rows = new ArrayList<>();
-        List<Button> buttons = new ArrayList<>();
-        for (MatchConversation chat : chats) {
-            String other = chat.otherParticipant(userId);
-            String name = ctx.profiles().find(other).map(MatchProfile::getDisplayName).orElse("Connection");
-            int unread = chat.unreadFor(userId);
-            String badge = unread > 0 ? " · " + unread + " new" : "";
-            String preview = chat.getLastMessagePreview() == null || chat.getLastMessagePreview().isBlank()
-                    ? ""
-                    : "\n_" + truncate(chat.getLastMessagePreview(), 50) + "_";
-            sb.append("**").append(name).append("**").append(badge).append(preview).append("\n\n");
-            buttons.add(Button.primary(
-                    MatchComponentIds.of(MatchComponentIds.ACTION_CHAT_SELECT, chat.getConversationId()),
-                    truncate(name, 20)
-            ));
-            if (buttons.size() == 5) {
-                rows.add(ActionRow.of(buttons));
-                buttons = new ArrayList<>();
-            }
-        }
-        if (!buttons.isEmpty()) {
-            rows.add(ActionRow.of(buttons));
-        }
-        e.getHook().sendMessageEmbeds(MatchEmbeds.soft("Your chats", sb.toString().trim()))
-                .setComponents(rows)
-                .setEphemeral(true)
-                .queue();
-    }
-
-    private static String truncate(String s, int max) {
-        if (s == null) {
-            return "";
-        }
-        return s.length() <= max ? s : s.substring(0, max - 1) + "…";
     }
 
     @Override

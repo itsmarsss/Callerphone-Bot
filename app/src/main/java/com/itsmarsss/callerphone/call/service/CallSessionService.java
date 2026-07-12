@@ -1,7 +1,6 @@
 package com.itsmarsss.callerphone.call.service;
 
 import com.itsmarsss.callerphone.Callerphone;
-import com.itsmarsss.callerphone.Response;
 import com.itsmarsss.callerphone.ToolSet;
 import com.itsmarsss.callerphone.call.discord.CallPresenter;
 import com.itsmarsss.callerphone.call.model.CallEndpoint;
@@ -12,12 +11,16 @@ import com.itsmarsss.callerphone.call.model.CallSession;
 import com.itsmarsss.callerphone.call.repository.CallSessionRepository;
 import com.itsmarsss.callerphone.experience.ControlMessageStore;
 import com.itsmarsss.callerphone.experience.ExperienceRenderer;
+import com.itsmarsss.callerphone.experience.ExperienceView;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.utils.messages.MessageCreateData;
+import net.dv8tion.jda.api.utils.messages.MessageEditData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -81,9 +84,8 @@ public final class CallSessionService {
         byChannel.put(a.channelId(), session);
         byChannel.put(b.channelId(), session);
 
-        MessageCreateData connected = connectedMessage(session);
-        sendLobby(chA, a.channelId(), connected);
-        // receiver already gets slash reply as matched; store lobby id when they reply
+        // Peer A: edit queue lobby in place when possible
+        publishLobby(chA, a.channelId(), CallPresenter.connected(session));
         logger.info("Call matched {} <-> {} source={}", a.channelId(), b.channelId(), session.getSource());
         return CallResult.matched(session);
     }
@@ -92,38 +94,98 @@ public final class CallSessionService {
         return ExperienceRenderer.toMessage(CallPresenter.connected(session));
     }
 
-    /** Remember the public lobby message for later edit-in-place transitions. */
     public void rememberLobbyMessage(String channelId, String messageId) {
         ControlMessageStore.get().put(ControlMessageStore.callLobbyKey(channelId), messageId);
     }
 
-    public synchronized MessageCreateData end(String channelId) {
+    /**
+     * Update an existing lobby message when possible; otherwise send a new one.
+     *
+     * @return true if an existing message was edited
+     */
+    public boolean publishLobby(TextChannel channel, String channelId, ExperienceView view) {
+        if (channel == null || channelId == null) {
+            return false;
+        }
+        MessageEditData edit = ExperienceRenderer.toEdit(view);
+        MessageCreateData create = ExperienceRenderer.toMessage(view);
+        Optional<String> existing = ControlMessageStore.get().get(ControlMessageStore.callLobbyKey(channelId));
+        if (existing.isPresent()) {
+            try {
+                channel.editMessageById(existing.get(), edit).queue(
+                        ok -> {
+                        },
+                        err -> channel.sendMessage(create).queue(msg -> rememberLobbyMessage(channelId, msg.getId()))
+                );
+                return true;
+            } catch (Exception e) {
+                logger.debug("Lobby edit failed for {}: {}", channelId, e.getMessage());
+            }
+        }
+        channel.sendMessage(create).queue(msg -> rememberLobbyMessage(channelId, msg.getId()));
+        return false;
+    }
+
+    public boolean tryEditLobby(String channelId, ExperienceView view) {
+        TextChannel channel = ToolSet.getTextChannel(channelId);
+        if (channel == null) {
+            return false;
+        }
+        Optional<String> existing = ControlMessageStore.get().get(ControlMessageStore.callLobbyKey(channelId));
+        if (existing.isEmpty()) {
+            return false;
+        }
+        try {
+            channel.editMessageById(existing.get(), ExperienceRenderer.toEdit(view)).queue();
+            return true;
+        } catch (Exception e) {
+            logger.debug("tryEditLobby failed for {}: {}", channelId, e.getMessage());
+            return false;
+        }
+    }
+
+    public synchronized EndOutcome end(String channelId) {
         CallSession session = byChannel.get(channelId);
         if (session == null) {
             if (queue.remove(channelId)) {
+                boolean edited = tryEditLobby(channelId, CallPresenter.leftQueue());
                 ControlMessageStore.get().remove(ControlMessageStore.callLobbyKey(channelId));
-                return ExperienceRenderer.toMessage(CallPresenter.leftQueue());
+                return new EndOutcome(edited, ExperienceRenderer.toMessage(CallPresenter.leftQueue()));
             }
-            return ExperienceRenderer.toMessage(CallPresenter.noCall());
+            return new EndOutcome(false, ExperienceRenderer.toMessage(CallPresenter.noCall()));
         }
-        TextChannel other = ToolSet.getTextChannel(session.otherChannelId(channelId));
+
+        session.end();
+        int messageCount = session.getMessages().size();
+        long minutes = Duration.between(session.getStartedAt(), Instant.now()).toMinutes();
+        String sessionId = session.getId();
+        String otherId = session.otherChannelId(channelId);
+
+        ExperienceView selfEnded = CallPresenter.ended(sessionId, minutes, messageCount);
+        ExperienceView peerEnded = CallPresenter.peerHungUp(sessionId, minutes, messageCount);
+
+        boolean editedSelf = tryEditLobby(channelId, selfEnded);
+        if (!editedSelf) {
+            TextChannel self = ToolSet.getTextChannel(channelId);
+            if (self != null) {
+                self.sendMessage(ExperienceRenderer.toMessage(selfEnded))
+                        .queue(msg -> rememberLobbyMessage(channelId, msg.getId()));
+            }
+        }
+
+        TextChannel other = ToolSet.getTextChannel(otherId);
         if (other != null) {
-            sendLobby(other, other.getId(), ExperienceRenderer.toMessage(CallPresenter.peerHungUp(session.getId())));
+            boolean editedOther = tryEditLobby(otherId, peerEnded);
+            if (!editedOther) {
+                other.sendMessage(ExperienceRenderer.toMessage(peerEnded))
+                        .queue(msg -> rememberLobbyMessage(otherId, msg.getId()));
+            }
         }
-        MessageCreateData ended = ExperienceRenderer.toMessage(CallPresenter.ended(session.getId()));
+
         finalize(session);
         ControlMessageStore.get().remove(ControlMessageStore.callLobbyKey(channelId));
-        if (other != null) {
-            ControlMessageStore.get().remove(ControlMessageStore.callLobbyKey(other.getId()));
-        }
-        return ended;
-    }
-
-    private void sendLobby(TextChannel channel, String channelId, MessageCreateData data) {
-        if (channel == null) {
-            return;
-        }
-        channel.sendMessage(data).queue(msg -> rememberLobbyMessage(channelId, msg.getId()));
+        ControlMessageStore.get().remove(ControlMessageStore.callLobbyKey(otherId));
+        return new EndOutcome(editedSelf, ExperienceRenderer.toMessage(selfEnded));
     }
 
     public boolean isInCall(String channelId) {
@@ -186,13 +248,16 @@ public final class CallSessionService {
     private void terminateError(CallSession session) {
         TextChannel a = ToolSet.getTextChannel(session.getChannelA());
         TextChannel b = ToolSet.getTextChannel(session.getChannelB());
+        ExperienceView lost = CallPresenter.warn("Connection lost", "The call ended unexpectedly.");
         if (a != null) {
-            a.sendMessage(Response.CONNECTION_ERROR.toString()).queue();
+            publishLobby(a, session.getChannelA(), lost);
         }
         if (b != null) {
-            b.sendMessage(Response.CONNECTION_ERROR.toString()).queue();
+            publishLobby(b, session.getChannelB(), lost);
         }
         finalize(session);
+        ControlMessageStore.get().remove(ControlMessageStore.callLobbyKey(session.getChannelA()));
+        ControlMessageStore.get().remove(ControlMessageStore.callLobbyKey(session.getChannelB()));
     }
 
     private void finalize(CallSession session) {
@@ -212,5 +277,8 @@ public final class CallSessionService {
 
     public CallSessionRepository repository() {
         return repository;
+    }
+
+    public record EndOutcome(boolean editedInPlace, MessageCreateData message) {
     }
 }

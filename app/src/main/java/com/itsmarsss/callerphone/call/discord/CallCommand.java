@@ -24,10 +24,20 @@ public final class CallCommand implements ISlashCommand {
                             CallPresenter.queued(result.queuePosition(), result.queueSize())))
                     .queue(hook -> hook.retrieveOriginal().queue(msg ->
                             calls.rememberLobbyMessage(channelId, msg.getId())));
-            case ALREADY_QUEUED -> e.reply(ExperienceRenderer.toMessage(
-                            CallPresenter.waiting(result.queuePosition(), result.queueSize())))
-                    .queue(hook -> hook.retrieveOriginal().queue(msg ->
-                            calls.rememberLobbyMessage(channelId, msg.getId())));
+            case ALREADY_QUEUED -> {
+                var view = CallPresenter.waiting(result.queuePosition(), result.queueSize());
+                if (calls.tryEditLobby(channelId, view)) {
+                    e.reply(ExperienceRenderer.toMessage(
+                                    CallPresenter.success("Still waiting", "Queue position updated on the lobby message.")
+                            ))
+                            .setEphemeral(true)
+                            .queue();
+                } else {
+                    e.reply(ExperienceRenderer.toMessage(view))
+                            .queue(hook -> hook.retrieveOriginal().queue(msg ->
+                                    calls.rememberLobbyMessage(channelId, msg.getId())));
+                }
+            }
             case MATCHED -> e.reply(calls.connectedMessage(result.session()))
                     .queue(hook -> hook.retrieveOriginal().queue(msg ->
                             calls.rememberLobbyMessage(channelId, msg.getId())));

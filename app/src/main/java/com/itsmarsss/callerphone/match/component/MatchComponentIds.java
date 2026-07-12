@@ -39,6 +39,10 @@ public final class MatchComponentIds {
     public static final String ACTION_SAFETY_BLOCK = "safety_block";
     public static final String ACTION_SAFETY_REPORT = "safety_report";
     public static final String ACTION_SAFETY_UNMATCH = "safety_unmatch";
+    /** String select: pick a chat. Values are conversation ids. */
+    public static final String ACTION_CHAT_MENU = "chat_menu";
+    /** String select: report category. Opaque is safety context. Values are category codes. */
+    public static final String ACTION_REPORT_CAT = "report_cat";
 
     private MatchComponentIds() {
     }

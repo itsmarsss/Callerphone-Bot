@@ -5,6 +5,7 @@ import com.itsmarsss.callerphone.Response;
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
+import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,6 +46,15 @@ public class ErrorHandler {
      */
     public static void handleModalError(ModalInteractionEvent event, Exception error) {
         logger.error("Error in modal interaction: {}", event.getModalId(), error);
+        try {
+            event.reply(errorMessage(error)).setEphemeral(true).queue();
+        } catch (Exception e) {
+            logger.error("Failed to send error message", e);
+        }
+    }
+
+    public static void handleSelectError(StringSelectInteractionEvent event, Exception error) {
+        logger.error("Error in string select: {}", event.getComponentId(), error);
         try {
             event.reply(errorMessage(error)).setEphemeral(true).queue();
         } catch (Exception e) {

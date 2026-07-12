@@ -1,6 +1,7 @@
 package com.itsmarsss.callerphone.call.discord;
 
 import com.itsmarsss.callerphone.call.service.CallSessionService;
+import com.itsmarsss.callerphone.experience.ExperienceRenderer;
 import com.itsmarsss.commandType.ISlashCommand;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.InteractionContextType;
@@ -12,7 +13,17 @@ public final class EndCallCommand implements ISlashCommand {
 
     @Override
     public void runSlash(SlashCommandInteractionEvent e) {
-        e.reply(calls.end(e.getChannel().getId())).queue();
+        CallSessionService.EndOutcome outcome = calls.end(e.getChannel().getId());
+        if (outcome.editedInPlace()) {
+            // Lobby message already shows the ended state publicly
+            e.reply(ExperienceRenderer.toMessage(
+                            CallPresenter.success("Done", "The call lobby was updated.")
+                    ))
+                    .setEphemeral(true)
+                    .queue();
+            return;
+        }
+        e.reply(outcome.message()).queue();
     }
 
     @Override
