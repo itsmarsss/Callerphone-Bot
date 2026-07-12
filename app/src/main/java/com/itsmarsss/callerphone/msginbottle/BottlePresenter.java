@@ -18,7 +18,11 @@ public final class BottlePresenter {
                 )
                 .actions(
                         ActionSpec.secondary(BottleComponentIds.of(BottleComponentIds.ACTION_ID_ANON, "_"), "Anonymous"),
-                        ActionSpec.success(BottleComponentIds.of(BottleComponentIds.ACTION_ID_SIGN, "_"), "Signed")
+                        ActionSpec.success(BottleComponentIds.of(BottleComponentIds.ACTION_ID_SIGN, "_"), "Signed"),
+                        ActionSpec.secondary(
+                                com.itsmarsss.callerphone.call.discord.CallComponentIds.again("_"),
+                                "Start a call"
+                        )
                 )
                 .ephemeral(true)
                 .build();
