@@ -344,6 +344,10 @@ public final class MatchCommand implements ISlashCommand {
         if ("stop".equals(action)) {
             EnrollmentService.ServiceResult r = ctx.conversations().stopChat(userId);
             if (r.success()) {
+                try {
+                    ctx.analytics().track(userId, "chat_stop", "slash");
+                } catch (Exception ignored) {
+                }
                 e.reply(ExperienceRenderer.toMessage(MatchPresenter.serviceDone(
                         r.message() + "\n\nOpen chats anytime — or Discover someone new."
                 ))).setEphemeral(true).queue();
@@ -351,6 +355,10 @@ public final class MatchCommand implements ISlashCommand {
                 reply(e, r);
             }
             return;
+        }
+        try {
+            ctx.analytics().track(userId, "chats_open", "slash");
+        } catch (Exception ignored) {
         }
         e.deferReply(true).queue();
         ctx.dbExecutor().execute(() -> ChatInboxUi.sendInbox(e.getHook(), ctx, userId));
