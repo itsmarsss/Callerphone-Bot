@@ -325,6 +325,12 @@ public final class CallPresenter {
                                         com.itsmarsss.callerphone.match.component.MatchComponentIds.ACTION_START_BROWSE, "_"
                                 ),
                                 "Discover people"
+                        ),
+                        ActionSpec.secondary(
+                                com.itsmarsss.callerphone.match.component.MatchComponentIds.of(
+                                        com.itsmarsss.callerphone.match.component.MatchComponentIds.ACTION_HOME, "_"
+                                ),
+                                "Inbox"
                         )
                 )
                 .ephemeral(true)
