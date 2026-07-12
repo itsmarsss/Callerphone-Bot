@@ -32,5 +32,7 @@ class ControlMessageStoreTest {
         assertEquals("call:lobby:c1", ControlMessageStore.callLobbyKey("c1"));
         assertEquals("match:discover:u1", ControlMessageStore.discoverKey("u1"));
         assertEquals("match:onboard:u1", ControlMessageStore.onboardingKey("u1"));
+        assertEquals("match:inbox:u1", ControlMessageStore.inboxKey("u1"));
+        assertEquals("match:home:u1", ControlMessageStore.homeKey("u1"));
     }
 }

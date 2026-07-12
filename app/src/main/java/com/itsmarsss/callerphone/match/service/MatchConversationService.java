@@ -100,9 +100,18 @@ public final class MatchConversationService {
                 ? peer.getDisplayName()
                 : "your match";
         String icebreaker = Icebreakers.forPair(self, peer);
+        String stageHint = switch (conversation.getStage()) {
+            case CONNECT_PENDING -> userId.equals(conversation.getConnectRequestedBy())
+                    ? "Connect request pending — waiting for them."
+                    : "They requested connect — accept or decline below.";
+            case CONNECTED -> "You're connected. Discord mentions may be available.";
+            case MEDIATED -> "Mediated chat — request connect when you're ready.";
+            default -> "";
+        };
         String message = "Chatting with **" + name + "**.\n"
-                + "Send a text DM here to talk.\n\n"
-                + "_" + icebreaker + "_";
+                + "Send a text DM here to talk.\n"
+                + (stageHint.isBlank() ? "" : stageHint + "\n")
+                + "\n_" + icebreaker + "_";
         return SelectResult.ok(message, conversation, other, icebreaker);
     }
 
