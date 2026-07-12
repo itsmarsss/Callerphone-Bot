@@ -39,8 +39,9 @@ public final class CallGameService {
         )).queue();
         try {
             if (com.itsmarsss.callerphone.bootstrap.ApplicationContext.isReady()) {
-                com.itsmarsss.callerphone.bootstrap.ApplicationContext.get().analytics()
-                        .track(proposerUserId, "call_game_propose", sessionId);
+                var analytics = com.itsmarsss.callerphone.bootstrap.ApplicationContext.get().analytics();
+                analytics.track(proposerUserId, "call_game_propose", sessionId);
+                analytics.trackSurface(proposerUserId, "call", "game_propose", sessionId);
             }
         } catch (Exception ignored) {
         }
@@ -101,8 +102,9 @@ public final class CallGameService {
         }
         try {
             if (com.itsmarsss.callerphone.bootstrap.ApplicationContext.isReady()) {
-                com.itsmarsss.callerphone.bootstrap.ApplicationContext.get().analytics()
-                        .track(acceptorUserId, "call_game_accept", sessionId);
+                var analytics = com.itsmarsss.callerphone.bootstrap.ApplicationContext.get().analytics();
+                analytics.track(acceptorUserId, "call_game_accept", sessionId);
+                analytics.trackSurface(acceptorUserId, "call", "game_accept", sessionId);
             }
         } catch (Exception ignored) {
         }
