@@ -100,8 +100,7 @@ public final class InboxUi {
             SocialInboxService.InboxEntry entry
     ) {
         if (entry == null) {
-            return ExperienceRenderer.toMessage(MatchPresenter.warn(
-                    "Nothing here",
+            return ExperienceRenderer.toMessage(MatchPresenter.serviceFailed(
                     "That update is gone. Open your inbox again."
             ));
         }
@@ -139,9 +138,9 @@ public final class InboxUi {
         MatchConversationService.SelectResult result = ctx.conversations().select(userId, conversationId);
         if (!result.success()) {
             // Source may still be a user id for interest, or stale chat
-            return ExperienceRenderer.toMessage(MatchPresenter.warn(
-                    entry.actorDisplay(),
-                    entry.preview() + "\n\nOpen `/match chats` if this connection is still active."
+            return ExperienceRenderer.toMessage(MatchPresenter.serviceFailed(
+                    (entry.preview() == null ? "" : entry.preview())
+                            + "\n\nOpen chats if this connection is still active."
             ));
         }
         MatchConversation conversation = result.conversation();
@@ -177,8 +176,7 @@ public final class InboxUi {
     private static MessageCreateData openBottle(ApplicationContext ctx, String userId, String bottleId) {
         Bottle bottle = MIB.getBottle(bottleId);
         if (bottle == null) {
-            return ExperienceRenderer.toMessage(MatchPresenter.warn(
-                    "Bottle gone",
+            return ExperienceRenderer.toMessage(MatchPresenter.serviceFailed(
                     "That bottle is no longer available."
             ));
         }

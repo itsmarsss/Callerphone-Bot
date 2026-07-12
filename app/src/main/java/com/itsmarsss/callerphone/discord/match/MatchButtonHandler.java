@@ -309,7 +309,7 @@ public final class MatchButtonHandler implements IButtonInteraction {
             case MatchComponentIds.ACTION_ICEBREAKER -> {
                 var conv = ctx.conversations().find(opaque);
                 if (conv.isEmpty() || !conv.get().getParticipants().contains(userId)) {
-                    e.reply(ExperienceRenderer.toMessage(MatchPresenter.warn("Chat", "Chat not found.")))
+                    e.reply(ExperienceRenderer.toMessage(MatchPresenter.serviceFailed("Chat not found.")))
                             .setEphemeral(true).queue();
                     return;
                 }

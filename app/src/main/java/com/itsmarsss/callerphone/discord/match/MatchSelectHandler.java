@@ -45,8 +45,7 @@ public final class MatchSelectHandler implements IStringSelectInteraction {
         ctx.dbExecutor().execute(() -> {
             var found = ctx.inbox().find(userId, entryId);
             if (!found.isPresent()) {
-                e.getHook().sendMessage(ExperienceRenderer.toMessage(MatchPresenter.warn(
-                        "Gone",
+                e.getHook().sendMessage(ExperienceRenderer.toMessage(MatchPresenter.serviceFailed(
                         "That update is no longer available."
                 ))).setEphemeral(true).queue();
                 return;
