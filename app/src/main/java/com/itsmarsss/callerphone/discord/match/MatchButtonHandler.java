@@ -74,6 +74,7 @@ public final class MatchButtonHandler implements IButtonInteraction {
             case MatchComponentIds.ACTION_CHAT_SELECT -> {
                 try {
                     ctx.analytics().track(userId, "chat_select", opaque);
+                    ctx.analytics().trackSurface(userId, "chat", "select", null);
                 } catch (Exception ignored) {
                 }
                 replyChatSelect(e, ctx, userId, opaque);
