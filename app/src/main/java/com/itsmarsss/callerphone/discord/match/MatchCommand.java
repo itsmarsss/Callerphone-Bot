@@ -206,9 +206,11 @@ public final class MatchCommand implements ISlashCommand {
         if (p.getState() != com.itsmarsss.callerphone.match.model.ProfileState.ACTIVE
                 || !ProfileChecklist.readyToSubmit(p)) {
             row.add(Button.primary(MatchComponentIds.of(MatchComponentIds.ACTION_SETUP, "_"), "Finish setup"));
+            row.add(Button.secondary(MatchComponentIds.of(MatchComponentIds.ACTION_PHOTO_MENU, "_"), "Photo"));
         } else {
             row.add(Button.success(MatchComponentIds.of(MatchComponentIds.ACTION_START_BROWSE, "_"), "Discover"));
-            row.add(Button.secondary(MatchComponentIds.of(MatchComponentIds.ACTION_SETUP, "_"), "Edit"));
+            row.add(Button.secondary(MatchComponentIds.of(MatchComponentIds.ACTION_EDIT_MENU, "_"), "Edit"));
+            row.add(Button.secondary(MatchComponentIds.of(MatchComponentIds.ACTION_SETTINGS, "_"), "Settings"));
         }
         e.replyEmbeds(MatchEmbeds.profileCard(p, true))
                 .addComponents(ActionRow.of(row))

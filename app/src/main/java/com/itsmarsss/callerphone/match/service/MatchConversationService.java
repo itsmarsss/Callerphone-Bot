@@ -87,6 +87,13 @@ public final class MatchConversationService {
         users.save(user);
         conversation.clearUnread(userId);
         conversations.save(conversation);
+        try {
+            if (com.itsmarsss.callerphone.bootstrap.ApplicationContext.isReady()) {
+                com.itsmarsss.callerphone.bootstrap.ApplicationContext.get().inbox()
+                        .markReadBySource(userId, conversationId);
+            }
+        } catch (Exception ignored) {
+        }
         MatchProfile self = profiles.find(userId).orElse(null);
         MatchProfile peer = profiles.find(other).orElse(null);
         String name = peer != null && peer.getDisplayName() != null && !peer.getDisplayName().isBlank()

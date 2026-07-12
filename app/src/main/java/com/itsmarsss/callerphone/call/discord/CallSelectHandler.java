@@ -29,6 +29,13 @@ public final class CallSelectHandler implements IStringSelectInteraction {
         String sessionId = parsed.sessionId();
         ReportCategory cat = ReportCategory.from(e.getValues().get(0)).orElse(ReportCategory.OTHER);
         sessions.reportById(sessionId);
+        try {
+            if (com.itsmarsss.callerphone.bootstrap.ApplicationContext.isReady()) {
+                com.itsmarsss.callerphone.bootstrap.ApplicationContext.get().analytics()
+                        .track(e.getUser().getId(), "call_report", cat.code());
+            }
+        } catch (Exception ignored) {
+        }
         e.reply(ExperienceRenderer.toMessage(CallPresenter.success(
                 "Report received",
                 "Category: **" + cat.label() + "**. Recent transcript was preserved for review."

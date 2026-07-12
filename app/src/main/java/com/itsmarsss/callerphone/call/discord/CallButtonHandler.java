@@ -57,6 +57,13 @@ public final class CallButtonHandler implements IButtonInteraction {
             }
             case CallComponentIds.REPORT -> openReportCategories(e, parsed.sessionId());
             case CallComponentIds.LEAVE_QUEUE -> {
+                try {
+                    if (com.itsmarsss.callerphone.bootstrap.ApplicationContext.isReady()) {
+                        com.itsmarsss.callerphone.bootstrap.ApplicationContext.get().analytics()
+                                .track(userId, "call_leave_queue", channelId);
+                    }
+                } catch (Exception ignored) {
+                }
                 var outcome = sessions.end(channelId);
                 e.reply(outcome.message()).queue();
             }
