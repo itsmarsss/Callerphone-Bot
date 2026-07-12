@@ -54,6 +54,7 @@ public final class MatchButtonHandler implements IButtonInteraction {
             case MatchComponentIds.ACTION_START_BROWSE -> {
                 try {
                     ctx.analytics().track(userId, "discover_open", "button");
+                    ctx.analytics().trackSurface(userId, "discover", "open", "button");
                 } catch (Exception ignored) {
                 }
                 e.deferReply(true).queue();
@@ -62,6 +63,7 @@ public final class MatchButtonHandler implements IButtonInteraction {
             case MatchComponentIds.ACTION_OPEN_CHATS -> {
                 try {
                     ctx.analytics().track(userId, "chats_open", "button");
+                    ctx.analytics().trackSurface(userId, "chats", "open", "button");
                 } catch (Exception ignored) {
                 }
                 e.deferReply(true).queue();
