@@ -639,6 +639,7 @@ public final class MatchButtonHandler implements IButtonInteraction {
         }
         try {
             ctx.analytics().track(userId, "safety_block", target);
+            ctx.analytics().trackSurface(userId, "safety", "block", null);
         } catch (Exception ignored) {
         }
         String name = ctx.profiles().find(target).map(MatchProfile::getDisplayName).orElse("That person");
