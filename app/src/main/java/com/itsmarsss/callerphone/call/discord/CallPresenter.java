@@ -154,7 +154,10 @@ public final class CallPresenter {
             "What's your comfort game or show right now?",
             "If you had a free Sunday, what would you do?",
             "What's something small that made your week better?",
-            "What are you learning or trying lately?"
+            "What are you learning or trying lately?",
+            "Coffee shop or late-night snack — which are you?",
+            "What's a hobby you'd love to talk about more?",
+            "If we had ten minutes, what should we debate for fun?"
     };
 
     public static String randomPrompt() {

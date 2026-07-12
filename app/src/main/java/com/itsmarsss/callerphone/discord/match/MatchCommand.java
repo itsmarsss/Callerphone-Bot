@@ -251,6 +251,10 @@ public final class MatchCommand implements ISlashCommand {
                 .addComponents(ActionRow.of(row))
                 .setEphemeral(true)
                 .queue();
+        try {
+            ctx.analytics().track(userId, "match_profile_view", p.getState() == null ? "" : p.getState().name());
+        } catch (Exception ignored) {
+        }
     }
 
     private void handleEdit(SlashCommandInteractionEvent e, ApplicationContext ctx, String userId) {

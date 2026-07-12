@@ -89,13 +89,21 @@ public final class CallButtonHandler implements IButtonInteraction {
                             CallPresenter.success("Still connected", "Keep talking.")
                     ))
                     .setEphemeral(true).queue();
-            case CallComponentIds.PROMPT -> e.reply(ExperienceRenderer.toMessage(
-                            CallPresenter.conversationPrompt(
-                                    CallPresenter.randomPrompt(),
-                                    parsed.sessionId()
-                            )
-                    ))
-                    .setEphemeral(true).queue();
+            case CallComponentIds.PROMPT -> {
+                try {
+                    if (com.itsmarsss.callerphone.bootstrap.ApplicationContext.isReady()) {
+                        com.itsmarsss.callerphone.bootstrap.ApplicationContext.get().analytics()
+                                .track(userId, "call_prompt", parsed.sessionId());
+                    }
+                } catch (Exception ignored) {
+                }
+                e.reply(ExperienceRenderer.toMessage(
+                        CallPresenter.conversationPrompt(
+                                CallPresenter.randomPrompt(),
+                                parsed.sessionId()
+                        )
+                )).setEphemeral(true).queue();
+            }
             case CallComponentIds.GAME_SHELF -> e.reply(ExperienceRenderer.toMessage(
                             CallPresenter.gameShelf(parsed.sessionId())
                     ))

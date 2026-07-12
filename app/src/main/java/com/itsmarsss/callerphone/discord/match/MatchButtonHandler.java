@@ -278,6 +278,10 @@ public final class MatchButtonHandler implements IButtonInteraction {
                         ctx.profiles().find(userId).orElse(null),
                         ctx.profiles().find(other).orElse(null)
                 );
+                try {
+                    ctx.analytics().track(userId, "match_icebreaker", opaque);
+                } catch (Exception ignored) {
+                }
                 e.reply(ExperienceRenderer.toMessage(MatchPresenter.quietSuccess(
                         "Conversation prompt",
                         "_" + opener + "_\n\nSend a text DM here to talk."
