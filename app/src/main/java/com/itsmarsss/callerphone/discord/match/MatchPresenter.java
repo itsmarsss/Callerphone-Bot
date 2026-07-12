@@ -862,7 +862,8 @@ public final class MatchPresenter {
                         ),
                         ActionSpec.secondary(MatchComponentIds.of(MatchComponentIds.ACTION_PREMIUM, "_"), "About Premium"),
                         ActionSpec.secondary(MatchComponentIds.of(MatchComponentIds.ACTION_REWARDS, "_"), "View rewards"),
-                        ActionSpec.secondary(MatchComponentIds.of(MatchComponentIds.ACTION_HOME, "_"), "Inbox")
+                        ActionSpec.secondary(MatchComponentIds.of(MatchComponentIds.ACTION_HOME, "_"), "Inbox"),
+                        ActionSpec.secondary(CallComponentIds.again("_"), "Start a call")
                 )
                 .ephemeral(true)
                 .build();
