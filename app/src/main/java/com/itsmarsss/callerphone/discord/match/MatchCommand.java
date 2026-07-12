@@ -278,7 +278,15 @@ public final class MatchCommand implements ISlashCommand {
     private void handleChats(SlashCommandInteractionEvent e, ApplicationContext ctx, String userId) {
         String action = e.getOption("action") == null ? "list" : e.getOption("action").getAsString();
         if ("stop".equals(action)) {
-            reply(e, ctx.conversations().stopChat(userId));
+            EnrollmentService.ServiceResult r = ctx.conversations().stopChat(userId);
+            if (r.success()) {
+                e.reply(ExperienceRenderer.toMessage(MatchPresenter.quietSuccess(
+                        "Chat deselected",
+                        r.message() + "\n\nOpen chats anytime — or Discover someone new."
+                ))).setEphemeral(true).queue();
+            } else {
+                reply(e, r);
+            }
             return;
         }
         e.deferReply(true).queue();

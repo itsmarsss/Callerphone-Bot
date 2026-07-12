@@ -28,8 +28,7 @@ public final class CallCommand implements ISlashCommand {
         CallResult result = calls.start(endpoint);
         track(userId, result);
         switch (result.status()) {
-            case CONFLICT -> e.reply(ExperienceRenderer.toMessage(CallPresenter.conflict()))
-                    .setEphemeral(true).queue();
+            case CONFLICT -> e.reply(ExperienceRenderer.toMessage(CallPresenter.conflict())).queue();
             case QUEUED -> {
                 ExperienceView view = dm
                         ? CallPresenter.queuedDm(result.queuePosition(), result.queueSize())

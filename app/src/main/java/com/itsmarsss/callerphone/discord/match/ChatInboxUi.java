@@ -66,10 +66,16 @@ public final class ChatInboxUi {
             }
             builder.setComponents(
                     ActionRow.of(menu.build()),
-                    ActionRow.of(Button.success(
-                            MatchComponentIds.of(MatchComponentIds.ACTION_START_BROWSE, "_"),
-                            "Discover more"
-                    ))
+                    ActionRow.of(
+                            Button.success(
+                                    MatchComponentIds.of(MatchComponentIds.ACTION_START_BROWSE, "_"),
+                                    "Discover more"
+                            ),
+                            Button.secondary(
+                                    MatchComponentIds.of(MatchComponentIds.ACTION_HOME, "_"),
+                                    "Inbox"
+                            )
+                    )
             );
         } else {
             List<Button> buttons = new ArrayList<>();
@@ -87,10 +93,16 @@ public final class ChatInboxUi {
             if (!buttons.isEmpty()) {
                 actionRows.add(ActionRow.of(buttons));
             }
-            actionRows.add(ActionRow.of(Button.success(
-                    MatchComponentIds.of(MatchComponentIds.ACTION_START_BROWSE, "_"),
-                    "Discover more"
-            )));
+            actionRows.add(ActionRow.of(
+                    Button.success(
+                            MatchComponentIds.of(MatchComponentIds.ACTION_START_BROWSE, "_"),
+                            "Discover more"
+                    ),
+                    Button.secondary(
+                            MatchComponentIds.of(MatchComponentIds.ACTION_HOME, "_"),
+                            "Inbox"
+                    )
+            ));
             builder.setComponents(actionRows);
         }
 
