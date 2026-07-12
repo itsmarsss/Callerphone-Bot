@@ -625,7 +625,12 @@ public final class MatchPresenter {
                                 MatchComponentIds.of(MatchComponentIds.ACTION_START_BROWSE, "_"),
                                 "Discover"
                         ),
-                        ActionSpec.secondary(MatchComponentIds.of(MatchComponentIds.ACTION_OPEN_CHATS, "_"), "Chats")
+                        ActionSpec.secondary(MatchComponentIds.of(MatchComponentIds.ACTION_OPEN_CHATS, "_"), "Chats"),
+                        ActionSpec.secondary(CallComponentIds.again("_"), "Start a call"),
+                        ActionSpec.secondary(
+                                BottleComponentIds.of(BottleComponentIds.ACTION_FIND, "_"),
+                                "Find a bottle"
+                        )
                 )
                 .ephemeral(true)
                 .build();
