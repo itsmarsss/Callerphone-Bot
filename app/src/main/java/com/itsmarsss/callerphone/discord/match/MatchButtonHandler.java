@@ -222,8 +222,14 @@ public final class MatchButtonHandler implements IButtonInteraction {
                         MatchPresenter.settings(user.isNotificationsEnabled(), user.isDigestOptIn())
                 )).setEphemeral(true).queue();
             }
-            case MatchComponentIds.ACTION_PHOTO_MENU -> e.reply(ExperienceRenderer.toMessage(MatchPresenter.photoMenu()))
-                    .setEphemeral(true).queue();
+            case MatchComponentIds.ACTION_PHOTO_MENU -> {
+                try {
+                    ctx.analytics().track(userId, "photo_menu_open", null);
+                } catch (Exception ignored) {
+                }
+                e.reply(ExperienceRenderer.toMessage(MatchPresenter.photoMenu()))
+                        .setEphemeral(true).queue();
+            }
             case MatchComponentIds.ACTION_PHOTO_AVATAR -> {
                 var r = ctx.profiles().setAvatar(userId, e.getUser().getEffectiveAvatarUrl());
                 if (r.success()) {
