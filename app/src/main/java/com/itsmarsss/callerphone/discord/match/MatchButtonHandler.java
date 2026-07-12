@@ -388,9 +388,14 @@ public final class MatchButtonHandler implements IButtonInteraction {
     }
 
     private static void replyService(ButtonInteraction e, EnrollmentService.ServiceResult result) {
-        e.reply(ExperienceRenderer.toMessage(result.success()
-                ? MatchPresenter.quietSuccess("Done", result.message())
-                : MatchPresenter.warn("Couldn't complete", result.message())
+        if (result.success()) {
+            e.reply(ExperienceRenderer.toMessage(
+                    MatchPresenter.serviceDone(result.message())
+            )).setEphemeral(true).queue();
+            return;
+        }
+        e.reply(ExperienceRenderer.toMessage(
+                MatchPresenter.serviceFailed(result.message())
         )).setEphemeral(true).queue();
     }
 

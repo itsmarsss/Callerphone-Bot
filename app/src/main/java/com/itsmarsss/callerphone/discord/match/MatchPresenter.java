@@ -1027,6 +1027,35 @@ public final class MatchPresenter {
                 .build();
     }
 
+    /** Generic successful service outcome with free-path recovery CTAs. */
+    public static ExperienceView serviceDone(String message) {
+        return ExperienceView.builder(ExperienceIntent.SUCCESS)
+                .title("Done")
+                .description(message == null || message.isBlank() ? "Updated." : message)
+                .actions(
+                        ActionSpec.success(MatchComponentIds.of(MatchComponentIds.ACTION_START_BROWSE, "_"), "Discover"),
+                        ActionSpec.secondary(MatchComponentIds.of(MatchComponentIds.ACTION_OPEN_CHATS, "_"), "Open chats"),
+                        ActionSpec.secondary(CallComponentIds.again("_"), "Start a call")
+                )
+                .ephemeral(true)
+                .build();
+    }
+
+    public static ExperienceView serviceFailed(String message) {
+        return ExperienceView.builder(ExperienceIntent.WARNING)
+                .title("Couldn't complete")
+                .description(message == null || message.isBlank()
+                        ? "Nothing was lost — try again from Home."
+                        : message)
+                .actions(
+                        ActionSpec.primary(MatchComponentIds.of(MatchComponentIds.ACTION_HOME, "_"), "Home"),
+                        ActionSpec.success(MatchComponentIds.of(MatchComponentIds.ACTION_START_BROWSE, "_"), "Discover"),
+                        ActionSpec.secondary(CallComponentIds.again("_"), "Start a call")
+                )
+                .ephemeral(true)
+                .build();
+    }
+
     public static ExperienceView icebreakerPrompt(String opener, String conversationId) {
         return ExperienceView.builder(ExperienceIntent.SOCIAL)
                 .title("Conversation prompt")
