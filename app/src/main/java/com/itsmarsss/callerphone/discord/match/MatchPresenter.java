@@ -1087,7 +1087,8 @@ public final class MatchPresenter {
                         ActionSpec.success(
                                 MatchComponentIds.of(MatchComponentIds.ACTION_CHAT_SELECT, conversationId),
                                 "Open chat"
-                        )
+                        ),
+                        ActionSpec.secondary(CallComponentIds.again("_"), "Start a call")
                 )
                 .ephemeral(true)
                 .build();
