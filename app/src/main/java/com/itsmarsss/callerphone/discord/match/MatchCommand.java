@@ -302,7 +302,9 @@ public final class MatchCommand implements ISlashCommand {
                 .setEphemeral(true)
                 .queue();
         try {
-            ctx.analytics().track(userId, "match_profile_view", p.getState() == null ? "" : p.getState().name());
+            String st = p.getState() == null ? "" : p.getState().name();
+            ctx.analytics().track(userId, "match_profile_view", st);
+            ctx.analytics().trackSurface(userId, "profile", "match_view", st);
         } catch (Exception ignored) {
         }
     }
