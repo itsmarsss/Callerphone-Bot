@@ -210,6 +210,23 @@ public final class MatchButtonHandler implements IButtonInteraction {
                         "Non-safety updates marked read. Open next anytime from your inbox."
                 ))).setEphemeral(true).queue();
             }
+            case MatchComponentIds.ACTION_ICEBREAKER -> {
+                var conv = ctx.conversations().find(opaque);
+                if (conv.isEmpty() || !conv.get().getParticipants().contains(userId)) {
+                    e.reply(ExperienceRenderer.toMessage(MatchPresenter.warn("Chat", "Chat not found.")))
+                            .setEphemeral(true).queue();
+                    return;
+                }
+                String other = conv.get().otherParticipant(userId);
+                String opener = com.itsmarsss.callerphone.match.service.Icebreakers.forPair(
+                        ctx.profiles().find(userId).orElse(null),
+                        ctx.profiles().find(other).orElse(null)
+                );
+                e.reply(ExperienceRenderer.toMessage(MatchPresenter.quietSuccess(
+                        "Conversation prompt",
+                        "_" + opener + "_\n\nSend a text DM here to talk."
+                ))).setEphemeral(true).queue();
+            }
             case MatchComponentIds.ACTION_GAME_TTT -> {
                 var result = ctx.connectionGames().proposeTtt(opaque, userId);
                 e.reply(ExperienceRenderer.toMessage(result.success()
@@ -340,6 +357,10 @@ public final class MatchButtonHandler implements IButtonInteraction {
             row2.add(Button.primary(
                     MatchComponentIds.of(MatchComponentIds.ACTION_GAME_TTT, conversationId),
                     "Play a game"
+            ));
+            row2.add(Button.secondary(
+                    MatchComponentIds.of(MatchComponentIds.ACTION_ICEBREAKER, conversationId),
+                    "Icebreaker"
             ));
         }
         if (conversation.getStage() == ConversationStage.MEDIATED) {

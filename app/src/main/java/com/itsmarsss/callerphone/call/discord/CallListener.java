@@ -45,7 +45,23 @@ public final class CallListener extends ListenerAdapter {
                 ToolSet.sendPPAndTOS(event);
             } else {
                 event.getChannel().sendMessage(
-                        "Accept Callerphone's privacy policy and terms with `/match join` or our support server before calling."
+                        com.itsmarsss.callerphone.experience.ExperienceRenderer.toMessage(
+                                com.itsmarsss.callerphone.experience.ExperienceView.builder(
+                                                com.itsmarsss.callerphone.experience.ExperienceIntent.WARNING)
+                                        .title("Almost ready")
+                                        .description(
+                                                "Accept Callerphone terms via **`/match join`** "
+                                                        + "(or our support server) before calling."
+                                        )
+                                        .actions(com.itsmarsss.callerphone.experience.ActionSpec.success(
+                                                com.itsmarsss.callerphone.match.component.MatchComponentIds.of(
+                                                        com.itsmarsss.callerphone.match.component.MatchComponentIds.ACTION_JOIN_ACCEPT,
+                                                        "_"
+                                                ),
+                                                "Create profile"
+                                        ))
+                                        .build()
+                        )
                 ).queue();
             }
             return;

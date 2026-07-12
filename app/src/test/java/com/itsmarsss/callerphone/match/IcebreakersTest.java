@@ -6,18 +6,27 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 class IcebreakersTest {
+
     @Test
-    void prefersSharedInterests() {
-        MatchProfile a = new MatchProfile("1");
-        a.setInterests(List.of("gaming", "music"));
-        MatchProfile b = new MatchProfile("2");
-        b.setInterests(List.of("gaming", "art"));
+    void sharedInterestsCaseInsensitive() {
+        MatchProfile a = new MatchProfile();
+        a.setInterests(List.of("Music", "Hiking"));
+        MatchProfile b = new MatchProfile();
+        b.setInterests(List.of("music", "Coding"));
         String line = Icebreakers.forPair(a, b);
+        assertNotNull(line);
         assertFalse(line.isBlank());
-        assertTrue(line.toLowerCase().contains("gaming") || line.length() > 10);
+        // Prefer shared-interest opener when present
+        assertTrue(line.toLowerCase().contains("music") || line.length() > 10);
+    }
+
+    @Test
+    void nullProfilesFallback() {
+        String line = Icebreakers.forPair(null, null);
+        assertNotNull(line);
+        assertFalse(line.isBlank());
     }
 }

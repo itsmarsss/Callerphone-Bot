@@ -22,8 +22,13 @@ public final class Icebreakers {
         List<String> options = new ArrayList<>();
         if (self != null && other != null && self.getInterests() != null && other.getInterests() != null) {
             for (String interest : self.getInterests()) {
-                if (other.getInterests().contains(interest)) {
-                    options.add("You both like **" + interest + "**. What got you into it?");
+                if (interest == null || interest.isBlank()) {
+                    continue;
+                }
+                boolean shared = other.getInterests().stream()
+                        .anyMatch(o -> o != null && o.equalsIgnoreCase(interest.trim()));
+                if (shared) {
+                    options.add("You both like **" + interest.trim() + "**. What got you into it?");
                 }
             }
         }

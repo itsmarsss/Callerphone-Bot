@@ -69,6 +69,8 @@ public final class MatchComponentIds {
     public static final String ACTION_PREMIUM = "premium";
     public static final String ACTION_TOGGLE_NOTIFY = "tog_ntfy";
     public static final String ACTION_TOGGLE_DIGEST = "tog_dgst";
+    /** Suggest icebreaker for a conversation. Opaque: conversationId. */
+    public static final String ACTION_ICEBREAKER = "ice";
 
     private MatchComponentIds() {
     }
