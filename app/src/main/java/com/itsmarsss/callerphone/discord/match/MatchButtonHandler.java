@@ -104,11 +104,30 @@ public final class MatchButtonHandler implements IButtonInteraction {
             case MatchComponentIds.ACTION_SAFETY_BLOCK -> safetyBlock(e, ctx, userId, opaque);
             case MatchComponentIds.ACTION_SAFETY_REPORT -> safetyReport(e, ctx, userId, opaque);
             case MatchComponentIds.ACTION_SAFETY_UNMATCH -> safetyUnmatch(e, ctx, userId, opaque);
-            case MatchComponentIds.ACTION_LEAVE_CONFIRM -> replyService(e, ctx.deletion().leaveAndSoftDelete(userId));
+            case MatchComponentIds.ACTION_LEAVE_CONFIRM -> {
+                var result = ctx.deletion().leaveAndSoftDelete(userId);
+                if (result.success()) {
+                    e.reply(ExperienceRenderer.toMessage(MatchPresenter.home(
+                            e.getUser().getName(), 0, 0, false, false
+                    ))).setEphemeral(true).queue();
+                } else {
+                    replyService(e, result);
+                }
+            }
             case MatchComponentIds.ACTION_LEAVE_CANCEL -> e.reply(ExperienceRenderer.toMessage(
                             MatchPresenter.quietSuccess("Still live", "You're still in Discover.")
                     )).setEphemeral(true).queue();
-            case MatchComponentIds.ACTION_DELETE_CONFIRM -> replyService(e, ctx.deletion().hardDeleteProfileContent(userId));
+            case MatchComponentIds.ACTION_DELETE_CONFIRM -> {
+                var result = ctx.deletion().hardDeleteProfileContent(userId);
+                if (result.success()) {
+                    e.reply(ExperienceRenderer.toMessage(MatchPresenter.quietSuccess(
+                            "Deleted",
+                            result.message() + "\n\nYou can start fresh with **Create profile** anytime."
+                    ))).setEphemeral(true).queue();
+                } else {
+                    replyService(e, result);
+                }
+            }
             case MatchComponentIds.ACTION_DELETE_CANCEL -> e.reply(ExperienceRenderer.toMessage(
                             MatchPresenter.quietSuccess("Cancelled", "Nothing was deleted.")
                     )).setEphemeral(true).queue();

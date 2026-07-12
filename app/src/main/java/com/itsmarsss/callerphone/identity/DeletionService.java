@@ -63,6 +63,13 @@ public final class DeletionService {
 
         // Keep matches/conversations — retention depends on unfinished chats still being there
         audits.append(AuditEvent.of(userId, "match_leave_pause", userId, "match", "user left discovery"));
+        try {
+            if (com.itsmarsss.callerphone.bootstrap.ApplicationContext.isReady()) {
+                com.itsmarsss.callerphone.bootstrap.ApplicationContext.get().analytics()
+                        .track(userId, "match_leave", "soft");
+            }
+        } catch (Exception ignored) {
+        }
         return EnrollmentService.ServiceResult.ok(
                 "You're out of discovery. Profile and chats are still here when you return.");
     }
@@ -74,6 +81,13 @@ public final class DeletionService {
             profiles.save(profile);
         });
         audits.append(AuditEvent.of(userId, "match_hard_scrub", userId, "match", "profile content scrubbed"));
+        try {
+            if (com.itsmarsss.callerphone.bootstrap.ApplicationContext.isReady()) {
+                com.itsmarsss.callerphone.bootstrap.ApplicationContext.get().analytics()
+                        .track(userId, "match_delete", "hard");
+            }
+        } catch (Exception ignored) {
+        }
         return EnrollmentService.ServiceResult.ok("Match profile content scrubbed for " + userId);
     }
 
