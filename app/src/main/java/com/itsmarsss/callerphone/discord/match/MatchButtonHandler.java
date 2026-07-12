@@ -323,7 +323,9 @@ public final class MatchButtonHandler implements IButtonInteraction {
                 var r = ctx.enrollment().setNotifications(userId, next);
                 user = ctx.enrollment().getOrCreate(userId);
                 try {
-                    ctx.analytics().track(userId, "settings_notify", next ? "on" : "off");
+                    String v = next ? "on" : "off";
+                    ctx.analytics().track(userId, "settings_notify", v);
+                    ctx.analytics().trackSurface(userId, "settings", "notify", v);
                 } catch (Exception ignored) {
                 }
                 e.reply(ExperienceRenderer.toMessage(r.success()
@@ -337,7 +339,9 @@ public final class MatchButtonHandler implements IButtonInteraction {
                 var r = ctx.enrollment().setDigestOptIn(userId, next);
                 user = ctx.enrollment().getOrCreate(userId);
                 try {
-                    ctx.analytics().track(userId, "settings_digest", next ? "on" : "off");
+                    String v = next ? "on" : "off";
+                    ctx.analytics().track(userId, "settings_digest", v);
+                    ctx.analytics().trackSurface(userId, "settings", "digest", v);
                 } catch (Exception ignored) {
                 }
                 e.reply(ExperienceRenderer.toMessage(r.success()
