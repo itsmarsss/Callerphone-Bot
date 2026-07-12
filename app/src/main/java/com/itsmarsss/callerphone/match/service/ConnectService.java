@@ -63,6 +63,7 @@ public final class ConnectService {
         conversation.setConnectExpiresAt(Instant.now().plus(Duration.ofHours(MatchLimits.CONNECT_EXPIRE_HOURS)));
         conversations.save(conversation);
         notifications.notifyConnectRequest(other, userId, conversationId);
+        track(userId, "connect_request", conversationId);
         return EnrollmentService.ServiceResult.ok("Request sent. They have 48 hours.");
     }
 
@@ -95,6 +96,7 @@ public final class ConnectService {
             consents.append(ConsentEvent.of(other, ConsentType.CONNECTION, "v1", true, conversationId));
             notifications.notifyConnectAccepted(other, userId);
         }
+        track(userId, "connect_accept", conversationId);
         return ConnectResult.connected(other);
     }
 
@@ -118,8 +120,19 @@ public final class ConnectService {
         conversations.save(conversation);
         if (requester != null) {
             notifications.notifyConnectDeclined(requester);
+            track(userId, "connect_decline", conversationId);
         }
         return EnrollmentService.ServiceResult.ok("Declined.");
+    }
+
+    private static void track(String userId, String name, String meta) {
+        try {
+            if (com.itsmarsss.callerphone.bootstrap.ApplicationContext.isReady()) {
+                com.itsmarsss.callerphone.bootstrap.ApplicationContext.get().analytics()
+                        .track(userId, name, meta);
+            }
+        } catch (Exception ignored) {
+        }
     }
 
     public record ConnectResult(boolean success, String message, String otherUserId) {

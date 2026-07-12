@@ -1,9 +1,12 @@
 package com.itsmarsss.callerphone.bot;
 
 import com.itsmarsss.callerphone.Callerphone;
-import com.itsmarsss.callerphone.ToolSet;
+import com.itsmarsss.callerphone.bootstrap.ApplicationContext;
+import com.itsmarsss.callerphone.experience.ExperienceIntent;
+import com.itsmarsss.callerphone.experience.ExperienceRenderer;
+import com.itsmarsss.callerphone.experience.ExperienceView;
+import com.itsmarsss.callerphone.experience.ViewField;
 import com.itsmarsss.commandType.ISlashCommand;
-import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.InteractionContextType;
@@ -11,6 +14,8 @@ import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 
 import java.lang.management.ManagementFactory;
+import java.util.ArrayList;
+import java.util.List;
 
 /** Plan §30: operational status without host CPU/memory dump. */
 public class BotInfo implements ISlashCommand {
@@ -20,22 +25,34 @@ public class BotInfo implements ISlashCommand {
         JDA jda = e.getJDA();
         long uptimeMs = ManagementFactory.getRuntimeMXBean().getUptime();
         jda.getRestPing().queue(
-                ping -> e.getHook().editOriginalEmbeds(build(jda, ping, uptimeMs)).queue(),
-                err -> e.getHook().editOriginalEmbeds(build(jda, -1, uptimeMs)).queue()
+                ping -> e.getHook().editOriginal(ExperienceRenderer.toEdit(build(jda, ping, uptimeMs))).queue(),
+                err -> e.getHook().editOriginal(ExperienceRenderer.toEdit(build(jda, -1, uptimeMs))).queue()
         );
     }
 
-    private net.dv8tion.jda.api.entities.MessageEmbed build(JDA jda, long restPing, long uptimeMs) {
-        return new EmbedBuilder()
-                .setColor(ToolSet.COLOR)
-                .setTitle("Callerphone status")
-                .setDescription("Online · All systems operational")
-                .addField("Latency", restPing < 0 ? "—" : restPing + " ms rest · " + jda.getGatewayPing() + " ms WS", true)
-                .addField("Servers", String.valueOf(jda.getGuilds().size()), true)
-                .addField("Version", Callerphone.VERSION, true)
-                .addField("Uptime", About.formatUptime(uptimeMs), true)
-                .addField("Shard", (jda.getShardInfo().getShardId() + 1) + "/" + jda.getShardInfo().getShardTotal(), true)
-                .setFooter("Support: " + (Callerphone.config != null ? Callerphone.config.getSupportServer() : ""))
+    private ExperienceView build(JDA jda, long restPing, long uptimeMs) {
+        List<ViewField> fields = new ArrayList<>();
+        fields.add(ViewField.of(
+                "Latency",
+                restPing < 0 ? "—" : restPing + " ms rest · " + jda.getGatewayPing() + " ms WS"
+        ));
+        fields.add(ViewField.of("Servers", String.valueOf(jda.getGuilds().size())));
+        fields.add(ViewField.of("Version", Callerphone.VERSION));
+        fields.add(ViewField.of("Uptime", About.formatUptime(uptimeMs)));
+        fields.add(ViewField.of(
+                "Shard",
+                (jda.getShardInfo().getShardId() + 1) + "/" + jda.getShardInfo().getShardTotal()
+        ));
+        fields.add(ViewField.of(
+                "Match",
+                ApplicationContext.isReady() ? "Ready" : "Starting"
+        ));
+        String footer = "Support: " + (Callerphone.config != null ? Callerphone.config.getSupportServer() : "");
+        return ExperienceView.builder(ExperienceIntent.NEUTRAL)
+                .title("Callerphone status")
+                .description("Online · product surfaces healthy")
+                .fields(fields)
+                .footer(footer)
                 .build();
     }
 

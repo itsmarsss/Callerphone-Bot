@@ -63,6 +63,10 @@ public final class CallProfileShareService {
                         Button.secondary(CallComponentIds.pass(sessionId, sharerUserId), "Not now")
                 ))
                 .queue();
+        try {
+            ApplicationContext.get().analytics().track(sharerUserId, "call_profile_share", sessionId);
+        } catch (Exception ignored) {
+        }
         return ShareResult.ok("Your profile was sent to the other side.");
     }
 
@@ -116,10 +120,19 @@ public final class CallProfileShareService {
                             "You're both interested.\n\n_" + opener + "_"
                     )).queue();
                 }
+                try {
+                    ApplicationContext.get().analytics().track(actorUserId, "call_share_to_connection",
+                            conversationId.orElse("pending"));
+                } catch (Exception ignored) {
+                }
                 return ShareResult.ok(conversationId.isPresent()
                         ? "You connected.\n_" + opener + "_"
                         : "You're both interested. Chat limit may be full for now.");
             }
+        }
+        try {
+            ApplicationContext.get().analytics().track(actorUserId, "call_share_interest", subjectUserId);
+        } catch (Exception ignored) {
         }
         MessageChannel other = ToolSet.getMessageChannel(opt.get().otherChannelId(actorChannelId));
         if (other != null) {
