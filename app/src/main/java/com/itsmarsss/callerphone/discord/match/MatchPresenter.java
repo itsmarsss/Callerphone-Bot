@@ -233,12 +233,7 @@ public final class MatchPresenter {
                                 + "Premium raises daily limits when available — Discover stays free either way.\n\n"
                                 + "Meanwhile: chats, calls, and bottles are still open."
                 )
-                .actions(
-                        ActionSpec.primary(MatchComponentIds.of(MatchComponentIds.ACTION_OPEN_CHATS, "_"), "Open chats"),
-                        ActionSpec.success(BottleComponentIds.of(BottleComponentIds.ACTION_FIND, "_"), "Find a bottle"),
-                        ActionSpec.secondary(CallComponentIds.again("_"), "Start a call"),
-                        ActionSpec.secondary(MatchComponentIds.of(MatchComponentIds.ACTION_PREMIUM, "_"), "About Premium")
-                )
+                .actions(limitRecoveryActions())
                 .ephemeral(true)
                 .build();
     }
@@ -247,14 +242,28 @@ public final class MatchPresenter {
         return ExperienceView.builder(ExperienceIntent.PREMIUM)
                 .title(title == null || title.isBlank() ? "Limit reached" : title)
                 .description(body + "\n\nPremium may raise some limits when available — free paths stay open.")
-                .actions(
-                        ActionSpec.primary(MatchComponentIds.of(MatchComponentIds.ACTION_OPEN_CHATS, "_"), "Open chats"),
-                        ActionSpec.success(BottleComponentIds.of(BottleComponentIds.ACTION_FIND, "_"), "Find a bottle"),
-                        ActionSpec.secondary(CallComponentIds.again("_"), "Start a call"),
-                        ActionSpec.secondary(MatchComponentIds.of(MatchComponentIds.ACTION_PREMIUM, "_"), "About Premium")
-                )
+                .actions(limitRecoveryActions())
                 .ephemeral(true)
                 .build();
+    }
+
+    /** Free-path recovery first; native Premium SKU when config.premiumSkuId is set. */
+    private static List<ActionSpec> limitRecoveryActions() {
+        List<ActionSpec> actions = new ArrayList<>();
+        try {
+            if (com.itsmarsss.callerphone.Callerphone.config != null) {
+                String sku = com.itsmarsss.callerphone.Callerphone.config.getPremiumSkuId().trim();
+                if (!sku.isBlank()) {
+                    actions.add(ActionSpec.premiumSku(sku));
+                }
+            }
+        } catch (Exception ignored) {
+        }
+        actions.add(ActionSpec.primary(MatchComponentIds.of(MatchComponentIds.ACTION_OPEN_CHATS, "_"), "Open chats"));
+        actions.add(ActionSpec.success(BottleComponentIds.of(BottleComponentIds.ACTION_FIND, "_"), "Find a bottle"));
+        actions.add(ActionSpec.secondary(CallComponentIds.again("_"), "Start a call"));
+        actions.add(ActionSpec.secondary(MatchComponentIds.of(MatchComponentIds.ACTION_PREMIUM, "_"), "About Premium"));
+        return actions;
     }
 
     public static ExperienceView incomingInterestFreeTeaser() {
