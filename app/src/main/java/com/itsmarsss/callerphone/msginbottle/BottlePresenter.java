@@ -178,7 +178,19 @@ public final class BottlePresenter {
         return ExperienceView.builder(ExperienceIntent.NEUTRAL)
                 .title("All good")
                 .description("You can still read the bottle. Find another whenever you're ready.")
-                .actions(ActionSpec.success(BottleComponentIds.of(BottleComponentIds.ACTION_FIND, "_"), "Find a bottle"))
+                .actions(
+                        ActionSpec.success(BottleComponentIds.of(BottleComponentIds.ACTION_FIND, "_"), "Find a bottle"),
+                        ActionSpec.secondary(
+                                com.itsmarsss.callerphone.call.discord.CallComponentIds.again("_"),
+                                "Start a call"
+                        ),
+                        ActionSpec.secondary(
+                                com.itsmarsss.callerphone.match.component.MatchComponentIds.of(
+                                        com.itsmarsss.callerphone.match.component.MatchComponentIds.ACTION_START_BROWSE, "_"
+                                ),
+                                "Discover people"
+                        )
+                )
                 .ephemeral(true)
                 .build();
     }
