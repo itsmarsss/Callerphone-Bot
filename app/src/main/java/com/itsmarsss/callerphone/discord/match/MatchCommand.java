@@ -119,7 +119,9 @@ public final class MatchCommand implements ISlashCommand {
             }
             case "export" -> handleExport(e, ctx, userId);
             case "premium" -> {
-                ctx.analytics().track(userId, "premium_view", ctx.premium().isPremium(userId) ? "entitled" : "free");
+                String tier = ctx.premium().isPremium(userId) ? "entitled" : "free";
+                ctx.analytics().track(userId, "premium_view", tier);
+                ctx.analytics().trackSurface(userId, "premium", "view", tier);
                 e.reply(ExperienceRenderer.toMessage(
                                 MatchPresenter.premiumOverview(
                                         ctx.premium().isPremium(userId),
