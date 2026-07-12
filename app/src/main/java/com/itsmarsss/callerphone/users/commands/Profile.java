@@ -30,6 +30,7 @@ public class Profile implements ISlashCommand {
         if (self && ApplicationContext.isReady()) {
             try {
                 ApplicationContext.get().analytics().track(user.getId(), "profile_view", "self");
+                ApplicationContext.get().analytics().trackSurface(user.getId(), "profile", "view", "self");
             } catch (Exception ignored) {
             }
             e.reply(ExperienceRenderer.toMessage(selfActivityView(user))).setEphemeral(true).queue();
