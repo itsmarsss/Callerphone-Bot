@@ -259,6 +259,7 @@ public final class DecisionService {
         }
 
         analytics.track(actorId, "match_interested", subjectId);
+        analytics.trackSurface(actorId, "discover", "interest", subjectId);
         String actorName = viewer.getDisplayName() == null || viewer.getDisplayName().isBlank()
                 ? "Someone"
                 : viewer.getDisplayName();
@@ -300,6 +301,8 @@ public final class DecisionService {
         notifications.notifyMutualMatch(actorId, subjectId, created.conversationId());
         analytics.track(actorId, "match_mutual", subjectId);
         analytics.track(subjectId, "match_mutual", actorId);
+        analytics.trackSurface(actorId, "discover", "mutual", subjectId);
+        analytics.trackSurface(subjectId, "discover", "mutual", actorId);
         String peerName = profiles.find(subjectId).map(MatchProfile::getDisplayName).orElse("your match");
         String actorName = viewer.getDisplayName() == null || viewer.getDisplayName().isBlank()
                 ? "Someone"
