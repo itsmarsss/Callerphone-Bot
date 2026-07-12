@@ -14,7 +14,7 @@ public final class HelpButtonHandler implements IButtonInteraction {
     public void runClick(ButtonInteraction e) {
         HelpComponentIds.Parsed parsed = HelpComponentIds.parse(e.getComponentId());
         if (parsed == null) {
-            e.reply("That help button expired. Run `/help` again.").setEphemeral(true).queue();
+            e.reply(ExperienceRenderer.toMessage(HelpPresenter.directory(false))).setEphemeral(true).queue();
             return;
         }
         boolean admin = com.itsmarsss.database.categories.Users.isModerator(e.getUser().getId());
@@ -41,7 +41,7 @@ public final class HelpButtonHandler implements IButtonInteraction {
                 e.editMessage(ExperienceRenderer.toEdit(HelpPresenter.category(title, body.toString())))
                         .queue();
             }
-            default -> e.reply("That help button expired. Run `/help` again.").setEphemeral(true).queue();
+            default -> e.reply(ExperienceRenderer.toMessage(HelpPresenter.directory(false))).setEphemeral(true).queue();
         }
     }
 

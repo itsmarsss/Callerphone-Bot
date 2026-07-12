@@ -18,7 +18,7 @@ public final class BottleSelectHandler implements IStringSelectInteraction {
         String bottleId = e.getValues().get(0);
         Bottle bottle = MIB.getBottle(bottleId);
         if (bottle == null) {
-            e.reply("That bottle is gone.").setEphemeral(true).queue();
+            e.reply(ExperienceRenderer.toMessage(BottlePresenter.genericError())).setEphemeral(true).queue();
             return;
         }
         MessageCreateData message = MessageInBottle.createMessage(bottle, Integer.MAX_VALUE);

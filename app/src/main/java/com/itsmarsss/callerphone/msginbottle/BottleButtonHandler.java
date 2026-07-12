@@ -65,7 +65,7 @@ public final class BottleButtonHandler implements IButtonInteraction {
             case BottleComponentIds.ACTION_KEEP_ANON -> e.reply(ExperienceRenderer.toMessage(
                     BottlePresenter.keepBrowsing()
             )).setEphemeral(true).queue();
-            default -> e.reply("That bottle button expired. Try `/bottle` again.").setEphemeral(true).queue();
+            default -> e.reply(ExperienceRenderer.toMessage(BottlePresenter.genericError())).setEphemeral(true).queue();
         }
     }
 

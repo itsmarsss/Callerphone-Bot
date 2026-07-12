@@ -16,13 +16,13 @@ public class AddPageHandler implements IButtonInteraction {
     public void runClick(ButtonInteraction e) {
         String[] parts = e.getButton().getCustomId().split("-", 2);
         if (parts.length < 2) {
-            e.reply("That button expired.").setEphemeral(true).queue();
+            e.reply(ExperienceRenderer.toMessage(BottlePresenter.genericError())).setEphemeral(true).queue();
             return;
         }
         String bottleId = parts[1];
         Bottle bottle = MIB.getBottle(bottleId);
         if (bottle == null) {
-            e.reply("That bottle is gone.").setEphemeral(true).queue();
+            e.reply(ExperienceRenderer.toMessage(BottlePresenter.genericError())).setEphemeral(true).queue();
             return;
         }
         if (bottle.getPages() != null && bottle.getPages().size() >= Constants.MIB_MAX_PAGES) {
