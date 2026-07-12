@@ -199,7 +199,7 @@ public final class DecisionService {
         analytics.track(actorId, "match_undo_skip", subjectId);
         BrowseSession session = discovery.reopenSession(actorId, subjectId);
         String name = profiles.find(subjectId).map(MatchProfile::getDisplayName).orElse("that profile");
-        return DecisionResult.undone("Back to **" + name + "**.", session);
+        return DecisionResult.undone("Back to **" + name + "**. Decide again.", session);
     }
 
     /**

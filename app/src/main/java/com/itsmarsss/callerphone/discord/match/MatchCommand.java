@@ -142,10 +142,17 @@ public final class MatchCommand implements ISlashCommand {
                 ctx.profiles().setAvatar(userId, e.getUser().getEffectiveAvatarUrl());
                 EnrollmentService.ServiceResult result = ctx.profiles().publish(userId);
                 if (result.success()) {
+                    try {
+                        ctx.analytics().track(userId, "match_go_live", "slash");
+                    } catch (Exception ignored) {
+                    }
                     e.reply(ExperienceRenderer.toMessage(MatchPresenter.liveReady())).setEphemeral(true).queue();
                 } else {
-                    e.reply(ExperienceRenderer.toMessage(MatchPresenter.setupRetry(result.message())))
-                            .setEphemeral(true).queue();
+                    var user = ctx.enrollment().getOrCreate(userId);
+                    var profile = ctx.profiles().find(userId).orElse(null);
+                    e.reply(ExperienceRenderer.toMessage(MatchPresenter.incompleteWelcome(
+                            ProfileChecklist.format(user, profile) + "\n\n_" + result.message() + "_"
+                    ))).setEphemeral(true).queue();
                 }
             }
             default -> e.reply(ExperienceRenderer.toMessage(MatchPresenter.warn("Unknown", "That command isn't recognized.")))
