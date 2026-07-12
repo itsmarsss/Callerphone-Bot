@@ -43,7 +43,7 @@ public final class CallButtonHandler implements IButtonInteraction {
             case CallComponentIds.SHARE -> {
                 var result = share.share(parsed.sessionId(), userId, channelId);
                 e.reply(ExperienceRenderer.toMessage(result.success()
-                                ? CallPresenter.success("Profile shared", result.message())
+                                ? CallPresenter.successInCall("Profile shared", result.message(), parsed.sessionId())
                                 : callShareFail(result.message())
                         ))
                         .setEphemeral(true).queue();
@@ -51,7 +51,7 @@ public final class CallButtonHandler implements IButtonInteraction {
             case CallComponentIds.LIKE -> {
                 var result = share.react(parsed.sessionId(), userId, parsed.subjectUserId(), true, channelId);
                 e.reply(ExperienceRenderer.toMessage(result.success()
-                                ? CallPresenter.success("Interest sent", result.message())
+                                ? CallPresenter.successInCall("Interest sent", result.message(), parsed.sessionId())
                                 : callShareFail(result.message())
                         ))
                         .setEphemeral(true).queue();
@@ -59,7 +59,7 @@ public final class CallButtonHandler implements IButtonInteraction {
             case CallComponentIds.PASS -> {
                 var result = share.react(parsed.sessionId(), userId, parsed.subjectUserId(), false, channelId);
                 e.reply(ExperienceRenderer.toMessage(
-                        CallPresenter.success("Noted", result.message())
+                        CallPresenter.successInCall("Noted", result.message(), parsed.sessionId())
                 )).setEphemeral(true).queue();
             }
             case CallComponentIds.REPORT -> openReportCategories(e, parsed.sessionId());
@@ -111,7 +111,7 @@ public final class CallButtonHandler implements IButtonInteraction {
             case CallComponentIds.GAME_TTT -> {
                 var result = games.proposeTtt(parsed.sessionId(), userId, channelId);
                 e.reply(ExperienceRenderer.toMessage(result.success()
-                                ? CallPresenter.success("Challenge sent", result.message())
+                                ? CallPresenter.successInCall("Challenge sent", result.message(), parsed.sessionId())
                                 : CallPresenter.warnRecover("Couldn't challenge", result.message())
                         ))
                         .setEphemeral(true).queue();
@@ -144,7 +144,11 @@ public final class CallButtonHandler implements IButtonInteraction {
                 } catch (Exception ignored) {
                 }
                 e.reply(ExperienceRenderer.toMessage(
-                        CallPresenter.success("Declined", "You can keep chatting — try a prompt or share profile.")
+                        CallPresenter.successInCall(
+                                "Declined",
+                                "You can keep chatting — try a prompt or share profile.",
+                                parsed.sessionId()
+                        )
                 )).setEphemeral(true).queue();
             }
             case CallComponentIds.AGAIN -> {

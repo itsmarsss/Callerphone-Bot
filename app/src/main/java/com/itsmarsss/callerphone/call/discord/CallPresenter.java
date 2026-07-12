@@ -339,6 +339,22 @@ public final class CallPresenter {
                 .build();
     }
 
+    /** Success while still in a call — keep the session controls handy. */
+    public static ExperienceView successInCall(String title, String description, String sessionId) {
+        ExperienceView.Builder b = ExperienceView.builder(ExperienceIntent.SUCCESS)
+                .title(title)
+                .description(description)
+                .ephemeral(true);
+        if (sessionId != null && !sessionId.isBlank()) {
+            b.actions(
+                    ActionSpec.primary(CallComponentIds.prompt(sessionId), "Conversation prompt"),
+                    ActionSpec.secondary(CallComponentIds.gameShelf(sessionId), "Start a game"),
+                    ActionSpec.success(CallComponentIds.share(sessionId), "Share profile")
+            );
+        }
+        return b.build();
+    }
+
     public static ExperienceView info(String title, String description) {
         return ExperienceView.builder(ExperienceIntent.SOCIAL)
                 .title(title)
