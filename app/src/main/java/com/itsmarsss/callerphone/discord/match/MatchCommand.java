@@ -385,6 +385,7 @@ public final class MatchCommand implements ISlashCommand {
             if (r.success()) {
                 try {
                     ctx.analytics().track(userId, "chat_stop", "slash");
+                    ctx.analytics().trackSurface(userId, "chat", "stop", "slash");
                 } catch (Exception ignored) {
                 }
                 e.reply(ExperienceRenderer.toMessage(MatchPresenter.serviceDone(
