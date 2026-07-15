@@ -174,7 +174,12 @@ public final class MatchPresenter {
                 .actions(
                         ActionSpec.success(MatchComponentIds.of(MatchComponentIds.ACTION_INBOX_OPEN, "_"), "Open next"),
                         ActionSpec.secondary(MatchComponentIds.of(MatchComponentIds.ACTION_START_BROWSE, "_"), "Discover"),
-                        ActionSpec.secondary(MatchComponentIds.of(MatchComponentIds.ACTION_OPEN_CHATS, "_"), "Open chats")
+                        ActionSpec.secondary(MatchComponentIds.of(MatchComponentIds.ACTION_OPEN_CHATS, "_"), "Open chats"),
+                        ActionSpec.secondary(CallComponentIds.again("_"), "Start a call"),
+                        ActionSpec.secondary(
+                                BottleComponentIds.of(BottleComponentIds.ACTION_FIND, "_"),
+                                "Find a bottle"
+                        )
                 )
                 .ephemeral(true)
                 .build();
@@ -1175,7 +1180,7 @@ public final class MatchPresenter {
         return ExperienceView.builder(ExperienceIntent.SUCCESS)
                 .title("Game on")
                 .description(message == null || message.isBlank()
-                        ? "Boards are in DMs. This chat stays open."
+                        ? "Boards are in each player's DMs — that's your Match surface. Keep chatting."
                         : message)
                 .actions(
                         ActionSpec.primary(

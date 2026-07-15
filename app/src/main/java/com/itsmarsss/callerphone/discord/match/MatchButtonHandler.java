@@ -246,6 +246,16 @@ public final class MatchButtonHandler implements IButtonInteraction {
                                     Button.secondary(
                                             MatchComponentIds.of(MatchComponentIds.ACTION_SETTINGS, "_"),
                                             "Settings"
+                                    ),
+                                    Button.secondary(
+                                            com.itsmarsss.callerphone.call.discord.CallComponentIds.again("_"),
+                                            "Start a call"
+                                    ),
+                                    Button.secondary(
+                                            com.itsmarsss.callerphone.msginbottle.BottleComponentIds.of(
+                                                    com.itsmarsss.callerphone.msginbottle.BottleComponentIds.ACTION_FIND, "_"
+                                            ),
+                                            "Find a bottle"
                                     )
                             ))
                             .setEphemeral(true).queue();

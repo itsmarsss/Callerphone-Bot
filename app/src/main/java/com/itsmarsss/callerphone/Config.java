@@ -31,8 +31,9 @@ public class Config {
     /** Private channel for re-hosting Match photos (optional). */
     private String matchMediaChannel = "";
     /**
-     * Discord Premium Apps SKU id for Callerphone Premium (optional).
-     * When set, entitlement create/delete events grant/revoke Premium.
+     * Discord Premium Apps SKU id for Callerphone Premium (optional YAML: {@code premiumSkuId}).
+     * When set, entitlement create/delete events grant/revoke Premium and overview
+     * shows a native purchase button. Leave blank until the SKU is approved.
      */
     private String premiumSkuId = "";
 

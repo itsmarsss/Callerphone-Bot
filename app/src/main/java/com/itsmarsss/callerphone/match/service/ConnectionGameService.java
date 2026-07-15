@@ -140,12 +140,56 @@ public final class ConnectionGameService {
         } catch (Exception ignored) {
         }
 
+        // Match chat is DM-mediated — boards live in each player's DMs (the conversation surface).
         ToolSet.sendPrivateGameMessageFrom(proposer, ttt.getMessageForFrom(), ttt);
         ToolSet.sendPrivateGameMessageTo(acceptor, ttt.getMessageForTo(), ttt);
 
+        // Notify proposer via DM if we can (board already sent above as from-message).
+        notifyGameStartedDm(proposer.getId(), acceptor.getName(), conversationId);
+
         ctx.inbox().push(proposer.getId(), SocialInboxService.EntryType.GAME_TURN,
-                conversationId, acceptor.getName(), "Accepted Tic-Tac-Toe — board is in DMs");
-        return Result.ok("Game started. Boards are in both players' DMs. The Match chat stays open.");
+                conversationId, acceptor.getName(), "Accepted Tic-Tac-Toe — your move is in DMs");
+        return Result.ok(
+                "Game started. Boards are in each player's DMs (that's your Match chat surface). "
+                        + "Keep messaging here — the connection stays open."
+        );
+    }
+
+    private static void notifyGameStartedDm(String proposerId, String acceptorName, String conversationId) {
+        try {
+            var rest = ToolSet.getUser(proposerId);
+            if (rest == null) {
+                return;
+            }
+            rest.queue(user -> user.openPrivateChannel().queue(ch ->
+                    ch.sendMessage(ExperienceRenderer.toMessage(
+                            ExperienceView.builder(ExperienceIntent.SUCCESS)
+                                    .title("Tic-Tac-Toe started")
+                                    .description(
+                                            "**" + acceptorName + "** accepted. Your board is above — make a move.\n\n"
+                                                    + "Match chat stays open for talking."
+                                    )
+                                    .actions(
+                                            ActionSpec.primary(
+                                                    MatchComponentIds.of(
+                                                            MatchComponentIds.ACTION_CHAT_SELECT,
+                                                            conversationId
+                                                    ),
+                                                    "Open chat"
+                                            ),
+                                            ActionSpec.secondary(
+                                                    MatchComponentIds.of(
+                                                            MatchComponentIds.ACTION_ICEBREAKER,
+                                                            conversationId
+                                                    ),
+                                                    "Icebreaker"
+                                            )
+                                    )
+                                    .build()
+                    )).queue()
+            ));
+        } catch (Exception ignored) {
+        }
     }
 
     public Result decline(String conversationId, String userId) {

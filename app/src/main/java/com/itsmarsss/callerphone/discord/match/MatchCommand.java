@@ -301,10 +301,24 @@ public final class MatchCommand implements ISlashCommand {
                 || !ProfileChecklist.readyToSubmit(p)) {
             row.add(Button.primary(MatchComponentIds.of(MatchComponentIds.ACTION_SETUP, "_"), "Finish setup"));
             row.add(Button.secondary(MatchComponentIds.of(MatchComponentIds.ACTION_PHOTO_MENU, "_"), "Photo"));
+            row.add(Button.secondary(
+                    com.itsmarsss.callerphone.call.discord.CallComponentIds.again("_"),
+                    "Start a call"
+            ));
         } else {
             row.add(Button.success(MatchComponentIds.of(MatchComponentIds.ACTION_START_BROWSE, "_"), "Discover"));
             row.add(Button.secondary(MatchComponentIds.of(MatchComponentIds.ACTION_EDIT_MENU, "_"), "Edit"));
             row.add(Button.secondary(MatchComponentIds.of(MatchComponentIds.ACTION_SETTINGS, "_"), "Settings"));
+            row.add(Button.secondary(
+                    com.itsmarsss.callerphone.call.discord.CallComponentIds.again("_"),
+                    "Start a call"
+            ));
+            row.add(Button.secondary(
+                    com.itsmarsss.callerphone.msginbottle.BottleComponentIds.of(
+                            com.itsmarsss.callerphone.msginbottle.BottleComponentIds.ACTION_FIND, "_"
+                    ),
+                    "Find a bottle"
+            ));
         }
         e.replyEmbeds(MatchEmbeds.profileCard(p, true))
                 .addComponents(ActionRow.of(row))
